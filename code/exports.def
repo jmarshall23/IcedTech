@@ -1,0 +1,14 @@
+EXPORTS
+	RadiantAPI_SelectObject @1
+	DoomMain @2
+	RadiantAPI_GotoEntity @3
+	RadiantAPI_SetRenderMode @4
+	RadaintAPI_KeyEvent @5
+	RadiantAPI_RedrawWindows @6
+	RadiantAPI_XYMouseRight @7
+	RadiantAPI_XYMouseLeft @8
+	RadiantAPI_GetEntityClassList @9
+	RadiantAPI_CreateEntity @10
+	RadiantAPI_MouseMove @11
+	RadiantAPI_CameraMouseLeft @12
+	RadiantAPI_TexWndMouseLeft @13

@@ -1,0 +1,8 @@
+megatextures/test_box
+{
+	qer_editorimage megatextures/test_box_preview.tga
+
+	{
+		megaTexture test_box
+	}
+}

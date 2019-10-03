@@ -1,0 +1,359 @@
+Version 2
+// entity 0
+{
+"classname" "worldspawn"
+"inlineworld" "1"
+// primitive 0
+{
+ brushDef3
+ {
+  ( -1 0 0 -2360 ) ( ( 0.001953125 -0 0.0156256128 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+  ( 0 1 0 -4592 ) ( ( 0.001953125 0 -7.109375 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+  ( 1 0 -0 1464 ) ( ( 0.001953125 0 -0.015625 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+  ( 0 -1 0 1160 ) ( ( 0.001953125 -0 7.109375 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+  ( 0 -0 1 -800 ) ( ( 0.001953125 0 -0.015625 ) ( -0 0.001953125 7.109375 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+  ( -0 -0 -1 584 ) ( ( 0.001953125 0 -0.015625 ) ( 0 0.001953125 -7.109375 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+ }
+}
+// primitive 1
+{
+ brushDef3
+ {
+  ( -1 0 0 -2368 ) ( ( 0.001953125 -0 0.0156256128 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 1 0 -4592 ) ( ( 0.001953125 0 -7.109375 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 1 0 -0 2312 ) ( ( 0.001953125 0 -0.015625 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 -1 0 1160 ) ( ( 0.001953125 -0 7.109375 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 -0 1 -984 ) ( ( 0.001953125 0 -0.015625 ) ( -0 0.001953125 7.109375 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( -0 -0 -1 584 ) ( ( 0.001953125 0 -0.015625 ) ( 0 0.001953125 -7.109375 ) ) "textures/mcity/mchangar15" 0 0 0
+ }
+}
+// primitive 2
+{
+ brushDef3
+ {
+  ( -1 0 0 -1520 ) ( ( 0.001953125 0 0.0156254936 ) ( 0 0.001953125 -0.015625 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 1 0 -4592 ) ( ( 0.001953125 0 -5.453125 ) ( 0 0.001953125 -0.015625 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 1 0 -0 1416 ) ( ( 0.001953125 0 -0.015625 ) ( 0 0.001953125 -0.015625 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 -1 0 1160 ) ( ( 0.001953125 0 5.453125 ) ( 0 0.001953125 -0.015625 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 -0 1 -976 ) ( ( 0.001953125 0 -0.015625 ) ( 0 0.001953125 5.453125 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( -0 -0 -1 576 ) ( ( 0.001953125 0 -0.015625 ) ( 0 0.001953125 -5.453125 ) ) "textures/mcity/mchangar15" 0 0 0
+ }
+}
+// primitive 3
+{
+ brushDef3
+ {
+  ( -0 -0 -1 576 ) ( ( 0.001953125 0 0.046875 ) ( -0 0.001953125 5.84375 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 -0 1 -976 ) ( ( 0.001953125 0 0.046875 ) ( -0 0.001953125 -5.84375 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 -1 0 1008 ) ( ( 0.001953125 -0 -5.84375 ) ( 0 0.001953125 -0.015625 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 1 0 -0 -4368 ) ( ( 0.001953125 0 0.046875 ) ( 0 0.001953125 -0.015625 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 1 0 -5480 ) ( ( 0.001953125 0 5.84375 ) ( 0 0.001953125 -0.015625 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( -1 0 0 4256 ) ( ( 0.001953125 0 -0.0468754657 ) ( 0 0.001953125 -0.015625 ) ) "textures/mcity/mchangar15" 0 0 0
+ }
+}
+// primitive 4
+{
+ brushDef3
+ {
+  ( -0 -0 -1 584 ) ( ( 0.001953125 0 0.046875 ) ( -0 0.001953125 4.1875 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 -0 1 -984 ) ( ( 0.001953125 0 0.046875 ) ( -0 0.001953125 -4.1875 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 -1 0 1008 ) ( ( 0.001953125 0 -4.1875 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 1 0 -0 -3464 ) ( ( 0.001953125 0 0.046875 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( 0 1 0 -5480 ) ( ( 0.001953125 -0 4.1875 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar15" 0 0 0
+  ( -1 0 0 3416 ) ( ( 0.001953125 0 -0.0468753465 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar15" 0 0 0
+ }
+}
+// primitive 5
+{
+ brushDef3
+ {
+  ( 0 0 -1 584 ) ( ( 0.001953125 0 0.046875 ) ( -0 0.001953125 4.1875 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+  ( -0 0 1 -800 ) ( ( 0.001953125 0 0.046875 ) ( -0 0.001953125 -4.1875 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+  ( -0 -1 -0 1008 ) ( ( 0.001953125 0 -4.1875 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+  ( 1 0 0 -4320 ) ( ( 0.001953125 0 0.046875 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+  ( -0 1 0 -5480 ) ( ( 0.001953125 -0 4.1875 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+  ( -1 0 0 3424 ) ( ( 0.001953125 0 -0.0468753465 ) ( 0 0.001953125 0 ) ) "textures/mcity/mchangar12_scale" 0 0 0
+ }
+}
+// primitive 6
+{
+ brushDef3
+ {
+  ( 0 0 -1 368 ) ( ( 0.0002362949 0 -0.281663537 ) ( 0 0.0000580316 0.4698235691 ) ) "textures/lava/lava" 0 0 0
+  ( 0 -0 1 -512 ) ( ( 0.0002362949 0 -0.281663537 ) ( 0 0.0000580316 0.5301763415 ) ) "textures/lava/lava" 0 0 0
+  ( 0 -1 0 1192 ) ( ( 0.0000580316 0 0.5301764011 ) ( 0 0.0069444445 3.5555553436 ) ) "textures/lava/lava" 0 0 0
+  ( 0.9999999404 0 0 -8095.9995117188 ) ( ( 0.0002362949 0 -0.281663537 ) ( 0 0.0069444445 3.5555553436 ) ) "textures/lava/lava" 0 0 0
+  ( 0 1 0 -5424 ) ( ( 0.0000580316 0 0.4698235989 ) ( 0 0.0069444445 3.5555553436 ) ) "textures/lava/lava" 0 0 0
+  ( -0.9999999404 0 0 -9135.9990234375 ) ( ( 0.0002362949 0 1.2816637754 ) ( 0 0.0069444445 3.5555553436 ) ) "textures/lava/lava" 0 0 0
+ }
+}
+// primitive 7
+{
+ brushDef3
+ {
+  ( 0 1 0 9696 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( -1 0 0 -8912 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 1 0 -0 -11864 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 -1 0 -9704 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 -0 1 -5736 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( -0 -0 -1 -136 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+ }
+}
+// primitive 8
+{
+ brushDef3
+ {
+  ( -1 0 0 11856 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 1 0 -8856 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 1 0 -0 -11864 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 -1 0 -9704 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 -0 1 -5736 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( -0 -0 -1 -136 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+ }
+}
+// primitive 9
+{
+ brushDef3
+ {
+  ( 0 -0 1 128 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( -1 0 0 -8912 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 1 0 -8856 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 1 0 -0 -11864 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 -1 0 -9704 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( -0 -0 -1 -136 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+ }
+}
+// primitive 10
+{
+ brushDef3
+ {
+  ( -0 -0 -1 5400 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 -0.0000002308 ) ) "textures/skies/colortest" 0 0 0
+  ( -1 0 0 -8912 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 5.28125 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 1 0 -8856 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 5.28125 ) ) "textures/skies/colortest" 0 0 0
+  ( 1 0 -0 -11864 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 5.28125 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 -1 0 -9704 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 5.28125 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 -0 1 -5408 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 -0.0000002308 ) ) "textures/skies/colortest" 0 0 0
+ }
+}
+// primitive 11
+{
+ brushDef3
+ {
+  ( 0 -1 0 8848 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( -1 0 0 -8912 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 1 0 -8856 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 1 0 -0 -11864 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 -0 1 -5736 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( -0 -0 -1 -136 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+ }
+}
+// primitive 12
+{
+ brushDef3
+ {
+  ( 1 0 -0 8904 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( -1 0 0 -8912 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 1 0 -8856 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 -1 0 -9704 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( 0 -0 1 -5736 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+  ( -0 -0 -1 -136 ) ( ( 0.00390625 0 0 ) ( 0 0.00390625 0 ) ) "textures/skies/colortest" 0 0 0
+ }
+}
+}
+// entity 1
+{
+"classname" "env_simplebuggy"
+"name" "env_simplebuggy_1"
+"origin" "2632 -1280 984"
+}
+// entity 2
+{
+"classname" "light"
+"name" "light_3"
+"origin" "-6096 2832 592"
+"noshadows" "0"
+"nospecular" "0"
+"nodiffuse" "0"
+"falloff" "0"
+"_color" "1 0 0.02"
+"light_radius" "4000 4000 4000"
+"bake" "1"
+}
+// entity 3
+{
+"classname" "light"
+"name" "light_2"
+"origin" "2760 -1328 0"
+"noshadows" "0"
+"nospecular" "0"
+"nodiffuse" "0"
+"falloff" "0"
+"texture" "lights/ambientlight"
+"_color" "0.13 0.13 0.13"
+"light_radius" "300000 300000 300000"
+}
+// entity 4
+{
+"classname" "func_static"
+"name" "func_static_2"
+"origin" "-280 232 784"
+"model" "models/enviroment/AtennaDish/DSN_Satellite.dae"
+}
+// entity 5
+{
+"anim" "idle"
+"classname" "monster_demon_hellknight"
+"name" "monster_demon_hellknight_1"
+"origin" "2688 -2096 1192"
+}
+// entity 6
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_1"
+"origin" "-1144 -4208 2080"
+}
+// entity 7
+{
+"anim" "idle"
+"classname" "monster_demon_mancubus"
+"name" "monster_demon_mancubus_1"
+"origin" "2536 -2120 1168"
+}
+// entity 8
+{
+"classname" "info_player_start"
+"name" "info_player_start_2"
+"origin" "2784 -1456 1096"
+"angle" "180"
+}
+// entity 9
+{
+"classname" "info_player_start"
+"name" "info_player_start_1"
+"origin" "5840 4936 232"
+"angle" "180"
+}
+// entity 10
+{
+"classname" "light"
+"name" "light_1"
+"origin" "-5184 -6248 5048"
+"noshadows" "0"
+"nospecular" "0"
+"nodiffuse" "0"
+"falloff" "0"
+"_color" "1 1 1"
+"light_radius" "30000 30000 30000"
+"bake" "1"
+}
+// entity 11
+{
+"classname" "func_static"
+"name" "func_static_1"
+"origin" "112 48 0"
+"model" "models/terrain/test_box.terrain"
+}
+// entity 12
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_2"
+"origin" "-832 -3600 2080"
+}
+// entity 13
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_3"
+"origin" "-400 -2760 2080"
+}
+// entity 14
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_4"
+"origin" "-600 -1368 2080"
+}
+// entity 15
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_5"
+"origin" "-552 624 2080"
+}
+// entity 16
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_6"
+"origin" "-496 2688 2080"
+}
+// entity 17
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_7"
+"origin" "400 4064 2080"
+}
+// entity 18
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_8"
+"origin" "2280 4760 2080"
+}
+// entity 19
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_9"
+"origin" "3176 3872 2080"
+}
+// entity 20
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_10"
+"origin" "2248 2640 2080"
+}
+// entity 21
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_11"
+"origin" "3216 1504 2080"
+}
+// entity 22
+{
+"anim" "idle"
+"classname" "monster_flying_cacodemon"
+"name" "monster_flying_cacodemon_12"
+"origin" "3824 4528 2080"
+}
+// entity 23
+{
+"classname" "light"
+"name" "light_4"
+"origin" "-320 2968 592"
+"noshadows" "0"
+"nospecular" "0"
+"nodiffuse" "0"
+"falloff" "0"
+"_color" "1 0 0.02"
+"light_radius" "4000 4000 4000"
+"bake" "1"
+}
+// entity 24
+{
+"classname" "light"
+"name" "light_5"
+"origin" "5456 2968 592"
+"noshadows" "0"
+"nospecular" "0"
+"nodiffuse" "0"
+"falloff" "0"
+"_color" "1 0 0.02"
+"light_radius" "4000 4000 4000"
+"bake" "1"
+}

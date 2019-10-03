@@ -1,0 +1,6 @@
+textures/substance/stone1
+{
+	bumpmap			textures/substance/stone1_normal
+	diffusemap		textures/substance/stone1
+	specularmap		textures/substance/stone1_spec
+}

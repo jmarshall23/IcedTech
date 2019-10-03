@@ -1,0 +1,170 @@
+/*
+===========================================================================
+
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
+
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
+
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
+
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
+
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+
+===========================================================================
+*/
+
+#include "global.inc"
+
+uniform sampler2D samp0		: register(s0);
+uniform sampler2D samp1		: register(s1);
+
+struct PS_IN {
+	float4 position : VPOS;
+	float2 texcoord0 : TEXCOORD0_centroid;
+};
+
+struct PS_OUT {
+	float4 color : COLOR0;
+};
+
+float4 blur13(sampler2D image, float2 uv, float2 resolution, float2 direction) {
+  float4 color = float4(0.0);
+  float2 off1 = float2(1.411764705882353) * direction;
+  float2 off2 = float2(3.2941176470588234) * direction;
+  float2 off3 = float2(5.176470588235294) * direction;
+  color += texture2D(image, uv) * 0.1964825501511404;
+  color += texture2D(image, uv + (off1 / resolution)) * 0.2969069646728344;
+  color += texture2D(image, uv - (off1 / resolution)) * 0.2969069646728344;
+  color += texture2D(image, uv + (off2 / resolution)) * 0.09447039785044732;
+  color += texture2D(image, uv - (off2 / resolution)) * 0.09447039785044732;
+  color += texture2D(image, uv + (off3 / resolution)) * 0.010381362401148057;
+  color += texture2D(image, uv - (off3 / resolution)) * 0.010381362401148057;
+  return color;
+}
+
+float Min3(float x, float y, float z)
+{
+	return min(x, min(y, z));
+}
+
+float Max3(float x, float y, float z)
+{
+	return max(x, max(y, z));
+}
+
+
+float rcp(float v)
+{
+	return 1.0 / v;
+}
+
+float4 CaSUpSample(sampler2D diffuseImage, float2 diffuseST)
+{
+	float2 texcoord = diffuseST.xy;
+	float Sharpness = 1;
+
+	// fetch a 3x3 neighborhood around the pixel 'e',
+	//  a b c
+	//  d(e)f
+	//  g h i
+    int2 bufferSize = textureSize(diffuseImage, 0);
+	float pixelX = (1.0 / bufferSize.x);
+	float pixelY = (1.0 / bufferSize.y);
+
+	float3 a = tex2D(diffuseImage, texcoord + float2(-pixelX, -pixelY)).rgb;
+	float3 b = tex2D(diffuseImage, texcoord + float2(0.0, -pixelY)).rgb;
+	float3 c = tex2D(diffuseImage, texcoord + float2(pixelX, -pixelY)).rgb;
+	float3 d = tex2D(diffuseImage, texcoord + float2(-pixelX, 0.0)).rgb;
+	float3 e = tex2D(diffuseImage, texcoord).rgb;
+	float3 f = tex2D(diffuseImage, texcoord + float2(pixelX, 0.0)).rgb;
+	float3 g = tex2D(diffuseImage, texcoord + float2(-pixelX, pixelY)).rgb;
+	float3 h = tex2D(diffuseImage, texcoord + float2(0.0, pixelY)).rgb;
+	float3 i = tex2D(diffuseImage, texcoord + float2(pixelX, pixelY)).rgb;
+
+	// Soft min and max.
+	//  a b c             b
+	//  d e f * 0.5  +  d e f * 0.5
+	//  g h i             h
+	// These are 2.0x bigger (factored out the extra multiply).
+	float mnR = Min3(Min3(d.r, e.r, f.r), b.r, h.r);
+	float mnG = Min3(Min3(d.g, e.g, f.g), b.g, h.g);
+	float mnB = Min3(Min3(d.b, e.b, f.b), b.b, h.b);
+
+	float mnR2 = Min3(Min3(mnR, a.r, c.r), g.r, i.r);
+	float mnG2 = Min3(Min3(mnG, a.g, c.g), g.g, i.g);
+	float mnB2 = Min3(Min3(mnB, a.b, c.b), g.b, i.b);
+	mnR = mnR + mnR2;
+	mnG = mnG + mnG2;
+	mnB = mnB + mnB2;
+
+	float mxR = Max3(Max3(d.r, e.r, f.r), b.r, h.r);
+	float mxG = Max3(Max3(d.g, e.g, f.g), b.g, h.g);
+	float mxB = Max3(Max3(d.b, e.b, f.b), b.b, h.b);
+
+	float mxR2 = Max3(Max3(mxR, a.r, c.r), g.r, i.r);
+	float mxG2 = Max3(Max3(mxG, a.g, c.g), g.g, i.g);
+	float mxB2 = Max3(Max3(mxB, a.b, c.b), g.b, i.b);
+	mxR = mxR + mxR2;
+	mxG = mxG + mxG2;
+	mxB = mxB + mxB2;
+
+	// Smooth minimum distance to signal limit divided by smooth max.
+	float rcpMR = rcp(mxR);
+	float rcpMG = rcp(mxG);
+	float rcpMB = rcp(mxB);
+
+	float ampR = saturate(min(mnR, 2.0 - mxR) * rcpMR);
+	float ampG = saturate(min(mnG, 2.0 - mxG) * rcpMG);
+	float ampB = saturate(min(mnB, 2.0 - mxB) * rcpMB);
+
+	// Shaping amount of sharpening.
+	ampR = sqrt(ampR);
+	ampG = sqrt(ampG);
+	ampB = sqrt(ampB);
+
+	// Filter shape.
+	//  0 w 0
+	//  w 1 w
+	//  0 w 0  
+	float peak = -rcp(lerp(8.0, 5.0, saturate(Sharpness)));
+
+	float wR = ampR * peak;
+	float wG = ampG * peak;
+	float wB = ampB * peak;
+
+	float rcpWeightR = rcp(1.0 + 4.0 * wR);
+	float rcpWeightG = rcp(1.0 + 4.0 * wG);
+	float rcpWeightB = rcp(1.0 + 4.0 * wB);
+
+	float3 outColor = float3(saturate((b.r*wR + d.r*wR + f.r*wR + h.r*wR + e.r)*rcpWeightR),
+		saturate((b.g*wG + d.g*wG + f.g*wG + h.g*wG + e.g)*rcpWeightG),
+		saturate((b.b*wB + d.b*wB + f.b*wB + h.b*wB + e.b)*rcpWeightB));
+
+	return float4(outColor, 1.0);
+}
+
+void main( PS_IN fragment, out PS_OUT result ) {
+	float2 tCoords = fragment.texcoord0;
+	float4 albedo = CaSUpSample( samp0, tCoords );
+	
+	float4 emissive_mask = tex2D( samp1, tCoords );
+	
+	float2 imageSize = rpRenderTargetSize.xy * 0.1;
+	float4 emissive = blur13(samp0, tCoords, imageSize, float2(0, 1));
+	emissive += blur13(samp0, tCoords, imageSize, float2(1, 0));
+	
+	result.color = (albedo) + (emissive_mask * emissive );
+}

@@ -1,0 +1,9 @@
+textures/lava/lava
+{
+	qer_editorimage textures/lava/lava
+
+	{
+		program emissive.vfp
+		fragmentMap 0 textures/lava/lava
+	}
+}

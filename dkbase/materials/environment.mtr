@@ -1,0 +1,64 @@
+models/enviroment/AtennaDish/DSN_Satellite_0
+{
+	qer_editorimage models/enviroment/AtennaDish/AntennaDish_BaseColor.png
+	bumpmap			models/enviroment/AtennaDish/AntennaDish_normal.png
+	diffusemap		models/enviroment/AtennaDish/AntennaDish_BaseColor.png
+	specularmap		models/enviroment/AtennaDish/AntennaDish_RAOM.png
+}
+
+models/enviroment/AtennaDish/DSN_Satellite_1
+{
+	qer_editorimage models/enviroment/AtennaDish/MachineryRooms_BaseColor.png
+	bumpmap			models/enviroment/AtennaDish/MachineryRooms_normal.png
+	diffusemap		models/enviroment/AtennaDish/MachineryRooms_BaseColor.png
+	specularmap		models/enviroment/AtennaDish/MachineryRooms_RAOM.png
+}
+
+models/enviroment/AtennaDish/DSN_Satellite_2
+{
+	qer_editorimage models/enviroment/AtennaDish/Pedestal_Mat_BaseColor.png
+	bumpmap			models/enviroment/AtennaDish/Pedestal_Mat_normal.png
+	diffusemap		models/enviroment/AtennaDish/Pedestal_Mat_BaseColor.png
+	specularmap		models/enviroment/AtennaDish/Pedestal_Mat_RAOM.png
+}
+
+models/enviroment/AtennaDish/DSN_Satellite_3
+{
+	qer_editorimage models/enviroment/AtennaDish/Pedestal_Mat_BaseColor.png
+	bumpmap			models/enviroment/AtennaDish/Pedestal_Mat_normal.png
+	diffusemap		models/enviroment/AtennaDish/Pedestal_Mat_BaseColor.png
+	specularmap		models/enviroment/AtennaDish/Pedestal_Mat_RAOM.png
+}
+
+models/enviroment/AtennaDish/DSN_Satellite_4
+{
+	qer_editorimage models/enviroment/AtennaDish/Pedestal_Mat_BaseColor.png
+	bumpmap			models/enviroment/AtennaDish/Pedestal_Mat_normal.png
+	diffusemap		models/enviroment/AtennaDish/Pedestal_Mat_BaseColor.png
+	specularmap		models/enviroment/AtennaDish/Pedestal_Mat_RAOM.png
+}
+
+
+models/enviro/warehouse01
+{
+	qer_editorimage models/enviro/Structure_v3
+	bumpmap			models/enviro/Structure_v3_NM
+	diffusemap		models/enviro/Structure_v3
+	specularmap		models/enviro/Structure_v3_AO
+}
+
+models/enviro/industrygate
+{
+	qer_editorimage models/enviro/industrygate
+	bumpmap			models/enviro/Structure_v3_NM
+	diffusemap		models/enviro/Structure_v3
+	specularmap		models/enviro/Structure_v3_AO
+}
+
+models/enviro/guardtower
+{
+	qer_editorimage models/enviro/guardtower_d
+	bumpmap			models/enviro/guardtower_normal
+	diffusemap		models/enviro/guardtower_d
+	specularmap		models/enviro/guardtower_spec
+}

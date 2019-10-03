@@ -1,0 +1,13 @@
+numlayers 2
+
+layer_0
+{
+	albedo megagen/test/dirtd.tga
+	mask megagen/white.tga
+}
+
+layer_1
+{
+	albedo megagen/test/stonesd.tga
+	mask megagen/test_box/mountain_layer.tga
+}

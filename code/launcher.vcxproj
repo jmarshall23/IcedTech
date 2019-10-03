@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="doomdll.vcxproj">
+      <Project>{49bec5c6-b964-417a-851e-808886b57420}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\BEVEL.BMP" />
+    <None Include="sys\win32\rc\res\DEFTEX.WAL" />
+    <None Include="sys\win32\rc\res\fpoint.cur" />
+    <None Include="sys\win32\rc\res\GetString.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="sys\win32\rc\res\guied_hand.cur" />
+    <None Include="sys\win32\rc\res\PropTree.rc2" />
+    <None Include="sys\win32\rc\res\spliter.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\BITMAP2.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\BMP00001.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\bmp00002.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\bmp00003.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\bmp00004.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\bmp00005.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\BMP0002.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\cchsb.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\ccrgb.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\dbg_back.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\dbg_breakpoint.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\dbg_current.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\dbg_currentline.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\dbg_empty.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\dbg_open.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\dbg_toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\doom.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\ENDCAP.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\fxed_link.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\fxed_toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\fxeditor.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\guied.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\guied_collapse.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\guied_expand.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\guied_nav_visible.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\guied_nav_visibledisabled.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\guied_scripts.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\guied_scripts_white.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\guied_viewer_toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\IBEVEL.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\icon2.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\IENDCAP.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\logo_sm3dfx.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\matedtree.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\MaterialEditor.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\me_disabled_icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\me_enabled.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\me_off_icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\me_on_icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\MEFileToolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\MEtoolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\Q.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\qe3.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\Radiant.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\RADIANT3.GIF" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\RadiantDoc.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\shaderbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\shaderdoc.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\shaderframe.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\Toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\TOOLBAR1.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\TOOLBAR2.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\VIEWDEFA.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\win32\rc\res\VIEWOPPO.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="sys\win32\rc\AFEditor.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="sys\win32\rc\Common.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="sys\win32\rc\Debugger.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="sys\win32\rc\DeclEditor.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="sys\win32\rc\doom.rc" />
+    <ResourceCompile Include="sys\win32\rc\GuiEd.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="sys\win32\rc\MaterialEditor.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="sys\win32\rc\ParticleEditor.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="sys\win32\rc\PDAEditor.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="sys\win32\rc\PropTree.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="sys\win32\rc\Radiant.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="sys\win32\rc\ScriptEditor.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+    <ResourceCompile Include="sys\win32\rc\SoundEditor.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sys\win32\rc\AFEditor_resource.h" />
+    <ClInclude Include="sys\win32\rc\Common_resource.h" />
+    <ClInclude Include="sys\win32\rc\Debugger_resource.h" />
+    <ClInclude Include="sys\win32\rc\DeclEditor_resource.h" />
+    <ClInclude Include="sys\win32\rc\doom_resource.h" />
+    <ClInclude Include="sys\win32\rc\GuiEd_resource.h" />
+    <ClInclude Include="sys\win32\rc\MaterialEditor_Resource.h" />
+    <ClInclude Include="sys\win32\rc\ParticleEditor_resource.h" />
+    <ClInclude Include="sys\win32\rc\PDAEditor_resource.h" />
+    <ClInclude Include="sys\win32\rc\PropTree_resource.h" />
+    <ClInclude Include="sys\win32\rc\Radiant_resource.h" />
+    <ClInclude Include="sys\win32\rc\ScriptEditor_resource.h" />
+    <ClInclude Include="sys\win32\rc\SoundEditor_resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="sys\win32\win_launcher.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{AED42CEB-91D4-48DF-8E9F-EDD9FB5FB285}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>launcher</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>../Darklight.exe</OutputFile>
+      <StackReserveSize>16777216</StackReserveSize>
+      <StackCommitSize>16777216</StackCommitSize>
+      <LargeAddressAware>true</LargeAddressAware>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>../Darklight.exe</OutputFile>
+      <StackReserveSize>16777216</StackReserveSize>
+      <StackCommitSize>16777216</StackCommitSize>
+      <LargeAddressAware>true</LargeAddressAware>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

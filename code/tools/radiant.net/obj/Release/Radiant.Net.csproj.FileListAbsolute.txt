@@ -1,0 +1,9 @@
+D:\Projects\Darklight\code\tools\radiant.net\bin\Release\radiant.net.dll
+D:\Projects\Darklight\code\tools\radiant.net\bin\Release\radiant.net.pdb
+D:\Projects\Darklight\code\tools\radiant.net\obj\Release\Radiant.Net.csprojAssemblyReference.cache
+D:\Projects\Darklight\code\tools\radiant.net\obj\Release\radiant.net.EntitySelection.resources
+D:\Projects\Darklight\code\tools\radiant.net\obj\Release\radiant.net.ProgressDialog.resources
+D:\Projects\Darklight\code\tools\radiant.net\obj\Release\Radiant.Net.csproj.GenerateResource.cache
+D:\Projects\Darklight\code\tools\radiant.net\obj\Release\Radiant.Net.csproj.CoreCompileInputs.cache
+D:\Projects\Darklight\code\tools\radiant.net\obj\Release\radiant.net.dll
+D:\Projects\Darklight\code\tools\radiant.net\obj\Release\radiant.net.pdb

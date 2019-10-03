@@ -1,0 +1,200 @@
+windowDef Desktop
+{
+	menugui	1
+	nocursor	1
+	rect	0,0,640,480
+	windowDef BackgroundImage
+	{
+		rect	0,0,640,480
+		visible	1
+		background	"guis/loading/atw1"
+		matcolor	1,1,1,1
+	}
+	windowDef Scanlines2
+	{
+		rect	0,0,640,480
+		matcolor	0.02,0.02,0.02,1
+		background	"gui/test/gui_scanlines4"
+		matscaley	3.75
+		noevents	1
+		visible	1
+	}
+	windowDef bgBlackTop
+	{
+		rect	0,0,640,200
+		visible	1
+		windowDef bgBlackTop1
+		{
+			rect	0,-21,170,-64
+			background	"guis/assets/mainmenu/bg1"
+			matcolor	1 ,1 ,1 ,0.6
+			visible	1
+			noevents	1
+		}
+		windowDef bgBlackTop2
+		{
+			rect	170,-21,32,-64
+			background	"guis/assets/mainmenu/bg2"
+			matcolor	1 ,1 ,1 ,0.6
+			visible	1
+			noevents	1
+		}
+		windowDef bgBlackTop3
+		{
+			rect	202,-21,458,-64
+			background	"guis/assets/mainmenu/bg3"
+			matcolor	1 ,1 ,1 ,0.6
+			visible	1
+			noevents	1
+		}
+	}
+	windowDef bgBlackBottom
+	{
+		rect	0,435,640,75
+		noevents	1
+		visible	1
+		windowDef bgBlackBottomFill
+		{
+			rect	0,64,640,75
+			backcolor	0 ,0 ,0 ,0.6
+			visible	1
+			noevents	1
+		}
+		windowDef bgBlackBottom1
+		{
+			rect	0,0,367,64
+			background	"guis/assets/mainmenu/bg1"
+			matcolor	1 ,1 ,1 ,0.6
+			visible	1
+			noevents	1
+		}
+		windowDef bgBlackBottom2
+		{
+			rect	367,0,32,64
+			background	"guis/assets/mainmenu/bg2"
+			matcolor	1 ,1 ,1 ,0.6
+			visible	1
+			noevents	1
+		}
+		windowDef bgBlackBottom3
+		{
+			rect	399,0,261,64
+			background	"guis/assets/mainmenu/bg3"
+			matcolor	1 ,1 ,1 ,0.6
+			visible	1
+			noevents	1
+		}
+		windowDef bgBlackBottomFade
+		{
+			rect	0,30,642,128
+			background	"guis/assets/mainmenu/bg4"
+			matcolor	0,0,0,1
+			visible	1
+			noevents	1
+		}
+	}
+	windowDef LoadingFillClip
+	{
+		rect	2,18,( "gui::map_loading" * 175 ),16
+		visible	1
+		windowDef LoadingFill
+		{
+			rect	0,0,256,16
+			visible	1
+			background	"guis/assets/splash/load"
+			matcolor	1,1,1,0.8
+		}
+	}
+	windowDef LoadingLine
+	{
+		rect	2,18,256,16
+		visible	1
+		background	"guis/assets/splash/loadborder"
+		matcolor	1,1,1,0
+	}
+	windowDef TextLoading
+	{
+		rect	16,-6,123,30
+		visible	1
+		text	""
+		font	"fonts/micro"
+		textscale	0.4
+		forecolor	0.2,0.6,0.7,1
+	}
+	windowDef FlareBox
+	{
+		rect	0,0,48,21
+		background	"gui/mainmenu/textflare"
+		matcolor	0.4 ,0.6, 0.6, 0
+		visible	1
+	}
+	windowDef TextTitle
+	{
+		rect	16,447,610,30
+		visible	1
+		//text	"#str_03487"
+		text "After the War 1 "
+		font	"fonts/micro"
+		textscale	0.4
+		forecolor	1,1,1,0
+	}
+	windowDef BlackFade
+	{
+		rect	0,0,640,480
+		backcolor	0, 0, 0, 1
+		visible	1
+	}
+	windowDef Anim
+	{
+		rect	0,0,0,0
+		visible	1
+
+		onTime 0 {
+			transition "BlackFade::backcolor" "0 0 0 1" "0 0 0 0" "400" ;
+			set "TextLoading::text" "L" ;
+			transition "FlareBox::matcolor" "0.4 0.6 0.6 0" "0.4 0.6 0.6 0.5" "200" ;
+			
+			transition "bgBlackTop1::rect" "0 -21 150 -64" "0 -21 170 -64" "400" "0.2" "0.8" ;
+			transition "bgBlackTop2::rect" "150 -21 32 -64" "170 -21 32 -64" "400" "0.2" "0.8" ;
+			transition "bgBlackTop3::rect" "182 -21 498 -64" "202 -21 458 -64" "400" "0.2" "0.8" ;
+			transition "bgBlackBottom1::rect" "0 0 397 64" "0 0 367 64" "400" "0.2" "0.8" ;	
+			transition "bgBlackBottom2::rect" "397 0 32 64" "367 0 32 64" "400" "0.2" "0.8" ;
+			transition "bgBlackBottom3::rect" "429 0 261 64" "399 0 261 64" "400" "0.2" "0.8" ;			
+		}
+
+		onTime 50 {
+			set "TextLoading::text" "#str_03469" ;
+			set "FlareBox::rect" "17 0 54 21" ;
+		}
+
+		onTime 100 {
+			set "TextLoading::text" "#str_03470" ;
+			set "FlareBox::rect" "37 0 54 21" ;
+		}
+
+		onTime 150 {
+			set "TextLoading::text" "#str_03343" ;
+			set "FlareBox::rect" "57 0 54 21" ;
+			
+		}
+
+		onTime 200 {
+			set "TextLoading::text" "#str_03471" ;
+			set "FlareBox::rect" "67 0 54 21" ;
+			transition "TextTitle::forecolor" "0 0 0 0" "1 1 1 0.9" "400" "0.2" ".8" ;
+		}
+
+		onTime 250 {
+			set "TextLoading::text" "#str_03472" ;
+			set "FlareBox::rect" "81 0 54 21" ;
+		}
+
+		onTime 300 {
+			set "TextLoading::text" "#str_00408" ;
+			set "FlareBox::rect" "100 0 54 21" ;
+			transition "FlareBox::matcolor" "0.4 0.6 0.6 0.5" "0 0 0 0" "200" ;
+			transition "LoadingLine::matcolor" "1 1 1 0" "1 1 1 0.8" "600" ;
+		}
+
+	}
+}

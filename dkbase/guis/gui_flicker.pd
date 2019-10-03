@@ -1,0 +1,45 @@
+// This file contains code that will add a soft flicker
+// effect to any GUI in which it is included.
+//
+// The original code is by id Software, and can be found
+// in the Doom3 file: scan2.gui... although this is but one 
+// variation of the flicker/glow GUI effects used in the game.
+
+	windowDef Bglow
+	{
+		rect		0, 0, 640, 480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible		1
+		matcolor	0.4, 0.8, 1, 0.1
+
+		onTime 0 {
+			transition "matcolor" "0.4 0.8 1 0.1" "0.4 0.8 1 0.09" "75" ;
+		}
+
+		onTime 75 {
+			transition "matcolor" "0.4 0.8 1 0.09" "0.4 0.8 1 0.1" "75" ;
+		}
+
+		onTime 150 {
+			transition "matcolor" "0.4 0.8 1 0.1" "0.4 0.8 1 0.09" "75" ;
+		}
+
+		onTime 220 {
+			transition "matcolor" "0.4 0.8 1 0.09" "0.4 0.8 1 0.1" "75" ;
+		}
+
+		onTime 300 {
+			transition "matcolor" "0.4 0.8 1 0.1" "0.4 0.8 1 0.08" "75" ;
+		}
+
+		onTime 375 {
+			transition "matcolor" "0.4 0.8 1 0.08" "0.4 0.8 1 0.1" "75" ;
+		}
+
+		onTime 450 {
+			resetTime "0" ;
+		}
+
+	}
+
+// EOF

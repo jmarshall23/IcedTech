@@ -1,0 +1,5 @@
+model player_head_test
+{
+	mesh models/md5/characters/player/mocap/player.md5mesh
+	anim idle models/md5/characters/player/mocap/cinematics/react1.md5anim
+}

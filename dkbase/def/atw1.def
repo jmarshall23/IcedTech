@@ -1,0 +1,12 @@
+
+mapDef atw1 {
+	"name"		"^4After the War 1"
+	"Deathmatch"		"1"
+	"Team DM"		"1"
+	"Last Man"		"1"
+	"Tourney"		"1"
+	"size0"		"169925414"
+	"size1"		"177656268"
+	"size2"		"243518930"
+	"size3"		"316148091"
+}

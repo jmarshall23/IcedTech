@@ -1,0 +1,171 @@
+/*
+===========================================================================
+
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
+
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
+
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
+
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
+
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+
+===========================================================================
+*/
+
+#include "global.inc"
+
+uniform sampler2D	samp0 : register(s0); // texture 1 is the per-surface bump map
+uniform sampler2D	samp1 : register(s1); // texture 2 is the light falloff texture
+uniform sampler2D	samp2 : register(s2); // texture 3 is the light projection texture
+uniform sampler2D	samp3 : register(s3); // texture 4 is the per-surface diffuse map
+uniform sampler2D	samp4 : register(s4); // texture 5 is the per-surface specular map
+uniform isampler2D 	samp5 : register(s5); // texture 5 is the virtual texture offset map
+struct PS_IN {
+	half4 position	: VPOS;
+	half4 texcoord0	: TEXCOORD0_centroid;
+	half4 texcoord1	: TEXCOORD1_centroid;
+	half4 texcoord2	: TEXCOORD2_centroid;
+	half4 texcoord3	: TEXCOORD3_centroid;
+	half4 texcoord4	: TEXCOORD4_centroid;
+	half4 texcoord5	: TEXCOORD5_centroid;
+	half4 texcoord6	: TEXCOORD6_centroid;
+	half4 texcoord7	: TEXCOORD7_centroid;
+	half4 color		: COLOR0;
+};
+
+struct PS_OUT {
+	half4 color : COLOR;
+	half4 color1 : COLOR1;
+};
+
+float2 GetPhysicalTexCoords(float2 texCoords, int isNormal) {
+	float2 deviceTexCoords = frac(texCoords);
+
+// Stupid OpenGL requires use to invert the texture coordinates.
+	if (isNormal == 0)
+	{
+		deviceTexCoords.y = 1.0 - deviceTexCoords.y;
+	}
+
+	int2 feedbackMipLevel = ComputeMipMapLevel(samp5, deviceTexCoords, rpVirtualPageInfo.x, rpVirtualPageInfo.y);
+
+	ivec2 pageOffsetTextureSizeMip = textureSize(samp5, feedbackMipLevel.x).xy;
+
+	float widthInPages = pageOffsetTextureSizeMip.x;
+	float heightInPages = pageOffsetTextureSizeMip.y;
+
+	// See were we are mapped on the physical material.
+	float2 pageId;
+	
+	pageId.x = deviceTexCoords.x * widthInPages;
+	pageId.y = deviceTexCoords.y * heightInPages;
+		
+	int2 lookup;
+	lookup.x = int(mod(pageId.x, widthInPages));
+	lookup.y = int(mod(pageId.y, heightInPages));
+
+	float2 texPages = texelFetch(samp5, lookup, feedbackMipLevel.x).xy;
+	
+	// Scale the physicalTexCoord factorial by the size of the physical virtual texture page.
+	float vt_scale = rpVirtualMapping.z / rpVirtualMapping.y;
+	float2 physicalTexCoords = fract(deviceTexCoords  * float2(pageOffsetTextureSizeMip.x, pageOffsetTextureSizeMip.y));
+	physicalTexCoords.xy /= vt_scale;
+	return   (physicalTexCoords)+(texPages / vt_scale);
+}
+
+void main( PS_IN fragment, out PS_OUT result ) {
+	half2 bumpST = fragment.texcoord1.xy;
+	half2 albedoST = fragment.texcoord4.xy;
+	half2 specST = fragment.texcoord5.xy;
+
+	// Check if we need to shift the texture coordinates into physical virtual texture space.
+	if (rpVirtualMapping.x >= 1)
+	{
+		bumpST = GetPhysicalTexCoords(bumpST, 1);
+		albedoST = GetPhysicalTexCoords(albedoST, 0);
+		specST = GetPhysicalTexCoords(specST, 0);
+	}
+	
+	// Ambient Light
+	if(rpLocalLightOrigin.w == 1)
+	{
+		half4 YCoCG =			tex2D( samp3, albedoST);
+		half4 bumpMap =			tex2D( samp0, bumpST);
+		
+		half3 localNormal;
+		localNormal.xy = bumpMap.wy - 0.5;
+		localNormal.z = sqrt( abs( dot( localNormal.xy, localNormal.xy ) - 0.25 ) );
+		localNormal = normalize( localNormal );
+		
+		half lightColor = dot(localNormal, float3(0, 0, 1));
+		result.color.xyz = YCoCG.xyz * lightColor * rpDiffuseModifier.xyz * 0.2;
+		result.color.w = 1;
+		return;
+	}
+
+	half4 bumpMap =			tex2D( samp0, bumpST);
+	half4 lightFalloff =	idtex2Dproj( samp1, fragment.texcoord2 );
+	half4 lightProj	=		idtex2Dproj( samp2, fragment.texcoord3 );
+	half4 YCoCG =			tex2D( samp3, albedoST);
+	half4 specTex =			tex2D( samp4, specST);
+
+	half3 lightVector = normalize( fragment.texcoord0.xyz );
+	half3 diffuseMap = YCoCG.xyz; //ConvertYCoCgToRGB( YCoCG );
+
+	half3 localNormal;
+	localNormal.xy = bumpMap.wy - 0.5;
+	localNormal.z = sqrt( abs( dot( localNormal.xy, localNormal.xy ) - 0.25 ) );
+	localNormal = normalize( localNormal );
+
+	//const half specularPower = 10.0f;
+	//half hDotN = dot3( normalize( fragment.texcoord6.xyz ), localNormal );
+	//half3 specularContribution = _half3( pow( hDotN, specularPower ) );
+	//half3 specularColor = float3(specMap.x, specMap.x, specMap.x) * specularContribution * rpSpecularModifier.xyz;
+
+	half3 diffuseColor = diffuseMap * rpDiffuseModifier.xyz;
+	half3 lightColor = dot3( lightVector, localNormal ) * lightProj.xyz * lightFalloff.xyz;
+	
+	 float3 H = normalize(fragment.texcoord6.xyz);
+   float NdotH = clamp( dot( localNormal, H ), 0, 1 );
+
+
+   float4 roughness = float4(specTex.r, specTex.r, specTex.r, specTex.r);
+   float4 metallic = float4(specTex.g, specTex.g, specTex.g, specTex.g);
+  
+	float3 V = normalize(fragment.texcoord7.xyz); // texcoord7 = cameravector
+
+	float3 F0 = float3(0.04); 
+	F0 = mix(F0, diffuseMap.xyz, metallic.xyz);
+			
+	// cook-torrance brdf
+	float NDF = DistributionGGX(localNormal, H, roughness.x);        
+	float G   = GeometrySmith(localNormal, V, lightVector, roughness.x);      
+	float3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);       
+			
+	float3 kS = F;
+	float3 kD = float3(1.0) - kS;
+	kD *= 1.0 - metallic.xyz;	  
+			
+	float3 numerator    = NDF * G * F;
+	float denominator = 4.0 * max(dot(localNormal, V), 0.0) * max(dot(localNormal, lightVector), 0.0);
+	float3 pbr     = numerator / max(denominator, 0.001);  
+	pbr *= rpSpecularModifier.xyz;
+
+	result.color.xyz = ( diffuseColor + pbr ) * lightColor; // * fragment.color.xyz;
+	result.color.w = 1.0;
+	result.color1 = float4(pbr.x, pbr.y, pbr.z, 0);
+}

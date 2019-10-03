@@ -1,0 +1,20 @@
+
+
+entityDef env_ragdoll_mancubus {
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_ragdoll"				"1"	
+
+	"editor_usage"					"Ragdoll for monster_demon_mancubus"
+
+	"spawnclass"					"idAFEntity_Generic"
+	"bleed"							"1"
+	"sleep"							"1"
+	"smoke_wound_flesh"				"bloodwound.smoke"
+
+	"model"							"monster_demon_mancubus"
+	"articulatedFigure"				"monster_demon_mancubus2"
+	
+	"liquidDensity"					"0.0065"
+}

@@ -1,0 +1,9 @@
+D:\Projects\Darklight\code\tools\radiant.net\obj\Debug\radiant.net.EntitySelection.resources
+D:\Projects\Darklight\code\tools\radiant.net\obj\Debug\Radiant.Net.csproj.GenerateResource.cache
+D:\Projects\Darklight\code\tools\radiant.net\obj\Debug\Radiant.Net.csproj.CoreCompileInputs.cache
+D:\Projects\Darklight\code\tools\radiant.net\obj\Debug\radiant.net.dll
+D:\Projects\Darklight\code\tools\radiant.net\obj\Debug\radiant.net.pdb
+D:\Projects\Darklight\radiant.net.dll
+D:\Projects\Darklight\radiant.net.pdb
+D:\Projects\Darklight\radiant.net.tlb
+D:\Projects\Darklight\code\tools\radiant.net\obj\Debug\Radiant.Net.csprojAssemblyReference.cache

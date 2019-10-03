@@ -1,0 +1,99 @@
+#include "global.inc"
+
+uniform sampler2D samp0	: register(s0);
+uniform sampler2D samp1 : register(s1);
+uniform sampler2D samp2 : register(s2);
+uniform sampler2D samp3 : register(s3);
+uniform sampler2D samp4 : register(s4);
+uniform sampler2D samp5 : register(s5);
+uniform sampler2D samp6 : register(s6);
+uniform sampler2D samp7 : register(s7);
+
+struct PS_IN {
+	float4 position : VPOS;
+	float2 texcoord0 : TEXCOORD0;
+	float2 texcoord1 : TEXCOORD1;
+	float2 texcoord2 : TEXCOORD2;
+	float2 texcoord3 : TEXCOORD3;
+	float2 texcoord4 : TEXCOORD4;
+	float2 texcoord5 : TEXCOORD5;
+	float2 texcoord6 : TEXCOORD6;
+	float4 texcoord7 : TEXCOORD7;
+};
+
+struct PS_OUT {
+	float4 color : COLOR;
+};
+
+void main( PS_IN fragment, out PS_OUT result ) {
+	float4 mask1, mask2;
+	float4 invMask1, invMask2;
+	float4 combined;
+	float2 scaled;
+	float4 R2;
+
+	mask1.x = tex2D(samp0, fragment.texcoord0.xy).x;
+	mask1.y = tex2D(samp0, fragment.texcoord1.xy).x;
+	mask1.z = tex2D(samp0, fragment.texcoord2.xy).x;
+	mask1.w = tex2D(samp0, fragment.texcoord3.xy).x;
+
+	mask2.x = tex2D(samp0, fragment.texcoord4.xy).x;
+	mask2.y = tex2D(samp0, fragment.texcoord5.xy).x;
+	mask2.z = tex2D(samp0, fragment.texcoord6.xy).x;
+	mask2.w = 1.0;
+	
+	invMask1 = 1 - mask1;
+	invMask2 = 1 - mask2;
+
+	combined = float4(0, 0, 0, 0);
+	scaled = fragment.texcoord7.zw;
+
+	// Sample the lowest quality first.
+	R2 = tex2D(samp1, scaled.xy);
+	R2.xyz = ConvertYCoCgToRGB(R2);
+	scaled = scaled * 2;
+	combined = combined * invMask1.x;
+	combined = (R2 * mask1.x) + combined;
+
+	R2 = tex2D(samp2, scaled.xy);
+	R2.xyz = ConvertYCoCgToRGB(R2);
+	scaled = scaled * 2;
+	combined = combined * invMask1.y;
+	combined = (R2 * mask1.y) + combined;
+
+	R2 = tex2D(samp3, scaled.xy);
+	R2.xyz = ConvertYCoCgToRGB(R2);
+	scaled = scaled * 2;
+	combined = combined * invMask1.z;
+	combined = (R2 * mask1.z) + combined;
+
+	R2 = tex2D(samp4, scaled.xy);
+	R2.xyz = ConvertYCoCgToRGB(R2);
+	scaled = scaled * 2;
+	combined = combined * invMask1.w;
+	combined = (R2 * mask1.w) + combined;
+
+	R2 = tex2D(samp5, scaled.xy);
+	R2.xyz = ConvertYCoCgToRGB(R2);
+	scaled = scaled * 2;
+	combined = combined * invMask2.x;
+	combined = (R2 * mask2.x) + combined;
+
+	R2 = tex2D(samp6, scaled.xy);
+	R2.xyz = ConvertYCoCgToRGB(R2);
+	scaled = scaled * 2;
+	combined = combined * invMask2.y;
+	combined = (R2 * mask2.y) + combined;
+
+	//R2 = tex2D(samp7, scaled.xy);
+	//R2.xyz = ConvertYCoCgToRGB(R2);
+	//scaled = scaled * 2;
+	//combined = combined * invMask2.z;
+	//combined = (R2 * mask2.z) + combined;
+	
+	float3 normal = tex2D(samp7, fragment.texcoord7.zw * 200).xyz;
+	normal = normal * 2 - 1;
+	float detail = dot(normal, float3(1, 0, 0));
+	
+	result.color = (combined + (detail * combined)) * 2;
+}

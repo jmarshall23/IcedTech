@@ -1,0 +1,8 @@
+postprocess/nopostprocess
+{
+	{
+		program postprocess.vfp
+		fragmentMap 0 _forwardRenderResolvedAlbedo
+		fragmentMap 1 _forwardRenderResolvedEmissive
+	}
+}

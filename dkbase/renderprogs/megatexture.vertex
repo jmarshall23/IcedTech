@@ -1,0 +1,44 @@
+// Megatexture.vertex
+//
+
+#include "global.inc"
+
+struct VS_IN {
+	float4 position : POSITION;
+	float2 texcoord : TEXCOORD0;
+	float4 normal : NORMAL;
+	float4 tangent : TANGENT;
+	float4 color : COLOR0;
+};
+
+struct VS_OUT {
+	float4 position : POSITION;
+	float2 texcoord0 : TEXCOORD0;
+	float2 texcoord1 : TEXCOORD1;
+	float2 texcoord2 : TEXCOORD2;
+	float2 texcoord3 : TEXCOORD3;
+	float2 texcoord4 : TEXCOORD4;
+	float2 texcoord5 : TEXCOORD5;
+	float2 texcoord6 : TEXCOORD6;
+	float4 texcoord7 : TEXCOORD7;
+};
+
+void main( VS_IN vertex, out VS_OUT result ) {
+	result.position.x = dot4( vertex.position, rpMVPmatrixX );
+	result.position.y = dot4( vertex.position, rpMVPmatrixY );
+	result.position.z = dot4( vertex.position, rpMVPmatrixZ );
+	result.position.w = dot4( vertex.position, rpMVPmatrixW );
+
+	// Megatexture masks, (texCoord * scale) + offset.
+	result.texcoord0.xy = (vertex.texcoord * rpMegaTextureLevel0.w) + rpMegaTextureLevel0.xy;
+	result.texcoord1.xy = (vertex.texcoord * rpMegaTextureLevel1.w) + rpMegaTextureLevel1.xy;
+	result.texcoord2.xy = (vertex.texcoord * rpMegaTextureLevel2.w) + rpMegaTextureLevel2.xy;
+	result.texcoord3.xy = (vertex.texcoord * rpMegaTextureLevel3.w) + rpMegaTextureLevel3.xy;
+	result.texcoord4.xy = (vertex.texcoord * rpMegaTextureLevel4.w) + rpMegaTextureLevel4.xy;
+	result.texcoord5.xy = (vertex.texcoord * rpMegaTextureLevel5.w) + rpMegaTextureLevel5.xy;
+	result.texcoord6.xy = (vertex.texcoord * rpMegaTextureLevel6.w) + rpMegaTextureLevel6.xy;
+
+	// Images only have scale.
+	result.texcoord7.xy = vertex.texcoord * rpMegaTextureLevel6.w;
+	result.texcoord7.zw = vertex.texcoord;
+}

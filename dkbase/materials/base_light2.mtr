@@ -1,0 +1,14 @@
+textures/base_light/striplight3
+{
+	qer_editorimage		textures/base_light/striplight3.tga
+	bumpmap			textures/base_light/striplight3_local.tga
+	diffusemap		textures/base_light/striplight3_d.tga
+	specularmap		textures/base_light/striplight3_s.tga
+	{
+		program     emmsive
+		fragmentMap 0			textures/base_light/striplight3_add.tga
+		red			parm0
+		green		parm1
+		blue		parm2
+	}
+}

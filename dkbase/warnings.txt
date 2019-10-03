@@ -1,0 +1,10 @@
+------------- Warnings ---------------
+
+during game/erebus1...
+WARNING: rvmVirtualTextureSystem::LoadVirtualImage: Failed to load image generated/image_programs/textures/base_trim/a_sfltrim5_d05a_bump.tga
+
+1 warnings.
+
+
+-------------- Errors ---------------
+
