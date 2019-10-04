@@ -123,6 +123,26 @@ void idMaterial::CommonInit() {
 	decalInfo.end[1] = 0;
 	decalInfo.end[2] = 0;
 	decalInfo.end[3] = 0;
+
+	for (int i = 0; i < VIRTUALTEXTURE_MAXMIPS; i++)
+	{
+		virtualTextureWidthInPages[i] = 0;
+		virtualTextureHeightInPages[i] = 0;
+	}
+
+	virtualTexturePageSource = 0;
+	virtualTexturePageOffsetNumMips = 0;
+	virtualAlbedoImage = nullptr;
+	virtualNormalImage = nullptr;
+	virtualSpecImage = nullptr;
+
+	for (int i = 0; i < VIRTUALTEXTURE_MAXMIPS; i++)
+		virtualPageOffsets[i] = nullptr;
+
+	virtualPageOffsetsImage = nullptr;
+	albedoLitTextureStage = nullptr;
+	normalLitTextureStage = nullptr;
+	specularLitTextureStage = nullptr;
 }
 
 /*
@@ -136,26 +156,6 @@ idMaterial::idMaterial() {
 	// we put this here instead of in CommonInit, because
 	// we don't want it cleared when a material is purged
 	surfaceArea = 0;
-	for (int i = 0; i < VIRTUALTEXTURE_MAXMIPS; i++)
-	{
-		virtualTextureWidthInPages[i] = 0;
-		virtualTextureHeightInPages[i] = 0;
-	}
-
-	virtualTexturePageSource = 0;
-	virtualTexturePageOffsetNumMips = 0;
-	virtualAlbedoImage = nullptr;
-	virtualNormalImage = nullptr;
-	virtualSpecImage = nullptr;
-
-	for(int i = 0; i < VIRTUALTEXTURE_MAXMIPS; i++)
-		virtualPageOffsets[i] = nullptr;
-
-	virtualPageOffsetsImage = nullptr;
-	albedoLitTextureStage = nullptr;
-	normalLitTextureStage = nullptr;
-	specularLitTextureStage = nullptr;
-
 }
 
 /*
@@ -170,12 +170,6 @@ idMaterial::~idMaterial() {
 			delete virtualPageOffsets[i];
 			virtualPageOffsets[i] = nullptr;
 		}
-	}
-
-	if (virtualPageOffsetsImage)
-	{
-		virtualPageOffsetsImage->PurgeImage();
-		virtualPageOffsetsImage = nullptr;
 	}
 }
 
@@ -213,6 +207,12 @@ void idMaterial::FreeData() {
 	if ( ops != NULL ) {
 		R_StaticFree( ops );
 		ops = NULL;
+	}
+
+	if (virtualPageOffsetsImage)
+	{
+		virtualPageOffsetsImage->PurgeImage();
+		virtualPageOffsetsImage = nullptr;
 	}
 }
 
@@ -2986,6 +2986,12 @@ void idMaterial::CreateVirtualPageOffsetsTexture(void) {
 	opts.numMSAASamples = 0;
 
 	virtualPageOffsetsImage = globalImages->ScratchImage(va("%s_pageOffsets", GetName()), &opts, TF_DEFAULT, TR_REPEAT, TD_DEFAULT);
+	// When the virtual offsets image gets purged by idImageManager, scratch image should deal with it,
+	// but for now so we don't modify the behaiver of the rest of the image, just deal with that case here.
+	if (!virtualPageOffsetsImage->IsLoaded())
+	{
+		virtualPageOffsetsImage->AllocImage(opts, TF_DEFAULT, TR_REPEAT);
+	}
 }
 /*
 ===================
