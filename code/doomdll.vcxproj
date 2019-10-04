@@ -272,6 +272,8 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <StackReserveSize>46777216</StackReserveSize>
       <StackCommitSize>46777216</StackCommitSize>
+      <AdditionalOptions>/NODEFAULTLIB:uafxcw.lib %(AdditionalOptions)</AdditionalOptions>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
