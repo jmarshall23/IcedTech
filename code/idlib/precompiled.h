@@ -126,6 +126,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../framework/FileSystem.h"
 #include "../framework/UsercmdGen.h"
 #include "../framework/Thread.h"
+#include "../framework/ParallelJobList.h"
 
 // decls
 #include "../framework/DeclManager.h"

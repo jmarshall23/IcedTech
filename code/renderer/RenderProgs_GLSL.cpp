@@ -298,7 +298,9 @@ static const char * GLSLParmNames[] = {
 
 	"rpVirtualTextureFeedback",
 	"rpVirtualMapping",
-	"rpVirtualPageInfo"
+	"rpVirtualPageInfo",
+
+	"rpShadowMapInfo"
 };
 
 /*

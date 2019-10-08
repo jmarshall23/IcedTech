@@ -1,0 +1,55 @@
+// shadow_dualp.vertex
+//
+
+// Vertex Shader for dual paraboloid shadow map.
+
+#include "global.inc"
+
+struct VS_IN {
+	float4 position : POSITION;
+};
+
+struct VS_OUT {
+	float4 position : POSITION;
+	float2 texcoord0 : TEXCOORD0;
+};
+
+void main( VS_IN vertex, out VS_OUT result ) {
+	float4 shadowVert;
+	float g_fNear = rpShadowMapInfo.y;
+	float g_fFar  = rpShadowMapInfo.z;
+	float4 vertXyz = float4(vertex.position.xyz, 1.0);
+	
+	shadowVert.x = dot4( vertXyz, rpMVPmatrixX );
+	shadowVert.y = dot4( vertXyz, rpMVPmatrixY );
+	shadowVert.z = dot4( vertXyz, rpMVPmatrixZ );
+	shadowVert.w = dot4( vertXyz, rpMVPmatrixW );
+	
+	shadowVert /= shadowVert.w;
+	
+	shadowVert.z *= rpShadowMapInfo.x;
+	
+	// because the origin is at 0 the proj-vector
+	// matches the vertex-position
+	float fLength = length(shadowVert.xyz);
+	 
+	// normalize
+	shadowVert /= fLength;
+	 
+	// save for clipping 	
+ 	result.texcoord0.x = shadowVert.z;
+	
+	// calc "normal" on intersection, by adding the 
+	// reflection-vector(0,0,1) and divide through 
+	// his z to get the texture coords
+	shadowVert.x /= shadowVert.z + 1.0f;
+	shadowVert.y /= shadowVert.z + 1.0f;
+	
+	// set z for z-buffering and neutralize w
+	shadowVert.z = (fLength - g_fNear) / (g_fFar - g_fNear);
+	shadowVert.w = 1.0f;
+	
+	result.texcoord0.y = shadowVert.z;
+	
+	result.position = shadowVert;
+}

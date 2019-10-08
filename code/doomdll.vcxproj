@@ -311,6 +311,9 @@
     <ClInclude Include="framework\FileSystem.h" />
     <ClInclude Include="framework\KeyInput.h" />
     <ClInclude Include="framework\Licensee.h" />
+    <ClInclude Include="framework\ParallelJobList.h" />
+    <ClInclude Include="framework\ParallelJobListLocal.h" />
+    <ClInclude Include="framework\ParallelJobList_JobHeaders.h" />
     <ClInclude Include="framework\Session.h" />
     <ClInclude Include="framework\Session_local.h" />
     <ClInclude Include="framework\Thread.h" />
@@ -437,6 +440,7 @@
     <ClCompile Include="framework\File.cpp" />
     <ClCompile Include="framework\FileSystem.cpp" />
     <ClCompile Include="framework\KeyInput.cpp" />
+    <ClCompile Include="framework\ParallelJobList.cpp" />
     <ClCompile Include="framework\Session.cpp" />
     <ClCompile Include="framework\Session_menu.cpp" />
     <ClCompile Include="framework\Thread.cpp" />
@@ -472,6 +476,7 @@
     <ClCompile Include="renderer\draw_interaction.cpp" />
     <ClCompile Include="renderer\draw_common.cpp" />
     <ClCompile Include="renderer\draw_occlusion.cpp" />
+    <ClCompile Include="renderer\draw_shadow.cpp" />
     <ClCompile Include="renderer\DXT\DXTDecoder.cpp" />
     <ClCompile Include="renderer\DXT\DXTEncoder.cpp" />
     <ClCompile Include="renderer\GLMatrix.cpp" />
@@ -1068,6 +1073,8 @@
     <None Include="..\dkbase\renderprogs\shadowDebug.vertex" />
     <None Include="..\dkbase\renderprogs\shadowDebug_skinned.pixel" />
     <None Include="..\dkbase\renderprogs\shadowDebug_skinned.vertex" />
+    <None Include="..\dkbase\renderprogs\shadow_dualp.pixel" />
+    <None Include="..\dkbase\renderprogs\shadow_dualp.vertex" />
     <None Include="..\dkbase\renderprogs\shadow_skinned.pixel" />
     <None Include="..\dkbase\renderprogs\shadow_skinned.vertex" />
     <None Include="..\dkbase\renderprogs\simpleshade.pixel" />

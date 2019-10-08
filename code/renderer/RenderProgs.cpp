@@ -112,7 +112,8 @@ void idRenderProgManager::Init() {
 		{ BUILTIN_STEREO_INTERLACE, "stereoInterlace.vfp" },
 		{ BUILTIN_MOTION_BLUR, "motionBlur.vfp" },
 		{ BUILTIN_TESTIMAGE, "testimage.vfp" },
-		{ BUILDIN_VIRTUALTEXTURE_FEEDBACK, "feedback.vfp" }
+		{ BUILDIN_VIRTUALTEXTURE_FEEDBACK, "feedback.vfp" },
+		{ BUILTIN_SHADOW_DUAL_PARABOLOID, "shadow_dualp.vfp" }
 	};
 	int numBuiltins = sizeof( builtins ) / sizeof( builtins[0] );
 	vertexShaders.SetNum( numBuiltins );

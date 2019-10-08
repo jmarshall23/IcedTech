@@ -329,6 +329,7 @@
     <ClCompile Include="game\Target.cpp" />
     <ClCompile Include="game\Trigger.cpp" />
     <ClCompile Include="game\Weapon.cpp" />
+    <ClCompile Include="game\weapons\WeaponThread.cpp" />
     <ClCompile Include="game\WorldSpawn.cpp" />
     <ClCompile Include="idlib\precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -402,6 +403,7 @@
     <ClInclude Include="game\Target.h" />
     <ClInclude Include="game\Trigger.h" />
     <ClInclude Include="game\Weapon.h" />
+    <ClInclude Include="game\weapons\WeaponThread.h" />
     <ClInclude Include="game\WorldSpawn.h" />
     <ClInclude Include="idlib\precompiled.h" />
   </ItemGroup>

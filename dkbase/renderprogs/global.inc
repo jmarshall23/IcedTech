@@ -109,6 +109,8 @@ uniform float4 rpMegaTextureLevel6		:   register(c60);
 uniform float4 rpVirtualTextureFeedback : register(c61);
 uniform float4 rpVirtualMapping			: register(c62);
 uniform float4 rpVirtualPageInfo		: register(c63);
+ 
+uniform float4 rpShadowMapInfo          : register(c64);
 
 static float dot2( float2 a, float2 b ) { return dot( a, b ); }
 static float dot3( float3 a, float3 b ) { return dot( a, b ); }

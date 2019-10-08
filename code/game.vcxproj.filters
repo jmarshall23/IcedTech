@@ -16,6 +16,9 @@
     <Filter Include="Script">
       <UniqueIdentifier>{bf06073d-3e0f-4e0a-9acf-43c6e35a9af7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Weapons">
+      <UniqueIdentifier>{3628e458-1b80-4fd6-99b8-79a126405a64}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game\ai\AAS.cpp">
@@ -166,6 +169,9 @@
     <ClCompile Include="game\WorldSpawn.cpp" />
     <ClCompile Include="idlib\precompiled.cpp" />
     <ClCompile Include="game\Game_render.cpp" />
+    <ClCompile Include="game\weapons\WeaponThread.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\ai\AAS.h">
@@ -297,6 +303,9 @@
     <ClInclude Include="game\Weapon.h" />
     <ClInclude Include="game\WorldSpawn.h" />
     <ClInclude Include="idlib\precompiled.h" />
+    <ClInclude Include="game\weapons\WeaponThread.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="game\Game.def" />

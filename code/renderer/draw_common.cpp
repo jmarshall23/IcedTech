@@ -1715,6 +1715,9 @@ void	RB_STD_DrawView( void ) {
 	drawSurfs = (drawSurf_t **)&backEnd.viewDef->drawSurfs[0];
 	numDrawSurfs = backEnd.viewDef->numDrawSurfs;
 
+	// Render the shadow maps. 
+	RB_Draw_ShadowMaps();
+
 	// If we have a feedback render pass, lets do that now.
 	if (backEnd.feedbackRenderTexture)
 	{

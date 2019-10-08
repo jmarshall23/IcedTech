@@ -126,6 +126,8 @@ enum renderParm_t {
 	RENDERPARM_VIRTUALMAPPING,
 	RENDERPARM_VIRTUALPAGEINFO,
 
+	RENDERPARM_SHADOWMAPINFO,
+
 	RENDERPARM_TOTAL,
 	RENDERPARM_USER = 128,
 };
@@ -158,6 +160,8 @@ public:
 	int		FindFragmentShader( const char * name );
 
 	void	BindShader( int vIndex, int fIndex );
+
+	void	BindShader_ShadowDualParaboloid() { BindShader_Builtin(BUILTIN_SHADOW_DUAL_PARABOLOID); }
 
 	void	BindShader_TestImage() { BindShader_Builtin(BUILTIN_TESTIMAGE); }
 	void	BindShader_GUI( ) { BindShader_Builtin( BUILTIN_GUI ); }
@@ -263,6 +267,7 @@ protected:
 		BUILTIN_TESTIMAGE,
 
 		BUILDIN_VIRTUALTEXTURE_FEEDBACK,
+		BUILTIN_SHADOW_DUAL_PARABOLOID,
 
 		MAX_BUILTINS
 	};

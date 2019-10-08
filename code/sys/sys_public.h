@@ -62,6 +62,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #define assertmem( x, y )				assert( _CrtIsValidPointer( x, y, true ) )
 
+#define verify( x )		( ( x ) ? true : false )
+
 #endif
 
 // Mac OSX
@@ -295,6 +297,8 @@ void			Sys_Sleep( int msec );
 // Sys_Milliseconds should only be used for profiling purposes,
 // any game related timing information should come from event timestamps
 int				Sys_Milliseconds( void );
+
+uint64_t		Sys_Microseconds(void);
 
 // for accurate performance testing
 double			Sys_GetClockTicks( void );

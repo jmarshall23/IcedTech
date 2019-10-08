@@ -414,6 +414,15 @@
     <ClInclude Include="renderer\VirtualTexture.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="framework\ParallelJobList_JobHeaders.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\ParallelJobList.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\ParallelJobListLocal.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cm\CollisionModel_contacts.cpp">
@@ -1013,6 +1022,12 @@
     <ClCompile Include="renderer\VirtualTextureTranscode.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="renderer\draw_shadow.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\ParallelJobList.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
@@ -1308,6 +1323,12 @@
       <Filter>Renderer\RenderProgs</Filter>
     </None>
     <None Include="..\dkbase\renderprogs\testimage.vertex">
+      <Filter>Renderer\RenderProgs</Filter>
+    </None>
+    <None Include="..\dkbase\renderprogs\shadow_dualp.pixel">
+      <Filter>Renderer\RenderProgs</Filter>
+    </None>
+    <None Include="..\dkbase\renderprogs\shadow_dualp.vertex">
       <Filter>Renderer\RenderProgs</Filter>
     </None>
   </ItemGroup>

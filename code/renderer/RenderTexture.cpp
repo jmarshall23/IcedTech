@@ -54,7 +54,7 @@ void idRenderTexture::InitRenderTexture(void) {
 	glBindFramebuffer(GL_FRAMEBUFFER, deviceHandle);
 
 	bool isTexture3D = false;
-	if ((colorImages.Num() >= 0 && colorImages[0]->GetOpts().textureType == TT_CUBIC) || ((depthImage != nullptr) && depthImage->GetOpts().textureType == TT_CUBIC))
+	if ((colorImages.Num() > 0 && colorImages[0]->GetOpts().textureType == TT_CUBIC) || ((depthImage != nullptr) && depthImage->GetOpts().textureType == TT_CUBIC))
 	{
 		isTexture3D = true;
 	}

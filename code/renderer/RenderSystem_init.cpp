@@ -2051,6 +2051,9 @@ void idRenderSystemLocal::InitOpenGL( void ) {
 
 		virtualTextureSystem.Init();
 
+		// init the shadow map system.
+		R_InitShadowMapSystem();
+
 		err = glGetError();
 		if ( err != GL_NO_ERROR ) {
 			common->Printf( "glGetError() = 0x%x\n", err );

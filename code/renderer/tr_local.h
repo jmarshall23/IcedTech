@@ -710,6 +710,8 @@ typedef struct {
 
 	int					c_copyFrameBuffer;
 
+	int					c_numShadowMapSlices;
+
 	bool				ignoreScissorOptimization;
 } backEndState_t;
 
@@ -729,6 +731,15 @@ typedef enum {
 typedef struct {
 	int		x, y, width, height;	// these are in physical, OpenGL Y-at-bottom pixels
 } renderCrop_t;
+
+//
+// rvmShadowMapAtlasSlice_t
+//
+struct rvmShadowMapAtlasSlice_t {
+	int x;
+	int y;
+};
+
 static const int	MAX_RENDER_CROPS = 8;
 
 /*
@@ -861,6 +872,10 @@ public:
 	int						guiRecursionLevel;		// to prevent infinite overruns
 	class idGuiModel *		guiModel;
 	class idGuiModel *		demoGuiModel;
+
+	idImage	*					shadowMapAtlasImage;
+	idRenderTexture	*			shadowMapAtlas;
+	rvmShadowMapAtlasSlice_t	*shadowMapAtlasLookup;
 
 	unsigned short			gammaTable[256];	// brightness / gamma modify this
 };
@@ -1364,6 +1379,8 @@ DRAW_*
 ============================================================
 */
 
+void	R_InitShadowMapSystem(void);
+
 void	RB_ARB_DrawInteractions( void );
 
 void	R_R200_Init( void );
@@ -1739,7 +1756,17 @@ idScreenRect R_CalcIntersectionScissor( const idRenderLightLocal * lightDef,
 									    const idRenderEntityLocal * entityDef,
 									    const viewDef_t * viewDef );
 
+/*
+=============================================================
+
+SHADOWS
+
+=============================================================
+*/
+void RB_Draw_ShadowMaps(void);
+
 //=============================================
+
 
 #include "RenderWorld_local.h"
 #include "GuiModel.h"
