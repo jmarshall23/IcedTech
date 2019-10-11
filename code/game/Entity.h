@@ -392,6 +392,7 @@ private:
 	void					UpdatePVSAreas( void );
 
 	// events
+public:
 	void					Event_GetName( void );
 	void					Event_SetName( const char *name );
 	void					Event_FindTargets( void );
@@ -424,6 +425,9 @@ private:
 	void					Event_GetWorldOrigin( void );
 	void					Event_SetWorldOrigin( idVec3 const &org );
 	void					Event_GetOrigin( void );
+// jmarshall
+	idVec3					GetOrigin(void);
+// jmarshall end
 	void					Event_SetOrigin( const idVec3 &org );
 	void					Event_GetAngles( void );
 	void					Event_SetAngles( const idAngles &ang );
@@ -441,6 +445,10 @@ private:
 	void					Event_GetNextKey( const char *prefix, const char *lastMatch );
 	void					Event_SetKey( const char *key, const char *value );
 	void					Event_GetKey( const char *key );
+// jmarshall
+	const char				*GetKey(const char *key);
+	float					GetFloat(const char *key);
+// jmarshall end
 	void					Event_GetIntKey( const char *key );
 	void					Event_GetFloatKey( const char *key );
 	void					Event_GetVectorKey( const char *key );
@@ -506,12 +514,11 @@ public:
 		EVENT_ADD_DAMAGE_EFFECT = idEntity::EVENT_MAXEVENTS,
 		EVENT_MAXEVENTS
 	};
-
 protected:
 	idAnimator				animator;
 	damageEffect_t *		damageEffects;
 
-private:
+public:
 	void					Event_GetJointHandle( const char *jointname );
 	void 					Event_ClearAllJoints( void );
 	void 					Event_ClearJoint( jointHandle_t jointnum );

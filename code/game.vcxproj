@@ -279,6 +279,7 @@
     <ClCompile Include="game\gamesys\SaveGame.cpp" />
     <ClCompile Include="game\gamesys\SysCmds.cpp" />
     <ClCompile Include="game\gamesys\SysCvar.cpp" />
+    <ClCompile Include="game\Game_parallel.cpp" />
     <ClCompile Include="game\Game_render.cpp" />
     <ClCompile Include="game\physics\Clip.cpp" />
     <ClCompile Include="game\physics\Force.cpp" />
@@ -329,7 +330,16 @@
     <ClCompile Include="game\Target.cpp" />
     <ClCompile Include="game\Trigger.cpp" />
     <ClCompile Include="game\Weapon.cpp" />
-    <ClCompile Include="game\weapons\WeaponThread.cpp" />
+    <ClCompile Include="game\weapons\Weapon_bfg.cpp" />
+    <ClCompile Include="game\weapons\Weapon_chaingun.cpp" />
+    <ClCompile Include="game\weapons\Weapon_fist.cpp" />
+    <ClCompile Include="game\weapons\Weapon_flashlight.cpp" />
+    <ClCompile Include="game\weapons\Weapon_machinegun.cpp" />
+    <ClCompile Include="game\weapons\Weapon_pda.cpp" />
+    <ClCompile Include="game\weapons\Weapon_pistol.cpp" />
+    <ClCompile Include="game\weapons\Weapon_plasmagun.cpp" />
+    <ClCompile Include="game\weapons\Weapon_rocketlauncher.cpp" />
+    <ClCompile Include="game\weapons\Weapon_shotgun.cpp" />
     <ClCompile Include="game\WorldSpawn.cpp" />
     <ClCompile Include="idlib\precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -403,7 +413,16 @@
     <ClInclude Include="game\Target.h" />
     <ClInclude Include="game\Trigger.h" />
     <ClInclude Include="game\Weapon.h" />
-    <ClInclude Include="game\weapons\WeaponThread.h" />
+    <ClInclude Include="game\weapons\Weapon_bfg.h" />
+    <ClInclude Include="game\weapons\Weapon_chaingun.h" />
+    <ClInclude Include="game\weapons\Weapon_fist.h" />
+    <ClInclude Include="game\weapons\Weapon_flashlight.h" />
+    <ClInclude Include="game\weapons\Weapon_machinegun.h" />
+    <ClInclude Include="game\weapons\Weapon_pda.h" />
+    <ClInclude Include="game\weapons\Weapon_pistol.h" />
+    <ClInclude Include="game\weapons\Weapon_plasmagun.h" />
+    <ClInclude Include="game\weapons\Weapon_rocketlauncher.h" />
+    <ClInclude Include="game\weapons\Weapon_shotgun.h" />
     <ClInclude Include="game\WorldSpawn.h" />
     <ClInclude Include="idlib\precompiled.h" />
   </ItemGroup>

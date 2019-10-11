@@ -322,7 +322,7 @@ extern idGameEdit *				gameEdit;
 ===============================================================================
 */
 // jmarshall
-const int GAME_API_VERSION		= 4001;
+const int GAME_API_VERSION		= 4002;
 // jmarshall end
 
 typedef struct {
@@ -341,7 +341,7 @@ typedef struct {
 	idDeclManager *				declManager;			// declaration manager
 	idAASFileManager *			AASFileManager;			// AAS file manager
 	idCollisionModelManager *	collisionModelManager;	// collision model manager
-
+	idParallelJobManager *		parallelJobManager;		// parallel job manager
 } gameImport_t;
 
 typedef struct {

@@ -4126,6 +4126,15 @@ void idEntity::Event_GetOrigin( void ) {
 
 /*
 ================
+idEntity::GetOrigin
+================
+*/
+idVec3 idEntity::GetOrigin(void) {
+	return GetLocalCoordinates(GetPhysics()->GetOrigin());
+}
+
+/*
+================
 idEntity::Event_SetAngles
 ================
 */
@@ -4309,6 +4318,31 @@ void idEntity::Event_GetKey( const char *key ) {
 	spawnArgs.GetString( key, "", &value );
 	idThread::ReturnString( value );
 }
+
+/*
+==============
+idEntity::GetKey
+==============
+*/
+// jmarshall
+const char *idEntity::GetKey(const char *key) {
+	const char *value;
+
+	spawnArgs.GetString(key, "", &value);
+
+	return value;
+}
+
+/*
+==============
+idEntity::GetFloat
+==============
+*/
+
+float idEntity::GetFloat(const char *key) {
+	return spawnArgs.GetFloat(key, "0");
+}
+// jmarshall end
 
 /*
 ================

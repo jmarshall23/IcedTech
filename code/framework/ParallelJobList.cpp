@@ -71,10 +71,10 @@ static bool IsRegisteredJob( jobRun_t function ) {
 
 /*
 ========================
-RegisterJob
+idParallelJobManagerLocal::RegisterJob
 ========================
 */
-void RegisterJob( jobRun_t function, const char * name ) {
+void idParallelJobManagerLocal::RegisterJob( jobRun_t function, const char * name ) {
 	if ( IsRegisteredJob( function ) ) {
 		return;
 	}
@@ -95,15 +95,6 @@ const char * GetJobName( jobRun_t function ) {
 		}
 	}
 	return "unknown";
-}
-
-/*
-========================
-idParallelJobRegistration::idParallelJobRegistration
-========================
-*/
-idParallelJobRegistration::idParallelJobRegistration( jobRun_t function, const char * name ) {
-	RegisterJob( function, name );
 }
 
 int globalSpuLocalStoreActive;

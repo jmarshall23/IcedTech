@@ -169,7 +169,35 @@
     <ClCompile Include="game\WorldSpawn.cpp" />
     <ClCompile Include="idlib\precompiled.cpp" />
     <ClCompile Include="game\Game_render.cpp" />
-    <ClCompile Include="game\weapons\WeaponThread.cpp">
+    <ClCompile Include="game\Game_parallel.cpp" />
+    <ClCompile Include="game\weapons\Weapon_fist.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_pistol.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_flashlight.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_pda.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_shotgun.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_machinegun.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_plasmagun.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_chaingun.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_rocketlauncher.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="game\weapons\Weapon_bfg.cpp">
       <Filter>Weapons</Filter>
     </ClCompile>
   </ItemGroup>
@@ -303,7 +331,34 @@
     <ClInclude Include="game\Weapon.h" />
     <ClInclude Include="game\WorldSpawn.h" />
     <ClInclude Include="idlib\precompiled.h" />
-    <ClInclude Include="game\weapons\WeaponThread.h">
+    <ClInclude Include="game\weapons\Weapon_fist.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_pistol.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_flashlight.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_pda.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_shotgun.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_machinegun.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_plasmagun.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_chaingun.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_rocketlauncher.h">
+      <Filter>Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="game\weapons\Weapon_bfg.h">
       <Filter>Weapons</Filter>
     </ClInclude>
   </ItemGroup>

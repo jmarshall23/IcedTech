@@ -46,6 +46,8 @@ idUserInterfaceManager *	uiManager = NULL;
 idDeclManager *				declManager = NULL;
 idAASFileManager *			AASFileManager = NULL;
 idCollisionModelManager *	collisionModelManager = NULL;
+idParallelJobManager *		parallelJobManager = NULL;
+
 idCVar *					idCVar::staticVars = NULL;
 
 idCVar com_forceGenericSIMD( "com_forceGenericSIMD", "0", CVAR_BOOL|CVAR_SYSTEM, "force generic platform independent SIMD" );
@@ -101,6 +103,7 @@ extern "C" gameExport_t *GetGameAPI( gameImport_t *import ) {
 		declManager					= import->declManager;
 		AASFileManager				= import->AASFileManager;
 		collisionModelManager		= import->collisionModelManager;
+		parallelJobManager			= import->parallelJobManager;
 	}
 
 	// set interface pointers used by idLib
@@ -294,6 +297,8 @@ void idGameLocal::Init( void ) {
 	idEvent::Init();
 	idClass::Init();
 
+	InitJobSystem();
+
 	InitConsoleCommands();
 
 	// load default scripts
@@ -349,6 +354,8 @@ void idGameLocal::Shutdown( void ) {
 	aasNames.Clear();
 
 	idAI::FreeObstacleAvoidanceNodes();
+
+	ShutdownJobSystem();
 
 	// shutdown the model exporter
 	idModelExport::Shutdown();
@@ -2197,6 +2204,16 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 			idSIMD::InitProcessor( "game", com_forceGenericSIMD.GetBool() );
 		}
 #endif
+
+// jmarshall
+		for(int i = 0; i < delayRemoveEntities.Num(); i++)
+		{
+			if(gameLocal.time > delayRemoveEntities[i].removeTime) {
+				delayRemoveEntities[i].entity->PostEventMS(&EV_Remove, 0);
+				delayRemoveEntities.RemoveIndex(i);
+			}
+		}
+// jmarshall end
 
 		// make sure the random number counter is used each frame so random events
 		// are influenced by the player's actions
@@ -4363,3 +4380,16 @@ idGameLocal::GetMapLoadingGUI
 */
 void idGameLocal::GetMapLoadingGUI( char gui[ MAX_STRING_CHARS ] ) { }
 
+// jmarshall
+/*
+===============
+idGameLocal::DelayRemoveEntity
+===============
+*/
+void idGameLocal::DelayRemoveEntity(idEntity *entity, int delay) {
+	rvmGameDelayRemoveEntry_t entry;
+	entry.entity = entity;
+	entry.removeTime = gameLocal.time + delay;
+	delayRemoveEntities.Append(entry);
+}
+// jmarshall end

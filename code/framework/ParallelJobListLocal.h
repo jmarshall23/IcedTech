@@ -122,9 +122,9 @@ private:
 //
 // Hyperthreading is not dead yet.  Intel's Core i7 Processor is quad-core with HT for 8 logicals.
 
-// DOOM3: We don't have that many jobs, so just set this fairly low so we don't spin up a ton of idle threads
-#define MAX_JOB_THREADS		2
-#define NUM_JOB_THREADS		"2"
+
+#define MAX_JOB_THREADS		8
+#define NUM_JOB_THREADS		"8"
 #define JOB_THREAD_CORES	{	CORE_ANY, CORE_ANY, CORE_ANY, CORE_ANY,	\
 								CORE_ANY, CORE_ANY, CORE_ANY, CORE_ANY,	\
 								CORE_ANY, CORE_ANY, CORE_ANY, CORE_ANY,	\
@@ -150,6 +150,8 @@ public:
 	virtual int					GetNumJobLists() const;
 	virtual int					GetNumFreeJobLists() const;
 	virtual idParallelJobList *	GetJobList(int index);
+
+	virtual void				RegisterJob(jobRun_t function, const char * name);
 
 	virtual int					GetNumProcessingUnits();
 

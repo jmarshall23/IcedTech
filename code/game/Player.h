@@ -512,6 +512,8 @@ public:
 	bool					SelfSmooth( void );
 	void					SetSelfSmooth( bool b );
 
+
+	int						GetPrevWeapon(void) { return previousWeapon; }
 private:
 	jointHandle_t			hipJoint;
 	jointHandle_t			chestJoint;
@@ -664,7 +666,7 @@ private:
 	void					UpdateObjectiveInfo( void );
 
 	void					UseVehicle( void );
-
+public:
 	void					Event_GetButtons( void );
 	void					Event_GetMove( void );
 	void					Event_GetViewAngles( void );

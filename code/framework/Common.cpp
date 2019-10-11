@@ -2893,6 +2893,9 @@ void idCommonLocal::InitGame( void ) {
 		Com_ExecMachineSpec_f( args );
 	}
 
+	// initialize the parallel job system.
+	parallelJobManager->Init();
+
 	// initialize the renderSystem data structures, but don't start OpenGL yet
 	renderSystem->Init();
 
@@ -3003,6 +3006,9 @@ void idCommonLocal::ShutdownGame( bool reloading ) {
 	if ( sw ) {
 		sw->StopAllSounds();
 	}
+
+	// shut the parallel job list.
+	parallelJobManager->Shutdown();
 
 	// shutdown the script debugger
 	// DebuggerServerShutdown();

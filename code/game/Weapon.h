@@ -38,110 +38,142 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 typedef enum {
+	WP_NONE,
+	WP_IDLE,
 	WP_READY,
 	WP_OUTOFAMMO,
 	WP_RELOAD,
 	WP_HOLSTERED,
 	WP_RISING,
-	WP_LOWERING
+	WP_LOWERING,
+	WP_FIRE
 } weaponStatus_t;
 
 typedef int ammo_t;
 static const int AMMO_NUMTYPES = 16;
 
 class idPlayer;
+class idWeapon;
 
 static const int LIGHTID_WORLD_MUZZLE_FLASH = 1;
 static const int LIGHTID_VIEW_MUZZLE_FLASH = 100;
 
 class idMoveableItem;
 
+class rvmWeaponObject : public idClass {
+public:
+	CLASS_PROTOTYPE(rvmWeaponObject);
+
+	virtual void			Init(idWeapon *weapon);
+
+	virtual void			Raise() { }
+	virtual void			Idle() { }
+	virtual void			Fire() { }
+	virtual void			Lower() { }
+	virtual void			Reload() { }
+
+	virtual void			ResetStates(void);
+
+	virtual bool			CanSwitchState(void);
+
+	virtual bool			HasWaitSignal(void);
+protected:
+	idWeapon				*owner;
+
+	void					Wait(float duration);
+protected:
+	int	risingState;
+	int	loweringState;
+	int idleState;
+	int firingState;
+	int reloadState;
+	float waitDuration;
+};
+
 class idWeapon : public idAnimatedEntity {
 public:
-	CLASS_PROTOTYPE( idWeapon );
+	CLASS_PROTOTYPE(idWeapon);
 
-							idWeapon();
+	idWeapon();
 	virtual					~idWeapon();
 
 	// Init
-	void					Spawn( void );
-	void					SetOwner( idPlayer *owner );
-	idPlayer*				GetOwner( void );
-	virtual bool			ShouldConstructScriptObjectAtSpawn( void ) const;
+	void					Spawn(void);
+	void					SetOwner(idPlayer *owner);
+	idPlayer*				GetOwner(void);
+	virtual bool			ShouldConstructScriptObjectAtSpawn(void) const;
 
-	static void				CacheWeapon( const char *weaponName );
+	static void				CacheWeapon(const char *weaponName);
 
 	// save games
-	void					Save( idSaveGame *savefile ) const;					// archives object for save game file
-	void					Restore( idRestoreGame *savefile );					// unarchives object from save game file
+	void					Save(idSaveGame *savefile) const;					// archives object for save game file
+	void					Restore(idRestoreGame *savefile);					// unarchives object from save game file
 
 	// Weapon definition management
-	void					Clear( void );
-	void					GetWeaponDef( const char *objectname, int ammoinclip );
-	bool					IsLinked( void );
-	bool					IsWorldModelReady( void );
+	void					Clear(void);
+	void					GetWeaponDef(const char *objectname, int ammoinclip);
+	bool					IsLinked(void);
+	bool					IsWorldModelReady(void);
 
 	// GUIs
-	const char *			Icon( void ) const;
-	void					UpdateGUI( void );
+	const char *			Icon(void) const;
+	void					UpdateGUI(void);
 
-	virtual void			SetModel( const char *modelname );
-	bool					GetGlobalJointTransform( bool viewModel, const jointHandle_t jointHandle, idVec3 &offset, idMat3 &axis );
-	void					SetPushVelocity( const idVec3 &pushVelocity );
-	bool					UpdateSkin( void );
+	virtual void			SetModel(const char *modelname);
+	bool					GetGlobalJointTransform(bool viewModel, const jointHandle_t jointHandle, idVec3 &offset, idMat3 &axis);
+	void					SetPushVelocity(const idVec3 &pushVelocity);
+	bool					UpdateSkin(void);
+
+	bool					IsFiring() { return isFiring; }
 
 	// State control/player interface
-	void					Think( void );
-	void					Raise( void );
-	void					PutAway( void );
-	void					Reload( void );
-	void					LowerWeapon( void );
-	void					RaiseWeapon( void );
-	void					HideWeapon( void );
-	void					ShowWeapon( void );
-	void					HideWorldModel( void );
-	void					ShowWorldModel( void );
-	void					OwnerDied( void );
-	void					BeginAttack( void );
-	void					EndAttack( void );
-	bool					IsReady( void ) const;
-	bool					IsReloading( void ) const;
-	bool					IsHolstered( void ) const;
-	bool					ShowCrosshair( void ) const;
-	idEntity *				DropItem( const idVec3 &velocity, int activateDelay, int removeDelay, bool died );
-	bool					CanDrop( void ) const;
-	void					WeaponStolen( void );
+	void					Think(void);
+	void					Raise(void);
+	void					PutAway(void);
+	void					Reload(void);
+	void					LowerWeapon(void);
+	void					RaiseWeapon(void);
+	void					HideWeapon(void);
+	void					ShowWeapon(void);
+	void					HideWorldModel(void);
+	void					ShowWorldModel(void);
+	void					OwnerDied(void);
+	void					BeginAttack(void);
+	void					EndAttack(void);
+	bool					IsReady(void) const;
+	bool					IsReloading(void) const;
+	bool					IsHolstered(void) const;
+	bool					ShowCrosshair(void) const;
+	idEntity *				DropItem(const idVec3 &velocity, int activateDelay, int removeDelay, bool died);
+	bool					CanDrop(void) const;
+	void					WeaponStolen(void);
 
-	// Script state management
-	virtual idThread *		ConstructScriptObject( void );
-	virtual void			DeconstructScriptObject( void );
-	void					SetState( const char *statename, int blendFrames );
-	void					UpdateScript( void );
-	void					EnterCinematic( void );
-	void					ExitCinematic( void );
-	void					NetCatchup( void );
+	void					SetState(weaponStatus_t state, int blendFrames);
+	void					EnterCinematic(void);
+	void					ExitCinematic(void);
+	void					NetCatchup(void);
 
 	// Visual presentation
-	void					PresentWeapon( bool showViewModel );
-	int						GetZoomFov( void );
-	void					GetWeaponAngleOffsets( int *average, float *scale, float *max );
-	void					GetWeaponTimeOffsets( float *time, float *scale );
-	bool					BloodSplat( float size );
+	void					PresentWeapon(bool showViewModel);
+	int						GetZoomFov(void);
+	void					GetWeaponAngleOffsets(int *average, float *scale, float *max);
+	void					GetWeaponTimeOffsets(float *time, float *scale);
+	bool					BloodSplat(float size);
 
 	// Ammo
-	static ammo_t			GetAmmoNumForName( const char *ammoname );
-	static const char		*GetAmmoNameForNum( ammo_t ammonum );
-	static const char		*GetAmmoPickupNameForNum( ammo_t ammonum );
-	ammo_t					GetAmmoType( void ) const;
-	int						AmmoAvailable( void ) const;
-	int						AmmoInClip( void ) const;
-	void					ResetAmmoClip( void );
-	int						ClipSize( void ) const;
-	int						LowAmmo( void ) const;
-	int						AmmoRequired( void ) const;
+	static ammo_t			GetAmmoNumForName(const char *ammoname);
+	static const char		*GetAmmoNameForNum(ammo_t ammonum);
+	static const char		*GetAmmoPickupNameForNum(ammo_t ammonum);
+	ammo_t					GetAmmoType(void) const;
+	int						AmmoAvailable(void) const;
+	int						AmmoInClip(void) const;
+	void					ResetAmmoClip(void);
+	int						ClipSize(void) const;
+	int						LowAmmo(void) const;
+	int						AmmoRequired(void) const;
 
-	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
+	virtual void			WriteToSnapshot(idBitMsgDelta &msg) const;
+	virtual void			ReadFromSnapshot(const idBitMsgDelta &msg);
 
 	enum {
 		EVENT_RELOAD = idEntity::EVENT_MAXEVENTS,
@@ -149,23 +181,56 @@ public:
 		EVENT_CHANGESKIN,
 		EVENT_MAXEVENTS
 	};
-	virtual bool			ClientReceiveEvent( int event, int time, const idBitMsg &msg );
+	virtual bool			ClientReceiveEvent(int event, int time, const idBitMsg &msg);
 
-	virtual void			ClientPredictionThink( void );
+	virtual void			ClientPredictionThink(void);
 
+public:
+	void					WeaponState(weaponStatus_t state, int blendFrames);
+public: // old and deprecated
+	void					Event_FireSound(void);
+	void					Event_Idle(void) { idealState = WP_IDLE; }
+	void					Event_Clear(void);
+	void					Event_GetOwner(void);
+	void					Event_SetWeaponStatus(float newStatus);
+	void					Event_WeaponReady(void);
+	void					Event_WeaponOutOfAmmo(void);
+	void					Event_WeaponReloading(void);
+	void					Event_WeaponHolstered(void);
+	void					Event_WeaponRising(void);
+	void					Event_WeaponLowering(void);
+	void					Event_UseAmmo(int amount);
+	void					Event_AddToClip(int amount);
+	void					Event_AmmoInClip(void);
+	void					Event_AmmoAvailable(void);
+	void					Event_TotalAmmoCount(void);
+	void					Event_ClipSize(void);
+	void					Event_PlayAnim(int channel, const char *animname, bool loop);
+	void					Event_PlayCycle(int channel, const char *animname);
+	bool					Event_AnimDone(int channel, int blendFrames);
+	void					Event_SetBlendFrames(int channel, int blendFrames);
+	void					Event_GetBlendFrames(int channel);
+	void					Event_Next(void);
+	void					Event_SetSkin(const char *skinname);
+	void					Event_Flashlight(int enable);
+	void					Event_GetLightParm(int parmnum);
+	void					Event_SetLightParm(int parmnum, float value);
+	void					Event_SetLightParms(float parm0, float parm1, float parm2, float parm3);
+	void					Event_LaunchProjectiles(int num_projectiles, float spread, float fuseOffset, float launchPower, float dmgPower);
+	void					Event_CreateProjectile(void);
+	void					Event_EjectBrass(void);
+	void					Event_Melee(void);
+	void					Event_GetWorldModel(void);
+	void					Event_AllowDrop(int allow);
+	void					Event_AutoReload(void);
+	void					Event_NetReload(void);
+	bool					Event_IsInvisible(void);
+	void					Event_NetEndReload(void);
+
+	idEntity				*GetWorldModel(void) { return worldModel.GetEntity(); }
 private:
-	// script control
-	idScriptBool			WEAPON_ATTACK;
-	idScriptBool			WEAPON_RELOAD;
-	idScriptBool			WEAPON_NETRELOAD;
-	idScriptBool			WEAPON_NETENDRELOAD;
-	idScriptBool			WEAPON_NETFIRING;
-	idScriptBool			WEAPON_RAISEWEAPON;
-	idScriptBool			WEAPON_LOWERWEAPON;
-	weaponStatus_t			status;
-	idThread *				thread;
-	idStr					state;
-	idStr					idealState;
+	weaponStatus_t			state;
+	weaponStatus_t			idealState;
 	int						animBlendFrames;
 	int						animDoneTime;
 	bool					isLinked;
@@ -186,6 +251,8 @@ private:
 	bool					hide;
 	bool					disabled;
 
+	const idDeclModelDef	*modelDef;
+
 	// berserk
 	int						berserk;
 
@@ -196,7 +263,7 @@ private:
 	// the view weapon render entity parms
 	idVec3					viewWeaponOrigin;
 	idMat3					viewWeaponAxis;
-	
+
 	// the muzzle bone's position, used for launching projectiles and trailing smoke
 	idVec3					muzzleOrigin;
 	idMat3					muzzleAxis;
@@ -255,7 +322,9 @@ private:
 	bool					isFiring;
 
 	// zoom
-    int						zoomFov;			// variable zoom fov per weapon
+	int						zoomFov;			// variable zoom fov per weapon
+
+	idSoundShader			*snd_fire;
 
 	// joints from models
 	jointHandle_t			barrelJointView;
@@ -301,53 +370,19 @@ private:
 	float					weaponOffsetScale;
 
 	// flashlight
-	void					AlertMonsters( void );
+	void					AlertMonsters(void);
 
 	// Visual presentation
-	void					InitWorldModel( const idDeclEntityDef *def );
-	void					MuzzleFlashLight( void );
-	void					MuzzleRise( idVec3 &origin, idMat3 &axis );
-	void					UpdateNozzleFx( void );
-	void					UpdateFlashPosition( void );
+	void					InitWorldModel(const idDeclEntityDef *def);
+	void					MuzzleFlashLight(void);
+	void					MuzzleRise(idVec3 &origin, idMat3 &axis);
+	void					UpdateNozzleFx(void);
+	void					UpdateFlashPosition(void);
 
 	// script events
-	void					Event_Clear( void );
-	void					Event_GetOwner( void );
-	void					Event_WeaponState( const char *statename, int blendFrames );
-	void					Event_SetWeaponStatus( float newStatus );
-	void					Event_WeaponReady( void );
-	void					Event_WeaponOutOfAmmo( void );
-	void					Event_WeaponReloading( void );
-	void					Event_WeaponHolstered( void );
-	void					Event_WeaponRising( void );
-	void					Event_WeaponLowering( void );
-	void					Event_UseAmmo( int amount );
-	void					Event_AddToClip( int amount );
-	void					Event_AmmoInClip( void );
-	void					Event_AmmoAvailable( void );
-	void					Event_TotalAmmoCount( void );
-	void					Event_ClipSize( void );
-	void					Event_PlayAnim( int channel, const char *animname );
-	void					Event_PlayCycle( int channel, const char *animname );
-	void					Event_AnimDone( int channel, int blendFrames );
-	void					Event_SetBlendFrames( int channel, int blendFrames );
-	void					Event_GetBlendFrames( int channel );
-	void					Event_Next( void );
-	void					Event_SetSkin( const char *skinname );
-	void					Event_Flashlight( int enable );
-	void					Event_GetLightParm( int parmnum );
-	void					Event_SetLightParm( int parmnum, float value );
-	void					Event_SetLightParms( float parm0, float parm1, float parm2, float parm3 );
-	void					Event_LaunchProjectiles( int num_projectiles, float spread, float fuseOffset, float launchPower, float dmgPower );
-	void					Event_CreateProjectile( void );
-	void					Event_EjectBrass( void );
-	void					Event_Melee( void );
-	void					Event_GetWorldModel( void );
-	void					Event_AllowDrop( int allow );
-	void					Event_AutoReload( void );
-	void					Event_NetReload( void );
-	void					Event_IsInvisible( void );
-	void					Event_NetEndReload( void );
+
+private:
+	rvmWeaponObject			*currentWeaponObject;
 };
 
 ID_INLINE bool idWeapon::IsLinked( void ) {

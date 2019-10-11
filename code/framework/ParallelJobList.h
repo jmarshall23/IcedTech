@@ -142,28 +142,13 @@ public:
 	virtual int					GetNumFreeJobLists() const = 0;
 	virtual idParallelJobList *	GetJobList( int index ) = 0;
 
+	virtual void				RegisterJob(jobRun_t function, const char * name) = 0;
+
 	virtual int					GetNumProcessingUnits() = 0;
 
 	virtual void				WaitForAllJobLists() = 0;
 };
 
 extern idParallelJobManager *	parallelJobManager;
-
-// jobRun_t functions can have the debug name associated with them
-// by explicitly calling this, or using the REGISTER_PARALLEL_JOB()
-// static variable macro.
-void RegisterJob( jobRun_t function, const char * name );
-
-/*
-================================================
-idParallelJobRegistration
-================================================
-*/
-class idParallelJobRegistration {
-public:
-	idParallelJobRegistration( jobRun_t function, const char * name );
-};
-
-#define REGISTER_PARALLEL_JOB( function, name )		static idParallelJobRegistration register_##function( (jobRun_t) function, name )
 
 #endif // !__PARALLELJOBLIST_H__

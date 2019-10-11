@@ -33,81 +33,77 @@ If you have questions concerning this license or the applicable additional terms
 
 /***********************************************************************
 
+  rvmWeaponObject
+
+***********************************************************************/
+
+CLASS_DECLARATION(idClass, rvmWeaponObject)
+END_CLASS
+
+/*
+==================
+rvmWeaponObject::Init
+==================
+*/
+void rvmWeaponObject::Init(idWeapon *weapon) {
+	owner = weapon;
+	ResetStates();
+	owner->Event_WeaponRising();
+
+	idClass::Init();
+}
+
+/*
+==================
+rvmWeaponObject::ResetStates
+==================
+*/
+void rvmWeaponObject::ResetStates(void) {
+	risingState = 0;
+	idleState = 0;
+	loweringState = 0;
+	firingState = 0;
+	reloadState = 0;
+	waitDuration = 0.0f;
+}
+
+/*
+==================
+rvmWeaponObject::CanSwitchState
+==================
+*/
+bool rvmWeaponObject::CanSwitchState(void) {
+	return firingState == 0 && reloadState == 0; // Don't allow switching weapons or states if we are firing or reloading.
+}
+/*
+==================
+rvmWeaponObject::HasWaitSignal
+==================
+*/
+bool rvmWeaponObject::HasWaitSignal(void) {
+	return waitDuration > sys->GetClockTicks();
+}
+
+/*
+==================
+rvmWeaponObject::Wait
+==================
+*/
+void rvmWeaponObject::Wait(float duration) {
+	waitDuration = sys->GetClockTicks() + (sys->ClockTicksPerSecond() * duration);
+}
+
+/***********************************************************************
+
   idWeapon  
 	
 ***********************************************************************/
 
 //
-// event defs
-//
-const idEventDef EV_Weapon_Clear( "<clear>" );
-const idEventDef EV_Weapon_GetOwner( "getOwner", NULL, 'e' );
-const idEventDef EV_Weapon_Next( "nextWeapon" );
-const idEventDef EV_Weapon_State( "weaponState", "sd" );
-const idEventDef EV_Weapon_UseAmmo( "useAmmo", "d" );
-const idEventDef EV_Weapon_AddToClip( "addToClip", "d" );
-const idEventDef EV_Weapon_AmmoInClip( "ammoInClip", NULL, 'f' );
-const idEventDef EV_Weapon_AmmoAvailable( "ammoAvailable", NULL, 'f' );
-const idEventDef EV_Weapon_TotalAmmoCount( "totalAmmoCount", NULL, 'f' );
-const idEventDef EV_Weapon_ClipSize( "clipSize", NULL, 'f' );
-const idEventDef EV_Weapon_WeaponOutOfAmmo( "weaponOutOfAmmo" );
-const idEventDef EV_Weapon_WeaponReady( "weaponReady" );
-const idEventDef EV_Weapon_WeaponReloading( "weaponReloading" );
-const idEventDef EV_Weapon_WeaponHolstered( "weaponHolstered" );
-const idEventDef EV_Weapon_WeaponRising( "weaponRising" );
-const idEventDef EV_Weapon_WeaponLowering( "weaponLowering" );
-const idEventDef EV_Weapon_Flashlight( "flashlight", "d" );
-const idEventDef EV_Weapon_LaunchProjectiles( "launchProjectiles", "dffff" );
-const idEventDef EV_Weapon_CreateProjectile( "createProjectile", NULL, 'e' );
-const idEventDef EV_Weapon_EjectBrass( "ejectBrass" );
-const idEventDef EV_Weapon_Melee( "melee", NULL, 'd' );
-const idEventDef EV_Weapon_GetWorldModel( "getWorldModel", NULL, 'e' );
-const idEventDef EV_Weapon_AllowDrop( "allowDrop", "d" );
-const idEventDef EV_Weapon_AutoReload( "autoReload", NULL, 'f' );
-const idEventDef EV_Weapon_NetReload( "netReload" );
-const idEventDef EV_Weapon_IsInvisible( "isInvisible", NULL, 'f' );
-const idEventDef EV_Weapon_NetEndReload( "netEndReload" );
-
-//
 // class def
 //
 CLASS_DECLARATION( idAnimatedEntity, idWeapon )
-	EVENT( EV_Weapon_Clear,						idWeapon::Event_Clear )
-	EVENT( EV_Weapon_GetOwner,					idWeapon::Event_GetOwner )
-	EVENT( EV_Weapon_State,						idWeapon::Event_WeaponState )
-	EVENT( EV_Weapon_WeaponReady,				idWeapon::Event_WeaponReady )
-	EVENT( EV_Weapon_WeaponOutOfAmmo,			idWeapon::Event_WeaponOutOfAmmo )
-	EVENT( EV_Weapon_WeaponReloading,			idWeapon::Event_WeaponReloading )
-	EVENT( EV_Weapon_WeaponHolstered,			idWeapon::Event_WeaponHolstered )
-	EVENT( EV_Weapon_WeaponRising,				idWeapon::Event_WeaponRising )
-	EVENT( EV_Weapon_WeaponLowering,			idWeapon::Event_WeaponLowering )
-	EVENT( EV_Weapon_UseAmmo,					idWeapon::Event_UseAmmo )
-	EVENT( EV_Weapon_AddToClip,					idWeapon::Event_AddToClip )
-	EVENT( EV_Weapon_AmmoInClip,				idWeapon::Event_AmmoInClip )
-	EVENT( EV_Weapon_AmmoAvailable,				idWeapon::Event_AmmoAvailable )
-	EVENT( EV_Weapon_TotalAmmoCount,			idWeapon::Event_TotalAmmoCount )
-	EVENT( EV_Weapon_ClipSize,					idWeapon::Event_ClipSize )
-	EVENT( AI_PlayAnim,							idWeapon::Event_PlayAnim )
-	EVENT( AI_PlayCycle,						idWeapon::Event_PlayCycle )
-	EVENT( AI_SetBlendFrames,					idWeapon::Event_SetBlendFrames )
-	EVENT( AI_GetBlendFrames,					idWeapon::Event_GetBlendFrames )
-	EVENT( AI_AnimDone,							idWeapon::Event_AnimDone )
-	EVENT( EV_Weapon_Next,						idWeapon::Event_Next )
-	EVENT( EV_SetSkin,							idWeapon::Event_SetSkin )
-	EVENT( EV_Weapon_Flashlight,				idWeapon::Event_Flashlight )
-	EVENT( EV_Light_GetLightParm,				idWeapon::Event_GetLightParm )
-	EVENT( EV_Light_SetLightParm,				idWeapon::Event_SetLightParm )
-	EVENT( EV_Light_SetLightParms,				idWeapon::Event_SetLightParms )
-	EVENT( EV_Weapon_LaunchProjectiles,			idWeapon::Event_LaunchProjectiles )
-	EVENT( EV_Weapon_CreateProjectile,			idWeapon::Event_CreateProjectile )
-	EVENT( EV_Weapon_EjectBrass,				idWeapon::Event_EjectBrass )
-	EVENT( EV_Weapon_Melee,						idWeapon::Event_Melee )
-	EVENT( EV_Weapon_GetWorldModel,				idWeapon::Event_GetWorldModel )
-	EVENT( EV_Weapon_AllowDrop,					idWeapon::Event_AllowDrop )
-	EVENT( EV_Weapon_AutoReload,				idWeapon::Event_AutoReload )
-	EVENT( EV_Weapon_NetReload,					idWeapon::Event_NetReload )
-	EVENT( EV_Weapon_IsInvisible,				idWeapon::Event_IsInvisible )
-	EVENT( EV_Weapon_NetEndReload,				idWeapon::Event_NetEndReload )
+
 END_CLASS
 
 /***********************************************************************
@@ -125,7 +121,7 @@ idWeapon::idWeapon() {
 	owner					= NULL;
 	worldModel				= NULL;
 	weaponDef				= NULL;
-	thread					= NULL;
+	isFiring = false;
 
 	memset( &guiLight, 0, sizeof( guiLight ) );
 	memset( &muzzleFlash, 0, sizeof( muzzleFlash ) );
@@ -144,6 +140,7 @@ idWeapon::idWeapon() {
 	brassDelay				= 0;
 
 	allowDrop				= true;
+	currentWeaponObject = nullptr;
 
 	Clear();
 
@@ -172,10 +169,6 @@ void idWeapon::Spawn( void ) {
 		worldModel = static_cast< idAnimatedEntity * >( gameLocal.SpawnEntityType( idAnimatedEntity::Type, NULL ) );
 		worldModel.GetEntity()->fl.networkSync = true;
 	}
-
-	thread = new idThread();
-	thread->ManualDelete();
-	thread->ManualControl();
 }
 
 /*
@@ -251,10 +244,12 @@ idWeapon::Save
 */
 void idWeapon::Save( idSaveGame *savefile ) const {
 
-	savefile->WriteInt( status );
-	savefile->WriteObject( thread );
-	savefile->WriteString( state );
-	savefile->WriteString( idealState );
+	//savefile->WriteInt( status );
+	//	savefile->WriteObject( thread );
+// jmarshall
+	savefile->WriteInt(state);
+	savefile->WriteInt(idealState);
+// jmarshall end
 	savefile->WriteInt( animBlendFrames );
 	savefile->WriteInt( animDoneTime );
 	savefile->WriteBool( isLinked );
@@ -377,22 +372,15 @@ idWeapon::Restore
 */
 void idWeapon::Restore( idRestoreGame *savefile ) {
 
-	savefile->ReadInt( (int &)status );
-	savefile->ReadObject( reinterpret_cast<idClass *&>( thread ) );
-	savefile->ReadString( state );
-	savefile->ReadString( idealState );
+//	savefile->ReadInt( (int &)status );
+	//	savefile->ReadObject( reinterpret_cast<idClass *&>( thread ) );
+// jmarshall
+	savefile->ReadInt((int &)state);
+	savefile->ReadInt((int &)idealState);
+// jmarshall end
 	savefile->ReadInt( animBlendFrames );
 	savefile->ReadInt( animDoneTime );
 	savefile->ReadBool( isLinked );
-
-	// Re-link script fields
-	WEAPON_ATTACK.LinkTo(		scriptObject, "WEAPON_ATTACK" );
-	WEAPON_RELOAD.LinkTo(		scriptObject, "WEAPON_RELOAD" );
-	WEAPON_NETRELOAD.LinkTo(	scriptObject, "WEAPON_NETRELOAD" );
-	WEAPON_NETENDRELOAD.LinkTo(	scriptObject, "WEAPON_NETENDRELOAD" );
-	WEAPON_NETFIRING.LinkTo(	scriptObject, "WEAPON_NETFIRING" );
-	WEAPON_RAISEWEAPON.LinkTo(	scriptObject, "WEAPON_RAISEWEAPON" );
-	WEAPON_LOWERWEAPON.LinkTo(	scriptObject, "WEAPON_LOWERWEAPON" );
 
 	savefile->ReadObject( reinterpret_cast<idClass *&>( owner ) );
 	worldModel.Restore( savefile );
@@ -427,14 +415,16 @@ void idWeapon::Restore( idRestoreGame *savefile ) {
 	const idDeclEntityDef *projectileDef = gameLocal.FindEntityDef( weaponDef->dict.GetString( "def_projectile" ), false );
 	if ( projectileDef ) {
 		projectileDict = projectileDef->dict;
-	} else {
+	}
+	else {
 		projectileDict.Clear();
 	}
 
 	const idDeclEntityDef *brassDef = gameLocal.FindEntityDef( weaponDef->dict.GetString( "def_ejectBrass" ), false );
 	if ( brassDef ) {
 		brassDict = brassDef->dict;
-	} else {
+	}
+	else {
 		brassDict.Clear();
 	}
 
@@ -535,18 +525,18 @@ idWeapon::Clear
 ================
 */
 void idWeapon::Clear( void ) {
-	CancelEvents( &EV_Weapon_Clear );
+	//	CancelEvents( &EV_Weapon_Clear );
 
 	DeconstructScriptObject();
 	scriptObject.Free();
 
-	WEAPON_ATTACK.Unlink();
-	WEAPON_RELOAD.Unlink();
-	WEAPON_NETRELOAD.Unlink();
-	WEAPON_NETENDRELOAD.Unlink();
-	WEAPON_NETFIRING.Unlink();
-	WEAPON_RAISEWEAPON.Unlink();
-	WEAPON_LOWERWEAPON.Unlink();
+	//WEAPON_ATTACK.Unlink();
+	//WEAPON_RELOAD.Unlink();
+	//WEAPON_NETRELOAD.Unlink();
+	//WEAPON_NETENDRELOAD.Unlink();
+	//WEAPON_NETFIRING.Unlink();
+	//WEAPON_RAISEWEAPON.Unlink();
+	//WEAPON_LOWERWEAPON.Unlink();
 
 	if ( muzzleFlashHandle != -1 ) {
 		gameRenderWorld->FreeLightDef( muzzleFlashHandle );
@@ -634,9 +624,9 @@ void idWeapon::Clear( void ) {
 	muzzleOrigin.Zero();
 	pushVelocity.Zero();
 
-	status			= WP_HOLSTERED;
-	state			= "";
-	idealState		= "";
+//	status			= WP_HOLSTERED;
+	state = WP_NONE;
+	idealState = WP_NONE;
 	animBlendFrames	= 0;
 	animDoneTime	= 0;
 
@@ -645,6 +635,12 @@ void idWeapon::Clear( void ) {
 	meleeDefName	= "";
 	meleeDistance	= 0.0f;
 	brassDict.Clear();
+
+	if (currentWeaponObject != nullptr)
+	{
+		delete currentWeaponObject;
+		currentWeaponObject = nullptr;
+	}
 
 	flashTime		= 250;
 	lightOn			= false;
@@ -739,7 +735,8 @@ void idWeapon::InitWorldModel( const idDeclEntityDef *def ) {
 			worldModelRenderEntity->suppressShadowInViewID = owner->entityNumber+1;
 			worldModelRenderEntity->suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + owner->entityNumber;
 		}
-	} else {
+	}
+	else {
 		ent->SetModel( "" );
 		ent->Hide();
 	}
@@ -791,11 +788,16 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 	hideTime			= SEC2MS( weaponDef->dict.GetFloat( "hide_time", "0.3" ) );
 	hideDistance		= weaponDef->dict.GetFloat( "hide_distance", "-15" );
 
+	idStr snd_fire_name = weaponDef->dict.GetString("snd_fire", "not_used");
+	snd_fire = (idSoundShader *)declManager->FindSound(snd_fire_name, false);
+
+
 	// muzzle smoke
 	smokeName = weaponDef->dict.GetString( "smoke_muzzle" );
 	if ( *smokeName != '\0' ) {
 		weaponSmoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
-	} else {
+	}
+	else {
 		weaponSmoke = NULL;
 	}
 	continuousSmoke = weaponDef->dict.GetBool( "continuousSmoke" );
@@ -804,7 +806,8 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 	smokeName = weaponDef->dict.GetString( "smoke_strike" );
 	if ( *smokeName != '\0' ) {
 		strikeSmoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
-	} else {
+	}
+	else {
 		strikeSmoke = NULL;
 	}
 	strikeSmokeStartTime = 0;
@@ -850,12 +853,14 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 		const idDeclEntityDef *projectileDef = gameLocal.FindEntityDef( projectileName, false );
 		if ( !projectileDef ) {
 			gameLocal.Warning( "Unknown projectile '%s' in weapon '%s'", projectileName, objectname );
-		} else {
+		}
+		else {
 			const char *spawnclass = projectileDef->dict.GetString( "spawnclass" );
 			idTypeInfo *cls = idClass::GetClass( spawnclass );
 			if ( !cls || !cls->IsType( idProjectile::Type ) ) {
 				gameLocal.Warning( "Invalid spawnclass '%s' on projectile '%s' (used by weapon '%s')", spawnclass, projectileName, objectname );
-			} else {
+			}
+			else {
 				projectileDict = projectileDef->dict;
 			}
 		}
@@ -939,7 +944,8 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 		const idDeclEntityDef *brassDef = gameLocal.FindEntityDef( brassDefName, false );
 		if ( !brassDef ) {
 			gameLocal.Warning( "Unknown brass '%s'", brassDefName );
-		} else {
+		}
+		else {
 			brassDict = brassDef->dict;
 		}
 	}
@@ -974,22 +980,33 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 	weaponOffsetTime = weaponDef->dict.GetFloat( "weaponOffsetTime", "400" );
 	weaponOffsetScale = weaponDef->dict.GetFloat( "weaponOffsetScale", "0.005" );
 
-	if ( !weaponDef->dict.GetString( "weapon_scriptobject", NULL, &objectType ) ) {
-		gameLocal.Error( "No 'weapon_scriptobject' set on '%s'.", objectname );
+	if (!weaponDef->dict.GetString("weapon_class", NULL, &objectType)) {
+		gameLocal.Error("No 'weaponclass' set on '%s'.", objectname);
 	}
 	
 	// setup script object
-	if ( !scriptObject.SetType( objectType ) ) {
-		gameLocal.Error( "Script object '%s' not found on weapon '%s'.", objectType, objectname );
+	idTypeInfo*	typeInfo;
+	typeInfo = idClass::GetClass(objectType);
+	if (!typeInfo) {
+		gameLocal.Error("Failed to get weapon class");
 	}
 
-	WEAPON_ATTACK.LinkTo(		scriptObject, "WEAPON_ATTACK" );
-	WEAPON_RELOAD.LinkTo(		scriptObject, "WEAPON_RELOAD" );
-	WEAPON_NETRELOAD.LinkTo(	scriptObject, "WEAPON_NETRELOAD" );
-	WEAPON_NETENDRELOAD.LinkTo(	scriptObject, "WEAPON_NETENDRELOAD" );
-	WEAPON_NETFIRING.LinkTo(	scriptObject, "WEAPON_NETFIRING" );
-	WEAPON_RAISEWEAPON.LinkTo(	scriptObject, "WEAPON_RAISEWEAPON" );
-	WEAPON_LOWERWEAPON.LinkTo(	scriptObject, "WEAPON_LOWERWEAPON" );
+	if (currentWeaponObject != nullptr) {
+		delete currentWeaponObject;
+		currentWeaponObject = nullptr;
+	}
+
+	currentWeaponObject = static_cast<rvmWeaponObject*>(typeInfo->CreateInstance());
+	currentWeaponObject->Init(this);
+	currentWeaponObject->CallSpawn();
+
+	//WEAPON_ATTACK.LinkTo(		scriptObject, "WEAPON_ATTACK" );
+	//WEAPON_RELOAD.LinkTo(		scriptObject, "WEAPON_RELOAD" );
+	//WEAPON_NETRELOAD.LinkTo(	scriptObject, "WEAPON_NETRELOAD" );
+	//WEAPON_NETENDRELOAD.LinkTo(	scriptObject, "WEAPON_NETENDRELOAD" );
+	//WEAPON_NETFIRING.LinkTo(	scriptObject, "WEAPON_NETFIRING" );
+	//WEAPON_RAISEWEAPON.LinkTo(	scriptObject, "WEAPON_RAISEWEAPON" );
+	//WEAPON_LOWERWEAPON.LinkTo(	scriptObject, "WEAPON_LOWERWEAPON" );
 
 	spawnArgs = weaponDef->dict;
 
@@ -1033,7 +1050,7 @@ void idWeapon::UpdateGUI( void ) {
 		return;
 	}
 	
-	if ( status == WP_HOLSTERED ) {
+	if ( state == WP_HOLSTERED ) {
 		return;
 	}
 
@@ -1049,7 +1066,8 @@ void idWeapon::UpdateGUI( void ) {
 			if ( !p->spectating || p->spectator != owner->entityNumber ) {
 				return;
 			}
-		} else {
+		}
+		else {
 			return;
 		}
 	}
@@ -1060,7 +1078,8 @@ void idWeapon::UpdateGUI( void ) {
 	if ( ammoamount < 0 ) {
 		// show infinite ammo
 		renderEntity.gui[ 0 ]->SetStateString( "player_ammo", "" );
-	} else {
+	}
+	else {
 		// show remaining ammo
 		renderEntity.gui[ 0 ]->SetStateString( "player_totalammo", va( "%i", ammoamount - inclip) );
 		renderEntity.gui[ 0 ]->SetStateString( "player_ammo", ClipSize() ? va( "%i", inclip ) : "--" );
@@ -1129,7 +1148,8 @@ void idWeapon::MuzzleFlashLight( void ) {
 	if ( muzzleFlashHandle != -1 ) {
 		gameRenderWorld->UpdateLightDef( muzzleFlashHandle, &muzzleFlash );
 		gameRenderWorld->UpdateLightDef( worldMuzzleFlashHandle, &worldMuzzleFlash );
-	} else {
+	}
+	else {
 		muzzleFlashHandle = gameRenderWorld->AddLightDef( &muzzleFlash );
 		worldMuzzleFlashHandle = gameRenderWorld->AddLightDef( &worldMuzzleFlash );
 	}
@@ -1166,17 +1186,18 @@ idWeapon::SetModel
 ================
 */
 void idWeapon::SetModel( const char *modelname ) {
-	assert( modelname );
+	assert(modelname);
 
-	if ( modelDefHandle >= 0 ) {
-		gameRenderWorld->RemoveDecals( modelDefHandle );
+	if (modelDefHandle >= 0) {
+		gameRenderWorld->RemoveDecals(modelDefHandle);
 	}
 
-	renderEntity.hModel = animator.SetModel( modelname );
-	if ( renderEntity.hModel ) {
+	renderEntity.hModel = animator.SetModel(modelname);
+	if (renderEntity.hModel) {
 		renderEntity.customSkin = animator.ModelDef()->GetDefaultSkin();
-		animator.GetJoints( &renderEntity.numJoints, &renderEntity.joints );
-	} else {
+		animator.GetJoints(&renderEntity.numJoints, &renderEntity.joints);
+	}
+	else {
 		renderEntity.customSkin = NULL;
 		renderEntity.callback = NULL;
 		renderEntity.numJoints = 0;
@@ -1237,7 +1258,45 @@ idWeapon::Think
 ================
 */
 void idWeapon::Think( void ) {
-	// do nothing because the present is called from the player through PresentWeapon
+	if (currentWeaponObject)
+	{	
+		if (idealState == WP_READY)
+			idealState = WP_IDLE;
+
+		if(idealState != state && currentWeaponObject->CanSwitchState())
+		{
+			state = idealState;
+			currentWeaponObject->ResetStates();
+		}
+
+		if (!currentWeaponObject->HasWaitSignal())
+		{
+			switch (state)
+			{
+			case weaponStatus_t::WP_RISING:
+				currentWeaponObject->Raise();
+				break;
+
+			case weaponStatus_t::WP_IDLE:
+				currentWeaponObject->Idle();
+				break;
+			case weaponStatus_t::WP_LOWERING:
+				currentWeaponObject->Lower();
+				break;
+
+			case weaponStatus_t::WP_RELOAD:
+				currentWeaponObject->Reload();
+				break;
+			case weaponStatus_t::WP_FIRE:
+				currentWeaponObject->Fire();
+				break;
+			}
+		}
+	}
+
+//	newAnimator.Run();
+
+//	renderEntity.shaderParms[SHADERPARM_MD3_FRAME] = newAnimator.GetCurrentFrame();
 }
 
 /*
@@ -1246,9 +1305,7 @@ idWeapon::Raise
 ================
 */
 void idWeapon::Raise( void ) {
-	if ( isLinked ) {
-		WEAPON_RAISEWEAPON = true;
-	}
+	idealState = WP_RISING;
 }
 
 /*
@@ -1258,9 +1315,7 @@ idWeapon::PutAway
 */
 void idWeapon::PutAway( void ) {
 	hasBloodSplat = false;
-	if ( isLinked ) {
-		WEAPON_LOWERWEAPON = true;
-	}
+	idealState = WP_LOWERING;
 }
 
 /*
@@ -1270,9 +1325,7 @@ NOTE: this is only for impulse-triggered reload, auto reload is scripted
 ================
 */
 void idWeapon::Reload( void ) {
-	if ( isLinked ) {
-		WEAPON_RELOAD = true;
-	}
+	idealState = WP_RELOAD;
 }
 
 /*
@@ -1286,7 +1339,8 @@ void idWeapon::LowerWeapon( void ) {
 		hideEnd		= hideDistance;
 		if ( gameLocal.time - hideStartTime < hideTime ) {
 			hideStartTime = gameLocal.time - ( hideTime - ( gameLocal.time - hideStartTime ) );
-		} else {
+		}
+		else {
 			hideStartTime = gameLocal.time;
 		}
 		hide = true;
@@ -1306,7 +1360,8 @@ void idWeapon::RaiseWeapon( void ) {
 		hideEnd		= 0.0f;
 		if ( gameLocal.time - hideStartTime < hideTime ) {
 			hideStartTime = gameLocal.time - ( hideTime - ( gameLocal.time - hideStartTime ) );
-		} else {
+		}
+		else {
 			hideStartTime = gameLocal.time;
 		}
 		hide = false;
@@ -1369,19 +1424,10 @@ idWeapon::OwnerDied
 ================
 */
 void idWeapon::OwnerDied( void ) {
-	if ( isLinked ) {
-		SetState( "OwnerDied", 0 );
-		thread->Execute();
-	}
-
 	Hide();
 	if ( worldModel.GetEntity() ) {
 		worldModel.GetEntity()->Hide();
 	}
-
-	// don't clear the weapon immediately since the owner might have killed himself by firing the weapon
-	// within the current stack frame
-	PostEventMS( &EV_Weapon_Clear, 0 );
 }
 
 /*
@@ -1390,20 +1436,8 @@ idWeapon::BeginAttack
 ================
 */
 void idWeapon::BeginAttack( void ) {	
-	if ( status != WP_OUTOFAMMO ) {
-		lastAttack = gameLocal.time;
-	}
-
-	if ( !isLinked ) {
-		return;
-	}
-
-	if ( !WEAPON_ATTACK ) {
-		if ( sndHum ) {
-			StopSound( SND_CHANNEL_BODY, false );
-		}
-	}
-	WEAPON_ATTACK = true;
+	isFiring = true;
+	idealState = WP_FIRE;
 }
 
 /*
@@ -1412,15 +1446,7 @@ idWeapon::EndAttack
 ================
 */
 void idWeapon::EndAttack( void ) {
-	if ( !WEAPON_ATTACK.IsLinked() ) {
-		return;
-	}
-	if ( WEAPON_ATTACK ) {
-		WEAPON_ATTACK = false;
-		if ( sndHum ) {
-			StartSoundShader( sndHum, SND_CHANNEL_BODY, 0, false, NULL );
-		}
-	}
+	isFiring = false;
 }
 
 /*
@@ -1429,7 +1455,7 @@ idWeapon::isReady
 ================
 */
 bool idWeapon::IsReady( void ) const {
-	return !hide && !IsHidden() && ( ( status == WP_RELOAD ) || ( status == WP_READY ) || ( status == WP_OUTOFAMMO ) );
+	return !hide && !IsHidden() && ((state == WP_RELOAD) || (state == WP_IDLE) || (state == WP_OUTOFAMMO));
 }
 
 /*
@@ -1438,7 +1464,7 @@ idWeapon::IsReloading
 ================
 */
 bool idWeapon::IsReloading( void ) const {
-	return ( status == WP_RELOAD );
+	return ( state == WP_RELOAD );
 }
 
 /*
@@ -1447,7 +1473,7 @@ idWeapon::IsHolstered
 ================
 */
 bool idWeapon::IsHolstered( void ) const {
-	return ( status == WP_HOLSTERED );
+	return ( state == WP_HOLSTERED );
 }
 
 /*
@@ -1456,7 +1482,7 @@ idWeapon::ShowCrosshair
 ================
 */
 bool idWeapon::ShowCrosshair( void ) const {
-	return !( state == idStr( WP_RISING ) || state == idStr( WP_LOWERING ) || state == idStr( WP_HOLSTERED ) );
+	return !(state == WP_RISING || state == WP_LOWERING || state == WP_HOLSTERED);
 }
 
 /*
@@ -1483,15 +1509,11 @@ idWeapon::WeaponStolen
 void idWeapon::WeaponStolen( void ) {
 	assert( !gameLocal.isClient );
 	if ( projectileEnt ) {
-		if ( isLinked ) {
-			SetState( "WeaponStolen", 0 );
-			thread->Execute();
-		}
 		projectileEnt = NULL;
 	}
 
 	// set to holstered so we can switch weapons right away
-	status = WP_HOLSTERED;
+	idealState = WP_HOLSTERED;
 
 	HideWeapon();
 }
@@ -1529,28 +1551,9 @@ idEntity * idWeapon::DropItem( const idVec3 &velocity, int activateDelay, int re
 idWeapon::SetState
 =====================
 */
-void idWeapon::SetState( const char *statename, int blendFrames ) {
-	const function_t *func;
-
-	if ( !isLinked ) {
-		return;
-	}
-
-	func = scriptObject.GetFunction( statename );
-	if ( !func ) {
-		assert( 0 );
-		gameLocal.Error( "Can't find function '%s' in object '%s'", statename, scriptObject.GetTypeName() );
-	}
-
-	thread->CallFunction( this, func, true );
-	state = statename;
-
+void idWeapon::SetState(weaponStatus_t state, int blendFrames) {
 	animBlendFrames = blendFrames;
-	if ( g_debugWeapon.GetBool() ) {
-		gameLocal.Printf( "%d: weapon state : %s\n", gameLocal.time, statename );
-	}
-
-	idealState = "";
+	this->state = state;
 }
 
 
@@ -1715,102 +1718,6 @@ void idWeapon::MuzzleRise( idVec3 &origin, idMat3 &axis ) {
 
 /*
 ================
-idWeapon::ConstructScriptObject
-
-Called during idEntity::Spawn.  Calls the constructor on the script object.
-Can be overridden by subclasses when a thread doesn't need to be allocated.
-================
-*/
-idThread *idWeapon::ConstructScriptObject( void ) {
-	const function_t *constructor;
-
-	thread->EndThread();
-
-	// call script object's constructor
-	constructor = scriptObject.GetConstructor();
-	if ( !constructor ) {
-		gameLocal.Error( "Missing constructor on '%s' for weapon", scriptObject.GetTypeName() );
-	}
-
-	// init the script object's data
-	scriptObject.ClearObject();
-	thread->CallFunction( this, constructor, true );
-	thread->Execute();
-
-	return thread;
-}
-
-/*
-================
-idWeapon::DeconstructScriptObject
-
-Called during idEntity::~idEntity.  Calls the destructor on the script object.
-Can be overridden by subclasses when a thread doesn't need to be allocated.
-Not called during idGameLocal::MapShutdown.
-================
-*/
-void idWeapon::DeconstructScriptObject( void ) {
-	const function_t *destructor;
-
-	if ( !thread ) {
-		return;
-	}
-	
-	// don't bother calling the script object's destructor on map shutdown
-	if ( gameLocal.GameState() == GAMESTATE_SHUTDOWN ) {
-		return;
-	}
-
-	thread->EndThread();
-
-	// call script object's destructor
-	destructor = scriptObject.GetDestructor();
-	if ( destructor ) {
-		// start a thread that will run immediately and end
-		thread->CallFunction( this, destructor, true );
-		thread->Execute();
-		thread->EndThread();
-	}
-
-	// clear out the object's memory
-	scriptObject.ClearObject();
-}
-
-/*
-================
-idWeapon::UpdateScript
-================
-*/
-void idWeapon::UpdateScript( void ) {
-	int	count;
-
-	if ( !isLinked ) {
-		return;
-	}
-
-	// only update the script on new frames
-	if ( !gameLocal.isNewFrame ) {
-		return;
-	}
-
-	if ( idealState.Length() ) {
-		SetState( idealState, animBlendFrames );
-	}
-
-	// update script state, which may call Event_LaunchProjectiles, among other things
-	count = 10;
-	while( ( thread->Execute() || idealState.Length() ) && count-- ) {
-		// happens for weapons with no clip (like grenades)
-		if ( idealState.Length() ) {
-			SetState( idealState, animBlendFrames );
-		}
-	}
-
-	WEAPON_RELOAD = false;
-}
-
-/*
-================
 idWeapon::AlertMonsters
 ================
 */
@@ -1829,7 +1736,8 @@ void idWeapon::AlertMonsters( void ) {
 		ent = gameLocal.GetTraceEntity( tr );
 		if ( ent->IsType( idAI::Type ) ) {
 			static_cast<idAI *>( ent )->TouchedByFlashlight( owner );
-		} else if ( ent->IsType( idTrigger::Type ) ) {
+		}
+		else if (ent->IsType(idTrigger::Type)) {
 			ent->Signal( SIG_TOUCH );
 			ent->ProcessEvent( &EV_Touch, owner, &tr );
 		}
@@ -1848,7 +1756,8 @@ void idWeapon::AlertMonsters( void ) {
 		ent = gameLocal.GetTraceEntity( tr );
 		if ( ent->IsType( idAI::Type ) ) {
 			static_cast<idAI *>( ent )->TouchedByFlashlight( owner );
-		} else if ( ent->IsType( idTrigger::Type ) ) {
+		}
+		else if (ent->IsType(idTrigger::Type)) {
 			ent->Signal( SIG_TOUCH );
 			ent->ProcessEvent( &EV_Touch, owner, &tr );
 		}
@@ -1874,11 +1783,13 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 		if ( hideStart < hideEnd ) {
 			frac = 1.0f - frac;
 			frac = 1.0f - frac * frac;
-		} else {
+		}
+		else {
 			frac = frac * frac;
 		}
 		hideOffset = hideStart + ( hideEnd - hideStart ) * frac;
-	} else {
+	}
+	else {
 		hideOffset = hideEnd;
 		if ( hide && disabled ) {
 			Hide();
@@ -1894,9 +1805,6 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 	GetPhysics()->SetAxis( viewWeaponAxis );
 	UpdateVisuals();
 
-	// update the weapon script
-	UpdateScript();
-
 	UpdateGUI();
 
 	// update animation
@@ -1911,7 +1819,8 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 	// present the model
 	if ( showViewModel ) {
 		Present();
-	} else {
+	}
+	else {
 		FreeModelDef();
 	}
 
@@ -1920,7 +1829,8 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 		// don't show shadows of the world model in first person
 		if ( gameLocal.isMultiplayer || g_showPlayerShadow.GetBool() || pm_thirdPerson.GetBool() ) {
 			worldModel.GetEntity()->GetRenderEntity()->suppressShadowInViewID	= 0;
-		} else {
+		}
+		else {
 			worldModel.GetEntity()->GetRenderEntity()->suppressShadowInViewID	= owner->entityNumber+1;
 			worldModel.GetEntity()->GetRenderEntity()->suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + owner->entityNumber;
 		}
@@ -1935,7 +1845,8 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 		// use the barrel joint if available
 		if ( barrelJointView ) {
 			GetGlobalJointTransform( true, barrelJointView, muzzleOrigin, muzzleAxis );
-		} else {
+		}
+		else {
 			// default to going straight out the view
 			muzzleOrigin = playerViewOrigin;
 			muzzleAxis = playerViewAxis;
@@ -1983,12 +1894,13 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 
 		if ( ( guiLightHandle != -1 ) ) {
 			gameRenderWorld->UpdateLightDef( guiLightHandle, &guiLight );
-		} else {
+		}
+		else {
 			guiLightHandle = gameRenderWorld->AddLightDef( &guiLight );
 		}
 	}
 
-	if ( status != WP_READY && sndHum ) {
+	if (idealState != WP_READY && sndHum ) {
 		StopSound( SND_CHANNEL_BODY, false );
 	}
 
@@ -2003,18 +1915,20 @@ idWeapon::EnterCinematic
 void idWeapon::EnterCinematic( void ) {
 	StopSound( SND_CHANNEL_ANY, false );
 
-	if ( isLinked ) {
-		SetState( "EnterCinematic", 0 );
-		thread->Execute();
-
-		WEAPON_ATTACK		= false;
-		WEAPON_RELOAD		= false;
-		WEAPON_NETRELOAD	= false;
-		WEAPON_NETENDRELOAD	= false;
-		WEAPON_NETFIRING	= false;
-		WEAPON_RAISEWEAPON	= false;
-		WEAPON_LOWERWEAPON	= false;
-	}
+	//Event_EnterCinematic();
+	//
+	//if ( isLinked ) {
+	//	SetState( "EnterCinematic", 0 );
+	//	thread->Execute();
+	//
+	//	WEAPON_ATTACK		= false;
+	//	WEAPON_RELOAD		= false;
+	//	WEAPON_NETRELOAD	= false;
+	//	WEAPON_NETENDRELOAD	= false;
+	////	WEAPON_NETFIRING	= false;
+	//	WEAPON_RAISEWEAPON	= false;
+	//	WEAPON_LOWERWEAPON	= false;
+	//}
 
 	disabled = true;
 
@@ -2029,10 +1943,12 @@ idWeapon::ExitCinematic
 void idWeapon::ExitCinematic( void ) {
 	disabled = false;
 
-	if ( isLinked ) {
-		SetState( "ExitCinematic", 0 );
-		thread->Execute();
-	}
+	//Event_ExitCinematic();
+	//
+	//if ( isLinked ) {
+	//	SetState( "ExitCinematic", 0 );
+	//	thread->Execute();
+	//}
 
 	RaiseWeapon();
 }
@@ -2044,8 +1960,8 @@ idWeapon::NetCatchup
 */
 void idWeapon::NetCatchup( void ) {
 	if ( isLinked ) {
-		SetState( "NetCatchup", 0 );
-		thread->Execute();
+		//SetState(WP_NETCATCHUP, 0);
+		//		thread->Execute();
 	}
 }
 
@@ -2186,7 +2102,8 @@ idWeapon::AmmoAvailable
 int idWeapon::AmmoAvailable( void ) const {
 	if ( owner ) {
 		return owner->inventory.HasAmmo( ammoType, ammoRequired );
-	} else {
+	}
+	else {
 		return 0;
 	}
 }
@@ -2269,20 +2186,20 @@ void idWeapon::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 	isFiring = msg.ReadBits( 1 ) != 0;
 
 	// WEAPON_NETFIRING is only turned on for other clients we're predicting. not for local client
-	if ( owner && gameLocal.localClientNum != owner->entityNumber && WEAPON_NETFIRING.IsLinked() ) {
-
-		// immediately go to the firing state so we don't skip fire animations
-		if ( !WEAPON_NETFIRING && isFiring ) {
-			idealState = "Fire";
-		}
-
-        // immediately switch back to idle
-        if ( WEAPON_NETFIRING && !isFiring ) {
-            idealState = "Idle";
-        }
-
-		WEAPON_NETFIRING = isFiring;
-	}
+	//if ( owner && gameLocal.localClientNum != owner->entityNumber && WEAPON_NETFIRING.IsLinked() ) {
+	//
+	//	// immediately go to the firing state so we don't skip fire animations
+	//	if ( !WEAPON_NETFIRING && isFiring ) {
+	//		idealState = "Fire";
+	//	}
+	//
+	//    // immediately switch back to idle
+	//    if ( WEAPON_NETFIRING && !isFiring ) {
+	//        idealState = "Idle";
+	//    }
+	//
+	//	WEAPON_NETFIRING = isFiring;
+	//}
 
 	if ( snapLight != lightOn ) {
 		Reload();
@@ -2299,17 +2216,17 @@ bool idWeapon::ClientReceiveEvent( int event, int time, const idBitMsg &msg ) {
 	switch( event ) {
 		case EVENT_RELOAD: {
 			if ( gameLocal.time - time < 1000 ) {
-				if ( WEAPON_NETRELOAD.IsLinked() ) {
-					WEAPON_NETRELOAD = true;
-					WEAPON_NETENDRELOAD = false;
+			//				if ( WEAPON_NETRELOAD.IsLinked() ) {
+			//					WEAPON_NETRELOAD = true;
+			//					WEAPON_NETENDRELOAD = false;
+			//				}
 				}
-			}
 			return true;
 		}
 		case EVENT_ENDRELOAD: {
-			if ( WEAPON_NETENDRELOAD.IsLinked() ) {
-				WEAPON_NETENDRELOAD = true;
-			}
+		//		if ( WEAPON_NETENDRELOAD.IsLinked() ) {
+		//			WEAPON_NETENDRELOAD = true;
+		//		}
 			return true;
 		}
 		case EVENT_CHANGESKIN: {
@@ -2354,40 +2271,14 @@ void idWeapon::Event_GetOwner( void ) {
 
 /*
 ===============
-idWeapon::Event_WeaponState
-===============
-*/
-void idWeapon::Event_WeaponState( const char *statename, int blendFrames ) {
-	const function_t *func;
-
-	func = scriptObject.GetFunction( statename );
-	if ( !func ) {
-		assert( 0 );
-		gameLocal.Error( "Can't find function '%s' in object '%s'", statename, scriptObject.GetTypeName() );
-	}
-
-	idealState = statename;
-
-	if ( !idealState.Icmp( "Fire" ) ) {
-		isFiring = true;
-	} else {
-		isFiring = false;
-	}
-
-	animBlendFrames = blendFrames;
-	thread->DoneProcessing();
-}
-
-/*
-===============
 idWeapon::Event_WeaponReady
 ===============
 */
 void idWeapon::Event_WeaponReady( void ) {
-	status = WP_READY;
-	if ( isLinked ) {
-		WEAPON_RAISEWEAPON = false;
-	}
+	idealState = WP_READY;
+	//	if ( isLinked ) {
+	//		WEAPON_RAISEWEAPON = false;
+	//	}
 	if ( sndHum ) {
 		StartSoundShader( sndHum, SND_CHANNEL_BODY, 0, false, NULL );
 	}
@@ -2400,10 +2291,10 @@ idWeapon::Event_WeaponOutOfAmmo
 ===============
 */
 void idWeapon::Event_WeaponOutOfAmmo( void ) {
-	status = WP_OUTOFAMMO;
-	if ( isLinked ) {
-		WEAPON_RAISEWEAPON = false;
-	}
+	idealState = WP_OUTOFAMMO;
+	//if ( isLinked ) {
+	//	WEAPON_RAISEWEAPON = false;
+	//}
 }
 
 /*
@@ -2412,7 +2303,7 @@ idWeapon::Event_WeaponReloading
 ===============
 */
 void idWeapon::Event_WeaponReloading( void ) {
-	status = WP_RELOAD;
+	idealState = WP_RELOAD;
 }
 
 /*
@@ -2421,10 +2312,10 @@ idWeapon::Event_WeaponHolstered
 ===============
 */
 void idWeapon::Event_WeaponHolstered( void ) {
-	status = WP_HOLSTERED;
-	if ( isLinked ) {
-		WEAPON_LOWERWEAPON = false;
-	}
+	idealState = WP_HOLSTERED;
+	//	if ( isLinked ) {
+	//		WEAPON_LOWERWEAPON = false;
+	//	}
 }
 
 /*
@@ -2433,10 +2324,10 @@ idWeapon::Event_WeaponRising
 ===============
 */
 void idWeapon::Event_WeaponRising( void ) {
-	status = WP_RISING;
-	if ( isLinked ) {
-		WEAPON_LOWERWEAPON = false;
-	}
+	idealState = WP_RISING;
+	//if ( isLinked ) {
+	//	WEAPON_LOWERWEAPON = false;
+	//}
 	owner->WeaponRisingCallback();
 }
 
@@ -2446,10 +2337,10 @@ idWeapon::Event_WeaponLowering
 ===============
 */
 void idWeapon::Event_WeaponLowering( void ) {
-	status = WP_LOWERING;
-	if ( isLinked ) {
-		WEAPON_RAISEWEAPON = false;
-	}
+	idealState = WP_LOWERING;
+	//	if ( isLinked ) {
+	//		WEAPON_RAISEWEAPON = false;
+	//	}
 	owner->WeaponLoweringCallback();
 }
 
@@ -2540,12 +2431,7 @@ idWeapon::Event_AutoReload
 ===============
 */
 void idWeapon::Event_AutoReload( void ) {
-	assert( owner );
-	if ( gameLocal.isClient ) {
-		idThread::ReturnFloat( 0.0f );
-		return;
-	}
-	idThread::ReturnFloat( gameLocal.userInfo[ owner->entityNumber ].GetBool( "ui_autoReload" ) );
+	idealState = WP_RELOAD;
 }
 
 /*
@@ -2574,10 +2460,22 @@ void idWeapon::Event_NetEndReload( void ) {
 
 /*
 ===============
+idWeapon::Event_FireSound
+===============
+*/
+void idWeapon::Event_FireSound(void) {
+	if (snd_fire)
+	{
+		StartSoundShader(snd_fire, SCHANNEL_ANY, 0, false, NULL);
+	}
+}
+
+/*
+===============
 idWeapon::Event_PlayAnim
 ===============
 */
-void idWeapon::Event_PlayAnim( int channel, const char *animname ) {
+void idWeapon::Event_PlayAnim(int channel, const char *animname, bool loop) {
 	int anim;
 	
 	anim = animator.GetAnim( animname );
@@ -2585,7 +2483,8 @@ void idWeapon::Event_PlayAnim( int channel, const char *animname ) {
 		gameLocal.Warning( "missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName() );
 		animator.Clear( channel, gameLocal.time, FRAME2MS( animBlendFrames ) );
 		animDoneTime = 0;
-	} else {
+	}
+	else {
 		if ( !( owner && owner->GetInfluenceLevel() ) ) {
 			Show();
 		}
@@ -2615,7 +2514,8 @@ void idWeapon::Event_PlayCycle( int channel, const char *animname ) {
 		gameLocal.Warning( "missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName() );
 		animator.Clear( channel, gameLocal.time, FRAME2MS( animBlendFrames ) );
 		animDoneTime = 0;
-	} else {
+	}
+	else {
 		if ( !( owner && owner->GetInfluenceLevel() ) ) {
 			Show();
 		}
@@ -2626,6 +2526,7 @@ void idWeapon::Event_PlayCycle( int channel, const char *animname ) {
 			worldModel.GetEntity()->GetAnimator()->CycleAnim( channel, anim, gameLocal.time, FRAME2MS( animBlendFrames ) );
 		}
 	}
+
 	animBlendFrames = 0;
 	idThread::ReturnInt( 0 );
 }
@@ -2635,12 +2536,12 @@ void idWeapon::Event_PlayCycle( int channel, const char *animname ) {
 idWeapon::Event_AnimDone
 ===============
 */
-void idWeapon::Event_AnimDone( int channel, int blendFrames ) {
+bool idWeapon::Event_AnimDone(int channel, int blendFrames) {
+	//return newAnimator.IsAnimComplete();
 	if ( animDoneTime - FRAME2MS( blendFrames ) <= gameLocal.time ) {
-		idThread::ReturnInt( true );
-	} else {
-		idThread::ReturnInt( false );
+		return true;
 	}
+	return false;
 }
 
 /*
@@ -2681,7 +2582,8 @@ void idWeapon::Event_SetSkin( const char *skinname ) {
 
 	if ( !skinname || !skinname[ 0 ] ) {
 		skinDecl = NULL;
-	} else {
+	}
+	else {
 		skinDecl = declManager->FindSkin( skinname );
 	}
 
@@ -2711,7 +2613,8 @@ void idWeapon::Event_Flashlight( int enable ) {
 	if ( enable ) {
 		lightOn = true;
 		MuzzleFlashLight();
-	} else {
+	}
+	else {
 		lightOn = false;
 		muzzleFlashEnd = 0;
 	}
@@ -2779,7 +2682,8 @@ void idWeapon::Event_CreateProjectile( void ) {
 			projectileEnt->Hide();
 		}
 		idThread::ReturnEntity( projectileEnt );
-	} else {
+	}
+	else {
 		idThread::ReturnEntity( NULL );
 	}
 }
@@ -2860,7 +2764,8 @@ void idWeapon::Event_LaunchProjectiles( int num_projectiles, float spread, float
 	if ( barrelJointView != INVALID_JOINT && projectileDict.GetBool( "launchFromBarrel" ) ) {
 		// there is an explicit joint for the muzzle
 		GetGlobalJointTransform( true, barrelJointView, muzzleOrigin, muzzleAxis );
-	} else {
+	}
+	else {
 		// go straight out of the view
 		muzzleOrigin = playerViewOrigin;
 		muzzleAxis = playerViewAxis;
@@ -2893,7 +2798,8 @@ void idWeapon::Event_LaunchProjectiles( int num_projectiles, float spread, float
 			}
 		}
 
-	} else {
+	}
+	else {
 
 		ownerBounds = owner->GetPhysics()->GetAbsBounds();
 
@@ -2911,7 +2817,8 @@ void idWeapon::Event_LaunchProjectiles( int num_projectiles, float spread, float
 				ent->Show();
 				ent->Unbind();
 				projectileEnt = NULL;
-			} else {
+			}
+			else {
 				gameLocal.SpawnEntityDef( projectileDict, &ent, false );
 			}
 
@@ -2935,7 +2842,8 @@ void idWeapon::Event_LaunchProjectiles( int num_projectiles, float spread, float
 				muzzle_pos = muzzleOrigin + playerViewAxis[ 0 ] * 2.0f;
 				if ( ( ownerBounds - projBounds).RayIntersection( muzzle_pos, playerViewAxis[0], distance ) ) {
 					start = muzzle_pos + distance * playerViewAxis[0];
-				} else {
+				}
+				else {
 					start = ownerBounds.GetCenter();
 				}
 				gameLocal.clip.Translation( tr, start, muzzle_pos, proj->GetPhysics()->GetClipModel(), proj->GetPhysics()->GetClipModel()->GetAxis(), MASK_SHOT_RENDERMODEL, owner );
@@ -2946,7 +2854,7 @@ void idWeapon::Event_LaunchProjectiles( int num_projectiles, float spread, float
 		}
 
 		// toss the brass
-		PostEventMS( &EV_Weapon_EjectBrass, brassDelay );
+//		PostEventMS( &EV_Weapon_EjectBrass, brassDelay );
 	}
 
 	// add the light for the muzzleflash
@@ -2979,7 +2887,8 @@ void idWeapon::Event_Melee( void ) {
 		gameLocal.clip.TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL, owner );
 		if ( tr.fraction < 1.0f ) {
 			ent = gameLocal.GetTraceEntity( tr );
-		} else {
+		}
+		else {
 			ent = NULL;
 		}
 
@@ -3031,7 +2940,8 @@ void idWeapon::Event_Melee( void ) {
 
 					ent->AddDamageEffect( tr, impulse, meleeDef->dict.GetString( "classname" ) );
 
-				} else {
+				}
+				else {
 
 					int type = tr.c.material->GetSurfaceType();
 					if ( type == SURFTYPE_NONE ) {
@@ -3054,7 +2964,8 @@ void idWeapon::Event_Melee( void ) {
 							gameLocal.ProjectDecal( tr.c.point, -tr.c.normal, 8.0f, true, 6.0, decal );
 						}
 						nextStrikeFx = gameLocal.time + 200;
-					} else {
+					}
+					else {
 						hitSound = "";
 					}
 
@@ -3096,7 +3007,8 @@ idWeapon::Event_AllowDrop
 void idWeapon::Event_AllowDrop( int allow ) {
 	if ( allow ) {
 		allowDrop = true;
-	} else {
+	}
+	else {
 		allowDrop = false;
 	}
 }
@@ -3149,12 +3061,11 @@ void idWeapon::Event_EjectBrass( void ) {
 idWeapon::Event_IsInvisible
 ===============
 */
-void idWeapon::Event_IsInvisible( void ) {
+bool idWeapon::Event_IsInvisible( void ) {
 	if ( !owner ) {
-		idThread::ReturnFloat( 0 );
-		return;
+		return false;
 	}
-	idThread::ReturnFloat( owner->PowerUpActive( INVISIBILITY ) ? 1 : 0 );
+	return owner->PowerUpActive(INVISIBILITY);
 }
 
 /*
@@ -3164,4 +3075,14 @@ idWeapon::ClientPredictionThink
 */
 void idWeapon::ClientPredictionThink( void ) {
 	UpdateAnimation();	
+}
+
+/*
+===============
+idWeapon::WeaponState
+===============
+*/
+void idWeapon::WeaponState(weaponStatus_t state, int blendFrames) {
+	animBlendFrames = blendFrames;
+	idealState = state;
 }
