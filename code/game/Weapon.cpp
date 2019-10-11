@@ -59,6 +59,8 @@ rvmWeaponObject::ResetStates
 ==================
 */
 void rvmWeaponObject::ResetStates(void) {
+	isHolstered = false;
+	isRisen = false;
 	risingState = 0;
 	idleState = 0;
 	loweringState = 0;
@@ -1265,8 +1267,11 @@ void idWeapon::Think( void ) {
 
 		if(idealState != state && currentWeaponObject->CanSwitchState())
 		{
-			state = idealState;
-			currentWeaponObject->ResetStates();
+			if (!(idealState == WP_RISING && currentWeaponObject->IsRisen()))
+			{
+				state = idealState;
+				currentWeaponObject->ResetStates();
+			}
 		}
 
 		if (!currentWeaponObject->HasWaitSignal())
@@ -1473,7 +1478,7 @@ idWeapon::IsHolstered
 ================
 */
 bool idWeapon::IsHolstered( void ) const {
-	return ( state == WP_HOLSTERED );
+	return state == WP_LOWERING && currentWeaponObject->IsHolstered();
 }
 
 /*

@@ -60,6 +60,7 @@ void rvmWeaponMachineGun::Raise() {
 		{
 			owner->WeaponState(WP_IDLE, MACHINEGUN_RAISE_TO_IDLE);
 			risingState = RISING_NOTSET;
+			isRisen = true;
 		}
 		break;
 	}
@@ -91,6 +92,7 @@ void rvmWeaponMachineGun::Lower() {
 		{
 			owner->Event_WeaponHolstered();
 			loweringState = LOWERING_NOTSET;
+			isHolstered = true;
 		}
 		break;
 	}
@@ -131,7 +133,7 @@ bool rvmWeaponMachineGun::HasWaitSignal(void) {
 	if (rvmWeaponObject::HasWaitSignal())
 		return true;
 
-	return next_attack >= MS2SEC(gameLocal.realClientTime);
+	return next_attack >= gameLocal.realClientTime;
 }
 
 /*
@@ -142,7 +144,7 @@ rvmWeaponMachineGun::Fire
 void rvmWeaponMachineGun::Fire() {
 	int ammoClip = owner->AmmoInClip();
 
-	if (next_attack >= MS2SEC(gameLocal.realClientTime))
+	if (next_attack >= gameLocal.realClientTime)
 	{
 		return;
 	}
@@ -161,7 +163,7 @@ void rvmWeaponMachineGun::Fire() {
 	switch (firingState)
 	{
 	case FIRE_NOTSET:
-		next_attack = MS2SEC(gameLocal.realClientTime) + MACHINEGUN_FIRERATE;
+		next_attack = gameLocal.realClientTime + MS2SEC(MACHINEGUN_FIRERATE);
 		owner->Event_LaunchProjectiles(MACHINEGUN_NUMPROJECTILES, spread, 0, 1, 1);
 
 		owner->Event_PlayAnim(ANIMCHANNEL_ALL, "fire", false);

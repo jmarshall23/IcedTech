@@ -44,6 +44,7 @@ void rvmWeaponPDA::Raise(void) {
 		{
 			owner->WeaponState(WP_IDLE, 0);
 			risingState = RISING_NOTSET;
+			isRisen = true;
 		}
 		break;
 	}
@@ -73,7 +74,8 @@ void rvmWeaponPDA::Lower() {
 		if (owner->Event_AnimDone(ANIMCHANNEL_ALL, 0))
 		{
 			owner->Event_WeaponHolstered();
-			loweringState = LOWERING_NOTSET;
+			loweringState = LOWERING_NOTSET;			
+			isHolstered = true;
 		}
 		break;
 	}

@@ -86,6 +86,7 @@ void rvmWeaponRocketLauncher::Raise() {
 		{
 			owner->WeaponState(WP_IDLE, ROCKETLAUNCHER_RAISE_TO_IDLE);
 			risingState = RISING_NOTSET;
+			isRisen = true;
 		}
 		break;
 	}
@@ -117,6 +118,7 @@ void rvmWeaponRocketLauncher::Lower() {
 		{
 			owner->Event_WeaponHolstered();
 			loweringState = LOWERING_NOTSET;
+			isHolstered = true;
 		}
 		break;
 	}

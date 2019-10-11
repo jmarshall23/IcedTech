@@ -59,6 +59,7 @@ void rvmWeaponPistol::Raise() {
 		{
 			owner->WeaponState(WP_IDLE, PISTOL_RAISE_TO_IDLE);
 			risingState = RISING_NOTSET;
+			isRisen = true;
 		}
 		break;
 	}
@@ -90,6 +91,7 @@ void rvmWeaponPistol::Lower() {
 		{
 			owner->Event_WeaponHolstered();
 			loweringState = LOWERING_NOTSET;
+			isHolstered = true;
 		}
 		break;
 	}
@@ -137,7 +139,7 @@ bool rvmWeaponPistol::HasWaitSignal(void) {
 	if (rvmWeaponObject::HasWaitSignal())
 		return true;
 
-	return next_attack >= MS2SEC(gameLocal.realClientTime);
+	return next_attack >= gameLocal.realClientTime;
 }
 
 /*
@@ -148,7 +150,7 @@ rvmWeaponPistol::Fire
 void rvmWeaponPistol::Fire() {
 	int ammoClip = owner->AmmoInClip();
 
-	if (next_attack >= MS2SEC(gameLocal.realClientTime))
+	if (next_attack >= gameLocal.realClientTime)
 	{
 		return;
 	}
@@ -167,7 +169,7 @@ void rvmWeaponPistol::Fire() {
 	switch (firingState)
 	{
 	case FIRE_NOTSET:
-		next_attack = MS2SEC(gameLocal.realClientTime) + PISTOL_FIRERATE;
+		next_attack = gameLocal.realClientTime + MS2SEC(PISTOL_FIRERATE);
 
 		if (ammoClip == PISTOL_LOWAMMO) {
 			int length;

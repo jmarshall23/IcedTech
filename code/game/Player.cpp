@@ -3841,10 +3841,9 @@ void idPlayer::Weapon_Combat( void ) {
 			}
 			weaponCatchup = false;			
 		} else {
-			if ( weapon.GetEntity()->IsReady() ) {
-				weapon.GetEntity()->PutAway();
-			}
+			weapon.GetEntity()->PutAway();
 
+			if(weapon.GetEntity()->IsHolstered())
 			{
 				assert( idealWeapon >= 0 );
 				assert( idealWeapon < MAX_WEAPONS );

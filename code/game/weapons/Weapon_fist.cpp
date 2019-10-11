@@ -53,6 +53,7 @@ void rvmWeaponFist::Raise(void) {
 			{
 				owner->WeaponState(WP_IDLE, FISTS_RAISE_TO_IDLE);
 				risingState = RISING_NOTSET;
+				isRisen = true;
 			}
 			break;
 	}
@@ -83,6 +84,7 @@ void rvmWeaponFist::Lower() {
 		{
 			owner->Event_WeaponHolstered();
 			loweringState = LOWERING_NOTSET;
+			isHolstered = true;
 		}
 		break;
 	}

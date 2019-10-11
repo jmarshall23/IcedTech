@@ -66,6 +66,7 @@ void rvmWeaponShotgun::Raise() {
 		{
 			owner->WeaponState(WP_IDLE, SHOTGUN_RAISE_TO_IDLE);
 			risingState = RISING_NOTSET;
+			isRisen = true;
 		}
 		break;
 	}
@@ -97,6 +98,7 @@ void rvmWeaponShotgun::Lower() {
 		{
 			owner->Event_WeaponHolstered();
 			loweringState = LOWERING_NOTSET;
+			isHolstered = true;
 		}
 		break;
 	}

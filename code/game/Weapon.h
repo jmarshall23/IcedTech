@@ -77,8 +77,14 @@ public:
 	virtual bool			CanSwitchState(void);
 
 	virtual bool			HasWaitSignal(void);
+
+	virtual bool			IsHolstered(void) { return isHolstered; }
+	virtual bool			IsRisen(void) { return isRisen; }
 protected:
 	idWeapon				*owner;
+
+	bool					isHolstered;
+	bool					isRisen;
 
 	void					Wait(float duration);
 protected:

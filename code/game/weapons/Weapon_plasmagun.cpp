@@ -59,6 +59,7 @@ void rvmWeaponPlasmaGun::Raise() {
 		{
 			owner->WeaponState(WP_IDLE, PLASMAGUN_RAISE_TO_IDLE);
 			risingState = RISING_NOTSET;
+			isRisen = true;
 		}
 		break;
 	}
@@ -90,6 +91,7 @@ void rvmWeaponPlasmaGun::Lower() {
 		{
 			owner->Event_WeaponHolstered();
 			loweringState = LOWERING_NOTSET;
+			isHolstered = true;
 		}
 		break;
 	}
@@ -130,7 +132,7 @@ bool rvmWeaponPlasmaGun::HasWaitSignal(void) {
 	if (rvmWeaponObject::HasWaitSignal())
 		return true;
 
-	return next_attack >= MS2SEC(gameLocal.realClientTime);
+	return next_attack >= gameLocal.time;
 }
 
 /*
@@ -141,7 +143,7 @@ rvmWeaponPlasmaGun::Fire
 void rvmWeaponPlasmaGun::Fire() {
 	int ammoClip = owner->AmmoInClip();
 
-	if (next_attack >= MS2SEC(gameLocal.realClientTime))
+	if (next_attack >= gameLocal.time)
 	{
 		return;
 	}
@@ -160,7 +162,7 @@ void rvmWeaponPlasmaGun::Fire() {
 	switch (firingState)
 	{
 	case FIRE_NOTSET:
-		next_attack = MS2SEC(gameLocal.realClientTime) + PLASMAGUN_FIRERATE;
+		next_attack = gameLocal.time + MS2SEC(PLASMAGUN_FIRERATE);
 		owner->Event_LaunchProjectiles(PLASMAGUN_NUMPROJECTILES, spread, 0, 1, 1);
 
 		owner->Event_PlayAnim(ANIMCHANNEL_ALL, "fire", false);
@@ -170,7 +172,10 @@ void rvmWeaponPlasmaGun::Fire() {
 	case FIRE_WAIT:
 		if (owner->Event_AnimDone(ANIMCHANNEL_ALL, PLASMAGUN_FIRE_TO_IDLE))
 		{
-			owner->WeaponState(WP_IDLE, PLASMAGUN_FIRE_TO_IDLE);
+			if(!owner->IsFiring() && owner->AmmoInClip() && gameLocal.time >= next_attack)
+			{
+				owner->WeaponState(WP_IDLE, PLASMAGUN_FIRE_TO_IDLE);
+			}
 			firingState = 0;
 		}
 		break;

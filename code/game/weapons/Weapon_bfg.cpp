@@ -67,6 +67,7 @@ void rvmWeaponBFG::Raise() {
 		{
 			owner->WeaponState(WP_IDLE, BFG_RAISE_TO_IDLE);
 			risingState = RISING_NOTSET;
+			isRisen = true;
 		}
 		break;
 	}
@@ -97,6 +98,7 @@ void rvmWeaponBFG::Lower() {
 		if (owner->Event_AnimDone(ANIMCHANNEL_ALL, 0))
 		{
 			owner->Event_WeaponHolstered();
+			isHolstered = true;
 			loweringState = LOWERING_NOTSET;
 		}
 		break;

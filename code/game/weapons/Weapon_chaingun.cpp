@@ -134,6 +134,7 @@ void rvmWeaponChainGun::Raise() {
 		{
 			owner->WeaponState(WP_IDLE, CHAINGUN_RAISE_TO_IDLE);
 			risingState = RISING_NOTSET;
+			isRisen = true;
 		}
 		break;
 	}
@@ -165,6 +166,7 @@ void rvmWeaponChainGun::Lower() {
 		{
 			owner->Event_WeaponHolstered();
 			loweringState = LOWERING_NOTSET;
+			isHolstered = true;
 		}
 		break;
 	}

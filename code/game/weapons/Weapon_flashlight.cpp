@@ -100,6 +100,7 @@ void rvmWeaponFlashlight::Raise(void) {
 		{
 			owner->WeaponState(WP_IDLE, FLASHLIGHT_RAISE_TO_IDLE);
 			risingState = RISING_NOTSET;
+			isRisen = true;
 		}
 		break;
 	}
@@ -130,6 +131,7 @@ void rvmWeaponFlashlight::Lower() {
 		{
 			owner->Event_WeaponHolstered();
 			loweringState = LOWERING_NOTSET;
+			isHolstered = true;
 		}
 		break;
 	}
