@@ -315,7 +315,7 @@ set_target_properties(idLib PROPERTIES LINK_FLAGS "/PDB:\"idlib.pdb\"")
 # Game Project
 add_definitions(-DGAME_DLL)
 add_library(game MODULE  ${src_game} )
-target_link_libraries(game ${CMAKE_BINARY_DIR}/idLib.lib)
+target_link_libraries(game idLib)
 add_precompiled_header( game game_precompiled.h  SOURCE_CXX ../game/game_precompiled.cpp )
 set_target_properties(game PROPERTIES OUTPUT_NAME "gamex86" LINK_FLAGS "/PDB:\"Game.pdb\"")
 
