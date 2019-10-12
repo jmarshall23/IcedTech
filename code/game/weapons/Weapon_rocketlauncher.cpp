@@ -2,7 +2,7 @@
 //
 
 
-#include "precompiled.h"
+#include "game_precompiled.h"
 #include "../Game_local.h"
 
 CLASS_DECLARATION(rvmWeaponObject, rvmWeaponRocketLauncher)

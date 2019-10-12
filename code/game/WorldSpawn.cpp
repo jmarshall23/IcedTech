@@ -32,7 +32,7 @@ Worldspawn class.  Each map has one worldspawn which handles global spawnargs.
 
 */
 
-#include "precompiled.h"
+#include "game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -98,8 +98,6 @@ void idWorldspawn::Spawn( void ) {
 	}
 	
 	CreateAmbientLight();
-
-	//ambientLight = gameLocal.SpawnEntityDef()
 }
 /*
 =================
@@ -118,8 +116,9 @@ void idWorldspawn::CreateAmbientLight(void) {
 	ambientLightDict.Set("falloff", "0");
 	ambientLightDict.Set("ambient", "1");
 	ambientLightDict.Set("texture", "lights/ambientlight2");
-	ambientLightDict.Set("_color", "0.15 0.15 0.15");
+	ambientLightDict.Set("_color", "0.35 0.35 0.35");
 	ambientLightDict.Set("light_radius", "10000 10000 10000");
+
 	if (!gameLocal.SpawnEntityDef(ambientLightDict, (idEntity **)&ambientLight, true))
 		gameLocal.Error("Failed to spawn ambient light!");
 }
