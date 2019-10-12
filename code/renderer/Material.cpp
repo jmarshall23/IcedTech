@@ -1705,7 +1705,19 @@ void idMaterial::SetupVirtualTextureStages(void) {
 	
 	if(normalLitTextureStage->virtualImage == nullptr)
 	{
-		normalLitTextureStage->virtualImage = virtualTextureSystem.LoadVirtualImage("textures/engine/vt_default_normal.tga", TD_BUMP, albedoLitTextureStage->virtualImage->GetWidth(0), albedoLitTextureStage->virtualImage->GetHeight(0));
+		idStr programFileName = va("generated/image_programs/DEFAULT_%s_bump.tga", GetName());
+		normalLitTextureStage->virtualImage = virtualTextureSystem.LoadVirtualImage(programFileName, TD_BUMP, albedoLitTextureStage->virtualImage->GetWidth(0), albedoLitTextureStage->virtualImage->GetHeight(0));
+
+		if (normalLitTextureStage->virtualImage == nullptr)
+		{
+			idStr programFilePathOS = fileSystem->RelativePathToOSPath(programFileName);
+			idStr defaultTexturePathOS = fileSystem->RelativePathToOSPath("textures/engine/vt_default_normal.tga");
+
+			fileSystem->CopyFile(defaultTexturePathOS, programFilePathOS);
+
+			normalLitTextureStage->virtualImage = virtualTextureSystem.LoadVirtualImage(programFileName, TD_BUMP, albedoLitTextureStage->virtualImage->GetWidth(0), albedoLitTextureStage->virtualImage->GetHeight(0));
+		}
+
 		normalLitTextureStage->image = virtualTextureSystem.GetVirtualNormalTexture();
 		virtualNormalImage = normalLitTextureStage->virtualImage;
 	}
@@ -1725,7 +1737,19 @@ void idMaterial::SetupVirtualTextureStages(void) {
 
 	if (specularLitTextureStage->virtualImage == nullptr)
 	{
-		specularLitTextureStage->virtualImage = virtualTextureSystem.LoadVirtualImage("textures/engine/vt_default_spec.tga", TD_SPECULAR, albedoLitTextureStage->virtualImage->GetWidth(0), albedoLitTextureStage->virtualImage->GetHeight(0));
+		idStr programFileName = va("generated/image_programs/DEFAULT_%s_spec.tga", GetName());
+		specularLitTextureStage->virtualImage = virtualTextureSystem.LoadVirtualImage(programFileName, TD_SPECULAR, albedoLitTextureStage->virtualImage->GetWidth(0), albedoLitTextureStage->virtualImage->GetHeight(0));
+
+		if (specularLitTextureStage->virtualImage == nullptr)
+		{
+			idStr programFilePathOS = fileSystem->RelativePathToOSPath(programFileName);
+			idStr defaultTexturePathOS = fileSystem->RelativePathToOSPath("textures/engine/vt_default_spec.tga");
+
+			fileSystem->CopyFile(defaultTexturePathOS, programFilePathOS);
+
+			specularLitTextureStage->virtualImage = virtualTextureSystem.LoadVirtualImage(programFileName, TD_SPECULAR, albedoLitTextureStage->virtualImage->GetWidth(0), albedoLitTextureStage->virtualImage->GetHeight(0));
+		}
+
 		specularLitTextureStage->image = virtualTextureSystem.GetVirtualSpecularTexture();
 		virtualSpecImage = specularLitTextureStage->virtualImage;		
 	}

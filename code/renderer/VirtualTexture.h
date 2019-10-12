@@ -5,7 +5,8 @@
 
 // Version 1: Initial Implementation
 // Version 2: Mipchain
-#define VIRTUALTEXTURE_VERSION		2
+// Version 3: Fix for default normal/spec, requires re-gen
+#define VIRTUALTEXTURE_VERSION		3
 
 #define VIRTUALTEXTURE_FILE			"virtualtextures/_virtualcache_v%d.pages"
 #define VIRTUALTEXTURE_HEADER		"virtualtextures/_virtualcache_v%d.table"
