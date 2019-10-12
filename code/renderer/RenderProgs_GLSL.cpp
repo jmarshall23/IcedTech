@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 
 #include "tr_local.h"
 
@@ -548,6 +548,7 @@ const char * fragmentInsert = {
 	"vec4 texCUBE( samplerCubeShadow sampler, vec4 texcoord ) { return vec4( texture( sampler, texcoord.xyzw ) ); }\n"
 	"\n"
 	"vec2 texQueryLOD( sampler2D sampler, vec2 texCoord ) { return textureQueryLod(sampler, texCoord).xy; }\n"
+	"vec2 texQueryLOD( isampler2D sampler, vec2 texCoord ) { return textureQueryLod(sampler, texCoord).xy; }\n"
 	"\n"
 	"vec4 tex1Dproj( sampler1D sampler, vec2 texcoord ) { return textureProj( sampler, texcoord ); }\n"
 	"vec4 tex2Dproj( sampler2D sampler, vec3 texcoord ) { return textureProj( sampler, texcoord ); }\n"

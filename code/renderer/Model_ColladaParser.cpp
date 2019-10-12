@@ -44,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  @brief Implementation of the Collada parser helper
  */
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 #pragma hdrstop
 
 #ifndef ASSIMP_BUILD_NO_DAE_IMPORTER

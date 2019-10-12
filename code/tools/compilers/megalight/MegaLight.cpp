@@ -1,7 +1,7 @@
 // MegaLight.cpp
 //
 
-#include "precompiled.h"
+#include "tools_precompiled.h"
 #include "MegaLight_file.h"
 
 /*

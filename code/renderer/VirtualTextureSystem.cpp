@@ -1,7 +1,7 @@
 // VirtualTexture.cpp
 //
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 
 #include "tr_local.h"
 #include "DXT/DXTCodec.h"

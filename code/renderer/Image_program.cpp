@@ -50,7 +50,7 @@ Manager
 
 */
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 
 
 // tr_imageprogram.c
