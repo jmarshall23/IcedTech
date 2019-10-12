@@ -302,7 +302,9 @@ public:
 	bool						GetOrigin( idVec3 &offset, int animNum, int time, int cyclecount ) const;
 	bool						GetOriginRotation( idQuat &rotation, int animNum, int currentTime, int cyclecount ) const;
 	bool						GetBounds( idBounds &bounds, int animNum, int time, int cyclecount ) const;
-	const char					*AddFrameCommand( const class idDeclModelDef *modelDef, int framenum, idLexer &src, const idDict *def );
+// jmarshall - added multiple frame support here.
+	const char					*AddFrameCommand( const class idDeclModelDef *modelDef, idList<int> &frameList, idLexer &src, const idDict *def );
+// jmarshall end
 	void						CallFrameCommands( idEntity *ent, int from, int to ) const;
 	bool						HasFrameCommands( void ) const;
 

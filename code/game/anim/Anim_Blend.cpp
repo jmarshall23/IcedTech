@@ -278,7 +278,7 @@ idAnim::AddFrameCommand
 Returns NULL if no error.
 =====================
 */
-const char *idAnim::AddFrameCommand( const idDeclModelDef *modelDef, int framenum, idLexer &src, const idDict *def ) {
+const char *idAnim::AddFrameCommand( const idDeclModelDef *modelDef, idList<int> &frameList, idLexer &src, const idDict *def ) {
 	int					i;
 	int					index;
 	idStr				text;
@@ -286,14 +286,6 @@ const char *idAnim::AddFrameCommand( const idDeclModelDef *modelDef, int framenu
 	frameCommand_t		fc;
 	idToken				token;
 	const jointInfo_t	*jointInfo;
-
-	// make sure we're within bounds
-	if ( ( framenum < 1 ) || ( framenum > anims[ 0 ]->NumFrames() ) ) {
-		return va( "Frame %d out of range", framenum );
-	}
-
-	// frame numbers are 1 based in .def files, but 0 based internally
-	framenum--;
 
 	memset( &fc, 0, sizeof( fc ) );
 
@@ -625,29 +617,43 @@ const char *idAnim::AddFrameCommand( const idDeclModelDef *modelDef, int framenu
 			frameLookup[ i ].firstCommand = 0;
 		}
 	}
+// jmarshall - multiple frame frames.
+	for (int i = 0; i < frameList.Num(); i++)
+	{
+		int framenum = frameList[i];
 
-	// allocate space for a new command
-	frameCommands.Alloc();
+		// make sure we're within bounds
+		if ((framenum < 1) || (framenum > anims[0]->NumFrames())) {
+			gameLocal.Error("Frame %d out of range", framenum);
+			return "";
+		}
 
-	// calculate the index of the new command
-	index = frameLookup[ framenum ].firstCommand + frameLookup[ framenum ].num;
+		// allocate space for a new command
+		frameCommands.Alloc();
 
-	// move all commands from our index onward up one to give us space for our new command
-	for( i = frameCommands.Num() - 1; i > index; i-- ) {
-		frameCommands[ i ] = frameCommands[ i - 1 ];
+		// frame numbers are 1 based in .def files, but 0 based internally
+		framenum--;
+
+		// calculate the index of the new command
+		index = frameLookup[framenum].firstCommand + frameLookup[framenum].num;
+
+		// move all commands from our index onward up one to give us space for our new command
+		for (i = frameCommands.Num() - 1; i > index; i--) {
+			frameCommands[i] = frameCommands[i - 1];
+		}
+
+		// fix the indices of any later frames to account for the inserted command
+		for (i = framenum + 1; i < frameLookup.Num(); i++) {
+			frameLookup[i].firstCommand++;
+		}
+
+		// store the new command 
+		frameCommands[index] = fc;
+
+		// increase the number of commands on this frame
+		frameLookup[framenum].num++;
 	}
-
-	// fix the indices of any later frames to account for the inserted command
-	for( i = framenum + 1; i < frameLookup.Num(); i++ ) {
-		frameLookup[ i ].firstCommand++;
-	}
-
-	// store the new command 
-	frameCommands[ index ] = fc;
-
-	// increase the number of commands on this frame
-	frameLookup[ framenum ].num++;
-
+// jmarshall end
 	// return with no error
 	return NULL;
 }
@@ -2500,33 +2506,43 @@ bool idDeclModelDef::ParseAnim( idLexer &src, int numDefaultAnims ) {
 				flags.anim_turn = true;
 			} else if ( token == "frame" ) {
 				// create a frame command
-				int			framenum;
+// jmarshall - support multiple frame numbers
+				idList<int>		frameList;
 				const char	*err;
+// jmarshall end
 
-				// make sure we don't have any line breaks while reading the frame command so the error line # will be correct
-				if ( !src.ReadTokenOnLine( &token ) ) {
-					src.Warning( "Missing frame # after 'frame'" );
-					MakeDefault();
-					return false;
-				}
-				if ( token.type == TT_PUNCTUATION && token == "-" ) {
-					src.Warning( "Invalid frame # after 'frame'" );
-					MakeDefault();
-					return false;
-				} else if ( token.type != TT_NUMBER || token.subtype == TT_FLOAT ) {
-					src.Error( "expected integer value, found '%s'", token.c_str() );
-				}
+// jmarshall - added do/while
+				do 
+				{				
+					// make sure we don't have any line breaks while reading the frame command so the error line # will be correct
+					if ( !src.ReadTokenOnLine( &token ) ) {
+						src.Warning( "Missing frame # after 'frame'" );
+						MakeDefault();
+						return false;
+					}
+					if ( token.type == TT_PUNCTUATION && token == "-" ) {
+						src.Warning( "Invalid frame # after 'frame'" );
+						MakeDefault();
+						return false;
+					} else if ( token.type != TT_NUMBER || token.subtype == TT_FLOAT ) {
+						src.Error( "expected integer value, found '%s'", token.c_str() );
+					}
 
-				// get the frame number
-				framenum = token.GetIntValue();
+					// get the frame number
+					int frameNum = token.GetIntValue();
+					frameList.Append(frameNum);
+				} while (src.CheckTokenString(","));
+// jmarshall end				
 
+// jmarshall - add framelist was framenum.
 				// put the command on the specified frame of the animation
-				err = anim->AddFrameCommand( this, framenum, src, NULL );
+				err = anim->AddFrameCommand( this, frameList, src, NULL );
 				if ( err ) {
 					src.Warning( "%s", err );
 					MakeDefault();
 					return false;
 				}
+// jmarshall end
 			} else {
 				src.Warning( "Unknown command '%s'", token.c_str() );
 				MakeDefault();
