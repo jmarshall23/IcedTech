@@ -31,6 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../renderer/Image.h"
 #include "../external/zlib/zlib.h"
+#include "ConsoleHistory.h"
 
 #define	MAX_PRINT_MSG_SIZE	4096
 #define MAX_WARNING_LIST	256
@@ -2871,6 +2872,9 @@ idCommonLocal::InitGame
 void idCommonLocal::InitGame( void ) {
 	// initialize the file system
 	fileSystem->Init();
+
+	// Load the console history.
+	consoleHistory.LoadHistoryFile();
 
 	// initialize the declaration manager
 	declManager->Init();
