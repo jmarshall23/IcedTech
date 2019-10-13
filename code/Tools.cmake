@@ -431,5 +431,6 @@ set(src_tools
 
 # Add tools library
 add_library(Tools STATIC ${src_tools})
+target_include_directories( Tools PRIVATE "${CMAKE_SOURCE_DIR}/tools/")
 add_precompiled_header( Tools tools_precompiled.h  SOURCE_CXX ./tools/tools_precompiled.cpp )
 set_target_properties(Tools PROPERTIES LINK_FLAGS "/PDB:\"Tools.pdb\"")

@@ -499,6 +499,7 @@ set_target_properties(External PROPERTIES LINK_FLAGS "/PDB:\"External.pdb\"")
 # DoomDLL Project
 add_definitions(-D__DOOM_DLL__)
 add_library(DoomDLL SHARED  ${src_engine} )
+target_include_directories(DoomDLL PRIVATE "${CMAKE_SOURCE_DIR}/framework")
 target_link_libraries(DoomDLL idLib External Tools "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib")
 add_precompiled_header( DoomDLL Engine_precompiled.h  SOURCE_CXX ./framework/Engine_precompiled.cpp )
 set_target_properties(DoomDLL PROPERTIES OUTPUT_NAME "DoomDLL" LINK_FLAGS "/PDB:\"DoomDLL.pdb\" /LARGEADDRESSAWARE /DEF:${CMAKE_CURRENT_SOURCE_DIR}/exports.def")

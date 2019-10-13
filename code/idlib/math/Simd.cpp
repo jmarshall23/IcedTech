@@ -143,6 +143,7 @@ long baseClocks = 0;
 
 #ifdef _WIN32
 
+#ifdef _M_IX86
 #define TIME_TYPE int
 
 #pragma warning(disable : 4731)     // frame pointer register 'ebx' modified by inline assembly code
@@ -166,6 +167,31 @@ long saved_ebx = 0;
 	__asm mov ebx, saved_ebx				\
 	__asm xor eax, eax						\
 	__asm cpuid
+
+#else
+#define TIME_TYPE time_t
+
+TIME_TYPE time_in_millisec(void) {
+	FILETIME tm;
+	ULONGLONG t;
+#if defined(NTDDI_WIN8) && NTDDI_VERSION >= NTDDI_WIN8
+	/* Windows 8, Windows Server 2012 and later. ---------------- */
+	GetSystemTimePreciseAsFileTime(&tm);
+#else
+	/* Windows 2000 and later. ---------------------------------- */
+	GetSystemTimeAsFileTime(&tm);
+#endif
+	t = tm.dwLowDateTime + ((ULONGLONG)tm.dwHighDateTime << 32LL);
+	return (t / 10000);
+}
+
+#define StartRecordTime( start )			\
+	start = time_in_millisec(); 
+
+#define StopRecordTime( end )				\
+	end = time_in_millisec();
+
+#endif
 
 #elif MACOS_X
 

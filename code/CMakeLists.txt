@@ -312,8 +312,9 @@ set(src_game
 )
 
 # idLib project
-add_definitions(-D_AFXDLL -D_USE_32BIT_TIME_T -D_WINDOWS -D_CRT_SECURE_NO_DEPRECATE)
+add_definitions(-D_AFXDLL -D_WINDOWS -D_CRT_SECURE_NO_DEPRECATE)
 add_library(idLib STATIC ${src_idlib})
+target_include_directories(idLib PRIVATE "${CMAKE_SOURCE_DIR}/idlib/")
 add_precompiled_header( idLib precompiled.h SOURCE_CXX ./idlib/precompiled.cpp )
 target_compile_definitions(idLib PRIVATE NAME=$<TARGET_FILE_NAME:idLib>)
 set_target_properties(idLib PROPERTIES LINK_FLAGS "/PDB:\"idlib.pdb\"")

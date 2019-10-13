@@ -1,0 +1,18 @@
+#ignore base
+base/*
+
+#except for these
+!base/sound/convert.bat
+!base/sound/extract_pak003_then_run_convert.txt
+
+code/.vs/*
+code/out/*
+dkbase/config.spec
+dkbase/generated/*
+dkbase/virtualtextures/*
+DoomDLL.dll
+DoomDLL.dll.manifest
+Darklight.exe
+Darklight.exe.manifest
+gamex86.dll
+gamex86.dll.manifest
