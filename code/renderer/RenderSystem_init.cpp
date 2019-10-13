@@ -2020,6 +2020,9 @@ idRenderSystemLocal::BeginLevelLoad
 void idRenderSystemLocal::BeginLevelLoad( void ) {
 	renderModelManager->BeginLevelLoad();
 	globalImages->BeginLevelLoad();
+// jmarshall
+	virtualTextureSystem.ClearCache();
+// jmarshall end
 }
 
 /*

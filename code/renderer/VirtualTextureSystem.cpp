@@ -750,3 +750,12 @@ rvmVirtualImage	*rvmVirtualTextureSystem::GetDefaultVirtualNormalTexture(int wid
 
 	return defaultNormalImage;
 }
+
+/*
+=============================
+rvmVirtualTextureSystem::ClearCache
+=============================
+*/
+void rvmVirtualTextureSystem::ClearCache(void) {
+	ClearVTPages();
+}
