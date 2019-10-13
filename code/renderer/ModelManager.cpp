@@ -304,6 +304,9 @@ idRenderModel *idRenderModelManagerLocal::GetModel( const char *modelName, bool 
 	} else if ( extension.Icmp( "md3" ) == 0 ) {
 		model = new idRenderModelMD3;
 		model->InitFromFile( modelName );
+	} else if (extension.Icmp("mdr") == 0) {
+		model = new rvmRenderModelMDR;
+		model->InitFromFile(modelName);
 	} else if ( extension.Icmp( "prt" ) == 0  ) {
 		model = new idRenderModelPrt;
 		model->InitFromFile( modelName );

@@ -2350,6 +2350,19 @@ void idDeclModelDef::SetupJoints( int *numJoints, idJointMat **jointList, idBoun
 	list = (idJointMat *) Mem_Alloc16( num * sizeof( list[0] ) );
 	pose = GetDefaultPose();
 
+// jmarshall
+	if (pose == nullptr)
+	{
+		if (*jointList)
+		{
+			Mem_Free16((*jointList));
+		}
+		(*jointList) = NULL;
+		frameBounds.Clear();
+		return;
+	}
+// jmarshall end
+
 	// convert the joint quaternions to joint matrices
 	SIMDProcessor->ConvertJointQuatsToJointMats( list, pose, joints.Num() );
 
@@ -2671,6 +2684,36 @@ bool idDeclModelDef::Parse( const char *text, const int textLength ) {
 				jointParents[i] = joints[i].parentNum;
 				channelJoints[0][i] = i;
 			}
+		}
+// jmarshall
+		else if (token == "rvmmesh") {
+			if (!src.ReadToken(&token2)) {
+				src.Warning("Unexpected end of file");
+				MakeDefault();
+				return false;
+			}
+			filename = token2;
+			filename.ExtractFileExtension(extension);
+
+			modelHandle = renderModelManager->FindModel(filename);
+			if (!modelHandle) {
+				src.Warning("Model '%s' not found", filename.c_str());
+				MakeDefault();
+				return false;
+			}
+
+			if (modelHandle->IsDefaultModel()) {
+				src.Warning("Model '%s' defaulted", filename.c_str());
+				MakeDefault();
+				return false;
+			}
+
+			// get the number of joints
+			num = modelHandle->NumJoints();
+			if (!num) {
+				src.Warning("Model '%s' has no joints", filename.c_str());
+			}
+// jmarshall end
 		} else if ( token == "remove" ) {
 			// removes any anims whos name matches
 			if( !src.ReadToken( &token2 ) ) {

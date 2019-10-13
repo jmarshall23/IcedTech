@@ -138,6 +138,8 @@ set(src_engine
 	./renderer/ModelOverlay.h
 	./renderer/Model_ase.cpp
 	./renderer/Model_ase.h
+	./renderer/Model_mdr.cpp
+	./renderer/Model_mdr.h
 	./renderer/Model_beam.cpp
 	./renderer/Model_ColladaHelper.h
 	./renderer/Model_ColladaParser.cpp
