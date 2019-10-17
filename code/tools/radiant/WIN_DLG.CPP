@@ -31,7 +31,12 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "qe3.h"
 
-BOOL CALLBACK EditCommandDlgProc (
+#ifdef defined(_MSC_VER) && defined(_M_IX86)
+BOOL
+#else
+INT_PTR
+#endif
+    CALLBACK EditCommandDlgProc (
     HWND hwndDlg,	// handle to dialog box
     UINT uMsg,	// message
     WPARAM wParam,	// first message parameter
@@ -96,7 +101,12 @@ BOOL CALLBACK EditCommandDlgProc (
 	return FALSE;
 }
 
-BOOL CALLBACK AddCommandDlgProc (
+#ifdef defined(_MSC_VER) && defined(_M_IX86)
+	BOOL
+#else
+	INT_PTR
+#endif
+	CALLBACK AddCommandDlgProc (
     HWND hwndDlg,	// handle to dialog box
     UINT uMsg,	// message
     WPARAM wParam,	// first message parameter
@@ -161,7 +171,12 @@ void UpdateBSPCommandList (HWND hwndDlg)
 
 
 // FIXME: turn this into an MFC dialog
-BOOL CALLBACK ProjectDlgProc (
+#ifdef defined(_MSC_VER) && defined(_M_IX86)
+BOOL
+#else
+INT_PTR
+#endif
+CALLBACK ProjectDlgProc (
     HWND hwndDlg,	// handle to dialog box
     UINT uMsg,	// message
     WPARAM wParam,	// first message parameter
@@ -194,6 +209,7 @@ BOOL CALLBACK ProjectDlgProc (
 			case IDC_ADDCMD:
 //				DialogBox(g_qeglobals.d_hInstance, (char *)IDD_ADDCMD, g_qeglobals.d_hwndMain, AddCommandDlgProc);
 				DialogBox(g_qeglobals.d_hInstance, (char *)IDD_ADDCMD, hwndDlg, AddCommandDlgProc);
+
 				UpdateBSPCommandList (hwndDlg);
 				break;
 
@@ -254,8 +270,12 @@ void DoProjectSettings()
 }
 
 
-
-BOOL CALLBACK GammaDlgProc (
+#ifdef defined(_MSC_VER) && defined(_M_IX86)
+BOOL
+#else
+INT_PTR
+#endif
+CALLBACK GammaDlgProc (
     HWND hwndDlg,	// handle to dialog box
     UINT uMsg,	// message
     WPARAM wParam,	// first message parameter
@@ -384,7 +404,12 @@ void GetSelectionIndex (int *ent, int *brush)
 	;
 }
 
-BOOL CALLBACK FindBrushDlgProc (
+#ifdef defined(_MSC_VER) && defined(_M_IX86)
+BOOL
+#else
+INT_PTR
+#endif
+CALLBACK FindBrushDlgProc (
     HWND hwndDlg,	// handle to dialog box
     UINT uMsg,	// message
     WPARAM wParam,	// first message parameter
@@ -443,8 +468,12 @@ void DoFind(void)
 ===================================================
 */
 
-
-BOOL CALLBACK RotateDlgProc (
+#ifdef defined(_MSC_VER) && defined(_M_IX86)
+BOOL
+#else
+INT_PTR
+#endif
+CALLBACK RotateDlgProc (
     HWND hwndDlg,	// handle to dialog box
     UINT uMsg,	// message
     WPARAM wParam,	// first message parameter
@@ -511,7 +540,12 @@ void DoRotate(void)
 
 bool g_bDoCone = false;
 bool g_bDoSphere = false;
-BOOL CALLBACK SidesDlgProc (
+#ifdef defined(_MSC_VER) && defined(_M_IX86)
+BOOL
+#else
+INT_PTR
+#endif
+CALLBACK SidesDlgProc (
     HWND hwndDlg,	// handle to dialog box
     UINT uMsg,	// message
     WPARAM wParam,	// first message parameter
@@ -569,7 +603,12 @@ void DoSides(bool bCone, bool bSphere, bool bTorus)
 DoAbout
 ===================
 */
-BOOL CALLBACK AboutDlgProc( HWND hwndDlg,
+#ifdef defined(_MSC_VER) && defined(_M_IX86)
+BOOL
+#else
+INT_PTR
+#endif
+CALLBACK AboutDlgProc( HWND hwndDlg,
 						    UINT uMsg,
 						    WPARAM wParam,
 						    LPARAM lParam )

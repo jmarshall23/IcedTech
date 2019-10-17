@@ -2105,7 +2105,7 @@ void CCamWnd::Cam_Render() {
 }
 
 
-void CCamWnd::OnTimer(UINT nIDEvent) 
+void CCamWnd::OnTimer(UINT_PTR nIDEvent)
 {
 	if (animationMode || nIDEvent == 1) {
 		Sys_UpdateWindows(W_CAMERA);
