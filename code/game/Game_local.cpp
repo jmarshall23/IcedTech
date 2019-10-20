@@ -47,6 +47,7 @@ idDeclManager *				declManager = NULL;
 idAASFileManager *			AASFileManager = NULL;
 idCollisionModelManager *	collisionModelManager = NULL;
 idParallelJobManager *		parallelJobManager = NULL;
+rvmNavigationManager *		navigationManager = NULL;
 
 idCVar *					idCVar::staticVars = NULL;
 
@@ -104,6 +105,7 @@ extern "C" gameExport_t *GetGameAPI( gameImport_t *import ) {
 		AASFileManager				= import->AASFileManager;
 		collisionModelManager		= import->collisionModelManager;
 		parallelJobManager			= import->parallelJobManager;
+		navigationManager			= import->navigationManager;
 	}
 
 	// set interface pointers used by idLib
@@ -155,6 +157,8 @@ idGameLocal::idGameLocal
 ============
 */
 idGameLocal::idGameLocal() {
+	navMeshFile = nullptr;
+
 	Clear();
 }
 
@@ -165,6 +169,11 @@ idGameLocal::Clear
 */
 void idGameLocal::Clear( void ) {
 	int i;
+
+	if(navMeshFile != nullptr) {
+		navigationManager->FreeNavFile(navMeshFile);
+		navMeshFile = nullptr;
+	}
 
 	serverInfo.Clear();
 	numClients = 0;
@@ -863,6 +872,10 @@ void idGameLocal::LoadMap( const char *mapName, int randseed ) {
 	}
 	mapFileName = mapFile->GetName();
 
+// jmarshall
+	navMeshFile = navigationManager->LoadNavFile(mapName);
+// jmarshall end
+
 	// load the collision map
 	collisionModelManager->LoadMap( mapFile );
 
@@ -1470,6 +1483,11 @@ idGameLocal::MapShutdown
 void idGameLocal::MapShutdown( void ) {
 	Printf( "--------- Game Map Shutdown ----------\n" );
 	
+	if (navMeshFile != nullptr) {
+		navigationManager->FreeNavFile(navMeshFile);
+		navMeshFile = nullptr;
+	}
+
 	gamestate = GAMESTATE_SHUTDOWN;
 
 	if ( gameRenderWorld ) {

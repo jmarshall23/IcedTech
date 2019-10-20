@@ -299,7 +299,7 @@ public:
 
 	// The same render world can be reinitialized as often as desired
 	// a NULL or empty mapName will create an empty, single area world
-	virtual bool			InitFromMap( const char *mapName ) = 0;
+	virtual bool			InitFromMap( const char *mapName, bool fastLoad = false ) = 0;
 
 	//-------------- Entity and Light Defs -----------------
 

@@ -285,6 +285,7 @@ set(src_tools
 	./tools/compilers/roqvq/quaddefs.h
 	./tools/compilers/roqvq/roq.h
 	./tools/compilers/roqvq/roqParam.h
+	./tools/compilers/navmesh/navmeshbuild.cpp
 	./tools/debugger/DebuggerApp.h
 	./tools/debugger/DebuggerBreakpoint.h
 	./tools/debugger/DebuggerClient.h
@@ -433,3 +434,4 @@ set(src_tools
 add_library(Tools STATIC ${src_tools})
 add_precompiled_header( Tools tools_precompiled.h  SOURCE_CXX ./tools/tools_precompiled.cpp )
 set_target_properties(Tools PROPERTIES LINK_FLAGS "/PDB:\"Tools.pdb\"")
+target_include_directories(Tools PRIVATE ./external/Recast/include)

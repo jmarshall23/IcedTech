@@ -560,6 +560,14 @@ int idRenderModelStatic::NearestJoint( int surfaceNum, int a, int b, int c ) con
 	return INVALID_JOINT;
 }
 
+/*
+================
+idRenderModelStatic::ForceFastLoad
+================
+*/
+void idRenderModelStatic::ForceFastLoad() {
+	fastLoad = true;
+}
 
 //=====================================================================
 

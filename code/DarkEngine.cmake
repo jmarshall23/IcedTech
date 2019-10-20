@@ -89,6 +89,12 @@ set(src_engine
 	./framework/async/NetworkSystem.h
 	./framework/async/ServerScan.cpp
 	./framework/async/ServerScan.h
+	
+	#NavMesh
+	./navigation/Nav_File.cpp
+	./navigation/Nav_public.h
+	./navigation/Nav_Manager.cpp
+	./navigation/Nav_local.h
 
 	#Renderer
 	./renderer/BinaryImage.cpp
@@ -475,6 +481,41 @@ set(src_external
 	./external/png/png.h
 	./external/png/pngconf.h
 
+
+	./external/recast/Include/Recast.h
+	./external/recast/Include/RecastAlloc.h
+	./external/recast/Include/RecastAssert.h
+	./external/recast/Source/Recast.cpp
+	./external/recast/Source/RecastAlloc.cpp
+	./external/recast/Source/RecastArea.cpp
+	./external/recast/Source/RecastAssert.cpp
+	./external/recast/Source/RecastContour.cpp
+	./external/recast/Source/RecastFilter.cpp
+	./external/recast/Source/RecastLayers.cpp
+	./external/recast/Source/RecastMesh.cpp
+	./external/recast/Source/RecastMeshDetail.cpp
+	./external/recast/Source/RecastRasterization.cpp
+	./external/recast/Source/RecastRegion.cpp
+
+	./external/detour/Include/DetourAlloc.h
+	./external/detour/Include/DetourAssert.h
+	./external/detour/Include/DetourCommon.h
+	./external/detour/Include/DetourMath.h
+	./external/detour/Include/DetourNavMesh.h
+	./external/detour/Include/DetourNavMeshBuilder.h
+	./external/detour/Include/DetourNavMeshQuery.h
+	./external/detour/Include/DetourNode.h
+	./external/detour/Include/DetourStatus.h
+	./external/detour/Source/DetourAlloc.cpp
+	./external/detour/Source/DetourAssert.cpp
+	./external/detour/Source/DetourCommon.cpp
+	./external/detour/Source/DetourNavMesh.cpp
+	./external/detour/Source/DetourNavMeshBuilder.cpp
+	./external/detour/Source/DetourNavMeshQuery.cpp
+	./external/detour/Source/DetourNode.cpp
+
+
+
 	./external/irrxml/src/CXMLReaderImpl.h
 	./external/irrxml/src/fast_atof.h
 	./external/irrxml/src/heapsort.h
@@ -495,6 +536,7 @@ include_directories(./external/irrxml/src)
 # External Static Library
 add_library(External STATIC ${src_external})
 set_target_properties(External PROPERTIES LINK_FLAGS "/PDB:\"External.pdb\"")
+target_include_directories(External PRIVATE ./external/Recast/include ./external/detour/Include)
 
 # DoomDLL Project
 add_definitions(-D__DOOM_DLL__)
@@ -502,6 +544,7 @@ add_library(DoomDLL SHARED  ${src_engine} )
 target_link_libraries(DoomDLL idLib External Tools "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib")
 add_precompiled_header( DoomDLL Engine_precompiled.h  SOURCE_CXX ./framework/Engine_precompiled.cpp )
 set_target_properties(DoomDLL PROPERTIES OUTPUT_NAME "DoomDLL" LINK_FLAGS "/PDB:\"DoomDLL.pdb\" /LARGEADDRESSAWARE /DEF:${CMAKE_CURRENT_SOURCE_DIR}/exports.def")
+target_include_directories(DoomDLL PRIVATE ./external/Recast/include ./external/detour/Include)
 
 # Launcher Project
 add_executable(Launcher ${src_launcher})

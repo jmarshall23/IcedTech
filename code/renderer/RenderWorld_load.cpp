@@ -149,9 +149,14 @@ idRenderModel *idRenderWorldLocal::ParseModel( idLexer *src ) {
 
 		src->ExpectAnyToken( &token );
 
-		surf.shader = declManager->FindMaterial( token );
+// jmarshall - fast load.
+		if (!isFastLoaded)
+		{
+			surf.shader = declManager->FindMaterial(token);
 
-		((idMaterial*)surf.shader)->AddReference();
+			((idMaterial*)surf.shader)->AddReference();
+		}
+// jmarshall end
 
 		surf.geometry = tri;
 
@@ -185,6 +190,13 @@ idRenderModel *idRenderWorldLocal::ParseModel( idLexer *src ) {
 	}
 
 	src->ExpectTokenString( "}" );
+
+// jmarshall
+	if (isFastLoaded)
+	{
+		model->ForceFastLoad();
+	}
+// jmarshall end
 
 	model->FinishSurfaces();
 
@@ -484,7 +496,7 @@ A NULL or empty name will make a world without a map model, which
 is still useful for displaying a bare model
 =================
 */
-bool idRenderWorldLocal::InitFromMap( const char *name ) {
+bool idRenderWorldLocal::InitFromMap( const char *name, bool fastLoad) {
 	idLexer *		src;
 	idToken			token;
 	idStr			filename;
@@ -498,6 +510,7 @@ bool idRenderWorldLocal::InitFromMap( const char *name ) {
 		return true;
 	}
 
+	isFastLoaded = fastLoad;
 
 	// load it
 	filename = name;
@@ -586,13 +599,20 @@ bool idRenderWorldLocal::InitFromMap( const char *name ) {
 		}
 
 		if ( token == "shadowModel" ) {
-			lastModel = ParseShadowModel( src );
+			if (!isFastLoaded)
+			{
+				lastModel = ParseShadowModel(src);
 
-			// add it to the model manager list
-			renderModelManager->AddModel( lastModel );
+				// add it to the model manager list
+				renderModelManager->AddModel(lastModel);
 
-			// save it in the list to free when clearing this map
-			localModels.Append( lastModel );
+				// save it in the list to free when clearing this map
+				localModels.Append(lastModel);
+			}
+			else
+			{
+				src->SkipBracedSection();
+			}
 			continue;
 		}
 
@@ -611,16 +631,19 @@ bool idRenderWorldLocal::InitFromMap( const char *name ) {
 
 	delete src;
 
-	// if it was a trivial map without any areas, create a single area
-	if ( !numPortalAreas ) {
-		ClearWorld();
+	if (!fastLoad)
+	{
+		// if it was a trivial map without any areas, create a single area
+		if (!numPortalAreas) {
+			ClearWorld();
+		}
+
+		// find the points where we can early-our of reference pushing into the BSP tree
+		CommonChildrenArea_r(&areaNodes[0]);
+
+		AddWorldModelEntities();
+		ClearPortalStates();
 	}
-
-	// find the points where we can early-our of reference pushing into the BSP tree
-	CommonChildrenArea_r( &areaNodes[0] );
-
-	AddWorldModelEntities();
-	ClearPortalStates();
 
 	// done!
 	return true;

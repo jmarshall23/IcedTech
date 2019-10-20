@@ -56,6 +56,7 @@ public:
 	virtual void				SetLevelLoadReferenced( bool referenced );
 	virtual bool				IsLevelLoadReferenced();
 	virtual void				TouchData();
+	virtual void				ForceFastLoad();
 	virtual void				InitEmpty( const char *name );
 	virtual void				AddSurface( modelSurface_t surface );
 	virtual void				FinishSurfaces();

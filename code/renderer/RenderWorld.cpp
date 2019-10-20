@@ -142,6 +142,8 @@ idRenderWorldLocal::idRenderWorldLocal() {
 	interactionTable = 0;
 	interactionTableWidth = 0;
 	interactionTableHeight = 0;
+
+	isFastLoaded = false;
 }
 
 /*

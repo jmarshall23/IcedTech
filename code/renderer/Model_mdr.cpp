@@ -610,9 +610,9 @@ void rvmRenderModelMDR::RenderFramesToModel(idRenderModelStatic *staticModel, co
 				tempNormal[2] += w->boneWeight * DotProduct(bone->matrix[2], v->normal);
 			}
 
-			tri->verts[baseVertex + j].xyz[0] = tempVert[0] * 64;
-			tri->verts[baseVertex + j].xyz[1] = tempVert[1] * 64;
-			tri->verts[baseVertex + j].xyz[2] = tempVert[2] * 64;
+			tri->verts[baseVertex + j].xyz[0] = tempVert[0];
+			tri->verts[baseVertex + j].xyz[1] = tempVert[1];
+			tri->verts[baseVertex + j].xyz[2] = tempVert[2];
 
 		//	R_VaoPackNormal(tess.normal[baseVertex + j], tempNormal);
 

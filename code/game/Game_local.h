@@ -404,6 +404,8 @@ public:
 	void					RemoveAASObstacle( const aasHandle_t handle );
 	void					RemoveAllAASObstacles( void );
 
+	rvmNavFile				*GetNavMeshFile() { return navMeshFile; }
+
 	bool					CheatsOk( bool requirePlayer = true );
 	void					SetSkill( int value );
 	gameState_t				GameState( void ) const;
@@ -607,6 +609,10 @@ private:
 
 // jmarshall
 	idList<rvmGameDelayRemoveEntry_t> delayRemoveEntities;
+// jmarshall end
+
+// jmarshall
+	rvmNavFile				*navMeshFile;
 // jmarshall end
 };
 

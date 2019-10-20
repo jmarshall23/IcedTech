@@ -191,7 +191,7 @@ public:
 	void					TouchWorldModels( void );
 	void					AddWorldModelEntities();
 	void					ClearPortalStates();
-	virtual	bool			InitFromMap( const char *mapName );
+	virtual	bool			InitFromMap( const char *mapName, bool fastLoad);
 
 	//--------------------------
 	// RenderWorld_portals.cpp
@@ -266,6 +266,7 @@ public:
 private:
 // jmarshall
 	bool					isLegacyWorldFile;
+	bool					isFastLoaded;
 // jmarshall end
 };
 
