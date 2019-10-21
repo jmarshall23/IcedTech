@@ -128,6 +128,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "../framework/Thread.h"
 #include "../framework/ParallelJobList.h"
 
+// navigation
+#include "../navigation/Nav_public.h"
+
 // decls
 #include "../framework/DeclManager.h"
 #include "../framework/DeclTable.h"
