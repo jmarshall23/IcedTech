@@ -407,6 +407,11 @@ public:
 
 	static int					FloatHash( const float *array, const int numFloats );
 
+// jmarshall
+	static int					Rand() { return rand(); }
+	static float				FRand() { return Rand() / (float)RAND_MAX; }
+	static float				FRandRange(float min, float max) { return min + (max - min) * FRand(); }
+// jmarshall end
 	static const float			PI;							// pi
 	static const float			TWO_PI;						// pi * 2
 	static const float			HALF_PI;					// pi / 2

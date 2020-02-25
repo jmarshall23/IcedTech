@@ -185,6 +185,10 @@ public:
 	int					IcmpnPath( const char *text, int n ) const;
 	int					IcmpPrefixPath( const char *text ) const;
 
+// jmarshall
+	float				ToFloat() const { return atof(data); }
+// jmarshall end
+
 	int					Length( void ) const;
 	int					Allocated( void ) const;
 	void				Empty( void );

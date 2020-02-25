@@ -1,11 +1,20 @@
 // Nav_Manager.cpp
 //
 
-#include "Engine_precompiled.h"
+#include "engine_precompiled.h"
 #include "Nav_local.h"
 
 rvmNavigationManagerLocal navigationManagerLocal;
 rvmNavigationManager *navigationManager = &navigationManagerLocal;
+
+/*
+============================
+rvmNavigationManagerLocal::Init
+============================
+*/
+void rvmNavigationManagerLocal::Init(void) {
+	
+}
 
 /*
 ============================

@@ -1,19 +1,9 @@
 // Nav_public.h
 //
 
-static const float m_cellSize = 4.0f;
-static const float m_cellHeight = 0.2f;
-static const float m_agentHeight = 2.0f;
-static const float m_agentRadius = 0.6f;
-static const float m_agentMaxClimb = 0.9f;
-static const float m_agentMaxSlope = 45.0f;
-static const float m_regionMinSize = 8;
-static const float m_regionMergeSize = 20;
-static const float m_edgeMaxLen = 12.0f;
-static const float m_edgeMaxError = 1.3f;
-static const float m_vertsPerPoly = 6.0f;
-static const float m_detailSampleDist = 3.0f;
-static const float m_detailSampleMaxError = 1.0f;
+#define NAV_FILE_VERSION				2
+#define NAV_FILE_EXTENSION				".nav"
+#define NAV_MAX_PATHSTEPS				512
 
 //
 // rvmNavFile
@@ -24,7 +14,10 @@ public:
 	virtual const char *GetName() = 0;
 
 	// Finds a random walkable point near point.
-	virtual void GetRandomPointNearPosition(idVec3 point, idVec3 &randomPoint) = 0;
+	virtual void GetRandomPointNearPosition(idVec3 point, idVec3 &randomPoint, float radius) = 0;
+
+	// Finds the path between two points.
+	virtual bool GetPathBetweenPoints(const idVec3 p1, const idVec3 p2, idList<idVec3>& waypoints) = 0;
 };
 
 //
@@ -32,13 +25,18 @@ public:
 //
 class rvmNavigationManager {
 public:
+	// Init the nav manager.
+	virtual void Init(void) = 0;
+
 	// Loads in a navigation file.
 	virtual rvmNavFile *LoadNavFile(const char *name) = 0;
 
 	// Frees the navigation file.
 	virtual void FreeNavFile(rvmNavFile *navFile) = 0;
 private:
-
+	
 };
+
+idVec3 NavConvertCoordsToDoom(idVec3 pt);
 
 extern rvmNavigationManager *navigationManager;
