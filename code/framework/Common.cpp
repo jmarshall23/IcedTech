@@ -2348,7 +2348,7 @@ void idCommonLocal::InitCommands( void ) {
 	cmdSystem->AddCommand( "roq", RoQFileEncode_f, CMD_FL_TOOL, "encodes a roq file" );
 	cmdSystem->AddCommand( "megalight", MegaLight_f, CMD_FL_TOOL, "builds lightmaps for a megatexture.");
 	cmdSystem->AddCommand( "megagen", RunMegaGen_f, CMD_FL_TOOL, "builds a source megatexture(giant tga) for a mega project.");
-	
+	cmdSystem->AddCommand("navbuild", NavMesh_f, CMD_FL_TOOL, "builds a navmesh file", idCmdSystem::ArgCompletion_MapName);
 #endif
 
 #ifdef ID_ALLOW_TOOLS
@@ -2465,6 +2465,9 @@ void idCommonLocal::Frame( void ) {
 			if ( idAsyncNetwork::serverDedicated.GetInteger() != 1 ) {
 				session->GuiFrameEvents();
 				session->UpdateScreen( false );
+// jmarshall
+				session->RunSessionTic();
+// jmarshall end
 			}
 		} else {
 			session->Frame();

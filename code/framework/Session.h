@@ -149,6 +149,10 @@ public:
 
 	virtual int		GetSaveGameVersion( void ) = 0;
 
+// jmarshall
+	virtual void	RunSessionTic(void) = 0;
+// jmarshall end
+
 	// The render world and sound world used for this session.
 	idRenderWorld *	rw;
 	idSoundWorld *	sw;
