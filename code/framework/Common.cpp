@@ -2568,7 +2568,7 @@ void idCommonLocal::LoadGameDLL( void ) {
 	gameImport.AASFileManager			= ::AASFileManager;
 	gameImport.collisionModelManager	= ::collisionModelManager;
 	gameImport.parallelJobManager		= ::parallelJobManager;
-
+	gameImport.navigationManager		= ::navigationManager;
 	gameExport							= *GetGameAPI( &gameImport );
 
 	if ( gameExport.version != GAME_API_VERSION ) {
