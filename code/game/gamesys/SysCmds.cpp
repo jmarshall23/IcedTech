@@ -2284,6 +2284,21 @@ void Cmd_TestId_f( const idCmdArgs &args ) {
 }
 
 /*
+======================
+Cmd_AddBot_f
+======================
+*/
+void Cmd_AddBot_f(const idCmdArgs &args) {
+	int clientNum;
+
+	clientNum = networkSystem->AllocateClientSlotForBot(8);
+	if (clientNum == -1) {
+		return;
+	}
+}
+
+
+/*
 =================
 idGameLocal::InitConsoleCommands
 
@@ -2292,6 +2307,8 @@ so it can perform tab completion
 =================
 */
 void idGameLocal::InitConsoleCommands( void ) {
+	cmdSystem->AddCommand("addbot", Cmd_AddBot_f, CMD_FL_GAME, "lists game entities");
+	
 	cmdSystem->AddCommand( "game_memory",			idClass::DisplayInfo_f,		CMD_FL_GAME,				"displays game class info" );
 	cmdSystem->AddCommand( "listClasses",			idClass::ListClasses_f,		CMD_FL_GAME,				"lists game classes" );
 	cmdSystem->AddCommand( "listThreads",			idThread::ListThreads_f,	CMD_FL_GAME|CMD_FL_CHEAT,	"lists script threads" );

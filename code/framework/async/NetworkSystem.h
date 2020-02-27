@@ -42,6 +42,12 @@ class idNetworkSystem {
 public:
 	virtual					~idNetworkSystem( void ) {}
 
+// jmarshall
+	virtual int				AllocateClientSlotForBot(int maxPlayersOnServer);
+	virtual int				ServerSetBotUserCommand(int clientNum, int frameNum, const usercmd_t& cmd);
+	virtual int				ServerSetBotUserName(int clientNum, const char* playerName);
+// jmarshall end
+
 	virtual void			ServerSendReliableMessage( int clientNum, const idBitMsg &msg );
 	virtual void			ServerSendReliableMessageExcluding( int clientNum, const idBitMsg &msg );
 	virtual int				ServerGetClientPing( int clientNum );

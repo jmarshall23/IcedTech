@@ -1849,7 +1849,7 @@ void idGameLocal::InitScriptForMap( void ) {
 idGameLocal::SpawnPlayer
 ============
 */
-void idGameLocal::SpawnPlayer( int clientNum ) {
+void idGameLocal::SpawnPlayer( int clientNum, bool isBot) {
 	idEntity	*ent;
 	idDict		args;
 
@@ -1858,7 +1858,17 @@ void idGameLocal::SpawnPlayer( int clientNum ) {
 
 	args.SetInt( "spawn_entnum", clientNum );
 	args.Set( "name", va( "player%d", clientNum + 1 ) );
-	args.Set( "classname", isMultiplayer ? "player_doommarine_mp" : "player_doommarine" );
+// jmarshall
+	if (isBot)
+	{
+		args.Set("classname", "player_doommarine_mp_bot");
+	}
+	else
+	{
+		args.Set("classname", isMultiplayer ? "player_doommarine_mp" : "player_doommarine");
+	}
+// jmarshall end
+
 	if ( !SpawnEntityDef( args, &ent ) || !entities[ clientNum ] ) {
 		Error( "Failed to spawn player as '%s'", args.GetString( "classname" ) );
 	}

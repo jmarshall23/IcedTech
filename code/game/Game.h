@@ -118,7 +118,7 @@ public:
 	virtual void				CacheDictionaryMedia( const idDict *dict ) = 0;
 
 	// Spawns the player entity to be used by the client.
-	virtual void				SpawnPlayer( int clientNum ) = 0;
+	virtual void				SpawnPlayer( int clientNum, bool isBot) = 0;
 
 	// Runs a game frame, may return a session command for level changing, etc
 	virtual gameReturn_t		RunFrame( const usercmd_t *clientCmds ) = 0;
@@ -145,8 +145,11 @@ public:
 	// Connects a client.
 	virtual void				ServerClientConnect( int clientNum, const char *guid ) = 0;
 
+	// Gets a random bot name for a new bot.
+	virtual bool				GetRandomBotName(int clientNum, idStr& botName) = 0;
+
 	// Spawns the player entity to be used by the client.
-	virtual void				ServerClientBegin( int clientNum ) = 0;
+	virtual void				ServerClientBegin( int clientNum, bool isBot) = 0;
 
 	// Disconnects a client and removes the player entity from the game.
 	virtual void				ServerClientDisconnect( int clientNum ) = 0;
