@@ -873,7 +873,7 @@ void idGameLocal::LoadMap( const char *mapName, int randseed ) {
 	mapFileName = mapFile->GetName();
 
 // jmarshall
-	navMeshFile = navigationManager->LoadNavFile(mapName);
+	LoadMapNav(mapName);
 // jmarshall end
 
 	// load the collision map

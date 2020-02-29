@@ -150,6 +150,7 @@ set(src_game
 	./game/bot/bot.cpp
 	./game/bot/bot_input.cpp
 	./game/bot/bot.h
+	./game/game_navigation.cpp
 	./game/game_precompiled.cpp
 	./game/game_precompiled.h
 	./game/Actor.cpp
