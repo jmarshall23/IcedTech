@@ -2273,6 +2273,11 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 		// update our gravity vector if needed.
 		UpdateGravity();
 
+		// run the frame for the bots.
+		if (gameLocal.isServer) {
+			RunBotFrame();
+		}
+
 		// create a merged pvs for all players
 		SetupPlayerPVS();
 

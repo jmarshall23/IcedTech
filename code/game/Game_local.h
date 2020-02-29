@@ -79,6 +79,7 @@ class idProgram;
 class idThread;
 class idEditEntities;
 class idLocationEntity;
+class rvmBot;
 
 #define	MAX_CLIENTS				32
 #define	GENTITYNUM_BITS			12
@@ -410,6 +411,11 @@ public:
 
 	rvmNavFile				*GetNavMeshFile() { return navMeshFile; }
 
+// jmarshall
+	void					RegisterBot(rvmBot* bot) { registeredBots.AddUnique(bot); }
+	void					UnRegisterBot(rvmBot* bot) { registeredBots.Remove(bot); }
+// jmarshall end
+
 	bool					CheatsOk( bool requirePlayer = true );
 	void					SetSkill( int value );
 	gameState_t				GameState( void ) const;
@@ -608,6 +614,12 @@ private:
 private:
 	void					InitJobSystem(void);
 	void					ShutdownJobSystem(void);
+
+// jmarshall
+	void					RunBotFrame(void);
+// jmarshall end
+
+	idList<class rvmBot*>	registeredBots;
 
 	idParallelJobList		*gameParallelJobList;
 

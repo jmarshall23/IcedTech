@@ -1761,3 +1761,15 @@ bool idGameLocal::GetRandomBotName(int clientNum, idStr& botName) {
 	botName = "TestBot";
 	return true;
 }
+
+/*
+================
+idGameLocal::RunBotFrame
+================
+*/
+void idGameLocal::RunBotFrame(void) {
+	for(int i = 0; i < registeredBots.Num(); i++)
+	{
+		registeredBots[i]->BotInputFrame();
+	}
+}

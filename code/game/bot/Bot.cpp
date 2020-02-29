@@ -13,7 +13,7 @@ rvmBot::rvmBot
 ===================
 */
 rvmBot::rvmBot() {
-
+	gameLocal.RegisterBot(this);
 }
 
 /*
@@ -22,5 +22,23 @@ rvmBot::~rvmBot
 ===================
 */
 rvmBot::~rvmBot() {
+	gameLocal.UnRegisterBot(this);
+}
 
+/*
+===================
+rvmBot::Spawn
+===================
+*/
+void rvmBot::Spawn(void) {
+	idPlayer::Spawn();
+}
+
+/*
+===================
+rvmBot::Think
+===================
+*/
+void rvmBot::Think(void) {
+	idPlayer::Think();
 }

@@ -1,0 +1,136 @@
+// Bot_Input.cpp
+//
+
+#include "game_precompiled.h"
+#include "../Game_local.h"
+
+/*
+==============
+rvmBot::BotInputToUserCommand
+==============
+*/
+void rvmBot::BotInputToUserCommand(bot_input_t* bi, usercmd_t* ucmd, int time) {
+	idVec3 forward, right;
+	idAngles angles;
+
+	short temp;
+	int j;
+
+	//clear the whole structure
+	memset(ucmd, 0, sizeof(usercmd_t));
+	//
+	//Com_Printf("dir = %f %f %f speed = %f\n", bi->dir[0], bi->dir[1], bi->dir[2], bi->speed);
+	//the duration for the user command in milli seconds
+	//
+	if (bi->actionflags & ACTION_DELAYEDJUMP) {
+		bi->actionflags |= ACTION_JUMP;
+		bi->actionflags &= ~ACTION_DELAYEDJUMP;
+	}
+	//set the buttons
+	if (bi->actionflags & ACTION_RESPAWN) ucmd->buttons = BUTTON_ATTACK;
+	if (bi->actionflags & ACTION_ATTACK) ucmd->buttons |= BUTTON_ATTACK;
+	//if (bi->actionflags & ACTION_TALK) ucmd->buttons |= BUTTON_TALK;
+	//if (bi->actionflags & ACTION_GESTURE) ucmd->buttons |= BUTTON_GESTURE;
+	//if (bi->actionflags & ACTION_USE) ucmd->buttons |= BUTTON_USE_HOLDABLE;
+	if (bi->actionflags & ACTION_WALK) ucmd->buttons |= BUTTON_RUN;
+	//if (bi->actionflags & ACTION_AFFIRMATIVE) ucmd->buttons |= BUTTON_AFFIRMATIVE;
+	//if (bi->actionflags & ACTION_NEGATIVE) ucmd->buttons |= BUTTON_NEGATIVE;
+	//if (bi->actionflags & ACTION_GETFLAG) ucmd->buttons |= BUTTON_GETFLAG;
+	//if (bi->actionflags & ACTION_GUARDBASE) ucmd->buttons |= BUTTON_GUARDBASE;
+	//if (bi->actionflags & ACTION_PATROL) ucmd->buttons |= BUTTON_PATROL;
+	//if (bi->actionflags & ACTION_FOLLOWME) ucmd->buttons |= BUTTON_FOLLOWME;
+	//
+	ucmd->impulse |= bi->weapon;
+	
+	//set the view angles
+	//NOTE: the ucmd->angles are the angles WITHOUT the delta angles
+	ucmd->angles[PITCH] = ANGLE2SHORT(bi->viewangles[PITCH]);
+	ucmd->angles[YAW] = ANGLE2SHORT(bi->viewangles[YAW]);
+	ucmd->angles[ROLL] = ANGLE2SHORT(bi->viewangles[ROLL]);
+	//subtract the delta angles
+	for (j = 0; j < 3; j++) {
+		temp = ucmd->angles[j]; // -delta_angles[j];
+		/*NOTE: disabled because temp should be mod first
+		if ( j == PITCH ) {
+			// don't let the player look up or down more than 90 degrees
+			if ( temp > 16000 ) temp = 16000;
+			else if ( temp < -16000 ) temp = -16000;
+		}
+		*/
+		ucmd->angles[j] = temp;
+	}
+	//NOTE: movement is relative to the REAL view angles
+	//get the horizontal forward and right vector
+	//get the pitch in the range [-180, 180]
+	if (bi->dir[2]) 
+		angles[PITCH] = bi->viewangles[PITCH];
+	else 
+		angles[PITCH] = 0;
+
+	angles[YAW] = bi->viewangles[YAW];
+	angles[ROLL] = 0;
+
+	angles.ToVectors(&forward, &right, NULL);
+
+	//bot input speed is in the range [0, 400]
+	bi->speed = bi->speed * 127 / 400;
+	//set the view independent movement
+	ucmd->forwardmove = DotProduct(forward, bi->dir) * bi->speed;
+	ucmd->rightmove = DotProduct(right, bi->dir) * bi->speed;
+	ucmd->upmove = abs(forward[2]) * bi->dir[2] * bi->speed;
+	//normal keyboard movement
+	if (bi->actionflags & ACTION_MOVEFORWARD) 
+		ucmd->forwardmove += 127;
+	if (bi->actionflags & ACTION_MOVEBACK) 
+		ucmd->forwardmove -= 127;
+	if (bi->actionflags & ACTION_MOVELEFT) 
+		ucmd->rightmove -= 127;
+	if (bi->actionflags & ACTION_MOVERIGHT) 
+		ucmd->rightmove += 127;
+	
+	//jump/moveup
+	if (bi->actionflags & ACTION_JUMP) 
+		ucmd->upmove += 127;
+
+	//crouch/movedown
+	if (bi->actionflags & ACTION_CROUCH)
+		ucmd->upmove -= 127;
+	//
+	//Com_Printf("forward = %d right = %d up = %d\n", ucmd.forwardmove, ucmd.rightmove, ucmd.upmove);
+	//Com_Printf("ucmd->serverTime = %d\n", ucmd->serverTime);
+}
+
+/*
+================
+rvmBot::ResetUcmd
+================
+*/
+void rvmBot::Bot_ResetUcmd(usercmd_t& ucmd) {
+	ucmd.forwardmove = 0;
+	ucmd.rightmove = 0;
+	ucmd.upmove = 0;
+	ucmd.impulse = 0;
+	ucmd.flags = 0;
+	memset(&ucmd.buttons, 0, sizeof(ucmd.buttons));
+}
+
+
+/*
+========================
+rvmBot::BotInputFrame
+========================
+*/
+void rvmBot::BotInputFrame(void) {
+	usercmd_t &botcmd = gameLocal.usercmds[entityNumber];
+
+	Bot_ResetUcmd(botcmd);
+
+	botcmd.gameTime = gameLocal.time;
+	botcmd.gameFrame = gameLocal.framenum;
+	botcmd.duplicateCount = 0;
+
+	BotInputToUserCommand(&botinput, &botcmd, gameLocal.time);
+
+	// Send the bot's user cmd off to the engine so other clients can predict this bot.
+	networkSystem->ServerSetBotUserCommand(entityNumber, gameLocal.framenum, botcmd);
+}
