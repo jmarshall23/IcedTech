@@ -258,29 +258,48 @@ struct weightconfig_t
 #define GFL_DROPPED				4
 #define MAX_EPAIRKEY		128
 
-#if 0
 //characteristic value
-union cvalue
+struct cvalue
 {
+	cvalue()
+	{
+		integer = 0;
+		_float = 0.0f;
+		string = "";
+	}
+
 	int integer;
 	float _float;
-	char* string;
+	idStr string;
 };
+
 //a characteristic
-typedef struct bot_characteristic_s
+struct bot_characteristic_t
 {
+	bot_characteristic_t()
+	{
+		type = 0;
+	}
+
 	char type;						//characteristic type
-	union cvalue value;				//characteristic value
-} bot_characteristic_t;
+	cvalue value;				//characteristic value
+};
 
 //a bot character
-typedef struct bot_character_s
+struct bot_character_t
 {
-	char filename[MAX_QPATH];
+	bot_character_t()
+	{
+		filename = "";
+		inUse = false;
+		skill = 0.0f;
+	}
+
+	idStr filename;
+	bool inUse;
 	float skill;
-	bot_characteristic_t c[1];		//variable sized
-} bot_character_t;
-#endif
+	bot_characteristic_t c[MAX_CHARACTERISTICS];
+};
 
 //the bot input, will be converted to an usercmd_t
 //the bot input, will be converted to an usercmd_t
@@ -640,6 +659,8 @@ typedef enum {
 	MOVE_SPRINT,
 	MOVE_JUMP,
 } botMoveFlags_t;
+
+#include "Bot_char.h"
 
 
 //

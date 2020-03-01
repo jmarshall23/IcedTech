@@ -333,6 +333,9 @@ void idGameLocal::Init( void ) {
 	// init the game render system.
 	InitGameRenderSystem();
 
+	// init all the bot systems.
+	characterStatsManager.Init();
+
 	gamestate = GAMESTATE_NOMAP;
 
 	Printf( "...%d aas types\n", aasList.Num() );
