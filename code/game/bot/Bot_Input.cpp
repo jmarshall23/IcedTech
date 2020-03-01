@@ -11,15 +11,14 @@ rvmBot::BotInputToUserCommand
 */
 void rvmBot::BotInputToUserCommand(bot_input_t* bi, usercmd_t* ucmd, int time) {
 	idVec3 forward, right;
-	idAngles angles;
 
 	short temp;
 	int j;
 
 	//clear the whole structure
-	memset(ucmd, 0, sizeof(usercmd_t));
+//	memset(ucmd, 0, sizeof(usercmd_t));
 	//
-	//Com_Printf("dir = %f %f %f speed = %f\n", bi->dir[0], bi->dir[1], bi->dir[2], bi->speed);
+	//common->Printf("dir = %f %f %f speed = %f\n", bi->dir[0], bi->dir[1], bi->dir[2], bi->speed);
 	//the duration for the user command in milli seconds
 	//
 	if (bi->actionflags & ACTION_DELAYEDJUMP) {
@@ -47,37 +46,16 @@ void rvmBot::BotInputToUserCommand(bot_input_t* bi, usercmd_t* ucmd, int time) {
 	ucmd->angles[PITCH] = ANGLE2SHORT(bi->viewangles[PITCH]);
 	ucmd->angles[YAW] = ANGLE2SHORT(bi->viewangles[YAW]);
 	ucmd->angles[ROLL] = ANGLE2SHORT(bi->viewangles[ROLL]);
-	//subtract the delta angles
-	for (j = 0; j < 3; j++) {
-		temp = ucmd->angles[j]; // -delta_angles[j];
-		/*NOTE: disabled because temp should be mod first
-		if ( j == PITCH ) {
-			// don't let the player look up or down more than 90 degrees
-			if ( temp > 16000 ) temp = 16000;
-			else if ( temp < -16000 ) temp = -16000;
-		}
-		*/
-		ucmd->angles[j] = temp;
-	}
-	//NOTE: movement is relative to the REAL view angles
-	//get the horizontal forward and right vector
-	//get the pitch in the range [-180, 180]
-	if (bi->dir[2]) 
-		angles[PITCH] = bi->viewangles[PITCH];
-	else 
-		angles[PITCH] = 0;
 
-	angles[YAW] = bi->viewangles[YAW];
-	angles[ROLL] = 0;
-
-	angles.ToVectors(&forward, &right, NULL);
+	bi->viewangles.ToVectors(&forward, &right, NULL);
 
 	//bot input speed is in the range [0, 400]
 	bi->speed = bi->speed * 127 / 400;
 	//set the view independent movement
-	ucmd->forwardmove = DotProduct(forward, bi->dir) * bi->speed;
-	ucmd->rightmove = DotProduct(right, bi->dir) * bi->speed;
+	ucmd->forwardmove = idMath::ClampChar(DotProduct(forward, bi->dir) * bi->speed);
+	ucmd->rightmove = idMath::ClampChar(DotProduct(right, bi->dir) * bi->speed);
 	ucmd->upmove = abs(forward[2]) * bi->dir[2] * bi->speed;
+
 	//normal keyboard movement
 	if (bi->actionflags & ACTION_MOVEFORWARD) 
 		ucmd->forwardmove += 127;

@@ -1,6 +1,8 @@
 // Bot.h
 //
 
+#define BOT_NOWAYPOINT			-1
+
 #define MAX_AVOIDGOALS			256
 #define MAX_GOALSTACK			8
 
@@ -20,6 +22,7 @@ struct bot_goal_t
 	void Reset()
 	{
 		origin.Zero();
+		nextMoveOrigin.Zero();
 		areanum = 0;
 		mins.Zero();
 		maxs.Zero();
@@ -27,9 +30,12 @@ struct bot_goal_t
 		number = 0;
 		flags = 0;
 		iteminfo = 0;
+		framenum = -1;
 	}
 
+	int framenum;
 	idVec3 origin;				//origin of the goal
+	idVec3 nextMoveOrigin;
 	int areanum;				//area number of the goal
 	idVec3 mins, maxs;			//mins and maxs of the goal
 	int entitynum;				//number of the goal entity
@@ -298,7 +304,7 @@ struct bot_input_t
 	float thinktime;		//time since last output (in seconds)
 	idVec3 dir;				//movement direction
 	float speed;			//speed in the range [0, 400]
-	idVec3 viewangles;		//the view angles
+	idAngles viewangles;		//the view angles
 	int actionflags;		//one of the ACTION_? flags
 	int weapon;				//weapon to use
 };
@@ -656,5 +662,13 @@ public:
 private:
 	void			BotInputToUserCommand(bot_input_t* bi, usercmd_t* ucmd, int time);
 
+	void			BotMoveToGoalOrigin(void);
+
+	void			ServerThink(void);
+
 	bot_input_t		botinput;
+	bot_goal_t		currentGoal;
+private:
+	int currentWaypoint;
+	idList<idVec3>	navWaypoints;
 };
