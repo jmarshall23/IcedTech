@@ -17,7 +17,7 @@
 //
 
 #include <stdlib.h>
-#include "DetourAlloc.h"
+#include "../include/DetourAlloc.h"
 
 static void *dtAllocDefault(size_t size, dtAllocHint)
 {

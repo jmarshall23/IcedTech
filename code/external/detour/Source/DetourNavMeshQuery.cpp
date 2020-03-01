@@ -18,13 +18,13 @@
 
 #include <float.h>
 #include <string.h>
-#include "DetourNavMeshQuery.h"
-#include "DetourNavMesh.h"
-#include "DetourNode.h"
-#include "DetourCommon.h"
-#include "DetourMath.h"
-#include "DetourAlloc.h"
-#include "DetourAssert.h"
+#include "../include/DetourNavMeshQuery.h"
+#include "../include/DetourNavMesh.h"
+#include "../include/DetourNode.h"
+#include "../include/DetourCommon.h"
+#include "../include/DetourMath.h"
+#include "../include/DetourAlloc.h"
+#include "../include/DetourAssert.h"
 #include <new>
 
 /// @class dtQueryFilter
@@ -88,7 +88,9 @@ inline bool dtQueryFilter::passFilter(const dtPolyRef /*ref*/,
 									  const dtMeshTile* /*tile*/,
 									  const dtPoly* poly) const
 {
-	return (poly->flags & m_includeFlags) != 0 && (poly->flags & m_excludeFlags) == 0;
+// jmarshall
+	return true; //(poly->flags & m_includeFlags) != 0 && (poly->flags & m_excludeFlags) == 0;
+// jmarshall end
 }
 
 inline float dtQueryFilter::getCost(const float* pa, const float* pb,
