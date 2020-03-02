@@ -121,6 +121,7 @@ struct weightconfig_t
 
 	void Reset()
 	{
+		inUse = false;
 		numweights = 0;
 		filename.Clear();
 
@@ -130,6 +131,7 @@ struct weightconfig_t
 		}
 	}
 
+	bool inUse;
 	int numweights;
 	weight_t weights[MAX_WEIGHTS];
 	idStr filename;
@@ -660,8 +662,22 @@ typedef enum {
 	MOVE_JUMP,
 } botMoveFlags_t;
 
-#include "Bot_char.h"
+//
+// rvmBotUtil
+//
+class rvmBotUtil {
+public:
+	static float random() {
+		return ((rand() & 0x7fff) / ((float)0x7fff));
+	}
 
+	static float crandom() {
+		return (2.0 * (random() - 0.5));
+	}
+};
+
+#include "Bot_char.h"
+#include "Bot_weights.h"
 
 //
 // rvmBot
