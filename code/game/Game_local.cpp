@@ -335,6 +335,8 @@ void idGameLocal::Init( void ) {
 
 	// init all the bot systems.
 	characterStatsManager.Init();
+	botFuzzyWeightManager.Init();
+	botWeaponInfoManager.Init();
 
 	gamestate = GAMESTATE_NOMAP;
 

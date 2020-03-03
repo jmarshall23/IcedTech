@@ -49,3 +49,5 @@ private:
 	weightconfig_t weightFileList[MAX_WEIGHT_FILES];
 	fuzzyseperator_t fuzzyseperators[MAX_FUZZY_OPERATORS];
 };
+
+extern idBotFuzzyWeightManager botFuzzyWeightManager;

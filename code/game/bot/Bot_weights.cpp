@@ -4,6 +4,8 @@
 #include "game_precompiled.h"
 #include "../Game_local.h"
 
+idBotFuzzyWeightManager botFuzzyWeightManager;
+
 /*
 ========================
 idBotFuzzyWeightManager::Init
