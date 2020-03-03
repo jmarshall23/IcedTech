@@ -1739,10 +1739,7 @@ void idWeapon::AlertMonsters( void ) {
 
 	if ( tr.fraction < 1.0f ) {
 		ent = gameLocal.GetTraceEntity( tr );
-		if ( ent->IsType( idAI::Type ) ) {
-			static_cast<idAI *>( ent )->TouchedByFlashlight( owner );
-		}
-		else if (ent->IsType(idTrigger::Type)) {
+		if (ent->IsType(idTrigger::Type)) {
 			ent->Signal( SIG_TOUCH );
 			ent->ProcessEvent( &EV_Touch, owner, &tr );
 		}
@@ -1759,13 +1756,15 @@ void idWeapon::AlertMonsters( void ) {
 
 	if ( tr.fraction < 1.0f ) {
 		ent = gameLocal.GetTraceEntity( tr );
-		if ( ent->IsType( idAI::Type ) ) {
+// jmarshall - add bot code here?
+		/*if ( ent->IsType( idAI::Type ) ) {
 			static_cast<idAI *>( ent )->TouchedByFlashlight( owner );
 		}
-		else if (ent->IsType(idTrigger::Type)) {
+		else*/ if (ent->IsType(idTrigger::Type)) {
 			ent->Signal( SIG_TOUCH );
 			ent->ProcessEvent( &EV_Touch, owner, &tr );
 		}
+// jmarshall end
 	}
 }
 

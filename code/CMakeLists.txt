@@ -165,7 +165,6 @@ set(src_game
 	./game/AF.h
 	./game/AFEntity.cpp
 	./game/AFEntity.h
-	./game/ai
 	./game/anim
 	./game/BrittleFracture.cpp
 	./game/BrittleFracture.h
@@ -226,17 +225,6 @@ set(src_game
 	./game/weapons
 	./game/WorldSpawn.cpp
 	./game/WorldSpawn.h
-	./game/ai/AAS.cpp
-	./game/ai/AAS.h
-	./game/ai/AAS_debug.cpp
-	./game/ai/AAS_local.h
-	./game/ai/AAS_pathing.cpp
-	./game/ai/AAS_routing.cpp
-	./game/ai/AI.cpp
-	./game/ai/AI.h
-	./game/ai/AI_events.cpp
-	./game/ai/AI_pathing.cpp
-	./game/ai/AI_Vagary.cpp
 	./game/anim/Anim.cpp
 	./game/anim/Anim.h
 	./game/anim/Anim_Blend.cpp

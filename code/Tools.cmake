@@ -73,19 +73,6 @@ set(src_tools
 	./tools/common/PropTree/PropTreeItemStatic.cpp
 	./tools/common/PropTree/PropTreeList.cpp
 	./tools/common/PropTree/PropTreeView.cpp
-	./tools/compilers/aas/AASBuild.cpp
-	./tools/compilers/aas/AASBuild_file.cpp
-	./tools/compilers/aas/AASBuild_gravity.cpp
-	./tools/compilers/aas/AASBuild_ledge.cpp
-	./tools/compilers/aas/AASBuild_merge.cpp
-	./tools/compilers/aas/AASCluster.cpp
-	./tools/compilers/aas/AASFile.cpp
-	./tools/compilers/aas/AASFileManager.cpp
-	./tools/compilers/aas/AASFile_optimize.cpp
-	./tools/compilers/aas/AASFile_sample.cpp
-	./tools/compilers/aas/AASReach.cpp
-	./tools/compilers/aas/Brush.cpp
-	./tools/compilers/aas/BrushBSP.cpp
 	./tools/compilers/dmap/dmap.cpp
 	./tools/compilers/dmap/facebsp.cpp
 	./tools/compilers/dmap/gldraw.cpp
@@ -269,14 +256,6 @@ set(src_tools
 	./tools/common/PropTree/PropTreeList.h
 	./tools/common/PropTree/PropTreeView.h
 	./tools/compilers/compiler_public.h
-	./tools/compilers/aas/AASBuild_local.h
-	./tools/compilers/aas/AASCluster.h
-	./tools/compilers/aas/AASFile.h
-	./tools/compilers/aas/AASFileManager.h
-	./tools/compilers/aas/AASFile_local.h
-	./tools/compilers/aas/AASReach.h
-	./tools/compilers/aas/Brush.h
-	./tools/compilers/aas/BrushBSP.h
 	./tools/compilers/dmap/dmap.h
 	./tools/compilers/megagen/MegaGen.h
 	./tools/compilers/megalight/MegaLight_file.h

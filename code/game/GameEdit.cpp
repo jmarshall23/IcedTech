@@ -564,7 +564,7 @@ void idEditEntities::DisplayEntities( void ) {
 			selectableEntityClasses.Append( sit );
 			break;
 		case 5:
-			sit.typeInfo = &idAI::Type;
+			sit.typeInfo = &rvmBot::Type;
 			sit.textKey = "name";
 			selectableEntityClasses.Append( sit );
 			break;

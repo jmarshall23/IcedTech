@@ -186,8 +186,6 @@ public:
 
 	virtual bool			OnLadder( void ) const;
 
-	virtual void			GetAASLocation( idAAS *aas, idVec3 &pos, int &areaNum ) const;
-
 	void					Attach( idEntity *ent );
 
 	virtual void			Teleport( const idVec3 &origin, const idAngles &angles, idEntity *destination );

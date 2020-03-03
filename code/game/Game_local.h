@@ -103,8 +103,6 @@ void gameError( const char *fmt, ... );
 
 #include "anim/Anim.h"
 
-#include "ai/AAS.h"
-
 #include "physics/Clip.h"
 #include "physics/Push.h"
 
@@ -400,14 +398,6 @@ public:
 
 	idMapFile *				GetLevelMap( void );
 	const char *			GetMapName( void ) const;
-
-	int						NumAAS( void ) const;
-	idAAS *					GetAAS( int num ) const;
-	idAAS *					GetAAS( const char *name ) const;
-	void					SetAASAreaState( const idBounds &bounds, const int areaContents, bool closed );
-	aasHandle_t				AddAASObstacle( const idBounds &bounds );
-	void					RemoveAASObstacle( const aasHandle_t handle );
-	void					RemoveAllAASObstacles( void );
 
 	rvmNavFile				*GetNavMeshFile() { return navMeshFile; }
 
@@ -796,7 +786,7 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "SecurityCamera.h"
 #include "BrittleFracture.h"
 
-#include "ai/AI.h"
+//#include "ai/AI.h"
 #include "anim/Anim_Testmodel.h"
 
 // jmarshall

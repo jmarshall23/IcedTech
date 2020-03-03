@@ -2341,9 +2341,6 @@ void idCommonLocal::InitCommands( void ) {
 	cmdSystem->AddCommand( "dmap", Dmap_f, CMD_FL_TOOL, "compiles a map", idCmdSystem::ArgCompletion_MapName );
 	cmdSystem->AddCommand( "renderbump", RenderBump_f, CMD_FL_TOOL, "renders a bump map", idCmdSystem::ArgCompletion_ModelName );
 	cmdSystem->AddCommand( "renderbumpFlat", RenderBumpFlat_f, CMD_FL_TOOL, "renders a flat bump map", idCmdSystem::ArgCompletion_ModelName );
-	cmdSystem->AddCommand( "runAAS", RunAAS_f, CMD_FL_TOOL, "compiles an AAS file for a map", idCmdSystem::ArgCompletion_MapName );
-	cmdSystem->AddCommand( "runAASDir", RunAASDir_f, CMD_FL_TOOL, "compiles AAS files for all maps in a folder", idCmdSystem::ArgCompletion_MapName );
-	cmdSystem->AddCommand( "runReach", RunReach_f, CMD_FL_TOOL, "calculates reachability for an AAS file", idCmdSystem::ArgCompletion_MapName );
 	cmdSystem->AddCommand( "roq", RoQFileEncode_f, CMD_FL_TOOL, "encodes a roq file" );
 	cmdSystem->AddCommand( "megalight", MegaLight_f, CMD_FL_TOOL, "builds lightmaps for a megatexture.");
 	cmdSystem->AddCommand( "megagen", RunMegaGen_f, CMD_FL_TOOL, "builds a source megatexture(giant tga) for a mega project.");
@@ -2554,7 +2551,6 @@ void idCommonLocal::LoadGameDLL( void ) {
 	gameImport.renderModelManager		= ::renderModelManager;
 	gameImport.uiManager				= ::uiManager;
 	gameImport.declManager				= ::declManager;
-	gameImport.AASFileManager			= ::AASFileManager;
 	gameImport.collisionModelManager	= ::collisionModelManager;
 	gameImport.parallelJobManager		= ::parallelJobManager;
 	gameImport.navigationManager		= ::navigationManager;
