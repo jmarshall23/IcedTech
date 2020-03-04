@@ -35,7 +35,8 @@
 #  if defined(_WIN32)
 #    include "glew.h"
 #  else
-#    include <GL/glew.h>
+//#    include <GL/glew.h>
+#    include "glew.h"
 #  endif
 #else
 #  include GLEW_INCLUDE
