@@ -4,7 +4,6 @@
 
 ***********************************************************************/
 
-#include "botfiles/inv.h"
 
 entityDef item_default {
 	"editor_color"			".3 .3 1"
@@ -32,8 +31,6 @@ entityDef item_default {
 	"editor_copy5"			"inv_objective"
 	"editor_copy6"			"inv_icon"
 	
-	"modelindex"			INVENTORY_NONE
-
 	"spawnclass"			"idItem"
 }
 
