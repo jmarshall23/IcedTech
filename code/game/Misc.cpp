@@ -31,7 +31,7 @@ Various utility objects and functions.
 
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"

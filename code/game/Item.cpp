@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -294,7 +294,7 @@ void idItem::Spawn( void ) {
 		if ( !ent ) {
 			gameLocal.Error( "Item couldn't find owner '%s'", giveTo.c_str() );
 		}
-		PostEventMS( &EV_Touch, 0, ent, NULL );
+		PostEventMS( &EV_Touch, 0, ent, 0 );
 	}
 
 	if ( spawnArgs.GetBool( "spin" ) || gameLocal.isMultiplayer ) {

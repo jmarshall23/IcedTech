@@ -26,8 +26,9 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 
+#include <unistd.h> // _exit
 /*
 ================================================================================================
 Contains the vartious ThreadingClass implementations.

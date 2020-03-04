@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 /*
@@ -266,7 +266,7 @@ typedef struct huffmanNode_s {
 } huffmanNode_t;
 
 typedef struct huffmanCode_s {
-	unsigned long			bits[8];
+	unsigned int			bits[8];
 	int						numBits;
 } huffmanCode_t;
 

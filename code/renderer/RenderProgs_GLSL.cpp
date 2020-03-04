@@ -26,7 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include <renderer/qgllib/glew.h>
+#include "Engine_precompiled.h"
 
 #include "tr_local.h"
 
@@ -512,7 +513,7 @@ struct typeConversion_t {
 };
 
 const char * vertexInsert = {
-	"#version 400\n"
+	"#version 450 compatibility\n"
 	"#define PC\n"
 	"\n"
 	"float saturate( float v ) { return clamp( v, 0.0, 1.0 ); }\n"
@@ -524,7 +525,7 @@ const char * vertexInsert = {
 };
 
 const char * fragmentInsert = {
-	"#version 400\n"
+	"#version 450 compatibility\n"
 	"#extension GL_ARB_explicit_attrib_location : enable\n"
 	"#define PC\n"
 	"\n"
@@ -632,13 +633,61 @@ void ParseInOutStruct( idLexer & src, int attribType, idList< inOutVariable_t > 
 			}
 		}
 
-		// check if it was defined previously
-		var.declareInOut = true;
+		//HACK: change type for feedback.pixel
+        //if( strstr(src.GetFileName(), "feedback.pixel")
+        //&& !strcmp( var.type, "sampler2D" )
+        //&& !strcmp( var.nameGLSL.c_str(), "samp0" ) ) {
+        //    var.type = "isampler2D";
+        //}
+
+        var.declareInOut = true;
+
+        // check if it was defined previously
 		for ( int i = 0; i < inOutVars.Num(); i++ ) {
 			if ( var.nameGLSL == inOutVars[i].nameGLSL ) {
 				var.declareInOut = false;
 				break;
 			}
+		}
+
+        // Handle some edge-cases for GLSL built-ins.
+        switch( attribType ){
+		    case AT_VS_IN: // vertex input
+                if( !var.nameGLSL.Cmp("gl_VertexID" )
+                 || !var.nameGLSL.Cmp("gl_InstanceID" )
+                 || !var.nameGLSL.Cmp("gl_DrawID" )              // GLSL >= 4.60 OR ARB_shader_draw_parameters
+                 || !var.nameGLSL.Cmp("gl_BaseVertex" )          // GLSL >= 4.60 OR ARB_shader_draw_parameters
+                 || !var.nameGLSL.Cmp("gl_BaseInstance" )        // GLSL >= 4.60 OR ARB_shader_draw_parameters
+                ){
+                    var.declareInOut = false;
+                }
+		        break;
+		    case AT_VS_OUT:// vertex output
+                if( !var.nameGLSL.Cmp("gl_Position" )
+                 || !var.nameGLSL.Cmp("gl_PointSize" )
+                 || !var.nameGLSL.Cmp("gl_ClipDistance" )
+                ){
+                    var.declareInOut = false;
+                }
+		        break;
+		    case AT_PS_IN: // pixel/fragment input
+                if( !var.nameGLSL.Cmp("gl_FrontFacing" )
+                 || !var.nameGLSL.Cmp("gl_PointCoord" )
+                 || !var.nameGLSL.Cmp("gl_SampleID" )       // GLSL >= 4.0
+                 || !var.nameGLSL.Cmp("gl_SamplePosition" ) // GLSL >= 4.0
+                 || !var.nameGLSL.Cmp("gl_SampleMaskIn" )   // GLSL >= 4.0
+                 || !var.nameGLSL.Cmp("gl_Layer" )          // GLSL >= 4.3
+                 || !var.nameGLSL.Cmp("gl_ViewportIndex" )  // GLSL >= 4.3
+                ){
+                    var.declareInOut = false;
+                }
+		        break;
+		    case AT_PS_OUT:// pixel/fragment output
+                if(  !var.nameGLSL.Cmp("gl_FragDepth" )      // You *CAN* do this one, but we don't. GLSL >= 4.2 OR ARB_conservative_depth
+                ){
+                    var.declareInOut = false;
+                }
+		        break;
 		}
 
 		inOutVars.Append( var );

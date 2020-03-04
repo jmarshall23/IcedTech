@@ -71,6 +71,7 @@ inline Float16::operator float() const
 inline Float16& Float16::operator =(const Float16& val)
 {
 	mValue = val.mValue;
+	return *this;
 }
 
 /*+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+*/

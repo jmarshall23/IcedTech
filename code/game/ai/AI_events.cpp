@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "../Game_local.h"
@@ -2335,7 +2335,7 @@ void idAI::Event_ThrowMoveable( void ) {
 	}
 	if ( moveable ) {
 		moveable->Unbind();
-		moveable->PostEventMS( &EV_SetOwner, 200, NULL );
+		moveable->PostEventMS( &EV_SetOwner, 200, 0 );
 	}
 }
 
@@ -2356,7 +2356,7 @@ void idAI::Event_ThrowAF( void ) {
 	}
 	if ( af ) {
 		af->Unbind();
-		af->PostEventMS( &EV_SetOwner, 200, NULL );
+		af->PostEventMS( &EV_SetOwner, 200, 0 );
 	}
 }
 

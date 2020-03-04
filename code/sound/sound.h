@@ -315,6 +315,10 @@ public:
 	// video playback needs to get this
 	virtual void *			GetIXAudio2() const = 0;
 
+#if !defined(WIN32)
+    virtual void*			GetOpenALDevice() const = 0;
+#endif
+
 	// for the sound level meter window
 	virtual cinData_t		ImageForTime( const int milliseconds, const bool waveform ) = 0;
 

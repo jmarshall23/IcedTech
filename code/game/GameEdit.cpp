@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -668,6 +668,11 @@ idGameEdit			gameEditLocal;
 idGameEdit *		gameEdit = &gameEditLocal;
 
 
+//lwss
+void idGameEdit::SetGameEditPointer() {
+    gameEdit = &gameEditLocal;
+}
+//lwss end
 /*
 =============
 idGameEdit::GetSelectedEntities

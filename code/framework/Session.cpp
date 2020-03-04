@@ -26,9 +26,9 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
-#pragma hdrstop
+#include "Engine_precompiled.h"
 
+#include <sys/posix/posix_public.h>
 #include "Session_local.h"
 
 idCVar	idSessionLocal::com_showAngles( "com_showAngles", "0", CVAR_SYSTEM | CVAR_BOOL, "" );
@@ -2585,7 +2585,6 @@ void idSessionLocal::Frame() {
 	}
 
 	// FIXME: deserves a cleanup and abstraction
-#if defined( _WIN32 )
 	// Spin in place if needed.  The game should yield the cpu if
 	// it is running over 60 hz, because there is fundamentally
 	// nothing useful for it to do.
@@ -2626,15 +2625,6 @@ void idSessionLocal::Frame() {
 		}
 		Sys_Sleep( 1 );
 	}
-#else
-	while( 1 ) {
-		latchedTicNumber = com_ticNumber;
-		if ( latchedTicNumber >= minTic ) {
-			break;
-		}
-		Sys_WaitForEvent( TRIGGER_EVENT_ONE );
-	}
-#endif
 
 	if ( authEmitTimeout ) {
 		// waiting for a game auth
@@ -2788,7 +2778,7 @@ void idSessionLocal::RunGameTic() {
 		} else {
 			cmd = logCmd.cmd;
 			cmd.ByteSwap();
-			logCmd.consistencyHash = LittleLong( logCmd.consistencyHash );
+			logCmd.consistencyHash = LittleInt( logCmd.consistencyHash );
 		}
 	}
 	

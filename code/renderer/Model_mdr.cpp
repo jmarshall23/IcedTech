@@ -6,6 +6,18 @@
 #include "Model_local.h"
 #include "Model_mdr.h"
 
+static char *custom_strlwr(char *str)
+{
+    unsigned char *p = (unsigned char *)str;
+
+    while (*p) {
+        *p = tolower((unsigned char)*p);
+        p++;
+    }
+
+    return str;
+}
+
 /*
 ========================
 rvmRenderModelMDR::rvmRenderModelMDR
@@ -110,14 +122,14 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 
 	pinmodel = (mdrHeader_t *)buffer;
 
-	pinmodel->version = LittleLong(pinmodel->version);
+	pinmodel->version = LittleInt(pinmodel->version);
 	if (pinmodel->version != MDR_VERSION)
 	{
 		common->Warning("R_LoadMDR: %s has wrong version (%i should be %i)\n", mod_name, pinmodel->version, MDR_VERSION);
 		return false;
 	}
 
-	size = LittleLong(pinmodel->ofsEnd);
+	size = LittleInt(pinmodel->ofsEnd);
 
 	if (size > filesize)
 	{
@@ -152,13 +164,13 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 
 	// Copy all the values over from the file and fix endian issues in the process, if necessary.
 
-	mdr->ident = LittleLong(pinmodel->ident);
+	mdr->ident = LittleInt(pinmodel->ident);
 	mdr->version = pinmodel->version;	// Don't need to swap byte order on this one, we already did above.
 	strcpy(mdr->name, pinmodel->name);
 	mdr->numFrames = pinmodel->numFrames;
 	mdr->numBones = pinmodel->numBones;
-	mdr->numLODs = LittleLong(pinmodel->numLODs);
-	mdr->numTags = LittleLong(pinmodel->numTags);
+	mdr->numLODs = LittleInt(pinmodel->numLODs);
+	mdr->numTags = LittleInt(pinmodel->numTags);
 	// We don't care about the other offset values, we'll generate them ourselves while loading.
 
 	numLods = mdr->numLODs;
@@ -249,7 +261,7 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 	lod = (mdrLOD_t *)frame;
 	mdr->ofsLODs = (int)((byte *)lod - (byte *)mdr);
 
-	curlod = (mdrLOD_t *)((byte *)pinmodel + LittleLong(pinmodel->ofsLODs));
+	curlod = (mdrLOD_t *)((byte *)pinmodel + LittleInt(pinmodel->ofsLODs));
 
 	// swap all the LOD's
 	for (l = 0; l < mdr->numLODs; l++)
@@ -261,12 +273,12 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 			return false;
 		}
 
-		lod->numSurfaces = LittleLong(curlod->numSurfaces);
+		lod->numSurfaces = LittleInt(curlod->numSurfaces);
 
 		// swap all the surfaces
 		surf = (mdrSurface_t *)(lod + 1);
 		lod->ofsSurfaces = (int)((byte *)surf - (byte *)lod);
-		cursurf = (mdrSurface_t *)((byte *)curlod + LittleLong(curlod->ofsSurfaces));
+		cursurf = (mdrSurface_t *)((byte *)curlod + LittleInt(curlod->ofsSurfaces));
 
 		for (i = 0; i < lod->numSurfaces; i++)
 		{
@@ -283,12 +295,12 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 
 			surf->ofsHeader = (byte *)mdr - (byte *)surf;
 
-			surf->numVerts = LittleLong(cursurf->numVerts);
-			surf->numTriangles = LittleLong(cursurf->numTriangles);
+			surf->numVerts = LittleInt(cursurf->numVerts);
+			surf->numTriangles = LittleInt(cursurf->numTriangles);
 			// numBoneReferences and BoneReferences generally seem to be unused
 
 			// lowercase the surface name so skin compares are faster
-			strlwr(surf->name);
+			custom_strlwr(surf->name);
 
 			// register the shaders
 			const char *materialName = va("%s/%s", shaderPrefix.c_str(), surf->shader);
@@ -308,7 +320,7 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 			// now copy the vertexes.
 			v = (mdrVertex_t *)(surf + 1);
 			surf->ofsVerts = (int)((byte *)v - (byte *)surf);
-			curv = (mdrVertex_t *)((byte *)cursurf + LittleLong(cursurf->ofsVerts));
+			curv = (mdrVertex_t *)((byte *)cursurf + LittleInt(cursurf->ofsVerts));
 
 			for (j = 0; j < surf->numVerts; j++)
 			{
@@ -335,7 +347,7 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 				// Now copy all the weights
 				for (k = 0; k < v->numWeights; k++)
 				{
-					weight->boneIndex = LittleLong(curweight->boneIndex);
+					weight->boneIndex = LittleInt(curweight->boneIndex);
 					weight->boneWeight = LittleFloat(curweight->boneWeight);
 
 					weight->offset[0] = LittleFloat(curweight->offset[0]);
@@ -353,7 +365,7 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 			// we know the offset to the triangles now:
 			tri = (mdrTriangle_t *)v;
 			surf->ofsTriangles = (int)((byte *)tri - (byte *)surf);
-			curtri = (mdrTriangle_t *)((byte *)cursurf + LittleLong(cursurf->ofsTriangles));
+			curtri = (mdrTriangle_t *)((byte *)cursurf + LittleInt(cursurf->ofsTriangles));
 
 			// simple bounds check
 			if (surf->numTriangles < 0 || (byte *)(tri + surf->numTriangles) >(byte *) mdr + size)
@@ -364,9 +376,9 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 
 			for (j = 0; j < surf->numTriangles; j++)
 			{
-				tri->indexes[0] = LittleLong(curtri->indexes[0]);
-				tri->indexes[1] = LittleLong(curtri->indexes[1]);
-				tri->indexes[2] = LittleLong(curtri->indexes[2]);
+				tri->indexes[0] = LittleInt(curtri->indexes[0]);
+				tri->indexes[1] = LittleInt(curtri->indexes[1]);
+				tri->indexes[2] = LittleInt(curtri->indexes[2]);
 
 				tri++;
 				curtri++;
@@ -377,7 +389,7 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 			surf = (mdrSurface_t *)tri;
 
 			// find the next surface.
-			cursurf = (mdrSurface_t *)((byte *)cursurf + LittleLong(cursurf->ofsEnd));
+			cursurf = (mdrSurface_t *)((byte *)cursurf + LittleInt(cursurf->ofsEnd));
 		}
 
 		// surf points to the next lod now.
@@ -385,13 +397,13 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 		lod = (mdrLOD_t *)surf;
 
 		// find the next LOD.
-		curlod = (mdrLOD_t *)((byte *)curlod + LittleLong(curlod->ofsEnd));
+		curlod = (mdrLOD_t *)((byte *)curlod + LittleInt(curlod->ofsEnd));
 	}
 
 	// lod points to the first tag now, so update the offset too.
 	tag = (mdrTag_t *)lod;
 	mdr->ofsTags = (int)((byte *)tag - (byte *)mdr);
-	curtag = (mdrTag_t *)((byte *)pinmodel + LittleLong(pinmodel->ofsTags));
+	curtag = (mdrTag_t *)((byte *)pinmodel + LittleInt(pinmodel->ofsTags));
 
 	// simple bounds check
 	if (mdr->numTags < 0 || (byte *)(tag + mdr->numTags) >(byte *) mdr + size)
@@ -402,7 +414,7 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 
 	for (i = 0; i < mdr->numTags; i++)
 	{
-		tag->boneIndex = LittleLong(curtag->boneIndex);
+		tag->boneIndex = LittleInt(curtag->boneIndex);
 		strcpy(tag->name, curtag->name);
 
 		tag++;

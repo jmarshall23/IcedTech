@@ -1,0 +1,44 @@
+#ignore base
+base/*
+
+#except for these
+!base/sound/convert.bat
+!base/sound/convert.sh
+!base/sound/extract_pak003_then_run_convert.txt
+
+code/.vs/*
+code/out/*
+code/build/*
+
+#clion files
+.idea/*
+code/cmake_install.cmake
+code/CMakeFiles/*
+code/cmake-build-*
+code/.idea/*
+code/CMakeCache.txt
+code/*.cbp
+code/Makefile
+
+#precompiled header files
+code/*_pch/*
+
+#static libs
+code/*.a
+
+#i honestly dont know
+code/libpng-config
+code/libpng.pc
+
+dkbase/config.spec
+dkbase/generated/*
+dkbase/virtualtextures/*
+
+#binaries
+*.exe
+*.dll
+*.so
+Launcher
+
+#gdb crap
+.gdb*

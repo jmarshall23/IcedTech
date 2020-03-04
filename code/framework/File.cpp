@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "Unzip.h"
@@ -39,8 +39,8 @@ FS_WriteFloatString
 =================
 */
 int FS_WriteFloatString( char *buf, const char *fmt, va_list argPtr ) {
-	long i;
-	unsigned long u;
+	int i;
+	unsigned int u;
 	double f;
 	char *str;
 	int index;
@@ -78,27 +78,27 @@ int FS_WriteFloatString( char *buf, const char *fmt, va_list argPtr ) {
 						break;
 					case 'd':
 					case 'i':
-						i = va_arg( argPtr, long );
+						i = va_arg( argPtr, int );
 						index += sprintf( buf+index, format.c_str(), i );
 						break;
 					case 'u':
-						u = va_arg( argPtr, unsigned long );
+						u = va_arg( argPtr, unsigned int );
 						index += sprintf( buf+index, format.c_str(), u );
 						break;
 					case 'o':
-						u = va_arg( argPtr, unsigned long );
+						u = va_arg( argPtr, unsigned int );
 						index += sprintf( buf+index, format.c_str(), u );
 						break;
 					case 'x':
-						u = va_arg( argPtr, unsigned long );
+						u = va_arg( argPtr, unsigned int );
 						index += sprintf( buf+index, format.c_str(), u );
 						break;
 					case 'X':
-						u = va_arg( argPtr, unsigned long );
+						u = va_arg( argPtr, unsigned int );
 						index += sprintf( buf+index, format.c_str(), u );
 						break;
 					case 'c':
-						i = va_arg( argPtr, long );
+						i = va_arg( argPtr, int );
 						index += sprintf( buf+index, format.c_str(), (char) i );
 						break;
 					case 's':
@@ -310,7 +310,7 @@ int idFile::WriteFloatString( const char *fmt, ... ) {
  */
 int idFile::ReadInt( int &value ) {
 	int result = Read( &value, sizeof( value ) );
-	value = LittleLong(value);
+	value = LittleInt(value);
 	return result;
 }
 
@@ -321,7 +321,7 @@ int idFile::ReadInt( int &value ) {
  */
 int idFile::ReadUnsignedInt( unsigned int &value ) {
 	int result = Read( &value, sizeof( value ) );
-	value = LittleLong(value);
+	value = LittleInt(value);
 	return result;
 }
 
@@ -466,7 +466,7 @@ int idFile::ReadMat3( idMat3 &mat ) {
  =================
  */
 int idFile::WriteInt( const int value ) {
-	int v = LittleLong(value);
+	int v = LittleInt(value);
 	return Write( &v, sizeof( v ) );
 }
 
@@ -476,7 +476,7 @@ int idFile::WriteInt( const int value ) {
  =================
  */
 int idFile::WriteUnsignedInt( const unsigned int value ) {
-	unsigned int v = LittleLong(value);
+	unsigned int v = LittleInt(value);
 	return Write( &v, sizeof( v ) );
 }
 

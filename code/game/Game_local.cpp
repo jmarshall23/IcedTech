@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -81,13 +81,17 @@ GetGameAPI
 #pragma export on
 #endif
 #if __GNUC__ >= 4
-#pragma GCC visibility push(default)
+extern "C" __attribute__((visibility ("default"))) gameExport_t *GetGameAPI( gameImport_t *import ) {
 #endif
-extern "C" gameExport_t *GetGameAPI( gameImport_t *import ) {
 #if __MWERKS__
+extern "C" gameExport_t *GetGameAPI( gameImport_t *import ) {
 #pragma export off
 #endif
-
+    //lwss
+    // having issue with static pointers being NULL after dll loading. might be a FIXME
+    //game = &gameLocal;
+    //gameEdit->SetGameEditPointer();
+    //lwss end
 	if ( import->version == GAME_API_VERSION ) {
 
 		// set interface pointers used by the game
@@ -121,9 +125,6 @@ extern "C" gameExport_t *GetGameAPI( gameImport_t *import ) {
 
 	return &gameExport;
 }
-#if __GNUC__ >= 4
-#pragma GCC visibility pop
-#endif
 
 /*
 ===========
@@ -873,7 +874,7 @@ void idGameLocal::LoadMap( const char *mapName, int randseed ) {
 	mapFileName = mapFile->GetName();
 
 // jmarshall
-	navMeshFile = navigationManager->LoadNavFile(mapName);
+	//navMeshFile = navigationManager->LoadNavFile(mapName);
 // jmarshall end
 
 	// load the collision map
@@ -1270,7 +1271,7 @@ bool idGameLocal::InitFromSaveGame( const char *mapName, idRenderWorld *renderWo
 		if ( !InhibitEntitySpawn( mapEnt->epairs ) ) {
 			CacheDictionaryMedia( &mapEnt->epairs );
 			const char *classname = mapEnt->epairs.GetString( "classname" );
-			if ( classname != '\0' ) {
+			if ( classname != 0 ) {
 				FindEntityDef( classname, false );
 			}
 		}
@@ -1644,7 +1645,7 @@ void idGameLocal::GetShakeSounds( const idDict *dict ) {
 	idStr soundName;
 
 	soundShaderName = dict->GetString( "s_shader" );
-	if ( soundShaderName != '\0' && dict->GetFloat( "s_shakes" ) != 0.0f ) {
+	if ( soundShaderName != 0 && dict->GetFloat( "s_shakes" ) != 0.0f ) {
 		soundShader = declManager->FindSound( soundShaderName );
 
 		for ( int i = 0; i < soundShader->GetNumSounds(); i++ ) {

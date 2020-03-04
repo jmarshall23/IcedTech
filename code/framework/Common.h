@@ -36,7 +36,9 @@ If you have questions concerning this license or the applicable additional terms
 
 ==============================================================
 */
-
+#ifndef BIT
+#define BIT( num )				( 1 << ( num ) )
+#endif
 typedef enum {
 	EDITOR_NONE					= 0,
 	EDITOR_RADIANT				= BIT(1),

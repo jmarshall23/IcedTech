@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "../renderer/Image.h"
@@ -196,7 +196,7 @@ private:
 	idStrList					warningList;
 	idStrList					errorList;
 
-	int							gameDLL;
+	void *						gameDLL;
 
 	idLangDict					languageDict;
 
@@ -2115,9 +2115,9 @@ void Com_LocalizeGuis_f( const idCmdArgs &args ) {
 
 	idFileList *files;
 	if ( idStr::Icmp( args.Argv(1), "all" ) == 0 ) {
-		idStr game = cvarSystem->GetCVarString( "fs_game" );
-		if(game.Length()) {
-			files = fileSystem->ListFilesTree( "guis", "*.gui", true, game );
+		idStr fsgame = cvarSystem->GetCVarString( "fs_game" );
+		if(fsgame.Length()) {
+			files = fileSystem->ListFilesTree( "guis", "*.gui", true, fsgame );
 		} else {
 			files = fileSystem->ListFilesTree( "guis", "*.gui", true );
 		}
@@ -2126,8 +2126,8 @@ void Com_LocalizeGuis_f( const idCmdArgs &args ) {
 		}
 		fileSystem->FreeFileList( files );
 
-		if(game.Length()) {
-			files = fileSystem->ListFilesTree( "guis", "*.pd", true, game );
+		if(fsgame.Length()) {
+			files = fileSystem->ListFilesTree( "guis", "*.pd", true, fsgame );
 		} else {
 			files = fileSystem->ListFilesTree( "guis", "*.pd", true, "d3xp" );
 		}
@@ -2337,7 +2337,7 @@ void idCommonLocal::InitCommands( void ) {
 	cmdSystem->AddCommand( "setMachineSpec", Com_SetMachineSpec_f, CMD_FL_SYSTEM, "detects system capabilities and sets com_machineSpec to appropriate value" );
 	cmdSystem->AddCommand( "execMachineSpec", Com_ExecMachineSpec_f, CMD_FL_SYSTEM, "execs the appropriate config files and sets cvars based on com_machineSpec" );
 
-#if	!defined( ID_DEMO_BUILD ) && !defined( ID_DEDICATED )
+#if	!defined( ID_DEMO_BUILD ) && !defined( ID_DEDICATED ) && defined(WIN32)
 	// compilers
 	cmdSystem->AddCommand( "dmap", Dmap_f, CMD_FL_TOOL, "compiles a map", idCmdSystem::ArgCompletion_MapName );
 	cmdSystem->AddCommand( "renderbump", RenderBump_f, CMD_FL_TOOL, "renders a bump map", idCmdSystem::ArgCompletion_ModelName );

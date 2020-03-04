@@ -1,10 +1,10 @@
 // VirtualTextureTranscode.cpp
 //
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #include "tr_local.h"
 
-#include "dxt/DXTCodec.h"
+#include "DXT/DXTCodec.h"
 
 idCVar vt_transcodeShowPages("vt_transcodeShowPages", "0", CVAR_INTEGER, "shows transcoded page information");
 idCVar vt_transcodeDebug("vt_transcodeDebug", "0", CVAR_BOOL, "shows information about transcoding");

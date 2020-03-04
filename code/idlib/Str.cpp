@@ -726,7 +726,7 @@ idStr::FileNameHash
 */
 int idStr::FileNameHash( void ) const {
 	int		i;
-	long	hash;
+    int	hash;
 	char	letter;
 
 	hash = 0;
@@ -739,7 +739,7 @@ int idStr::FileNameHash( void ) const {
 		if ( letter =='\\' ) {
 			letter = '/';
 		}
-		hash += (long)(letter)*(i+119);
+		hash += (int)(letter)*(i+119);
 		i++;
 	}
 	hash &= (FILE_HASH_SIZE-1);
@@ -1590,6 +1590,7 @@ va
 
 does a varargs printf into a temp buffer
 NOTE: not thread safe
+FIXME: this function is unsafe
 ============
 */
 char *va( const char *fmt, ... ) {

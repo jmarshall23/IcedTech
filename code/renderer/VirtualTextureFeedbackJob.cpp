@@ -1,7 +1,8 @@
 // VirtualTextureFeedbackJob.cpp
 //
 
-#include "engine_precompiled.h"
+#include <renderer/qgllib/glew.h>
+#include "Engine_precompiled.h"
 
 #include "tr_local.h"
 

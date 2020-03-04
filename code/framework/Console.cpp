@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #include "ConsoleHistory.h"
 
 void SCR_DrawTextLeftAlign(float &y, const char *text, ...) id_attribute((format(printf, 2, 3)));

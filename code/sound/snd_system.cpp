@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 
 #include "snd_local.h"
 
@@ -348,8 +348,28 @@ idSoundSystemLocal::GetIXAudio2
 ========================
 */
 void * idSoundSystemLocal::GetIXAudio2() const {
+#if defined(WIN32)
 	return (void *)hardware.GetIXAudio2();
+#else
+	return 0;
+#endif
 }
+
+/*
+========================
+idSoundSystemLocal::GetOpenALDevice
+========================
+*/
+// RB begin
+void* idSoundSystemLocal::GetOpenALDevice() const
+{
+#if defined(WIN32)
+    return ( void* )hardware.GetIXAudio2();
+#else
+    return ( void* )hardware.GetOpenALDevice();
+#endif
+}
+// RB end
 
 /*
 ========================

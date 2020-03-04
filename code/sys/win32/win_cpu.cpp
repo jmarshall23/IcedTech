@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "win_local.h"
@@ -55,7 +55,7 @@ double Sys_GetClockTicks( void ) {
 
 #else
 
-	unsigned long lo, hi;
+	unsigned int lo, hi;
 
 	__asm {
 		push ebx
@@ -106,7 +106,7 @@ double Sys_ClockTicksPerSecond( void ) {
 			}
 			RegCloseKey( hKey );
 			if ( ret == ERROR_SUCCESS ) {
-				ticks = (double) ((unsigned long)ProcSpeed) * 1000000;
+				ticks = (double) ((unsigned int)ProcSpeed) * 1000000;
 			}
 		}
 	}

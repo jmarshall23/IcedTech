@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,7 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include <renderer/qgllib/glew.h>
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "tr_local.h"
@@ -143,7 +144,7 @@ idCVar r_testGammaBias( "r_testGammaBias", "0", CVAR_RENDERER | CVAR_FLOAT, "if 
 idCVar r_testStepGamma( "r_testStepGamma", "0", CVAR_RENDERER | CVAR_FLOAT, "if > 0 draw a grid pattern to test gamma levels" );
 idCVar r_lightScale( "r_lightScale", "2", CVAR_RENDERER | CVAR_FLOAT, "all light intensities are multiplied by this" );
 idCVar r_lightSourceRadius( "r_lightSourceRadius", "0", CVAR_RENDERER | CVAR_FLOAT, "for soft-shadow sampling" );
-idCVar r_flareSize( "r_flareSize", "1", CVAR_RENDERER | CVAR_FLOAT, "scale the flare deforms from the material def" ); 
+idCVar r_flareSize( "r_flareSize", "1", CVAR_RENDERER | CVAR_FLOAT, "scale the flare deforms from the material def" );
 
 idCVar r_useExternalShadows( "r_useExternalShadows", "1", CVAR_RENDERER | CVAR_INTEGER, "1 = skip drawing caps when outside the light volume, 2 = force to no caps for testing", 0, 2, idCmdSystem::ArgCompletion_Integer<0,2> );
 idCVar r_useOptimizedShadows( "r_useOptimizedShadows", "1", CVAR_RENDERER | CVAR_BOOL, "use the dmap generated static shadow volumes" );
@@ -209,7 +210,7 @@ idCVar r_showSkel( "r_showSkel", "0", CVAR_RENDERER | CVAR_INTEGER, "draw the sk
 idCVar r_jointNameScale( "r_jointNameScale", "0.02", CVAR_RENDERER | CVAR_FLOAT, "size of joint names when r_showskel is set to 1" );
 idCVar r_jointNameOffset( "r_jointNameOffset", "0.5", CVAR_RENDERER | CVAR_FLOAT, "offset of joint names when r_showskel is set to 1" );
 
-idCVar r_cgVertexProfile( "r_cgVertexProfile", "best", CVAR_RENDERER | CVAR_ARCHIVE, "arbvp1, vp20, vp30" );     
+idCVar r_cgVertexProfile( "r_cgVertexProfile", "best", CVAR_RENDERER | CVAR_ARCHIVE, "arbvp1, vp20, vp30" );
 idCVar r_cgFragmentProfile( "r_cgFragmentProfile", "best", CVAR_RENDERER | CVAR_ARCHIVE, "arbfp1, fp30" );
 
 idCVar r_debugLineDepthTest( "r_debugLineDepthTest", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "perform depth test on debug lines" );
@@ -224,34 +225,34 @@ idCVar r_debugRenderToTexture( "r_debugRenderToTexture", "0", CVAR_RENDERER | CV
 idCVar r_debugContext("r_debugContext", "0", CVAR_INTEGER, "");
 
 /*
-=================
-R_CheckExtension
-=================
-*/
-bool R_CheckExtension( char *name ) {
-	if ( !strstr( glConfig.extensions_string, name ) ) {
-		common->Printf( "X..%s not found\n", name );
-		return false;
-	}
-
-	common->Printf( "...using %s\n", name );
-	return true;
-}
-
-/*
 ========================
 DebugCallback
 
 For ARB_debug_output
 ========================
 */
-static void CALLBACK DebugCallback(unsigned int source, unsigned int type,
+static void DebugCallback(unsigned int source, unsigned int type,
 	unsigned int id, unsigned int severity, int length, const char * message, void * userParam) {
 	// it probably isn't safe to do an idLib::Printf at this point
-	OutputDebugString(message);
-	OutputDebugString("\n");
+	//OutputDebugString(message);
+	//OutputDebugString("\n");
 }
+/*
+========================
+SetExtension
 
+Helper for logging
+========================
+*/
+static void SetExtension( bool extension, bool *out, const char *name )
+{
+    *out = extension;
+    if( extension ){
+        common->Printf("...using %s\n", name);
+    } else {
+        common->Printf( "X..%s not found\n", name );
+    }
+}
 /*
 ==================
 R_CheckPortableExtensions
@@ -259,16 +260,27 @@ R_CheckPortableExtensions
 ==================
 */
 static void R_CheckPortableExtensions( void ) {
-	glConfig.glVersion = atof( glConfig.version_string );
-
 	common->Printf("Initilizing Glew...\n");
+	// Allow experimental extensions.
+	glewExperimental = GL_TRUE;
+
 	if (glewInit() != GLEW_OK)
 	{
 		common->FatalError("Failed to initilize glew!\n");
 	}
+    common->Printf( "GL EXTENSIONS DUMP...\n" );
+
+    GLint numExt;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &numExt);
+
+    for( int i = 0; i < numExt; i++ ){
+        const char *ext = (const char*)glGetStringi(GL_EXTENSIONS, i);
+        common->Printf("%s -", ext );
+    }
+    common->Printf("\n");
 
 	// GL_ARB_multitexture
-	glConfig.multitextureAvailable = R_CheckExtension( "GL_ARB_multitexture" );
+	SetExtension( GLEW_ARB_multitexture, &glConfig.multitextureAvailable, "ARB_multitexture");
 	if ( glConfig.multitextureAvailable ) {
 		//if ( glConfig.maxTextureUnits > MAX_MULTITEXTURE_UNITS ) {
 		//	glConfig.maxTextureUnits = MAX_MULTITEXTURE_UNITS;
@@ -282,30 +294,26 @@ static void R_CheckPortableExtensions( void ) {
 	}
 
 	// GL_ARB_texture_env_combine
-	glConfig.textureEnvCombineAvailable = R_CheckExtension( "GL_ARB_texture_env_combine" );
+    SetExtension( GLEW_ARB_texture_env_combine, &glConfig.textureEnvCombineAvailable, "ARB_texture_env_combine" );
 
 	// GL_ARB_texture_cube_map
-	glConfig.cubeMapAvailable = R_CheckExtension( "GL_ARB_texture_cube_map" );
+	SetExtension( GLEW_ARB_texture_cube_map, &glConfig.cubeMapAvailable, "ARB_texture_cube_map" );
 
 	// GL_ARB_texture_env_dot3
-	glConfig.envDot3Available = R_CheckExtension( "GL_ARB_texture_env_dot3" );
+	SetExtension( GLEW_ARB_texture_env_dot3, &glConfig.envDot3Available, "ARB_texture_env_dot3" );
 
 	// GL_ARB_texture_env_add
-	glConfig.textureEnvAddAvailable = R_CheckExtension( "GL_ARB_texture_env_add" );
+	SetExtension( GLEW_ARB_texture_env_add, &glConfig.textureEnvAddAvailable, "ARB_texture_env_add" );
 
 	// GL_ARB_texture_non_power_of_two
-	glConfig.textureNonPowerOfTwoAvailable = R_CheckExtension( "GL_ARB_texture_non_power_of_two" );
+	SetExtension( GLEW_ARB_texture_non_power_of_two, &glConfig.textureNonPowerOfTwoAvailable, "ARB_texture_non_power_of_two" );
 
 	// GL_ARB_texture_compression + GL_S3_s3tc
 	// DRI drivers may have GL_ARB_texture_compression but no GL_EXT_texture_compression_s3tc
-	if ( R_CheckExtension( "GL_ARB_texture_compression" ) && R_CheckExtension( "GL_EXT_texture_compression_s3tc" ) ) {
-		glConfig.textureCompressionAvailable = true;
-	} else {
-		glConfig.textureCompressionAvailable = false;
-	}
+    SetExtension( (GLEW_ARB_texture_compression && GLEW_EXT_texture_compression_s3tc), &glConfig.textureCompressionAvailable, "ARB_texture_compression AND EXT_texture_compression_s3tc");
 
 	// GL_EXT_texture_filter_anisotropic
-	glConfig.anisotropicAvailable = R_CheckExtension( "GL_EXT_texture_filter_anisotropic" );
+	SetExtension( GLEW_EXT_texture_filter_anisotropic, &glConfig.anisotropicAvailable, "EXT_texture_filter_anisotropic" );
 	if ( glConfig.anisotropicAvailable ) {
 		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &glConfig.maxTextureAnisotropy );
 		common->Printf( "   maxTextureAnisotropy: %f\n", glConfig.maxTextureAnisotropy );
@@ -316,7 +324,8 @@ static void R_CheckPortableExtensions( void ) {
 	// GL_EXT_texture_lod_bias
 	// The actual extension is broken as specificed, storing the state in the texture unit instead
 	// of the texture object.  The behavior in GL 1.4 is the behavior we use.
-	if ( glConfig.glVersion >= 1.4 || R_CheckExtension( "GL_EXT_texture_lod" ) ) {
+	//if ( glConfig.glVersion >= 1.4 || R_CheckExtension( "GL_EXT_texture_lod" ) ) {
+	if ( glConfig.glVersion >= 1.4 || GLEW_EXT_texture_lod_bias ) {
 		common->Printf( "...using %s\n", "GL_1.4_texture_lod_bias" );
 		glConfig.textureLODBiasAvailable = true;
 	} else {
@@ -325,16 +334,16 @@ static void R_CheckPortableExtensions( void ) {
 	}
 
 	// GL_EXT_shared_texture_palette
-	glConfig.sharedTexturePaletteAvailable = R_CheckExtension( "GL_EXT_shared_texture_palette" );
-	if ( glConfig.sharedTexturePaletteAvailable ) {
+	SetExtension( GLEW_EXT_shared_texture_palette, &glConfig.sharedTexturePaletteAvailable, "EXT_shared_texture_palette" );
+	//if ( glConfig.sharedTexturePaletteAvailable ) {
 	//	glColorTableEXT = ( void ( APIENTRY * ) ( int, int, int, int, int, const void * ) ) GLimp_ExtensionPointer( "glColorTableEXT" );
-	}
+	//}
 
 	// GL_EXT_texture3D (not currently used for anything)
-	glConfig.texture3DAvailable = R_CheckExtension( "GL_EXT_texture3D" );
-	
+	SetExtension( GLEW_EXT_texture3D, &glConfig.texture3DAvailable, "EXT_texture3D" );
+
 	// GL_ARB_uniform_buffer_object
-	glConfig.uniformBufferAvailable = R_CheckExtension("GL_ARB_uniform_buffer_object");
+	SetExtension( GLEW_ARB_uniform_buffer_object, &glConfig.uniformBufferAvailable, "ARB_uniform_buffer_object" );
 	if (glConfig.uniformBufferAvailable) {
 		glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, (GLint *)&glConfig.uniformBufferOffsetAlignment);
 		if (glConfig.uniformBufferOffsetAlignment < 256) {
@@ -346,7 +355,8 @@ static void R_CheckPortableExtensions( void ) {
 	// This isn't very important, but some pathological case might cause a clamp error and give a shadow bug.
 	// Nvidia also believes that future hardware may be able to run faster with this enabled to avoid the
 	// serialization of clamping.
-	if ( R_CheckExtension( "GL_EXT_stencil_wrap" ) ) {
+	//if ( R_CheckExtension( "GL_EXT_stencil_wrap" ) ) {
+	if ( GLEW_EXT_stencil_wrap ) {
 		tr.stencilIncr = GL_INCR_WRAP_EXT;
 		tr.stencilDecr = GL_DECR_WRAP_EXT;
 	} else {
@@ -355,55 +365,56 @@ static void R_CheckPortableExtensions( void ) {
 	}
 
 	// GL_NV_register_combiners
-	glConfig.registerCombinersAvailable = R_CheckExtension( "GL_NV_register_combiners" );
-	if ( glConfig.registerCombinersAvailable ) {
-		
-	}
+	SetExtension( GLEW_NV_register_combiners, &glConfig.registerCombinersAvailable, "NV_register_combiners" );
+	//if ( glConfig.registerCombinersAvailable ) {
+	//}
 
 	// GL_EXT_stencil_two_side
-	glConfig.twoSidedStencilAvailable = R_CheckExtension( "GL_EXT_stencil_two_side" );
+	SetExtension( GLEW_EXT_stencil_two_side, &glConfig.twoSidedStencilAvailable, "EXT_stencil_two_side" );
 	if ( glConfig.twoSidedStencilAvailable ) {
 		//glActiveStencilFaceEXT = (PFNGLACTIVESTENCILFACEEXTPROC)GLimp_ExtensionPointer( "glActiveStencilFaceEXT" );
 	} else {
-		glConfig.atiTwoSidedStencilAvailable = R_CheckExtension( "GL_ATI_separate_stencil" );
-		if ( glConfig.atiTwoSidedStencilAvailable ) {
+		SetExtension( GLEW_ATI_separate_stencil, &glConfig.atiTwoSidedStencilAvailable, "ATI_separate_stencil" );
+		//if ( glConfig.atiTwoSidedStencilAvailable ) {
 		//	glStencilFuncSeparateATI  = (PFNGLSTENCILFUNCSEPARATEATIPROC)GLimp_ExtensionPointer( "glStencilFuncSeparateATI" );
 		//	glStencilOpSeparateATI = (PFNGLSTENCILOPSEPARATEATIPROC)GLimp_ExtensionPointer( "glStencilOpSeparateATI" );
-		}
+		//}
 	}
 
 	// GL_ATI_fragment_shader
-	glConfig.atiFragmentShaderAvailable = R_CheckExtension( "GL_ATI_fragment_shader" );
+	SetExtension( GLEW_ATI_fragment_shader, &glConfig.atiFragmentShaderAvailable, "ATI_fragment_shader" );
 	if (! glConfig.atiFragmentShaderAvailable ) {
 		// only on OSX: ATI_fragment_shader is faked through ATI_text_fragment_shader (macosx_glimp.cpp)
-		glConfig.atiFragmentShaderAvailable = R_CheckExtension( "GL_ATI_text_fragment_shader" );
+		//glConfig.atiFragmentShaderAvailable = R_CheckExtension( "GL_ATI_text_fragment_shader" );
+		SetExtension( GL_ATI_text_fragment_shader, &glConfig.atiFragmentShaderAvailable, "ATI_text_fragment_shader" );
 	}
 	
 
 	// ARB_vertex_buffer_object
-	glConfig.ARBVertexBufferObjectAvailable = R_CheckExtension( "GL_ARB_vertex_buffer_object" );
-	
+	SetExtension( GLEW_ARB_vertex_buffer_object, &glConfig.ARBVertexBufferObjectAvailable, "ARB_vertex_buffer_object" );
+
 	// ARB_vertex_program
-	glConfig.ARBVertexProgramAvailable = R_CheckExtension( "GL_ARB_vertex_program" );
-	
+	SetExtension( GLEW_ARB_vertex_program, &glConfig.ARBVertexProgramAvailable, "ARB_vertex_program" );
+
 
 	// ARB_fragment_program
 	if ( r_inhibitFragmentProgram.GetBool() ) {
 		glConfig.ARBFragmentProgramAvailable = false;
 	} else {
-		glConfig.ARBFragmentProgramAvailable = R_CheckExtension( "GL_ARB_fragment_program" );
-			}
+		//glConfig.ARBFragmentProgramAvailable = R_CheckExtension( "GL_ARB_fragment_program" );
+		SetExtension( GLEW_ARB_fragment_program, &glConfig.ARBFragmentProgramAvailable, "ARB_fragment_program" );
+    }
 
 	// check for minimum set
-	if ( !glConfig.multitextureAvailable || !glConfig.textureEnvCombineAvailable || !glConfig.cubeMapAvailable
-		|| !glConfig.envDot3Available ) {
-			common->Error( common->GetLanguageDict()->GetString( "#str_06780" ) );
+	if ( !glConfig.multitextureAvailable || !glConfig.textureEnvCombineAvailable || !glConfig.cubeMapAvailable || !glConfig.envDot3Available ) {
+			common->Error( "Minimum OpenGL set not available! (multitexture/textureEnvCombine/cubeMap/envDot3)\n" );
 	}
 
  	// GL_EXT_depth_bounds_test
- 	glConfig.depthBoundsTestAvailable = R_CheckExtension( "EXT_depth_bounds_test" );
+	SetExtension( GLEW_EXT_depth_bounds_test, &glConfig.depthBoundsTestAvailable, "EXT_depth_bounds_test" );
 
-	if (R_CheckExtension("GL_ARB_debug_output"))
+	//if (R_CheckExtension("GL_ARB_debug_output"))
+	if (GLEW_ARB_debug_output)
 	{
 		if (r_debugContext.GetInteger() >= 1) {
 			glEnable(GL_DEBUG_OUTPUT);
@@ -543,11 +554,13 @@ void R_InitOpenGL( void ) {
 	// input and sound systems need to be tied to the new window
 	Sys_InitInput();
 
-	// get our config strings
-	glConfig.vendor_string = (const char *)glGetString(GL_VENDOR);
+	//lwss: extensions can't be gotten this way in newer OpenGL
+    //glConfig.extensions_string = (const char *)glGetString(GL_EXTENSIONS);
+    glConfig.vendor_string = (const char *)glGetString(GL_VENDOR);
 	glConfig.renderer_string = (const char *)glGetString(GL_RENDERER);
-	glConfig.version_string = (const char *)glGetString(GL_VERSION);
-	glConfig.extensions_string = (const char *)glGetString(GL_EXTENSIONS);
+    glConfig.glVersion = atof( (const char*)glGetString(GL_VERSION) );
+    common->Printf("OpenGL Version: %f | Renderer: %s | Vendor: %s\n", glConfig.glVersion, glConfig.renderer_string, glConfig.vendor_string );
+    //lwss end
 
 	// OpenGL driver constants
 	glGetIntegerv( GL_MAX_TEXTURE_SIZE, &temp );
@@ -560,7 +573,7 @@ void R_InitOpenGL( void ) {
 
 	glConfig.isInitialized = true;
 
-	// recheck all the extensions (FIXME: this might be dangerous)
+	// recheck all the extensions
 	R_CheckPortableExtensions();
 
 	renderProgManager.Init();
@@ -1576,10 +1589,19 @@ void GfxInfo_f( const idCmdArgs &args ) {
 		"fullscreen"
 	};
 
-	common->Printf( "\nGL_VENDOR: %s\n", glConfig.vendor_string );
+    GLint numExt;
+
+    common->Printf( "\nGL_VENDOR: %s\n", glConfig.vendor_string );
 	common->Printf( "GL_RENDERER: %s\n", glConfig.renderer_string );
-	common->Printf( "GL_VERSION: %s\n", glConfig.version_string );
-	common->Printf( "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
+	common->Printf( "GL_VERSION: %f\n", glConfig.glVersion );
+    //lwss
+    common->Printf( "GL_EXTENSIONS...\n" );
+    glGetIntegerv(GL_NUM_EXTENSIONS, &numExt);
+
+    for( int i = 0; i < numExt; i++ ){
+        common->Printf("\t[%d]%s\n", i, (const char*)glGetStringi(GL_EXTENSIONS, i));
+    }
+    //lwss end
 	if ( glConfig.wgl_extensions_string ) {
 		common->Printf( "WGL_EXTENSIONS: %s\n", glConfig.wgl_extensions_string );
 	}
@@ -1947,9 +1969,6 @@ void idRenderSystemLocal::Init( void ) {
 
 	idCinematic::InitCinematic( );
 
-	// build brightness translation tables
-	R_SetColorMappings();
-
 	R_InitMaterials();
 
 	renderModelManager->Init();
@@ -1961,7 +1980,7 @@ void idRenderSystemLocal::Init( void ) {
 
 	// determine which back end we will use
 	// ??? this is invalid here as there is not enough information to set it up correctly
-	SetBackEndRenderer();
+	// SetBackEndRenderer();
 
 	common->Printf( "renderSystem initialized.\n" );
 	common->Printf( "--------------------------------------\n" );

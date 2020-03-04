@@ -53,17 +53,17 @@ public:
 
 	virtual void			FPU_EnableExceptions( int exceptions );
 
-	virtual void			GetCallStack( address_t *callStack, const int callStackSize );
-	virtual const char *	GetCallStackStr( const address_t *callStack, const int callStackSize );
-	virtual const char *	GetCallStackCurStr( int depth );
-	virtual void			ShutdownSymbols( void );
+	//virtual void			GetCallStack( address_t *callStack, const int callStackSize );
+	//virtual const char *	GetCallStackStr( const address_t *callStack, const int callStackSize );
+	//virtual const char *	GetCallStackCurStr( int depth );
+	//virtual void			ShutdownSymbols( void );
 
 	virtual bool			LockMemory( void *ptr, int bytes );
 	virtual bool			UnlockMemory( void *ptr, int bytes );
 
-	virtual int				DLL_Load( const char *dllName );
-	virtual void *			DLL_GetProcAddress( int dllHandle, const char *procName );
-	virtual void			DLL_Unload( int dllHandle );
+	virtual void *			DLL_Load( const char *dllName );
+	virtual void *			DLL_GetProcAddress( void *dllHandle, const char *procName );
+	virtual void			DLL_Unload( void *dllHandle );
 	virtual void			DLL_GetFileName( const char *baseName, char *dllName, int maxLength );
 
 	virtual sysEvent_t		GenerateMouseButtonEvent( int button, bool down );

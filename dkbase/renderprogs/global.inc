@@ -132,13 +132,13 @@ static const half4 matrixCoCg1YtoRGB1X = half4(  1.0, -1.0,  0.0,        1.0 );
 static const half4 matrixCoCg1YtoRGB1Y = half4(  0.0,  1.0, -0.50196078, 1.0 ); // -0.5 * 256.0 / 255.0
 static const half4 matrixCoCg1YtoRGB1Z = half4( -1.0, -1.0,  1.00392156, 1.0 ); // +1.0 * 256.0 / 255.0
 
-static int2 ComputeMipMapLevel(isampler2D pageOffsetTexture, float2 texCoords, float width, float height)
-{
-	texCoords = texCoords * float2(width, height);
-
-	float2 mipMapLevel = texQueryLOD(pageOffsetTexture, texCoords);
-	return int2(0, 0);
-}
+//static int2 ComputeMipMapLevel(isampler2D pageOffsetTexture, float2 texCoords, float width, float height)
+//{
+//	texCoords = texCoords * float2(width, height);
+//
+//	float2 mipMapLevel = texQueryLOD(pageOffsetTexture, texCoords);
+//	return int2(0, 0);
+//}
 
 static float ComputeMippedValue(int mipmap, float value)
 {

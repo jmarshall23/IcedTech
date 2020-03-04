@@ -1131,9 +1131,6 @@ void R_SetColorMappings( void );
 void R_ScreenShot_f( const idCmdArgs &args );
 void R_StencilShot( void );
 
-bool R_CheckExtension( char *name );
-
-
 /*
 ====================================================================
 
@@ -1196,7 +1193,12 @@ void		GLimp_DeactivateContext( void );
 
 void		GLimp_EnableLogging( bool enable );
 
+const int GRAB_ENABLE		= (1 << 0);
+const int GRAB_REENABLE		= (1 << 1);
+const int GRAB_HIDECURSOR	= (1 << 2);
+const int GRAB_SETSTATE		= (1 << 3);
 
+void GLimp_GrabInput(int flags);
 /*
 ====================================================================
 

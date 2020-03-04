@@ -26,7 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include <renderer/qgllib/glew.h>
+#include "Engine_precompiled.h"
 #include "tr_local.h"
 
 idCVar r_showBuffers( "r_showBuffers", "0", CVAR_INTEGER, "" );
@@ -41,7 +42,8 @@ IsWriteCombined
 ==================
 */
 bool IsWriteCombined( void * base ) {
-	MEMORY_BASIC_INFORMATION info;
+#if defined(WIN32)
+    MEMORY_BASIC_INFORMATION info;
 	SIZE_T size = VirtualQueryEx( GetCurrentProcess(), base, &info, sizeof( info ) );
 	if ( size == 0 ) {
 		DWORD error = GetLastError();
@@ -50,6 +52,9 @@ bool IsWriteCombined( void * base ) {
 	}
 	bool isWriteCombined = ( ( info.AllocationProtect & PAGE_WRITECOMBINE ) != 0 );
 	return isWriteCombined;
+#else
+    return false;
+#endif
 }
 
 
@@ -181,7 +186,7 @@ bool idVertexBuffer::AllocBufferObject( const void * data, int allocSize ) {
 
 	// these are rewritten every frame
 	glBufferDataARB( GL_ARRAY_BUFFER_ARB, numBytes, NULL, bufferUsage );
-	apiObject = reinterpret_cast< void * >( bufferObject );
+	apiObject = bufferObject;
 
 	GLenum err = glGetError();
 	if ( err == GL_OUT_OF_MEMORY ) {
@@ -226,8 +231,7 @@ void idVertexBuffer::FreeBufferObject() {
 		common->Printf( "vertex buffer free %p, api %p (%i bytes)\n", this, GetAPIObject(), GetSize() );
 	}
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glDeleteBuffersARB( 1, & bufferObject );
+	glDeleteBuffersARB( 1, (GLuint*)&apiObject );
 
 	ClearWithoutFreeing();
 }
@@ -287,8 +291,7 @@ void idVertexBuffer::Update( const void * data, int updateSize ) const {
 
 	int numBytes = ( updateSize + 15 ) & ~15;
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, apiObject );
 	glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, GetOffset(), (GLsizeiptrARB)numBytes, data );
 /*
 	void * buffer = MapBuffer( BM_WRITE );
@@ -308,8 +311,7 @@ void * idVertexBuffer::MapBuffer( bufferMapType_t mapType ) const {
 
 	void * buffer = NULL;
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, apiObject );
 	if ( mapType == BM_READ ) {
 		//buffer = glMapBufferARB( GL_ARRAY_BUFFER_ARB, GL_READ_ONLY_ARB );
 		buffer = glMapBufferRange( GL_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
@@ -322,7 +324,7 @@ void * idVertexBuffer::MapBuffer( bufferMapType_t mapType ) const {
 		if ( buffer != NULL ) {
 			buffer = (byte *)buffer + GetOffset();
 		}
-		assert( IsWriteCombined( buffer ) );
+		//assert( IsWriteCombined( buffer ) );
 	} else {
 		assert( false );
 	}
@@ -344,8 +346,7 @@ void idVertexBuffer::UnmapBuffer() const {
 	assert( apiObject != NULL );
 	assert( IsMapped() );
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, apiObject );
 	if ( !glUnmapBufferARB( GL_ARRAY_BUFFER_ARB ) ) {
 		common->Printf( "idVertexBuffer::UnmapBuffer failed\n" );
 	}
@@ -426,7 +427,7 @@ bool idIndexBuffer::AllocBufferObject( const void * data, int allocSize ) {
 
 	// these are rewritten every frame
 	glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, numBytes, NULL, bufferUsage );
-	apiObject = reinterpret_cast< void * >( bufferObject );
+	apiObject = bufferObject;
 
 	GLenum err = glGetError();
 	if ( err == GL_OUT_OF_MEMORY ) {
@@ -471,10 +472,10 @@ void idIndexBuffer::FreeBufferObject() {
 		common->Printf( "index buffer free %p, api %p (%i bytes)\n", this, GetAPIObject(), GetSize() );
 	}
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glDeleteBuffersARB( 1, & bufferObject );
+    glDeleteBuffers( 1, ( GLuint* )&apiObject );
 
-	ClearWithoutFreeing();
+
+    ClearWithoutFreeing();
 }
 
 /*
@@ -533,8 +534,7 @@ void idIndexBuffer::Update( const void * data, int updateSize ) const {
 
 	int numBytes = ( updateSize + 15 ) & ~15;
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, apiObject );
 	glBufferSubDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GetOffset(), (GLsizeiptrARB)numBytes, data );
 /*
 	void * buffer = MapBuffer( BM_WRITE );
@@ -555,8 +555,7 @@ void * idIndexBuffer::MapBuffer( bufferMapType_t mapType ) const {
 
 	void * buffer = NULL;
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, apiObject );
 	if ( mapType == BM_READ ) {
 		//buffer = glMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GL_READ_ONLY_ARB );
 		buffer = glMapBufferRange( GL_ELEMENT_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
@@ -569,7 +568,7 @@ void * idIndexBuffer::MapBuffer( bufferMapType_t mapType ) const {
 		if ( buffer != NULL ) {
 			buffer = (byte *)buffer + GetOffset();
 		}
-		assert( IsWriteCombined( buffer ) );
+		//assert( IsWriteCombined( buffer ) );
 	} else {
 		assert( false );
 	}
@@ -591,8 +590,7 @@ void idIndexBuffer::UnmapBuffer() const {
 	assert( apiObject != NULL );
 	assert( IsMapped() );
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, apiObject );
 	if ( !glUnmapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB ) ) {
 		common->Printf( "idIndexBuffer::UnmapBuffer failed\n" );
 	}
@@ -664,7 +662,7 @@ bool idJointBuffer::AllocBufferObject( const float * joints, int numAllocJoints 
 	glBindBufferARB( GL_UNIFORM_BUFFER, buffer );
 	glBufferDataARB( GL_UNIFORM_BUFFER, numBytes, NULL, GL_STREAM_DRAW_ARB );
 	glBindBufferARB( GL_UNIFORM_BUFFER, 0);
-	apiObject = reinterpret_cast< void * >( buffer );
+	apiObject = buffer;
 
 	if ( r_showBuffers.GetBool() ) {
 		common->Printf( "joint buffer alloc %p, api %p (%i joints)\n", this, GetAPIObject(), GetNumJoints() );
@@ -702,9 +700,8 @@ void idJointBuffer::FreeBufferObject() {
 		common->Printf( "joint buffer free %p, api %p (%i joints)\n", this, GetAPIObject(), GetNumJoints() );
 	}
 
-	GLuint buffer = reinterpret_cast< GLuint > ( apiObject );
 	glBindBufferARB( GL_UNIFORM_BUFFER, 0 );
-	glDeleteBuffersARB( 1, & buffer );
+	glDeleteBuffersARB( 1, ( GLuint* )&apiObject );
 
 	ClearWithoutFreeing();
 }
@@ -765,7 +762,7 @@ void idJointBuffer::Update( const float * joints, int numUpdateJoints ) const {
 
 	const int numBytes = numUpdateJoints * 3 * 4 * sizeof( float );
 
-	glBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
+	glBindBufferARB( GL_UNIFORM_BUFFER, apiObject  );
 	glBufferSubDataARB( GL_UNIFORM_BUFFER, GetOffset(), (GLsizeiptrARB)numBytes, joints );
 }
 
@@ -783,7 +780,7 @@ float * idJointBuffer::MapBuffer( bufferMapType_t mapType ) const {
 
 	void * buffer = NULL;
 
-	glBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
+	glBindBufferARB( GL_UNIFORM_BUFFER, apiObject );
 	numBytes = numBytes;
 	assert( GetOffset() == 0 );
 	//buffer = glMapBufferARB( GL_UNIFORM_BUFFER, GL_WRITE_ONLY_ARB );
@@ -809,7 +806,7 @@ void idJointBuffer::UnmapBuffer() const {
 	assert( apiObject != NULL );
 	assert( IsMapped() );
 
-	glBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
+	glBindBufferARB( GL_UNIFORM_BUFFER, apiObject );
 	if ( !glUnmapBufferARB( GL_UNIFORM_BUFFER ) ) {
 		common->Printf( "idJointBuffer::UnmapBuffer failed\n" );
 	}

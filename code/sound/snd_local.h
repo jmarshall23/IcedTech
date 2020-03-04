@@ -79,8 +79,9 @@ typedef enum {
 
 #include "SoundVoice.h"
 
-
 #define OPERATION_SET 1
+
+#if defined(WIN32)
 
 #include <dxsdkver.h>
 
@@ -92,8 +93,35 @@ typedef enum {
 #include "XAudio2/XA2_SoundVoice.h"
 #include "XAudio2/XA2_SoundHardware.h"
 
+#else
 
+#include "OpenAL/AL_SoundSample.h"
+#include "OpenAL/AL_SoundVoice.h"
+#include "OpenAL/AL_SoundHardware.h"
 
+ID_INLINE_EXTERN ALenum CheckALErrors_( const char* filename, int line )
+{
+    ALenum err = alGetError();
+    if( err != AL_NO_ERROR )
+    {
+        common->Printf( "OpenAL Error: %s (0x%x), @ %s %d\n", alGetString( err ), err, filename, line );
+    }
+    return err;
+}
+#define CheckALErrors() CheckALErrors_(__FILE__, __LINE__)
+
+ID_INLINE_EXTERN ALCenum CheckALCErrors_( ALCdevice* device, const char* filename, int linenum )
+{
+    ALCenum err = alcGetError( device );
+    if( err != ALC_NO_ERROR )
+    {
+        common->Printf( "ALC Error: %s (0x%x), @ %s %d\n", alcGetString( device, err ), err, filename, linenum );
+    }
+    return err;
+}
+#define CheckALCErrors(x) CheckALCErrors_((x), __FILE__, __LINE__)
+
+#endif
 //------------------------
 // Listener data
 //------------------------
@@ -398,6 +426,10 @@ public:
 
 	virtual void *			GetIXAudio2() const;
 
+#if !defined(WIN32)
+    virtual void *			GetOpenALDevice() const;
+#endif
+
 	// for the sound level meter window
 	virtual cinData_t		ImageForTime( const int milliseconds, const bool waveform );
 
@@ -430,16 +462,27 @@ public:
 
 //	virtual void			Preload( idPreloadManifest & preload );
 
-	struct bufferContext_t {
-		bufferContext_t() :
-			voice( NULL ),
-			sample( NULL ),
-			bufferNumber( 0 )
-		{ }
-		idSoundVoice_XAudio2 *	voice;
-		idSoundSample_XAudio2 * sample;
-		int bufferNumber;
-	};
+    struct bufferContext_t
+    {
+        bufferContext_t() :
+                voice( NULL ),
+                sample( NULL ),
+                bufferNumber( 0 )
+        { }
+
+#if defined(WIN32)
+        // DG: because the inheritance is kinda strange (idSoundVoice is derived
+		// from idSoundVoice_XAudio2), casting the latter to the former isn't possible
+		// so we need this ugly #ifdef ..
+		idSoundVoice_XAudio2* 	voice;
+		idSoundSample_XAudio2* sample;
+#else
+        idSoundVoice_OpenAL* 	voice;
+        idSoundSample_OpenAL*	sample;
+#endif
+
+        int bufferNumber;
+    };
 
 	// Get a stream buffer from the free pool, returns NULL if none are available
 	bufferContext_t *			ObtainStreamBufferContext();

@@ -28,6 +28,8 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __SYS_THREADING_H__
 #define __SYS_THREADING_H__
 
+#include <cstdint>
+#include <cstddef> //ptrdiff_t
 /*
 ================================================================================================
 
@@ -35,19 +37,42 @@ If you have questions concerning this license or the applicable additional terms
 
 ================================================================================================
 */
-
+#if defined(_WIN32)
 	typedef CRITICAL_SECTION		mutexHandle_t;
 	typedef HANDLE					signalHandle_t;
 	typedef LONG					interlockedInt_t;
+#else
 
-	// _ReadWriteBarrier() does not translate to any instructions but keeps the compiler
-	// from reordering read and write instructions across the barrier.
-	// MemoryBarrier() inserts and CPU instruction that keeps the CPU from reordering reads and writes.
-	#pragma intrinsic(_ReadWriteBarrier)
-	#define SYS_MEMORYBARRIER		_ReadWriteBarrier(); MemoryBarrier()
+#include <pthread.h>
+#include <SDL2/SDL_endian.h>
+#include <idlib/Lib.h>
 
+struct signalHandle_t
+    {
+        // DG: all this stuff is needed to emulate Window's Event API
+        //     (CreateEvent(), SetEvent(), WaitForSingleObject(), ...)
+        pthread_cond_t cond;
+        pthread_mutex_t mutex;
+        int waiting; // number of threads waiting for a signal
+        bool manualReset;
+        bool signaled; // is it signaled right now?
+    };
 
+    typedef pthread_mutex_t			mutexHandle_t;
+    typedef int						interlockedInt_t;
+#endif
 
+// _ReadWriteBarrier() does not translate to any instructions but keeps the compiler
+// from reordering read and write instructions across the barrier.
+// MemoryBarrier() inserts and CPU instruction that keeps the CPU from reordering reads and writes.
+#if defined(_MSC_VER)
+    #pragma intrinsic(_ReadWriteBarrier)
+    #define SYS_MEMORYBARRIER		_ReadWriteBarrier(); MemoryBarrier()
+#elif defined(__GNUC__) // FIXME: what about clang?
+    // according to http://en.wikipedia.org/wiki/Memory_ordering the following should be equivalent to the stuff above..
+    //#ifdef __sync_syncronize
+    #define SYS_MEMORYBARRIER		asm volatile("" ::: "memory");__sync_synchronize()
+#endif
 
 
 /*
@@ -59,28 +84,75 @@ If you have questions concerning this license or the applicable additional terms
 ================================================================================================
 */
 
+// RB: added POSIX implementation
+#if defined(_WIN32)
+class idSysThreadLocalStorage
+{
+public:
+	idSysThreadLocalStorage()
+	{
+		tlsIndex = TlsAlloc();
+	}
 
-	class idSysThreadLocalStorage {
-	public:
-		idSysThreadLocalStorage() { 
-			tlsIndex = TlsAlloc();
-		}
-		idSysThreadLocalStorage( const ptrdiff_t &val ) {
-			tlsIndex = TlsAlloc();
-			TlsSetValue( tlsIndex, (LPVOID)val );
-		}
-		~idSysThreadLocalStorage() {
-			TlsFree( tlsIndex );
-		}
-		operator ptrdiff_t() {
-			return (ptrdiff_t)TlsGetValue( tlsIndex );
-		}
-		const ptrdiff_t & operator = ( const ptrdiff_t &val ) {
-			TlsSetValue( tlsIndex, (LPVOID)val );
-			return val;
-		}	
-		DWORD	tlsIndex;
-	};
+	idSysThreadLocalStorage( const ptrdiff_t& val )
+	{
+		tlsIndex = TlsAlloc();
+		TlsSetValue( tlsIndex, ( LPVOID )val );
+	}
+
+	~idSysThreadLocalStorage()
+	{
+		TlsFree( tlsIndex );
+	}
+
+	operator ptrdiff_t()
+	{
+		return ( ptrdiff_t )TlsGetValue( tlsIndex );
+	}
+
+	const ptrdiff_t& operator = ( const ptrdiff_t& val )
+	{
+		TlsSetValue( tlsIndex, ( LPVOID )val );
+		return val;
+	}
+
+	DWORD	tlsIndex;
+};
+#else
+class idSysThreadLocalStorage
+{
+public:
+    idSysThreadLocalStorage()
+    {
+        pthread_key_create( &key, NULL );
+    }
+
+    idSysThreadLocalStorage( const ptrdiff_t& val )
+    {
+        pthread_key_create( &key, NULL );
+        pthread_setspecific( key, ( const void* ) val );
+    }
+
+    ~idSysThreadLocalStorage()
+    {
+        pthread_key_delete( key );
+    }
+
+    operator ptrdiff_t()
+    {
+        return ( ptrdiff_t )pthread_getspecific( key );
+    }
+
+    const ptrdiff_t& operator = ( const ptrdiff_t& val )
+    {
+        pthread_setspecific( key, ( const void* ) val );
+        return val;
+    }
+
+    pthread_key_t	key;
+};
+#endif
+// RB end
 
 #define ID_TLS idSysThreadLocalStorage
 
@@ -102,7 +174,7 @@ enum core_t {
 	CORE_2B
 };
 
-typedef unsigned int (*xthread_t)( void * );
+typedef int (*xthread_t)( void * );
 
 enum xthreadPriority {
 	THREAD_LOWEST,
@@ -116,6 +188,14 @@ enum xthreadPriority {
 
 // on win32, the threadID is NOT the same as the threadHandle
 uintptr_t			Sys_GetCurrentThreadID();
+
+struct SDL_Thread;
+
+typedef struct {
+    const char		*name;
+    SDL_Thread		*threadHandle;
+    unsigned int	threadId;
+} xthreadInfo;
 
 // returns a threadHandle
 uintptr_t			Sys_CreateThread( xthread_t function, void *parms, xthreadPriority priority, 
@@ -151,13 +231,102 @@ void *				Sys_InterlockedCompareExchangePointer( void * & ptr, void * comparand,
 
 void				Sys_Yield();
 
-const int MAX_CRITICAL_SECTIONS		= 4;
+const int MAX_CRITICAL_SECTIONS		= 5;
 
 enum {
-	CRITICAL_SECTION_ZERO = 0,
-	CRITICAL_SECTION_ONE,
-	CRITICAL_SECTION_TWO,
-	CRITICAL_SECTION_THREE
+    CRITICAL_SECTION_ZERO = 0,
+    CRITICAL_SECTION_ONE,
+    CRITICAL_SECTION_TWO,
+    CRITICAL_SECTION_THREE,
+    CRITICAL_SECTION_SYS
 };
+
+void				Sys_EnterCriticalSection( int index = CRITICAL_SECTION_ZERO );
+void				Sys_LeaveCriticalSection( int index = CRITICAL_SECTION_ZERO );
+
+void	Swap_Init( void );
+
+
+// little/big endian conversion
+
+ID_INLINE bool Swap_IsBigEndian( void ) {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    return false;
+#else
+    return true;
+#endif
+}
+
+ID_INLINE short	BigShort( short l ) {
+    return SDL_SwapBE16(l);
+}
+
+ID_INLINE short	LittleShort( short l ) {
+    return SDL_SwapLE16(l);
+}
+
+ID_INLINE int		BigInt( int l ) {
+    return SDL_SwapBE32(l);
+}
+
+ID_INLINE int		LittleInt( int l ) {
+    return SDL_SwapLE32(l);
+}
+
+ID_INLINE float	BigFloat( float l ) {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    return FloatSwap(l);
+#else
+    return l;
+#endif
+}
+
+ID_INLINE float	LittleFloat( float l ) {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    return l;
+#else
+    return FloatSwap(l);
+#endif
+}
+
+ID_INLINE void	BigRevBytes( void *bp, int elsize, int elcount ) {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    RevBytesSwap(bp, elsize, elcount);
+#else
+    return;
+#endif
+}
+
+ID_INLINE void	LittleRevBytes( void *bp, int elsize, int elcount ){
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    return;
+#else
+    RevBytesSwap(bp, elsize, elcount);
+#endif
+}
+
+ID_INLINE void	LittleBitField( void *bp, int elsize ){
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    return;
+#else
+    RevBitFieldSwap(bp, elsize);
+#endif
+}
+
+ID_INLINE void	SixtetsForInt( byte *out, int src) {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    SixtetsForIntLittle(out, src);
+#else
+    SixtetsForIntBig(out, src);
+#endif
+}
+
+ID_INLINE int		IntForSixtets( byte *in ) {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    return IntForSixtetsLittle(in);
+#else
+    return IntForSixtetsBig(in);
+#endif
+}
 
 #endif	// !__SYS_THREADING_H__

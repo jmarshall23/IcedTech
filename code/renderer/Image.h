@@ -38,6 +38,8 @@ No texture is ever used that does not have a corresponding idImage.
 ====================================================================
 */
 
+#include <GL/gl.h>
+
 static const int	MAX_TEXTURE_LEVELS = 14;
 
 // How is this texture used?  Determines the storage and color format
@@ -389,5 +391,5 @@ Image Channel Manipulations
 
 ====================================================================
 */
-#define ChannelBlend_Add(B,L)         ((byte)(min(255, (B + L))))
+#define ChannelBlend_Add(B,L)         ((byte)(std::min(255, (B + L))))
 #define ChannelBlend_Multiply(A,B)   ((byte)((A * B) / 255))

@@ -26,8 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "tools_precompiled.h"
-#pragma hdrstop
+#include <idlib/precompiled.h>
+
 
 #include "Brush.h"
 #include "BrushBSP.h"

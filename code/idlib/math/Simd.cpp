@@ -139,7 +139,7 @@ void idSIMD::Shutdown( void ) {
 
 idSIMDProcessor *p_simd;
 idSIMDProcessor *p_generic;
-long baseClocks = 0;
+int baseClocks = 0;
 
 #ifdef _WIN32
 
@@ -147,7 +147,7 @@ long baseClocks = 0;
 
 #pragma warning(disable : 4731)     // frame pointer register 'ebx' modified by inline assembly code
 
-long saved_ebx = 0;
+int saved_ebx = 0;
 
 #define StartRecordTime( start )			\
 	__asm mov saved_ebx, ebx				\
@@ -312,7 +312,7 @@ TIME_TYPE time_in_millisec( void ) {
 PrintClocks
 ============
 */
-void PrintClocks( char *string, int dataCount, int clocks, int otherClocks = 0 ) {
+void PrintClocks( const char *string, int dataCount, int clocks, int otherClocks = 0 ) {
 	int i;
 
 	idLib::common->Printf( string );

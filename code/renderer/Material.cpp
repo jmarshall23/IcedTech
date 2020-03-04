@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "tr_local.h"
@@ -1705,13 +1705,13 @@ void idMaterial::SetupVirtualTextureStages(void) {
 	
 	if(normalLitTextureStage->virtualImage == nullptr)
 	{
-		idStr programFileName = va("generated/image_programs/DEFAULT_%s_bump.tga", GetName());
+		idStr programFileName = va("generated/image_programs/default_%s_bump.tga", GetName());
 		normalLitTextureStage->virtualImage = virtualTextureSystem.LoadVirtualImage(programFileName, TD_BUMP, albedoLitTextureStage->virtualImage->GetWidth(0), albedoLitTextureStage->virtualImage->GetHeight(0));
 
 		if (normalLitTextureStage->virtualImage == nullptr)
 		{
-			idStr programFilePathOS = fileSystem->RelativePathToOSPath(programFileName);
-			idStr defaultTexturePathOS = fileSystem->RelativePathToOSPath("textures/engine/vt_default_normal.tga");
+			idStr programFilePathOS = fileSystem->RelativePathToOSPath(programFileName, "fs_basepath");
+			idStr defaultTexturePathOS = fileSystem->RelativePathToOSPath("textures/engine/vt_default_normal.tga", "fs_basepath");
 
 			fileSystem->CopyFile(defaultTexturePathOS, programFilePathOS);
 
@@ -1737,13 +1737,13 @@ void idMaterial::SetupVirtualTextureStages(void) {
 
 	if (specularLitTextureStage->virtualImage == nullptr)
 	{
-		idStr programFileName = va("generated/image_programs/DEFAULT_%s_spec.tga", GetName());
+		idStr programFileName = va("generated/image_programs/default_%s_spec.tga", GetName());
 		specularLitTextureStage->virtualImage = virtualTextureSystem.LoadVirtualImage(programFileName, TD_SPECULAR, albedoLitTextureStage->virtualImage->GetWidth(0), albedoLitTextureStage->virtualImage->GetHeight(0));
 
 		if (specularLitTextureStage->virtualImage == nullptr)
 		{
-			idStr programFilePathOS = fileSystem->RelativePathToOSPath(programFileName);
-			idStr defaultTexturePathOS = fileSystem->RelativePathToOSPath("textures/engine/vt_default_spec.tga");
+			idStr programFilePathOS = fileSystem->RelativePathToOSPath(programFileName, "fs_basepath");
+			idStr defaultTexturePathOS = fileSystem->RelativePathToOSPath("textures/engine/vt_default_spec.tga", "fs_basepath");
 
 			fileSystem->CopyFile(defaultTexturePathOS, programFilePathOS);
 

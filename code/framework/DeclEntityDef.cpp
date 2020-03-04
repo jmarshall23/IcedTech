@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 
@@ -148,6 +148,6 @@ idDeclEntityDef::Print
 Dumps all key/value pairs, including inherited ones
 ================
 */
-void idDeclEntityDef::Print( void ) {
+void idDeclEntityDef::Print( void ) const {
 	dict.Print();
 }
