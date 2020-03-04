@@ -26,6 +26,7 @@ public:
 	void ScaleWeight(weightconfig_t* config, char* name, float scale);
 	void ScaleFuzzyBalanceRange(weightconfig_t* config, float scale);
 	void InterbreedWeightConfigs(weightconfig_t* config1, weightconfig_t* config2, weightconfig_t* configout);
+	void FreeWeightConfig(weightconfig_t* config);
 private:
 	fuzzyseperator_t* AllocFuzzyWeight(void);
 	bool ReadValue(idParser& source, float* value);
@@ -34,8 +35,6 @@ private:
 	int InterbreedFuzzySeperator_r(fuzzyseperator_t* fs1, fuzzyseperator_t* fs2, fuzzyseperator_t* fsout);
 
 	fuzzyseperator_t* ReadFuzzySeperators_r(idParser& source);
-
-	void FreeWeightConfig(weightconfig_t* config);
 
 	void FreeWeightConfig2(weightconfig_t* config);
 	void FreeFuzzySeperators_r(fuzzyseperator_t* fs);

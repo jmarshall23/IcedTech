@@ -130,6 +130,45 @@ void rvmBot::ServerThink(void) {
 	}
 }
 
+
+/*
+=======================
+rvmBot::PresenceTypeBoundingBox
+=======================
+*/
+void rvmBot::PresenceTypeBoundingBox(int presencetype, idVec3 &mins, idVec3 &maxs)
+{
+	int index;
+	//bounding box size for each presence type
+	//idVec3 boxmins[3] = { {0, 0, 0}, {-15, -15, -24}, {-15, -15, -24} };
+	//idVec3 boxmaxs[3] = { {0, 0, 0}, { 15,  15,  32}, { 15,  15,   8} };
+
+	idVec3 boxmins[3];
+	idVec3 boxmaxs[3];
+
+	boxmins[0] = idVec3(0, 0, 0);
+	boxmins[1] = idVec3(-15, -15, -24);
+	boxmins[2] = idVec3(-15, -15, -24);
+
+	boxmaxs[0] = idVec3(0, 0, 0);
+	boxmaxs[1] = idVec3(15, 15, 32);
+	boxmaxs[2] = idVec3(15, 15, 8);
+
+
+	if (presencetype == PRESENCE_NORMAL)
+		index = 1;
+	else if (presencetype == PRESENCE_CROUCH)
+		index = 2;
+	else
+	{
+		//botimport.Print(PRT_FATAL, "AAS_PresenceTypeBoundingBox: unknown presence type\n");
+		index = 2;
+	}
+	mins = boxmins[index];
+	maxs = boxmaxs[index];
+}
+
+
 /*
 ===================
 rvmBot::Think

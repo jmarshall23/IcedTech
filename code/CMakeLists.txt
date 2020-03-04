@@ -151,6 +151,8 @@ set(src_game
 	./game/bot/bot_input.cpp
 	./game/bot/bot_char.cpp
 	./game/bot/bot_char.h
+	./game/bot/bot_goal.cpp
+	./game/bot/bot_goal.h
 	./game/bot/bot_weights.cpp
 	./game/bot/bot_weights.h
 	./game/bot/bot_weapons.cpp

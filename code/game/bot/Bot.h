@@ -11,39 +11,6 @@
 #define GFL_ROAM				2
 #define GFL_DROPPED				4
 
-//a bot goal
-struct bot_goal_t
-{
-	bot_goal_t()
-	{
-		Reset();
-	}
-
-	void Reset()
-	{
-		origin.Zero();
-		nextMoveOrigin.Zero();
-		areanum = 0;
-		mins.Zero();
-		maxs.Zero();
-		entitynum = 0;
-		number = 0;
-		flags = 0;
-		iteminfo = 0;
-		framenum = -1;
-	}
-
-	int framenum;
-	idVec3 origin;				//origin of the goal
-	idVec3 nextMoveOrigin;
-	int areanum;				//area number of the goal
-	idVec3 mins, maxs;			//mins and maxs of the goal
-	int entitynum;				//number of the goal entity
-	int number;					//goal number
-	int flags;					//goal flags
-	int iteminfo;				//item information
-};
-
 #define BLERR_NOERROR					0	//no error
 #define BLERR_LIBRARYNOTSETUP			1	//library not setup
 #define BLERR_INVALIDENTITYNUMBER		2	//invalid entity number
@@ -623,6 +590,9 @@ public:
 #include "Bot_char.h"
 #include "Bot_weights.h"
 #include "Bot_weapons.h"
+#include "Bot_goal.h"
+
+#define Bot_Time() ((float)gameLocal.time / 1000.0f)
 
 //
 // rvmBot
@@ -641,6 +611,8 @@ public:
 
 	void			BotInputFrame(void);
 	void			Bot_ResetUcmd(usercmd_t& ucmd);
+
+	static void		PresenceTypeBoundingBox(int presencetype, idVec3& mins, idVec3& maxs);
 private:
 	void			BotInputToUserCommand(bot_input_t* bi, usercmd_t* ucmd, int time);
 

@@ -494,6 +494,7 @@ public:
 	bool					NavGetPathBetweenPoints(const idVec3 p1, const idVec3 p2, idList<idVec3>& points);
 	void					GetRandomPointNearPosition(idVec3 point, idVec3& randomPoint, float radius);
 
+	int						NavTravelTime(idVec3 start, idVec3 end);
 private:
 	const static int		INITIAL_SPAWN_COUNT = 1;
 

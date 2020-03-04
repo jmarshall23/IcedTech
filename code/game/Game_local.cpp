@@ -316,6 +316,7 @@ void idGameLocal::Init( void ) {
 	characterStatsManager.Init();
 	botFuzzyWeightManager.Init();
 	botWeaponInfoManager.Init();
+	botGoalManager.BotSetupGoalAI();
 
 	gamestate = GAMESTATE_NOMAP;
 
@@ -924,6 +925,10 @@ void idGameLocal::LoadMap( const char *mapName, int randseed ) {
 	pvs.Init();
 	playerPVS.i = -1;
 	playerConnectedAreas.i = -1;
+
+// jmarshall
+	botGoalManager.InitLevelItems();
+// jmarshall end
 
 	// clear the smoke particle free list
 	smokeParticles->Init();
@@ -2183,6 +2188,10 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 		assert( !isClient );
 	}
 #endif
+
+// jmarshall
+	botGoalManager.UpdateEntityItems();
+// jmarshall end
 
 	player = GetLocalPlayer();
 

@@ -69,11 +69,18 @@ public:
 	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
 	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
 
+// jmarshall
+	int						GetModelIndex() const { return modelindex; }
+// jmarshall end
+
 private:
 	idVec3					orgOrigin;
 	bool					spin;
 	bool					pulse;
 	bool					canPickUp;
+// jmarshall
+	int						modelindex;
+// jmarshall end
 
 	// for item pulse effect
 	int						itemShellHandle;

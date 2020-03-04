@@ -4,6 +4,34 @@
 #include "game_precompiled.h"
 #include "Game_local.h"
 
+#define DISTANCEFACTOR_CROUCH		1.3f		//crouch speed = 100
+#define DISTANCEFACTOR_SWIM			1		//should be 0.66, swim speed = 150
+#define DISTANCEFACTOR_WALK			0.33f	//walk speed = 300
+
+/*
+=================
+idGameLocal::NavTravelTime
+=================
+*/
+int idGameLocal::NavTravelTime(idVec3 start, idVec3 end)
+{
+	int intdist;
+	float dist;
+	idVec3 dir;
+
+	dir = start - end;	
+	dist = dir.Length();
+
+	//if crouch only area
+	dist *= DISTANCEFACTOR_WALK;
+
+	intdist = (int)dist;
+	//make sure the distance isn't zero
+	if (intdist <= 0) 
+		intdist = 1;
+	return intdist;
+}
+
 /*
 =========================
 idGameLocal::NavGetPathBetweenPoints

@@ -288,6 +288,10 @@ void idItem::Spawn( void ) {
 		GetPhysics()->SetContents( CONTENTS_TRIGGER );
 	}
 
+// jmarshall
+	modelindex = spawnArgs.GetInt("modelindex");
+// jmarshall end
+
 	giveTo = spawnArgs.GetString( "owner" );
 	if ( giveTo.Length() ) {
 		ent = gameLocal.FindEntity( giveTo );
