@@ -312,6 +312,12 @@ void idGameLocal::Init( void ) {
 	// init the game render system.
 	InitGameRenderSystem();
 
+	// load in the bot itemtable.
+	botItemTable = FindEntityDef("bot_itemtable", false);
+	if(botItemTable == NULL) {
+		common->FatalError("Failed to find bot_itemtable decl!\n");
+	}
+
 	// init all the bot systems.
 	characterStatsManager.Init();
 	botFuzzyWeightManager.Init();
@@ -4268,5 +4274,20 @@ void idGameLocal::DelayRemoveEntity(idEntity *entity, int delay) {
 	entry.entity = entity;
 	entry.removeTime = gameLocal.time + delay;
 	delayRemoveEntities.Append(entry);
+}
+
+/*
+===============
+idGameLocal::GetBotItemModelIndex
+===============
+*/
+int idGameLocal::GetBotItemModelIndex(const char* name) {
+	const idKeyValue* keyvalue = botItemTable->dict.FindKey(name);
+	if(!keyvalue) {
+		gameLocal.Error("GetBotItemModelIndex: Doesn't have key %s\n", name);
+		return -1;
+	}
+
+	return botItemTable->dict.GetInt(name);
 }
 // jmarshall end

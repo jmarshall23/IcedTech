@@ -4,6 +4,85 @@
 
 ***********************************************************************/
 
+// Everything in here must match dkbase/botfiles/inv.h!
+entityDef bot_itemtable {
+	"MODELINDEX_DEFAULT"			"0"
+	"MODELINDEX_ARMORSHARD"		"1"
+	"MODELINDEX_ARMORCOMBAT"		"2"
+	"MODELINDEX_ARMORBODY"		"3"
+	"MODELINDEX_HEALTHSMALL"		"4"
+	"MODELINDEX_HEALTH"			"5"
+	"MODELINDEX_HEALTHLARGE"		"6"
+	"MODELINDEX_HEALTHMEGA"		"7"
+	"MODELINDEX_GAUNTLET"			"8"
+	"MODELINDEX_SHOTGUN"			"9"
+	"MODELINDEX_MACHINEGUN"		"10"
+	"MODELINDEX_GRENADELAUNCHER"	"11"
+	"MODELINDEX_ROCKETLAUNCHER"	"12"
+	"MODELINDEX_LIGHTNING"		"13"
+	"MODELINDEX_RAILGUN"			"14"
+	"MODELINDEX_PLASMAGUN"		"15"
+	"MODELINDEX_BFG10K"			"16"
+	"MODELINDEX_GRAPPLINGHOOK"	"17"
+	"MODELINDEX_SHELLS"			"18"
+	"MODELINDEX_BULLETS"			"19"
+	"MODELINDEX_GRENADES"			"20"
+	"MODELINDEX_CELLS"			"21"
+	"MODELINDEX_LIGHTNINGAMMO"	"22"
+	"MODELINDEX_ROCKETS"			"23"
+	"MODELINDEX_SLUGS"			"24"
+	"MODELINDEX_BFGAMMO"			"25"
+	"MODELINDEX_TELEPORTER"		"26"
+	"MODELINDEX_MEDKIT"			"27"
+	"MODELINDEX_QUAD"				"28"
+	"MODELINDEX_ENVIRONMENTSUIT"	"29"
+	"MODELINDEX_HASTE"			"30"
+	"MODELINDEX_INVISIBILITY"		"31"
+	"MODELINDEX_REGEN"			"32"
+	"MODELINDEX_FLIGHT"			"33"
+	"MODELINDEX_REDFLAG"			"34"
+	"MODELINDEX_BLUEFLAG"			"35"
+	"MODELINDEX_KAMIKAZE"			"36"
+	"MODELINDEX_PORTAL"			"37"
+	"MODELINDEX_INVULNERABILITY"	"38"
+	"MODELINDEX_NAILS"			"39"
+	"MODELINDEX_MINES"			"40"
+	"MODELINDEX_BELT"				"41"
+	"MODELINDEX_SCOUT"			"42"
+	"MODELINDEX_GUARD"			"43"
+	"MODELINDEX_DOUBLER"			"44"
+	"MODELINDEX_AMMOREGEN"		"45"
+	"MODELINDEX_NEUTRALFLAG"		"46"
+	"MODELINDEX_REDCUBE"			"47"
+	"MODELINDEX_BLUECUBE"			"48"
+	"MODELINDEX_NAILGUN"			"49"
+	"MODELINDEX_PROXLAUNCHER"		"50"
+	"MODELINDEX_CHAINGUN"			"51"
+	"MODELINDEX_POINTABLUE"		"52"
+	"MODELINDEX_POINTBBLUE"		"53"
+	"MODELINDEX_POINTARED"		"54"
+	"MODELINDEX_POINTBRED"		"55"
+	"MODELINDEX_POINTAWHITE"		"56"
+	"MODELINDEX_POINTBWHITE"		"57"
+	"MODELINDEX_POINTWHITE"		"58"
+	"MODELINDEX_POINTRED"			"59"
+	"MODELINDEX_POINTBLUE"		"60"
+	
+	"WEAPONINDEX_GAUNTLET"			"1"
+	"WEAPONINDEX_MACHINEGUN"			"2"
+	"WEAPONINDEX_SHOTGUN"				"3"
+	"WEAPONINDEX_GRENADE_LAUNCHER"	"4"
+	"WEAPONINDEX_ROCKET_LAUNCHER"		"5"
+	"WEAPONINDEX_LIGHTNING"			"6"
+	"WEAPONINDEX_RAILGUN"				"7"
+	"WEAPONINDEX_PLASMAGUN"			"8"
+	"WEAPONINDEX_BFG"					"9"
+	"WEAPONINDEX_GRAPPLING_HOOK"		"10"
+	"WEAPONINDEX_NAILGUN"				"11"
+	"WEAPONINDEX_PROXLAUNCHER"		"12"
+	"WEAPONINDEX_CHAINGUN"			"13"
+
+};
 
 entityDef item_default {
 	"editor_color"			".3 .3 1"
@@ -31,6 +110,8 @@ entityDef item_default {
 	"editor_copy5"			"inv_objective"
 	"editor_copy6"			"inv_icon"
 	
+	"modelindex"			"MODELINDEX_DEFAULT"
+
 	"spawnclass"			"idItem"
 }
 
@@ -55,7 +136,7 @@ entityDef item_armor_security {
 	"inv_name"				"Security Armor"
 	"inv_armor" 			"50"
 	
-	"modelindex"			INVENTORY_ARMOR
+	"modelindex"			"MODELINDEX_ARMORBODY"
 }
 
 entityDef item_armor_shard {
@@ -73,7 +154,7 @@ entityDef item_armor_shard {
 	"inv_name"				"Armor Shard"
 	"inv_armor" 			"5"
 	
-	"modelindex"			INVENTORY_ARMOR
+	"modelindex"			"MODELINDEX_ARMORSHARD"
 }
 
 
@@ -207,7 +288,7 @@ entityDef item_medkit {
 	"inv_item"				"2"
 	"snd_acquire"			"guisounds_health"
 	
-	"modelindex"			INVENTORY_HEALTH
+	"modelindex"			"MODELINDEX_HEALTHLARGE"
 }
 
 entityDef item_medkit_small {
@@ -226,7 +307,7 @@ entityDef item_medkit_small {
 	"inv_item"				"2"
 	"snd_acquire"			"guisounds_health"
 	
-	"modelindex"			INVENTORY_MEDKIT
+	"modelindex"			"MODELINDEX_HEALTH"
 }
 
 // The proper spelling is with 1 n, but a lot of the assets have it spelled with 2 so be aware when looking for media.

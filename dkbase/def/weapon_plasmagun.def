@@ -43,6 +43,8 @@ entityDef weapon_plasmagun {
 	"editor_maxs"				"16 16 32"
 	"editor_usage"				"Plasma Gun"
 	"editor_rotatable"		"1"
+	
+	"modelindex"				"MODELINDEX_PLASMAGUN"
 
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"

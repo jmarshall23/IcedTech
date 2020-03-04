@@ -28,6 +28,8 @@ export fred {
 entityDef weapon_fists {
 	"model_view" 				"viewmodel_fists"
 
+	"modelindex"				"MODELINDEX_GAUNTLET"
+
 	"inv_name"					"Fists"
 	"inv_weapon"				"weapon_fists"
 	"icon"						"guis/assets/hud/wpn_12"
