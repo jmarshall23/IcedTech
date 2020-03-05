@@ -1,6 +1,8 @@
 // Bot.h
 //
 
+class rvmBotAIBotActionBase;
+
 #define BOT_NOWAYPOINT			-1
 
 #define MAX_AVOIDGOALS			256
@@ -287,6 +289,7 @@ struct bot_input_t
 		viewangles.Zero();
 		actionflags = 0;
 		weapon = 0;
+		respawn = false;
 	}
 
 	float thinktime;		//time since last output (in seconds)
@@ -295,6 +298,7 @@ struct bot_input_t
 	idAngles viewangles;		//the view angles
 	int actionflags;		//one of the ACTION_? flags
 	int weapon;				//weapon to use
+	bool respawn;
 };
 
 #if 0
@@ -564,13 +568,26 @@ unsigned short int BotTravelTime(vec3_t start, vec3_t end);
 #endif
 
 struct bot_state_t {
+	bot_state_t()
+	{
+		character = NULL;
+		action = 0;
+		gs = 0;
+		ws = 0;
+		client = 0;
+		entitynum = 0;
+		setupcount = 0;
+		entergame_time = 0;
+	}
 	bot_character_t* character;
+	rvmBotAIBotActionBase* action;
 	int gs;
 	int ws;
 	int client;
 	int entitynum;
 	int setupcount;
 	float entergame_time;
+	bot_input_t	botinput;
 };
 
 typedef enum {
@@ -631,10 +648,7 @@ private:
 
 	void			ServerThink(void);
 
-	bot_input_t		botinput;
 	bot_goal_t		currentGoal;
-
-	rvmBotAIBotActionBase*		botAction;
 private:
 	bot_state_t		bs;
 private:

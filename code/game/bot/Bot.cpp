@@ -17,7 +17,7 @@ rvmBot::rvmBot
 ===================
 */
 rvmBot::rvmBot() {
-	botAction = NULL;
+	bs.action = NULL;
 	currentWaypoint = BOT_NOWAYPOINT;
 	gameLocal.RegisterBot(this);
 }
@@ -85,13 +85,13 @@ rvmBot::Think
 ===================
 */
 void rvmBot::BotMoveToGoalOrigin(void) {
-	botinput.dir = currentGoal.nextMoveOrigin - GetPhysics()->GetOrigin();
+	bs.botinput.dir = currentGoal.nextMoveOrigin - GetPhysics()->GetOrigin();
 
-	idAngles ang(0, botinput.dir.ToYaw(), 0);
-	botinput.viewangles = ang;
-	botinput.speed = 200;
+	idAngles ang(0, bs.botinput.dir.ToYaw(), 0);
+	bs.botinput.viewangles = ang;
+	bs.botinput.speed = 200;
 
-	botinput.dir.Normalize();
+	bs.botinput.dir.Normalize();
 }
 
 /*
@@ -124,11 +124,11 @@ void rvmBot::ServerThink(void) {
 		}
 	}
 
-	if(botAction == NULL) {
-		botAction = &botAIActionSeekLTG;
+	if(bs.action == NULL) {
+		bs.action = &botAIActionSeekLTG;
 	}
 
-	botAction->Think(&bs);
+	bs.action->Think(&bs);
 
 	// If we are moving along a set of waypoints, let's move along.
 	if (currentWaypoint != BOT_NOWAYPOINT)

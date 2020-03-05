@@ -158,6 +158,8 @@ set(src_game
 	./game/bot/bot_weapons.cpp
 	./game/bot/bot_weapons.h
 	./game/bot/bot.h
+	./game/bot/botai/BotAI.cpp
+	./game/bot/botai/BotAI_respawn.cpp
 	./game/bot/botai/BotAI_SeekLTG.cpp
 	./game/bot/botai/BotAI.h
 	./game/game_navigation.cpp

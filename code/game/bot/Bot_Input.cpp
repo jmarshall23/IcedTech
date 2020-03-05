@@ -76,6 +76,10 @@ void rvmBot::BotInputToUserCommand(bot_input_t* bi, usercmd_t* ucmd, int time) {
 	//
 	//Com_Printf("forward = %d right = %d up = %d\n", ucmd.forwardmove, ucmd.rightmove, ucmd.upmove);
 	//Com_Printf("ucmd->serverTime = %d\n", ucmd->serverTime);
+
+	if(bi->respawn) {
+		ucmd->buttons |= BUTTON_ATTACK;
+	}
 }
 
 /*
@@ -107,7 +111,7 @@ void rvmBot::BotInputFrame(void) {
 	botcmd.gameFrame = gameLocal.framenum;
 	botcmd.duplicateCount = 0;
 
-	BotInputToUserCommand(&botinput, &botcmd, gameLocal.time);
+	BotInputToUserCommand(&bs.botinput, &botcmd, gameLocal.time);
 
 	// Send the bot's user cmd off to the engine so other clients can predict this bot.
 	networkSystem->ServerSetBotUserCommand(entityNumber, gameLocal.framenum, botcmd);
