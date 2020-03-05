@@ -319,7 +319,7 @@ void idGameLocal::Init( void ) {
 	}
 
 	// init all the bot systems.
-	characterStatsManager.Init();
+	botCharacterStatsManager.Init();
 	botFuzzyWeightManager.Init();
 	botWeaponInfoManager.Init();
 	botGoalManager.BotSetupGoalAI();
@@ -1837,7 +1837,7 @@ void idGameLocal::InitScriptForMap( void ) {
 idGameLocal::SpawnPlayer
 ============
 */
-void idGameLocal::SpawnPlayer( int clientNum, bool isBot) {
+void idGameLocal::SpawnPlayer( int clientNum, bool isBot, const char* botName) {
 	idEntity	*ent;
 	idDict		args;
 
@@ -1850,6 +1850,11 @@ void idGameLocal::SpawnPlayer( int clientNum, bool isBot) {
 	if (isBot)
 	{
 		args.Set("classname", "player_doommarine_mp_bot");
+		if(botName == NULL) {
+			gameLocal.Error("Can't spawn a bot with no name!");
+		}
+
+		args.Set("botname", botName);
 	}
 	else
 	{

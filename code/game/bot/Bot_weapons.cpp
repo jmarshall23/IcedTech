@@ -392,3 +392,33 @@ void idBotWeaponInfoManager::BotResetWeaponState(int weaponstate)
 	ws->weaponweightconfig = weaponweightconfig;
 	memcpy(ws->weaponweightindex, weaponweightindex, sizeof(int) * BOT_MAX_WEAPONS);
 }
+
+/*
+=====================
+idBotWeaponInfoManager::BotAllocWeaponState
+=====================
+*/
+int idBotWeaponInfoManager::BotAllocWeaponState(void) {
+	int i;
+
+	for (i = 1; i <= MAX_CLIENTS; i++)
+	{
+		if (!botweaponstates[i].inUse)
+		{
+			botweaponstates[i].Reset();
+			botweaponstates[i].inUse = true;
+			return i;
+		}
+	}
+	return 0;
+}
+
+/*
+=====================
+idBotWeaponInfoManager::BotAllocWeaponState
+=====================
+*/
+void idBotWeaponInfoManager::BotFreeWeaponState(int ws)  {
+	botweaponstates[ws].inUse = false;
+	botweaponstates[ws].Reset();
+}

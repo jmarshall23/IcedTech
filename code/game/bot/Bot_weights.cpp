@@ -323,7 +323,7 @@ weightconfig_t* idBotFuzzyWeightManager::ReadWeightConfig(char* filename)
 	{
 		config = &weightFileList[n];
 		
-		if (!config->inUse)
+		if (config->inUse)
 			continue;
 		
 		if (config->filename == filename)

@@ -732,7 +732,7 @@ idAsyncServer::BeginLocalClient
 void idAsyncServer::BeginLocalClient( void ) {
 	game->SetLocalClient( localClientNum );
 	game->SetUserInfo( localClientNum, sessLocal.mapSpawnData.userInfo[localClientNum], false, false );
-	game->ServerClientBegin( localClientNum, false );
+	game->ServerClientBegin( localClientNum, false, NULL);
 }
 
 /*
@@ -1302,7 +1302,7 @@ void idAsyncServer::ProcessUnreliableClientMessage( int clientNum, const idBitMs
 		SendEnterGameToClient( clientNum );
 
 		// get the client running in the game
-		game->ServerClientBegin( clientNum, false );
+		game->ServerClientBegin( clientNum, false, NULL );
 
 		// write any reliable messages to initialize the client game state
 		game->ServerWriteInitialReliableMessages( clientNum );
@@ -2915,7 +2915,7 @@ int idAsyncServer::AllocOpenClientSlotForAI(int maxPlayersOnServer) {
 	spawnArgs.Set("ui_name", botName);
 
 	// Init the new client, and broadcast it to the rest of the players.
-	game->ServerClientBegin(botClientId, true);
+	game->ServerClientBegin(botClientId, true, botName);
 	idAsyncServer::SendUserInfoBroadcast(botClientId, spawnArgs, true);
 
 	return 1;

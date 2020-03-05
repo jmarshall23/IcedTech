@@ -4,7 +4,7 @@
 #include "game_precompiled.h"
 #include "../Game_local.h"
 
-idBotCharacterStatsManager characterStatsManager;
+idBotCharacterStatsManager botCharacterStatsManager;
 
 /*
 ====================
@@ -293,7 +293,7 @@ void idBotCharacterStatsManager::Characteristic_String(bot_character_t* ch, int 
 	//an integer will be converted to a float
 	if (ch->c[index].type == CT_STRING)
 	{
-		ch->c[index].value.string = buf;
+		strcpy(buf, ch->c[index].value.string);
 		buf[size - 1] = '\0';
 		return;
 	}

@@ -35,7 +35,46 @@ rvmBot::~rvmBot() {
 rvmBot::Spawn
 ===================
 */
-void rvmBot::Spawn(void) {
+void rvmBot::Spawn(void) {	
+	idStr botName = spawnArgs.GetString("botname");
+	char filename[256];
+	int errnum;
+
+	// Load in the bot character.
+	bs.character = botCharacterStatsManager.BotLoadCharacterFromFile(va("bots/%s_c.c", botName.c_str()), 1);
+	if(!bs.character) {
+		gameLocal.Error("Failed to load character file for bot %s\n", botName.c_str());
+	}
+
+	// Allocate the goal state.
+	bs.gs = botGoalManager.BotAllocGoalState(entityNumber);
+
+	// Get the bot items weights file name.
+	botCharacterStatsManager.Characteristic_String(bs.character, CHARACTERISTIC_ITEMWEIGHTS, filename, 256);
+	errnum = botGoalManager.BotLoadItemWeights(bs.gs, filename);
+	if (errnum != BLERR_NOERROR) {
+		gameLocal.Error("Failed to load bot item weights!");
+		botGoalManager.BotFreeGoalState(bs.gs);
+		return;
+	}
+
+	//allocate a weapon state
+	bs.ws = botWeaponInfoManager.BotAllocWeaponState();
+
+	//load the weapon weights
+	botCharacterStatsManager.Characteristic_String(bs.character, CHARACTERISTIC_WEAPONWEIGHTS, filename, 256);
+	errnum = botWeaponInfoManager.BotLoadWeaponWeights(bs.ws, filename);
+	if (errnum != BLERR_NOERROR) {
+		//	trap_BotFreeGoalState(bs->gs);
+		botWeaponInfoManager.BotFreeWeaponState(bs.ws);
+		return;
+	}
+
+	bs.client = entityNumber;
+	bs.entitynum = entityNumber;
+	bs.setupcount = 4;
+	bs.entergame_time = Bot_Time();
+
 	idPlayer::Spawn();
 }
 

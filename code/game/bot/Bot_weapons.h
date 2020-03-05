@@ -107,9 +107,18 @@ struct bot_weaponstate_t
 {
 	bot_weaponstate_t()
 	{
+		Reset();
+	}
+
+	void Reset()
+	{
+		inUse = false;
+		weaponweightconfig = NULL;
 		for (int i = 0; i < BOT_MAX_WEAPONS; i++)
 			weaponweightindex[i] = 0;
 	}
+
+	bool inUse;
 	weightconfig_t* weaponweightconfig;
 	int weaponweightindex[BOT_MAX_WEAPONS];							//weapon weight index
 };
@@ -125,6 +134,8 @@ public:
 	void	BotGetWeaponInfo(int weaponstate, int weapon, weaponinfo_t* weaponinfo);
 	int		BotChooseBestFightWeapon(int weaponstate, int* inventory);
 	void	BotResetWeaponState(int weaponstate);
+	int		BotAllocWeaponState(void);
+	void	BotFreeWeaponState(int ws);
 private:
 	int		BotValidWeaponNumber(int weaponnum);
 	bot_weaponstate_t* BotWeaponStateFromHandle(int handle);

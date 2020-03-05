@@ -118,7 +118,7 @@ public:
 	virtual void				CacheDictionaryMedia( const idDict *dict ) = 0;
 
 	// Spawns the player entity to be used by the client.
-	virtual void				SpawnPlayer( int clientNum, bool isBot) = 0;
+	virtual void				SpawnPlayer( int clientNum, bool isBot, const char* botName) = 0;
 
 	// Runs a game frame, may return a session command for level changing, etc
 	virtual gameReturn_t		RunFrame( const usercmd_t *clientCmds ) = 0;
@@ -149,7 +149,7 @@ public:
 	virtual bool				GetRandomBotName(int clientNum, idStr& botName) = 0;
 
 	// Spawns the player entity to be used by the client.
-	virtual void				ServerClientBegin( int clientNum, bool isBot) = 0;
+	virtual void				ServerClientBegin( int clientNum, bool isBot, const char *botName) = 0;
 
 	// Disconnects a client and removes the player entity from the game.
 	virtual void				ServerClientDisconnect( int clientNum ) = 0;
@@ -325,7 +325,7 @@ extern idGameEdit *				gameEdit;
 ===============================================================================
 */
 // jmarshall
-const int GAME_API_VERSION		= 4004;
+const int GAME_API_VERSION		= 4005;
 // jmarshall end
 
 typedef struct {

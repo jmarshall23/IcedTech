@@ -563,6 +563,16 @@ inline float AAS_Time() {
 unsigned short int BotTravelTime(vec3_t start, vec3_t end);
 #endif
 
+struct bot_state_t {
+	bot_character_t* character;
+	int gs;
+	int ws;
+	int client;
+	int entitynum;
+	int setupcount;
+	float entergame_time;
+};
+
 typedef enum {
 	NULLMOVEFLAG = -1,
 	MOVE_PRONE,
@@ -622,6 +632,9 @@ private:
 
 	bot_input_t		botinput;
 	bot_goal_t		currentGoal;
+
+private:
+	bot_state_t		bs;
 private:
 	int currentWaypoint;
 	idList<idVec3>	navWaypoints;
