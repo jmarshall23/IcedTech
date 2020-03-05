@@ -17,6 +17,7 @@ rvmBot::rvmBot
 ===================
 */
 rvmBot::rvmBot() {
+	botAction = NULL;
 	currentWaypoint = BOT_NOWAYPOINT;
 	gameLocal.RegisterBot(this);
 }
@@ -122,6 +123,12 @@ void rvmBot::ServerThink(void) {
 			currentWaypoint = BOT_NOWAYPOINT;
 		}
 	}
+
+	if(botAction == NULL) {
+		botAction = &botAIActionSeekLTG;
+	}
+
+	botAction->Think(&bs);
 
 	// If we are moving along a set of waypoints, let's move along.
 	if (currentWaypoint != BOT_NOWAYPOINT)

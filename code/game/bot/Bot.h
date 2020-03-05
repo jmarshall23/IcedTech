@@ -601,6 +601,7 @@ public:
 #include "Bot_weights.h"
 #include "Bot_weapons.h"
 #include "Bot_goal.h"
+#include "BotAI/BotAI.h"
 
 #define Bot_Time() ((float)gameLocal.time / 1000.0f)
 
@@ -633,6 +634,7 @@ private:
 	bot_input_t		botinput;
 	bot_goal_t		currentGoal;
 
+	rvmBotAIBotActionBase*		botAction;
 private:
 	bot_state_t		bs;
 private:
