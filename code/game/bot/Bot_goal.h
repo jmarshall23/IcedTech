@@ -267,7 +267,7 @@ public:
 	int BotLoadItemWeights(int goalstate, char* filename);
 	void BotResetGoalState(int goalstate);
 
-	int BotItemGoalInVisButNotVisible(int viewer, idVec3 eye, idVec3 viewangles, bot_goal_t* goal);
+	int BotItemGoalInVisButNotVisible(int viewer, idVec3 eye, idAngles viewangles, bot_goal_t* goal);
 
 	int BotChooseLTGItem(int goalstate, idVec3 origin, int* inventory, int travelflags);
 	int BotChooseNBGItem(int goalstate, idVec3 origin, int* inventory, int travelflags, bot_goal_t* ltg, float maxtime);
@@ -275,6 +275,8 @@ public:
 	int BotTouchingGoal(idVec3 origin, bot_goal_t* goal);
 
 	int BotAllocGoalState(int client);
+
+	void BotGoalName(int number, char* name, int size);
 
 	void BotFreeGoalState(int handle);
 	void BotShutdownGoalAI(void);
@@ -296,7 +298,6 @@ public:
 	int BotGetNextCampSpotGoal(int num, bot_goal_t* goal);
 	void BotFindEntityForLevelItem(levelitem_t* li);
 private:
-	void BotGoalName(int number, char* name, int size);
 
 	levelitem_t* AllocLevelItem(void);
 	void FreeLevelItem(levelitem_t* li);

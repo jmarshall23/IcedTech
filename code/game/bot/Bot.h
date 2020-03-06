@@ -567,28 +567,7 @@ inline float AAS_Time() {
 unsigned short int BotTravelTime(vec3_t start, vec3_t end);
 #endif
 
-struct bot_state_t {
-	bot_state_t()
-	{
-		character = NULL;
-		action = 0;
-		gs = 0;
-		ws = 0;
-		client = 0;
-		entitynum = 0;
-		setupcount = 0;
-		entergame_time = 0;
-	}
-	bot_character_t* character;
-	rvmBotAIBotActionBase* action;
-	int gs;
-	int ws;
-	int client;
-	int entitynum;
-	int setupcount;
-	float entergame_time;
-	bot_input_t	botinput;
-};
+#define MAX_BOT_INVENTORY 256
 
 typedef enum {
 	NULLMOVEFLAG = -1,
@@ -618,6 +597,47 @@ public:
 #include "Bot_weights.h"
 #include "Bot_weapons.h"
 #include "Bot_goal.h"
+
+struct bot_state_t {
+	bot_state_t()
+	{
+		character = NULL;
+		gs = 0;
+		ws = 0;
+		Reset();
+	}
+	void Reset()
+	{		
+		action = 0;
+		client = 0;
+		entitynum = 0;
+		setupcount = 0;
+		entergame_time = 0;
+		weaponnum = 0;
+		ltg_time = 0;
+		weaponchange_time = 0;
+		memset(&inventory[0], 0, sizeof(inventory));
+	}
+
+	bot_character_t* character;
+	rvmBotAIBotActionBase* action;
+	int gs;
+	int ws;
+	int client;
+	int entitynum;
+	int setupcount;
+	int ltg_time;
+	int weaponnum;
+	float entergame_time;
+	float weaponchange_time;
+	idVec3 origin;
+	idAngles viewangles;
+	idVec3 eye;
+	int inventory[MAX_BOT_INVENTORY];
+	bot_goal_t	currentGoal;
+	bot_input_t	botinput;
+};
+
 #include "BotAI/BotAI.h"
 
 #define Bot_Time() ((float)gameLocal.time / 1000.0f)
@@ -634,8 +654,9 @@ public:
 	rvmBot();
 	~rvmBot();
 
-	void			Spawn(void);
-	void			Think(void);
+	virtual void			Spawn(void) override;
+	virtual void			Think(void) override;
+	virtual void			SpawnToPoint(const idVec3& spawn_origin, const idAngles& spawn_angles) override;
 
 	void			BotInputFrame(void);
 	void			Bot_ResetUcmd(usercmd_t& ucmd);
@@ -647,8 +668,8 @@ private:
 	void			BotMoveToGoalOrigin(void);
 
 	void			ServerThink(void);
+	void			BotUpdateInventory(void);
 
-	bot_goal_t		currentGoal;
 private:
 	bot_state_t		bs;
 private:

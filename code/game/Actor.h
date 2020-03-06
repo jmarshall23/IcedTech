@@ -119,7 +119,7 @@ public:
 							idActor( void );
 	virtual					~idActor( void );
 
-	void					Spawn( void );
+	virtual void			Spawn( void );
 	virtual void			Restart( void );
 
 	void					Save( idSaveGame *savefile ) const;

@@ -32,6 +32,45 @@ rvmBot::~rvmBot() {
 }
 
 /*
+==================
+rvmBot::BotUpdateInventory
+==================
+*/
+void rvmBot::BotUpdateInventory(void) {
+	//bs.inventory[INVENTORY_ARMOR]			= bs->cur_ps.stats[STAT_ARMOR];
+	//bs.inventory[INVENTORY_GAUNTLET]		= (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_GAUNTLET)) != 0;
+	//bs.inventory[INVENTORY_SHOTGUN]			= (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SHOTGUN)) != 0;
+	//bs.inventory[INVENTORY_MACHINEGUN]		= (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_MACHINEGUN)) != 0;
+	//bs.inventory[INVENTORY_GRENADELAUNCHER] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_GRENADE_LAUNCHER)) != 0;
+	//bs.inventory[INVENTORY_ROCKETLAUNCHER]	= (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_ROCKET_LAUNCHER)) != 0;
+	//bs.inventory[INVENTORY_LIGHTNING]		= (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_LIGHTNING)) != 0;
+	//bs.inventory[INVENTORY_RAILGUN]			= (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_RAILGUN)) != 0;
+	//bs.inventory[INVENTORY_PLASMAGUN]		= (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_PLASMAGUN)) != 0;
+	//bs.inventory[INVENTORY_BFG10K]			= (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_BFG)) != 0;
+	//bs.inventory[INVENTORY_GRAPPLINGHOOK]	= (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_GRAPPLING_HOOK)) != 0;
+	//bs.inventory[INVENTORY_SHELLS]			= bs->cur_ps.ammo[WP_SHOTGUN];
+	//bs.inventory[INVENTORY_BULLETS]			= bs->cur_ps.ammo[WP_MACHINEGUN];
+	//bs.inventory[INVENTORY_GRENADES]		= bs->cur_ps.ammo[WP_GRENADE_LAUNCHER];
+	//bs.inventory[INVENTORY_CELLS] = bs->cur_ps.ammo[WP_PLASMAGUN];
+	//bs.inventory[INVENTORY_LIGHTNINGAMMO] = bs->cur_ps.ammo[WP_LIGHTNING];
+	//bs.inventory[INVENTORY_ROCKETS] = bs->cur_ps.ammo[WP_ROCKET_LAUNCHER];
+	//bs.inventory[INVENTORY_SLUGS] = bs->cur_ps.ammo[WP_RAILGUN];
+	//bs.inventory[INVENTORY_BFGAMMO] = bs->cur_ps.ammo[WP_BFG];
+	//bs.inventory[INVENTORY_HEALTH] = bs->cur_ps.stats[STAT_HEALTH];
+	//bs.inventory[INVENTORY_TELEPORTER] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_TELEPORTER;
+	//bs.inventory[INVENTORY_MEDKIT] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_MEDKIT;
+	//bs.inventory[INVENTORY_QUAD] = bs->cur_ps.powerups[PW_QUAD] != 0;
+	//bs.inventory[INVENTORY_ENVIRONMENTSUIT] = bs->cur_ps.powerups[PW_BATTLESUIT] != 0;
+	//bs.inventory[INVENTORY_HASTE] = bs->cur_ps.powerups[PW_HASTE] != 0;
+	//bs.inventory[INVENTORY_INVISIBILITY] = bs->cur_ps.powerups[PW_INVIS] != 0;
+	//bs.inventory[INVENTORY_REGEN] = bs->cur_ps.powerups[PW_REGEN] != 0;
+	//bs.inventory[INVENTORY_FLIGHT] = bs->cur_ps.powerups[PW_FLIGHT] != 0;
+	//bs.inventory[INVENTORY_REDFLAG] = bs->cur_ps.powerups[PW_REDFLAG] != 0;
+	//bs.inventory[INVENTORY_BLUEFLAG] = bs->cur_ps.powerups[PW_BLUEFLAG] != 0;
+}
+
+
+/*
 ===================
 rvmBot::Spawn
 ===================
@@ -85,7 +124,7 @@ rvmBot::Think
 ===================
 */
 void rvmBot::BotMoveToGoalOrigin(void) {
-	bs.botinput.dir = currentGoal.nextMoveOrigin - GetPhysics()->GetOrigin();
+	bs.botinput.dir = bs.currentGoal.nextMoveOrigin - GetPhysics()->GetOrigin();
 
 	idAngles ang(0, bs.botinput.dir.ToYaw(), 0);
 	bs.botinput.viewangles = ang;
@@ -96,25 +135,51 @@ void rvmBot::BotMoveToGoalOrigin(void) {
 
 /*
 ===================
+rvmBot::SpawnToPoint
+===================
+*/
+void rvmBot::SpawnToPoint(const idVec3& spawn_origin, const idAngles& spawn_angles) {
+	idPlayer::SpawnToPoint(spawn_origin, spawn_angles);
+
+	if (gameLocal.isServer) {
+		bs.ltg_time = 0;
+		bs.action = NULL;
+	}
+}
+
+/*
+===================
 rvmBot::ServerThink
 ===================
 */
 void rvmBot::ServerThink(void) {
+	bs.origin = GetPhysics()->GetOrigin();
+	bs.eye = GetEyePosition();
+	bs.viewangles = viewAngles;
+
+	BotUpdateInventory();
+
 	if (bot_pathdebug.IsModified())
 	{
 		if (bot_pathdebug.GetBool())
 		{
-			currentGoal.origin = gameLocal.GetLocalPlayer()->GetPhysics()->GetOrigin();
-			currentGoal.framenum = gameLocal.framenum;
+			bs.currentGoal.origin = gameLocal.GetLocalPlayer()->GetPhysics()->GetOrigin();
+			bs.currentGoal.framenum = gameLocal.framenum;
 		}
 
 		bot_pathdebug.ClearModified();
 		bot_pathdebug.SetBool(false);
 	}
 
+	if (bs.action == NULL) {
+		bs.action = &botAIActionSeekLTG;
+	}
+
+	bs.action->Think(&bs);
+
 	// If we have a new goal position, let's figure out how to get there.
-	if (currentGoal.framenum == gameLocal.framenum) {
-		if (gameLocal.NavGetPathBetweenPoints(GetPhysics()->GetOrigin(), currentGoal.origin, navWaypoints))
+	if (bs.currentGoal.framenum == gameLocal.framenum) {
+		if (gameLocal.NavGetPathBetweenPoints(GetPhysics()->GetOrigin(), bs.currentGoal.origin, navWaypoints))
 		{
 			currentWaypoint = 0;
 		}
@@ -123,12 +188,6 @@ void rvmBot::ServerThink(void) {
 			currentWaypoint = BOT_NOWAYPOINT;
 		}
 	}
-
-	if(bs.action == NULL) {
-		bs.action = &botAIActionSeekLTG;
-	}
-
-	bs.action->Think(&bs);
 
 	// If we are moving along a set of waypoints, let's move along.
 	if (currentWaypoint != BOT_NOWAYPOINT)
@@ -145,7 +204,7 @@ void rvmBot::ServerThink(void) {
 			}
 		}
 
-		currentGoal.nextMoveOrigin = navWaypoints[currentWaypoint];
+		bs.currentGoal.nextMoveOrigin = navWaypoints[currentWaypoint];
 
 		BotMoveToGoalOrigin();
 
@@ -168,7 +227,7 @@ void rvmBot::ServerThink(void) {
 			rotation.Identity();
 
 			idBox start_box(GetPhysics()->GetOrigin(), box_debug_extents, rotation);
-			idBox end_box(currentGoal.origin, box_debug_extents, rotation);
+			idBox end_box(bs.currentGoal.origin, box_debug_extents, rotation);
 
 			gameRenderWorld->DebugBox(color_red, start_box);
 			gameRenderWorld->DebugBox(color_red, end_box);

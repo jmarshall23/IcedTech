@@ -215,7 +215,7 @@ weight "item_health_mega"
 	}
 }
 
-weight "weapon_shotgun"
+weight "weapon_shotgun_mp"
 {
 	switch(INVENTORY_SHOTGUN)
 	{
@@ -224,7 +224,7 @@ weight "weapon_shotgun"
 	}
 }
 
-weight "weapon_machinegun"
+weight "weapon_machinegun_mp"
 {
 	switch(INVENTORY_MACHINEGUN)
 	{
@@ -233,7 +233,7 @@ weight "weapon_machinegun"
 	} 
 }
 
-weight "weapon_grenadelauncher"
+weight "weapon_grenadelauncher_mp"
 {
 	switch(INVENTORY_GRENADELAUNCHER)
 	{
@@ -242,7 +242,7 @@ weight "weapon_grenadelauncher"
 	} 
 }
 
-weight "weapon_rocketlauncher"
+weight "weapon_rocketlauncher_mp"
 {
 	switch(INVENTORY_ROCKETLAUNCHER)
 	{
@@ -251,7 +251,7 @@ weight "weapon_rocketlauncher"
 	} 
 }
 
-weight "weapon_lightning"
+weight "weapon_lightning_mp"
 {
 	switch(INVENTORY_LIGHTNING)
 	{
@@ -260,7 +260,7 @@ weight "weapon_lightning"
 	}
 } 
 
-weight "weapon_railgun"
+weight "weapon_railgun_mp"
 {
 	switch(INVENTORY_RAILGUN)
 	{
@@ -269,7 +269,7 @@ weight "weapon_railgun"
 	} 
 }
 
-weight "weapon_plasmagun"
+weight "weapon_plasmagun_mp"
 {
 	switch(INVENTORY_PLASMAGUN)
 	{
@@ -278,7 +278,7 @@ weight "weapon_plasmagun"
 	} 
 }
 
-weight "weapon_bfg"
+weight "weapon_bfg_mp"
 {
 	switch(INVENTORY_BFG10K)
 	{
@@ -287,7 +287,7 @@ weight "weapon_bfg"
 	} 
 }
  
-weight "weapon_nailgun"
+weight "weapon_nailgun_mp"
 {
 	switch(INVENTORY_NAILGUN)
 	{
@@ -296,7 +296,7 @@ weight "weapon_nailgun"
 	} 
 }
 
-weight "weapon_prox_launcher"
+weight "weapon_prox_launcher_mp"
 {
 	switch(INVENTORY_PROXLAUNCHER)
 	{

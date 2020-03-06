@@ -495,7 +495,7 @@ public:
 	void					GetRandomPointNearPosition(idVec3 point, idVec3& randomPoint, float radius);
 
 	int						NavTravelTime(idVec3 start, idVec3 end);
-	int						GetBotItemModelIndex(const char* name);
+	int						GetBotItemEntry(const char* name);
 private:
 	const static int		INITIAL_SPAWN_COUNT = 1;
 

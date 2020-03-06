@@ -16,4 +16,8 @@ void rvmBotAIBotSeekLTG::Think(bot_state_t* bs) {
 		bs->action = &botAIRespawn;
 		return;
 	}
+
+	if (!BotGetItemLongTermGoal(bs, 0, &bs->currentGoal)) {
+		return;
+	}
 }

@@ -386,7 +386,7 @@ void idBotGoalManager::BotInitInfoEntities(void)
 		if (ent == NULL)
 			continue;
 		
-		classname = ent->GetClassname();
+		classname = ent->spawnArgs.GetString("classname");
 
 		//map locations
 		if (classname == "target_location")
@@ -459,7 +459,7 @@ void idBotGoalManager::InitLevelItems(void)
 			continue;
 
 		spawnflags = ent->GetInt("spawnflags");
-		classname = ent->GetClassname();
+		classname = ent->spawnArgs.GetString("classname");
 
 		for (i = 0; i < ic->numiteminfo; i++)
 		{
@@ -468,7 +468,7 @@ void idBotGoalManager::InitLevelItems(void)
 		}
 		if (i >= ic->numiteminfo)
 		{
-			gameLocal.Warning("entity %s unknown item\r\n", classname);
+			gameLocal.Warning("entity %s unknown item\r\n", classname.c_str());
 			continue;
 		}
 
@@ -562,7 +562,7 @@ void idBotGoalManager::BotGoalName(int number, char* name, int size)
 		if (li->number == number)
 		{
 			name[size - 1] = '\0';
-			itemconfig->iteminfo[li->iteminfo].name = name;
+			strcpy(name, itemconfig->iteminfo[li->iteminfo].name);
 			return;
 		}
 	}
@@ -1588,7 +1588,7 @@ int idBotGoalManager::BotTouchingGoal(idVec3 origin, bot_goal_t* goal)
 idBotGoalManager::BotItemGoalInVisButNotVisible
 ========================
 */
-int idBotGoalManager::BotItemGoalInVisButNotVisible(int viewer, idVec3 eye, idVec3 viewangles, bot_goal_t* goal)
+int idBotGoalManager::BotItemGoalInVisButNotVisible(int viewer, idVec3 eye, idAngles viewangles, bot_goal_t* goal)
 {
 	//aas_entityinfo_t entinfo;
 	trace_t trace;

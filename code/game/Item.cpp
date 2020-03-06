@@ -289,7 +289,7 @@ void idItem::Spawn( void ) {
 	}
 
 // jmarshall
-	modelindex = gameLocal.GetBotItemModelIndex(spawnArgs.GetString("modelindex"));
+	modelindex = gameLocal.GetBotItemEntry(spawnArgs.GetString("modelindex"));
 // jmarshall end
 
 	giveTo = spawnArgs.GetString( "owner" );

@@ -932,10 +932,6 @@ void idGameLocal::LoadMap( const char *mapName, int randseed ) {
 	playerPVS.i = -1;
 	playerConnectedAreas.i = -1;
 
-// jmarshall
-	botGoalManager.InitLevelItems();
-// jmarshall end
-
 	// clear the smoke particle free list
 	smokeParticles->Init();
 
@@ -1196,6 +1192,10 @@ void idGameLocal::InitFromNewMap( const char *mapName, idRenderWorld *renderWorl
 
 	// free up any unused animations
 	animationLib.FlushUnusedAnims();
+
+// jmarshall
+	botGoalManager.InitLevelItems();
+// jmarshall end
 
 	gamestate = GAMESTATE_ACTIVE;
 
@@ -2201,7 +2201,7 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 #endif
 
 // jmarshall
-	botGoalManager.UpdateEntityItems();
+	//botGoalManager.UpdateEntityItems();
 // jmarshall end
 
 	player = GetLocalPlayer();
@@ -4283,10 +4283,10 @@ void idGameLocal::DelayRemoveEntity(idEntity *entity, int delay) {
 
 /*
 ===============
-idGameLocal::GetBotItemModelIndex
+idGameLocal::GetBotItemEntry
 ===============
 */
-int idGameLocal::GetBotItemModelIndex(const char* name) {
+int idGameLocal::GetBotItemEntry(const char* name) {
 	const idKeyValue* keyvalue = botItemTable->dict.FindKey(name);
 	if(!keyvalue) {
 		gameLocal.Error("GetBotItemModelIndex: Doesn't have key %s\n", name);

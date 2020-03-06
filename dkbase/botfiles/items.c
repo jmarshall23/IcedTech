@@ -315,7 +315,7 @@ mins		{-13,-13,-13}
 maxs		{13,13,13}
 } 
 
-iteminfo "weapon_bfg"
+iteminfo "weapon_bfg_mp"
 {
 name		"BFG10K"
 model		"models/weapons2/bfg/bfg.md3"
@@ -403,7 +403,7 @@ maxs		{13,13,13}
 } 
 
 
-iteminfo "weapon_shotgun"
+iteminfo "weapon_shotgun_mp"
 {
 name		"Shotgun"
 model		"models/weapons2/shotgun/shotgun.md3"
@@ -429,7 +429,7 @@ maxs		{13,13,13}
 } 
 
 
-iteminfo "weapon_rocketlauncher"
+iteminfo "weapon_rocketlauncher_mp"
 {
 name		"Rocket Launcher"
 model		"models/weapons2/rocketl/rocketl.md3"
@@ -454,7 +454,7 @@ maxs		{13,13,13}
 } 
 
 
-iteminfo "weapon_plasmagun"
+iteminfo "weapon_plasmagun_mp"
 {
 name		"Plasma Gun"
 model		"models/weapons2/plasma/plasma.md3"

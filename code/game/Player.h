@@ -321,8 +321,8 @@ public:
 							idPlayer();
 	virtual					~idPlayer();
 
-	void					Spawn( void );
-	void					Think( void );
+	virtual void			Spawn( void );
+	virtual void			Think( void );
 
 	// save games
 	void					Save( idSaveGame *savefile ) const;					// archives object for save game file
@@ -338,7 +338,7 @@ public:
 	void					SetupWeaponEntity( void );
 	void					SelectInitialSpawnPoint( idVec3 &origin, idAngles &angles );
 	void					SpawnFromSpawnSpot( void );
-	void					SpawnToPoint( const idVec3	&spawn_origin, const idAngles &spawn_angles );
+	virtual void			SpawnToPoint( const idVec3	&spawn_origin, const idAngles &spawn_angles );
 	void					SetClipModel( void );	// spectator mode uses a different bbox size
 
 	void					SavePersistantInfo( void );
