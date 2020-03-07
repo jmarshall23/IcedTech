@@ -25,6 +25,7 @@ rvmReflectionProbe::Capture
 */
 void rvmReflectionProbe::Capture(void) {
 	idTempArray<byte>	captureFrameBuffer(captureSize * captureSize * 4);
+	char* extensions[6] = { "_px.tga", "_nx.tga", "_py.tga", "_ny.tga", "_pz.tga", "_nz.tga" };
 
 	for(int side = 0; side < 6; side++) {
 		renderView_t renderView;
@@ -41,45 +42,41 @@ void rvmReflectionProbe::Capture(void) {
 		renderView.viewaxis.Zero();
 		renderView.skipPostProcess = true;
 
-		idMat4 view;
-		view.Zero();
-		float* viewaxis = view.ToFloatPtr();
-
+	
 		switch (side) {
 		case 0:
-			viewaxis[0] = 1;
-			viewaxis[9] = 1;
-			viewaxis[6] = -1;
+			renderView.viewaxis[0][0] = 1;
+			renderView.viewaxis[1][2] = 1;
+			renderView.viewaxis[2][1] = 1;
 			break;
 		case 1:
-			viewaxis[0] = -1;
-			viewaxis[9] = -1;
-			viewaxis[6] = -1;
+			renderView.viewaxis[0][0] = -1;
+			renderView.viewaxis[1][2] = -1;
+			renderView.viewaxis[2][1] = 1;
 			break;
 		case 2:
-			viewaxis[4] = 1;
-			viewaxis[1] = -1;
-			viewaxis[10] = 1;
+			renderView.viewaxis[0][1] = 1;
+			renderView.viewaxis[1][0] = -1;
+			renderView.viewaxis[2][2] = -1;
 			break;
 		case 3:
-			viewaxis[4] = -1;
-			viewaxis[1] = -1;
-			viewaxis[10] = -1;
+			renderView.viewaxis[0][1] = -1;
+			renderView.viewaxis[1][0] = -1;
+			renderView.viewaxis[2][2] = 1;
 			break;
 		case 4:
-			viewaxis[8] = 1;
-			viewaxis[1] = -1;
-			viewaxis[6] = -1;
+			renderView.viewaxis[0][2] = 1;
+			renderView.viewaxis[1][0] = -1;
+			renderView.viewaxis[2][1] = 1;
 			break;
 		case 5:
-			viewaxis[8] = -1;
-			viewaxis[1] = 1;
-			viewaxis[6] = -1;
+			renderView.viewaxis[0][2] = -1;
+			renderView.viewaxis[1][0] = 1;
+			renderView.viewaxis[2][1] = 1;
 			break;
 		}
 
-		renderView.viewaxis = view.ToMat3();
-		
+	
 		// Render this slice of the cubemap.
 		renderSystem->BeginFrame(renderView.window_width, renderView.window_height);
 			gameLocal.RenderScene(&renderView, gameRenderWorld);
@@ -89,7 +86,7 @@ void rvmReflectionProbe::Capture(void) {
 		renderSystem->ReadRenderTexture(gameLocal.GetGameRender()->forwardRenderPassResolvedRT, captureFrameBuffer.Ptr());
 
 		// Write out this slice to a targa.
-		idStr tgaName = va("%s/%s_reflectionprobe_%d", gameLocal.GetMapFileName(), GetName(), side);
+		idStr tgaName = va("%s/%s_reflectionprobe_%s", gameLocal.GetMapFileName(), GetName(), extensions[side]);
 		tgaName.Replace(".", "_");
 		tgaName += ".tga";
 		renderSystem->WriteTGA(tgaName.c_str(), captureFrameBuffer.Ptr(), renderView.window_width, renderView.window_height, false, "");
