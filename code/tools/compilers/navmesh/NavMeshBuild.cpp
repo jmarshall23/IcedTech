@@ -54,7 +54,7 @@ void AddModelToMegaGeometry(WorldGeometry_t &geometry, idVec3 origin, idMat3 axi
 bool LoadWorldFile(idStr mapName, WorldGeometry_t &geometry, int &crcMAP)
 {
 	mapName.StripFileExtension();
-	idStr procName = "maps/";
+	idStr procName;// = "maps/";
 	procName += mapName;
 
 	idRenderWorld *world = renderSystem->AllocRenderWorld();
