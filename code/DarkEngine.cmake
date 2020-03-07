@@ -494,7 +494,7 @@ else()
 		./renderer/DXT/DXTDecoder.cpp
 		./renderer/DXT/DXTEncoder.cpp
 
-		./renderer/qgllib/glew.c
+		#./renderer/qgllib/glew.c
 
 		# Sound System
 		./sound/snd_emitter.cpp
@@ -794,7 +794,9 @@ if(WIN32)
 	target_link_libraries(DoomDLL idLib External Tools "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib")
 else()
 	find_package(SDL2 REQUIRED)
-	target_link_libraries(DoomDLL idLib External openal vorbisfile vorbis jpeg png z ${SDL2_LIBRARIES} GL pthread)
+	find_package(GLEW REQUIRED)
+	target_include_directories(DoomDLL PRIVATE ${GLEW_INCLUDE_DIRS})
+	target_link_libraries(DoomDLL idLib External openal vorbisfile vorbis jpeg png z ${SDL2_LIBRARIES} ${GLEW_LIBRARIES} GL pthread)
 endif()
 target_include_directories(DoomDLL PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" )
 target_include_directories(DoomDLL PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/framework" )

@@ -1,7 +1,8 @@
 // draw_feedback.cpp
 //
 
-#include <renderer/qgllib/glew.h>
+//#include <renderer/qgllib/glew.h>
+#include <GL/glew.h>
 #include "Engine_precompiled.h"
 #include "tr_local.h"
 

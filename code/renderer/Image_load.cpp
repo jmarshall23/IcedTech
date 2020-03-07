@@ -26,7 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include <renderer/qgllib/glew.h>
+//#include <renderer/qgllib/glew.h>
+#include <GL/glew.h>
 #include "Engine_precompiled.h"
 
 #include "tr_local.h"
@@ -419,7 +420,7 @@ void idImage::Bind() {
 			glDisable(GL_TEXTURE_2D);
 		}
 
-		if (opts.textureType == TT_CUBIC) {
+        if (opts.textureType == TT_CUBIC) {
 			glEnable(GL_TEXTURE_CUBE_MAP_EXT);
 		}
 		else if (opts.textureType == TT_2D) {
@@ -432,12 +433,22 @@ void idImage::Bind() {
 	if ( opts.textureType == TT_2D ) {
 		if ( tmu->current2DMap != texnum ) {
 			tmu->current2DMap = texnum;
-			glBindMultiTextureEXT( GL_TEXTURE0_ARB + texUnit, GL_TEXTURE_2D, texnum );
+			if( glConfig.directStateAccess ){
+                glBindMultiTextureEXT( GL_TEXTURE0_ARB + texUnit, GL_TEXTURE_2D, texnum );
+            } else {
+                glActiveTexture( GL_TEXTURE0 + texUnit );
+                glBindTexture( GL_TEXTURE_2D, texnum );
+			}
 		}
 	} else if ( opts.textureType == TT_CUBIC ) {
 		if ( tmu->currentCubeMap != texnum ) {
 			tmu->currentCubeMap = texnum;
-			glBindMultiTextureEXT( GL_TEXTURE0_ARB + texUnit, GL_TEXTURE_CUBE_MAP_EXT, texnum );
+			if( glConfig.directStateAccess ){
+                glBindMultiTextureEXT( GL_TEXTURE0_ARB + texUnit, GL_TEXTURE_CUBE_MAP_EXT, texnum );
+            } else {
+                glActiveTexture( GL_TEXTURE0 + texUnit );
+                glBindTexture( GL_TEXTURE_CUBE_MAP, texnum );
+			}
 		}
 	}
 

@@ -4,7 +4,7 @@
 Doom 3 BFG Edition GPL Source Code
 Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").
 
 Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -109,7 +109,7 @@ uniform float4 rpMegaTextureLevel6		:   register(c60);
 uniform float4 rpVirtualTextureFeedback : register(c61);
 uniform float4 rpVirtualMapping			: register(c62);
 uniform float4 rpVirtualPageInfo		: register(c63);
- 
+
 uniform float4 rpShadowMapInfo          : register(c64);
 
 static float dot2( float2 a, float2 b ) { return dot( a, b ); }
@@ -132,30 +132,6 @@ static const half4 matrixCoCg1YtoRGB1X = half4(  1.0, -1.0,  0.0,        1.0 );
 static const half4 matrixCoCg1YtoRGB1Y = half4(  0.0,  1.0, -0.50196078, 1.0 ); // -0.5 * 256.0 / 255.0
 static const half4 matrixCoCg1YtoRGB1Z = half4( -1.0, -1.0,  1.00392156, 1.0 ); // +1.0 * 256.0 / 255.0
 
-//static int2 ComputeMipMapLevel(isampler2D pageOffsetTexture, float2 texCoords, float width, float height)
-//{
-//	texCoords = texCoords * float2(width, height);
-//
-//	float2 mipMapLevel = texQueryLOD(pageOffsetTexture, texCoords);
-//	return int2(0, 0);
-//}
-
-static float ComputeMippedValue(int mipmap, float value)
-{
-	if(mipmap == 0)
-		return value;
-
-	for(int i = 0; i < mipmap; i++)
-	{
-		value = value / 2;
-	}
-
-	if(value < 1)
-		value = 1;
-	
-	return value;
-}
-
 static half3 ConvertYCoCgToRGB( half4 YCoCg ) {
 	half3 rgbColor;
 
@@ -167,6 +143,29 @@ static half3 ConvertYCoCgToRGB( half4 YCoCg ) {
 	rgbColor.z = dot4( YCoCg, matrixCoCg1YtoRGB1Z );
 	return rgbColor;
 }
+
+//static int2 ComputeMipMapLevel(isampler2D pageOffsetTexture, float2 texCoords, float width, float height)
+//{
+//	texCoords = texCoords * float2(width, height);
+//
+//	float2 mipMapLevel = texQueryLOD(pageOffsetTexture, texCoords);
+//	return int2(0, 0);
+//}
+//static float ComputeMippedValue(int mipmap, float value)
+//{
+//	if(mipmap == 0)
+//		return value;
+//
+//	for(int i = 0; i < mipmap; i++)
+//	{
+//		value = value / 2;
+//	}
+//
+//	if(value < 1)
+//		value = 1;
+//
+//	return value;
+//}
 
 static float2 CenterScale( float2 inTC, float2 centerScale ) {
 	float scaleX = centerScale.x;
@@ -198,36 +197,6 @@ float rand( float2 co ) {
     return frac( sin( dot( co.xy, float2( 12.9898, 78.233 ) ) ) * 43758.5453 );
 }
 
-float2 CenterScale( float2 inTC, float2 centerScale ) {
-	float scaleX = centerScale.x;
-	float scaleY = centerScale.y;
-	float4 tc0 = float4( scaleX, 0, 0, 0.5 - ( 0.5f * scaleX ) );
-	float4 tc1 = float4( 0, scaleY, 0, 0.5 - ( 0.5f * scaleY ) );
-
-	float2 finalTC;
-	finalTC.x = dot4( inTC, tc0 );
-	finalTC.y = dot4( inTC, tc1 );
-	return finalTC;
-}
-
-float2 Rotate2D( float2 inTC, float2 cs ) {
-	float sinValue = cs.y;
-	float cosValue = cs.x;
-
-	float4 tc0 = float4( cosValue, -sinValue, 0, ( -0.5f * cosValue ) + ( 0.5f * sinValue ) + 0.5f );
-	float4 tc1 = float4( sinValue, cosValue, 0, ( -0.5f * sinValue ) + ( -0.5f * cosValue ) + 0.5f );
-
-	float2 finalTC;
-	finalTC.x = dot4( inTC, tc0 );
-	finalTC.y = dot4( inTC, tc1 );
-	return finalTC;
-}
-
-// better noise function available at https://github.com/ashima/webgl-noise
-float rand( float2 co ) {
-    return fract( sin( dot( co.xy, float2( 12.9898, 78.233 ) ) ) * 43758.5453 );
-}
-
 float DistributionGGX(float3 N, float3 H, float roughness)
 {
     float a      = roughness*roughness;
@@ -236,11 +205,11 @@ float DistributionGGX(float3 N, float3 H, float roughness)
     float NdotH2 = NdotH*NdotH;
 	float PI = 3.14159265359;
 
-	
+
     float num   = a2;
     float denom = (NdotH2 * (a2 - 1.0) + 1.0);
     denom = PI * denom * denom;
-	
+
     return num / denom;
 }
 
@@ -251,7 +220,7 @@ float GeometrySchlickGGX(float NdotV, float roughness)
 
     float num   = NdotV;
     float denom = NdotV * (1.0 - k) + k;
-	
+
     return num / denom;
 }
 float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
@@ -260,14 +229,14 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
     float NdotL = max(dot(N, L), 0.0);
     float ggx2  = GeometrySchlickGGX(NdotV, roughness);
     float ggx1  = GeometrySchlickGGX(NdotL, roughness);
-	
+
     return ggx1 * ggx2;
 }
 
 float3 fresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
-} 
+}
 
 #define _half2( x )		half2( x )
 #define _half3( x )		half3( x )

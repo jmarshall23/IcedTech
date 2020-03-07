@@ -159,8 +159,14 @@ bool GLimp_Init(glimpParms_t parms) {
         //SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
         //SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 0 );
 
-        //SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
         //SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
+
+        idCVar *r_debugContext = cvarSystem->Find("r_debugContext");
+        if( r_debugContext && r_debugContext->GetBool() ){
+            common->Printf("Setting OpenGL Debug Context.\n");
+            SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
+        }
 
         SDL_GL_SetAttribute(SDL_GL_RED_SIZE, channelcolorbits);
         SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, channelcolorbits);

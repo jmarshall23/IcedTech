@@ -26,7 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include <renderer/qgllib/glew.h>
+//#include <renderer/qgllib/glew.h>
+#include <GL/glew.h>
 #include "Engine_precompiled.h"
 #pragma hdrstop
 
@@ -233,6 +234,10 @@ For ARB_debug_output
 */
 static void DebugCallback(unsigned int source, unsigned int type,
 	unsigned int id, unsigned int severity, int length, const char * message, void * userParam) {
+    if( strstr( message, "GL_INVALID") ){
+        common->Printf("OpenGL Debug Message! (%s)\n", message);
+    }
+
 	// it probably isn't safe to do an idLib::Printf at this point
 	//OutputDebugString(message);
 	//OutputDebugString("\n");
@@ -396,6 +401,13 @@ static void R_CheckPortableExtensions( void ) {
 	// ARB_vertex_program
 	SetExtension( GLEW_ARB_vertex_program, &glConfig.ARBVertexProgramAvailable, "ARB_vertex_program" );
 
+	// EXT_direct_state_access
+    idCVar *useUniform = cvarSystem->Find("r_useUniformArrays" );
+    if( useUniform && !useUniform->GetBool() ){
+        glConfig.directStateAccess = false;
+    } else {
+        SetExtension( GLEW_EXT_direct_state_access, &glConfig.directStateAccess, "ARB/EXT_direct_state_access" );
+    }
 
 	// ARB_fragment_program
 	if ( r_inhibitFragmentProgram.GetBool() ) {
@@ -559,7 +571,8 @@ void R_InitOpenGL( void ) {
     glConfig.vendor_string = (const char *)glGetString(GL_VENDOR);
 	glConfig.renderer_string = (const char *)glGetString(GL_RENDERER);
     glConfig.glVersion = atof( (const char*)glGetString(GL_VERSION) );
-    common->Printf("OpenGL Version: %f | Renderer: %s | Vendor: %s\n", glConfig.glVersion, glConfig.renderer_string, glConfig.vendor_string );
+    common->Printf("OpenGL Version: %f | GLSL version: %s | Renderer: %s | Vendor: %s\n",
+            glConfig.glVersion, (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION), glConfig.renderer_string, glConfig.vendor_string );
     //lwss end
 
 	// OpenGL driver constants
@@ -1271,7 +1284,7 @@ void R_EnvShot_f( const idCmdArgs &args ) {
 	renderView_t	ref;
 	viewDef_t	primary;
 	int			blends;
-	char	*extensions[6] =  { "_px.tga", "_nx.tga", "_py.tga", "_ny.tga", 
+	const char	*extensions[6] =  { "_px.tga", "_nx.tga", "_py.tga", "_ny.tga",
 		"_pz.tga", "_nz.tga" };
 	int			size;
 
@@ -1411,7 +1424,7 @@ void R_MakeAmbientMap_f( const idCmdArgs &args ) {
 	renderView_t	ref;
 	viewDef_t	primary;
 	int			downSample;
-	char	*extensions[6] =  { "_px.tga", "_nx.tga", "_py.tga", "_ny.tga", 
+	const char	*extensions[6] =  { "_px.tga", "_nx.tga", "_py.tga", "_ny.tga",
 		"_pz.tga", "_nz.tga" };
 	int			outSize;
 	byte		*buffers[6];

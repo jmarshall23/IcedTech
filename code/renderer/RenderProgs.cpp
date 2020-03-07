@@ -26,7 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include <renderer/qgllib/glew.h>
+//#include <renderer/qgllib/glew.h>
+#include <GL/glew.h>
 #include "Engine_precompiled.h"
 #include "tr_local.h"
 
@@ -149,7 +150,11 @@ void idRenderProgManager::Init() {
 	vertexShaders[builtinShaders[BUILTIN_SHADOW_DEBUG_SKINNED]].usesJoints = true;
 	vertexShaders[builtinShaders[BUILTIN_FOG_SKINNED]].usesJoints = true;
 
-	glUseProgram(0);
+    currentVertexShader = -1;
+    currentFragmentShader = -1;
+    currentRenderProgram = -1;
+
+    glUseProgram(0);
 
 	cmdSystem->AddCommand( "reloadShaders", R_ReloadShaders, CMD_FL_RENDERER, "reloads shaders" );
 }

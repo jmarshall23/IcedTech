@@ -63,6 +63,7 @@ typedef struct glconfig_s {
 	int					colorBits, depthBits, stencilBits;
 
 	bool				multitextureAvailable;
+	bool				directStateAccess;
 	bool				textureCompressionAvailable;
 	bool				anisotropicAvailable;
 	bool				textureLODBiasAvailable;
