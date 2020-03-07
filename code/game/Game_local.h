@@ -377,6 +377,7 @@ public:
 
 // jmarshall
 	virtual bool			GetRandomBotName(int clientNum, idStr& botName);
+	virtual void			ResetGameRenderTargets(void);
 // jmarshall end
 
 	// ---------------------- Public idGameLocal Interface -------------------
@@ -496,6 +497,10 @@ public:
 
 	int						NavTravelTime(idVec3 start, idVec3 end);
 	int						GetBotItemEntry(const char* name);
+
+	rvmGameRender_t*		GetGameRender() { return &gameRender; }
+
+	const char*				GetMapFileName() { return mapFileName.c_str(); }
 private:
 	const static int		INITIAL_SPAWN_COUNT = 1;
 
@@ -808,6 +813,10 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 
 // jmarshall
 #include "Bot/Bot.h"
+// jmarshall end
+
+// jmarshall
+#include "ReflectionProbe.h"
 // jmarshall end
 
 #include "script/Script_Compiler.h"

@@ -162,6 +162,8 @@ set(src_game
 	./game/bot/botai/BotAI_respawn.cpp
 	./game/bot/botai/BotAI_SeekLTG.cpp
 	./game/bot/botai/BotAI.h
+	./game/ReflectionProbe.cpp
+	./game/ReflectionProbe.h
 	./game/game_navigation.cpp
 	./game/game_precompiled.cpp
 	./game/game_precompiled.h

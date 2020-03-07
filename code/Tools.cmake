@@ -92,6 +92,7 @@ set(src_tools
 	./tools/compilers/megagen/MegaProject.cpp
 	./tools/compilers/megalight/MegaLight.cpp
 	./tools/compilers/renderbump/renderbump.cpp
+	./tools/compilers/renderprobes/renderprobes.cpp
 	./tools/compilers/roqvq/codec.cpp
 	./tools/compilers/roqvq/NSBitmapImageRep.cpp
 	./tools/compilers/roqvq/roq.cpp

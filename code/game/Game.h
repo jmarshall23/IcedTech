@@ -194,6 +194,9 @@ public:
 // jmarshall 
 	// Can be called be either the game or the tools to render the scene.
 	virtual void				RenderScene(const renderView_t *view, idRenderWorld *renderWorld) = 0;
+
+	// Resets the game render targets to be the proper resolution of the screen.
+	virtual void				ResetGameRenderTargets(void) = 0;
 // jmarshall end
 
 	virtual void				GetMapLoadingGUI( char gui[ MAX_STRING_CHARS ] ) = 0;
@@ -273,6 +276,10 @@ public:
 	// Selection methods
 	virtual void				TriggerSelected();
 
+// jmarshall
+	virtual void				BuildReflectionCaptures(void);
+// jmarshall end
+
 	// Entity defs and spawning.
 	virtual const idDict *		FindEntityDefDict( const char *name, bool makeDefault = true ) const;
 	virtual void				SpawnEntityDef( const idDict &args, idEntity **ent );
@@ -325,7 +332,7 @@ extern idGameEdit *				gameEdit;
 ===============================================================================
 */
 // jmarshall
-const int GAME_API_VERSION		= 4005;
+const int GAME_API_VERSION		= 4006;
 // jmarshall end
 
 typedef struct {

@@ -56,4 +56,7 @@ void MegaLight_f(const idCmdArgs &args);
 // Navmesh compiler
 void NavMesh_f(const idCmdArgs& args);
 
+// reflection probe generation.
+void RenderProbes_f(const idCmdArgs& args);
+
 #endif	/* !__COMPILER_PUBLIC_H__ */

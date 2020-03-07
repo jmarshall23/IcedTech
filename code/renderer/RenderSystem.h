@@ -261,6 +261,12 @@ public:
 	// Fills in the image dinem for the given image.
 	virtual void			GetImageSize(idImage *image, int &imageWidth, int &imageHeight) = 0;
 
+	// Fills in buffer with the contents of the rendertexture. Call this after you call EndFrame!
+	virtual void			ReadRenderTexture(idRenderTexture* renderTexture, byte* buffer) = 0;
+
+	// Writes a TGA file to the filesystem.
+	virtual void			WriteTGA(const char* filename, const byte* data, int width, int height, bool flipVertical, const char* basePath) = 0;
+
 	// aviDemo uses this.
 	// Will automatically tile render large screen shots if necessary
 	// Samples is the number of jittered frames for anti-aliasing
@@ -268,7 +274,7 @@ public:
 	// This will perform swapbuffers, so it is NOT an approppriate way to
 	// generate image files that happen during gameplay, as for savegame
 	// markers.  Use WriteRender() instead.
-	virtual void			TakeScreenshot( int width, int height, const char *fileName, int samples, struct renderView_s *ref ) = 0;
+	virtual void			TakeScreenshot( int width, int height, const char *fileName, int samples, struct renderView_t *ref ) = 0;
 
 	// the render output can be cropped down to a subset of the real screen, as
 	// for save-game reviews and split-screen multiplayer.  Users of the renderer

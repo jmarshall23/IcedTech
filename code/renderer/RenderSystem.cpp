@@ -1134,3 +1134,23 @@ idRenderSystemLocal::RunFeedbackJob
 void idRenderSystemLocal::RunFeedbackJob(idRenderTexture *feedbackRT) {
 	virtualTextureSystem.RunFeedbackJob(feedbackRT->GetColorImage(0));
 }
+
+/*
+===============
+idRenderSystemLocal::ReadRenderTexture
+===============
+*/
+void idRenderSystemLocal::ReadRenderTexture(idRenderTexture* renderTexture, byte* buffer) {
+	idImage* image = renderTexture->GetColorImage(0);
+
+	glGetTextureImage(image->texnum, 0, GL_RGBA, GL_BYTE, image->GetUploadWidth() * image->GetUploadHeight() * 4, buffer);
+}
+
+/*
+===============
+idRenderSystemLocal::WriteTGA
+===============
+*/
+void idRenderSystemLocal::WriteTGA(const char* filename, const byte* data, int width, int height, bool flipVertical, const char* basePath) {
+	R_WriteTGA(filename, data, width, height, flipVertical, basePath);
+}

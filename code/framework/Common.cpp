@@ -2345,6 +2345,7 @@ void idCommonLocal::InitCommands( void ) {
 	cmdSystem->AddCommand( "megalight", MegaLight_f, CMD_FL_TOOL, "builds lightmaps for a megatexture.");
 	cmdSystem->AddCommand( "megagen", RunMegaGen_f, CMD_FL_TOOL, "builds a source megatexture(giant tga) for a mega project.");
 	cmdSystem->AddCommand("navbuild", NavMesh_f, CMD_FL_TOOL, "builds a navmesh file", idCmdSystem::ArgCompletion_MapName);
+	cmdSystem->AddCommand("renderprobes", RenderProbes_f, CMD_FL_TOOL, "builds reflection probes", idCmdSystem::ArgCompletion_MapName);
 #endif
 
 #ifdef ID_ALLOW_TOOLS

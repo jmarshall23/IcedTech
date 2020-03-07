@@ -1140,3 +1140,22 @@ void idGameEdit::MapEntityTranslate( const char *name, const idVec3 &v ) const {
 		}
 	}
 }
+
+/*
+================
+idGameEdit::BuildReflectionCaptures
+================
+*/
+void idGameEdit::BuildReflectionCaptures(void) {
+	for(int i = 0; i < gameLocal.num_entities; i++) {
+		if (gameLocal.entities[i] == NULL)
+			continue;
+
+		rvmReflectionProbe* reflectionProbe = gameLocal.entities[i]->Cast<rvmReflectionProbe>();
+
+		if (reflectionProbe == NULL)
+			continue;
+
+		reflectionProbe->Capture();
+	}
+}
