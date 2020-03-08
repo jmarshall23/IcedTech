@@ -89,6 +89,13 @@ typedef enum {
 	SND_TWO,
 	SND_ONE,
 	SND_SUDDENDEATH,
+// jmarshall
+	SND_FIRSTFRAG,
+	SND_WELCOMEDOM,
+	SND_ONEFRAG,
+	SND_TWOFRAG,
+	SND_THREEFRAG,
+// jmarshall end
 	SND_COUNT
 } snd_evt_t;
 
@@ -138,6 +145,11 @@ public:
 		NEXTGAME,
 		STATE_COUNT
 	} gameState_t;
+
+// jmarshall
+	static snd_evt_t fragFeedbackSndTable[4];
+// jmarshall end
+
 	static const char *GameStateStrings[ STATE_COUNT ];
 	idMultiplayerGame::gameState_t		GetGameState( void ) const;
 
@@ -305,7 +317,10 @@ private:
 
 	gameType_t		lastGameType;			// for restarts
 	int				startFragLimit;			// synchronize to clients in initial state, set on -> GAMEON
-
+// jmarshall
+	bool			firstBlood;
+	bool			fragWarningFeedback[4];
+// jmarshall end
 private:
 	void			UpdatePlayerRanks();
 
