@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for Darklight, include source and define
 # project specific logic here.
 #
-set(CMAKE_VERBOSE_MAKEFILE ON)
+#set(CMAKE_VERBOSE_MAKEFILE ON)
 cmake_minimum_required (VERSION 3.8)
 
 include( PrecompiledHeader.cmake )

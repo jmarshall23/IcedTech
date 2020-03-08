@@ -1249,6 +1249,10 @@ void idRenderProgManager::LoadGLSLProgram( const int programIndex, const int ver
 	glslProgram_t & prog = glslPrograms[programIndex];
 
 	if ( prog.progId != INVALID_PROGID ) {
+		idLib::Warning( "Tried to load already loaded GLSL program(%d) with vertexShader %s and fragmentShader %s\n",
+						programIndex,
+						( vertexShaderIndex >= 0 ) ? vertexShaders[vertexShaderIndex].name.c_str() : "<Invalid>",
+						( fragmentShaderIndex >= 0 ) ? fragmentShaders[ fragmentShaderIndex ].name.c_str() : "<Invalid>" );
 		return; // Already loaded
 	}
 
@@ -1256,44 +1260,45 @@ void idRenderProgManager::LoadGLSLProgram( const int programIndex, const int ver
 	GLuint fragmentProgID = ( fragmentShaderIndex != -1 ) ? fragmentShaders[ fragmentShaderIndex ].progId : INVALID_PROGID;
 
 	const GLuint program = glCreateProgram();
-	if ( program ) {
+	if ( !program ) {
+		idLib::Error("Couldn't create glsl program! glCreateProgram() failed!\n");
+	}
 
-		if ( vertexProgID != INVALID_PROGID ) {
-			glAttachShader( program, vertexProgID );
+	if ( vertexProgID != INVALID_PROGID ) {
+		glAttachShader( program, vertexProgID );
+	}
+
+	if ( fragmentProgID != INVALID_PROGID ) {
+		glAttachShader( program, fragmentProgID );
+	}
+
+	// bind vertex attribute locations
+	for ( int i = 0; attribsPC[i].glsl != NULL; i++ ) {
+		if ( ( attribsPC[i].flags & AT_VS_IN ) != 0 ) {
+			glBindAttribLocation( program, attribsPC[i].bind, attribsPC[i].glsl );
 		}
+	}
 
-		if ( fragmentProgID != INVALID_PROGID ) {
-			glAttachShader( program, fragmentProgID );
+	glLinkProgram( program );
+
+	int infologLength = 0;
+	glGetProgramiv( program, GL_INFO_LOG_LENGTH, &infologLength );
+	if ( infologLength > 1 ) {
+		char * infoLog = (char *)malloc( infologLength );
+		int charsWritten = 0;
+		glGetProgramInfoLog( program, infologLength, &charsWritten, infoLog );
+
+		// catch the strings the ATI and Intel drivers output on success
+		if ( strstr( infoLog, "Vertex shader(s) linked, fragment shader(s) linked." ) != NULL || strstr( infoLog, "No errors." ) != NULL ) {
+			//common->Printf( "render prog %s from %s linked\n", GetName(), GetFileName() );
 		}
+		common->Printf( "While linking GLSL program %d with vertexShader %s and fragmentShader %s\n",
+			programIndex,
+			( vertexShaderIndex >= 0 ) ? vertexShaders[vertexShaderIndex].name.c_str() : "<Invalid>",
+			( fragmentShaderIndex >= 0 ) ? fragmentShaders[ fragmentShaderIndex ].name.c_str() : "<Invalid>" );
+		common->Printf( "%s\n", infoLog );
 
-		// bind vertex attribute locations
-		for ( int i = 0; attribsPC[i].glsl != NULL; i++ ) {
-			if ( ( attribsPC[i].flags & AT_VS_IN ) != 0 ) {
-				glBindAttribLocation( program, attribsPC[i].bind, attribsPC[i].glsl );
-			}
-		}
-
-		glLinkProgram( program );
-
-		int infologLength = 0;
-		glGetProgramiv( program, GL_INFO_LOG_LENGTH, &infologLength );
-		if ( infologLength > 1 ) {
-			char * infoLog = (char *)malloc( infologLength );
-			int charsWritten = 0;
-			glGetProgramInfoLog( program, infologLength, &charsWritten, infoLog );
-
-			// catch the strings the ATI and Intel drivers output on success
-			if ( strstr( infoLog, "Vertex shader(s) linked, fragment shader(s) linked." ) != NULL || strstr( infoLog, "No errors." ) != NULL ) {
-				//common->Printf( "render prog %s from %s linked\n", GetName(), GetFileName() );
-			}
-            common->Printf( "While linking GLSL program %d with vertexShader %s and fragmentShader %s\n",
-                programIndex,
-                ( vertexShaderIndex >= 0 ) ? vertexShaders[vertexShaderIndex].name.c_str() : "<Invalid>",
-                ( fragmentShaderIndex >= 0 ) ? fragmentShaders[ fragmentShaderIndex ].name.c_str() : "<Invalid>" );
-            common->Printf( "%s\n", infoLog );
-
-			free( infoLog );
-		}
+		free( infoLog );
 	}
 
 	int linked = GL_FALSE;
