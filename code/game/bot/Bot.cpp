@@ -194,9 +194,7 @@ void rvmBot::ServerThink(void) {
 	{
 		if (currentWaypoint < navWaypoints.Num())
 		{
-			float dist = idMath::Distance(GetPhysics()->GetOrigin(), navWaypoints[currentWaypoint]);
-
-			if (dist <= bot_goaldist.GetInteger())
+			if (botGoalManager.BotNearGoal(GetPhysics()->GetOrigin(), navWaypoints[currentWaypoint]))
 			{
 				currentWaypoint++;
 				if (currentWaypoint >= navWaypoints.Num())

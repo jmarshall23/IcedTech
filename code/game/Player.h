@@ -494,7 +494,7 @@ public:
 	// server side work for in/out of spectate. takes care of spawning it into the world as well
 	void					ServerSpectate( bool spectate );
 	// for very specific usage. != GetPhysics()
-	idPhysics				*GetPlayerPhysics( void );
+	idPhysics_Player		*GetPlayerPhysics( void );
 	void					TeleportDeath( int killer );
 	void					SetLeader( bool lead );
 	bool					IsLeader( void );
@@ -690,7 +690,7 @@ ID_INLINE bool idPlayer::IsRespawning( void ) {
 	return respawning;
 }
 
-ID_INLINE idPhysics* idPlayer::GetPlayerPhysics( void ) {
+ID_INLINE idPhysics_Player* idPlayer::GetPlayerPhysics( void ) {
 	return &physicsObj;
 }
 
