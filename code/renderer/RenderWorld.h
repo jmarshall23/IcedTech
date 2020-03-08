@@ -83,7 +83,7 @@ const int SHADERPARM_PARTICLE_STOPTIME = 8;	// don't spawn any more particles af
 const int MAX_RENDERENTITY_GUI		= 3;
 
 
-typedef bool(*deferredEntityCallback_t)( renderEntity_t *, const renderView_s * );
+typedef bool(*deferredEntityCallback_t)( renderEntity_t *, const renderView_t* );
 
 // jmarshall - added constructor here.
 struct renderEntity_t {
@@ -146,7 +146,7 @@ struct renderEntity_t {
 	// networking: see WriteGUIToSnapshot / ReadGUIFromSnapshot
 	class idUserInterface * gui[ MAX_RENDERENTITY_GUI ];
 
-	struct renderView_s	*	remoteRenderView;		// any remote camera surfaces will use this
+	struct renderView_t*	remoteRenderView;		// any remote camera surfaces will use this
 
 	int						numJoints;
 	idJointMat *			joints;					// array of joints that will modify vertices.
@@ -221,7 +221,33 @@ typedef struct renderLight_s {
 } renderLight_t;
 
 
-typedef struct renderView_s {
+struct renderView_t {
+// jmarshall
+	renderView_t()
+	{
+		viewID = 0;
+		x = 0;
+		y = 0;
+		width = 0;
+		height = 0;
+		fov_x = 0;
+		fov_y = 0;
+		vieworg.Zero();
+		viewaxis.Zero();
+		cramZNear = false;
+		forceUpdate = false;
+		window_width = 0;
+		window_height = 0;
+		skipFrustumInteractionCheck = false;
+		forceScreenSize = false;
+		skipPostProcess = false;
+		time = 0;
+		for (int i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++)
+			shaderParms[i] = 0;
+		globalMaterial = NULL;
+	}
+// jmarshall end
+
 	// player views will set this to a non-zero integer for model suppress / allow
 	// subviews (mirrors, cameras, etc) will always clear it to zero
 	int						viewID;
@@ -243,6 +269,7 @@ typedef struct renderView_s {
 
 	bool					skipFrustumInteractionCheck;
 	bool					forceScreenSize;
+	bool					skipPostProcess;
 // jmarshall end
 
 
@@ -250,7 +277,7 @@ typedef struct renderView_s {
 	int						time;
 	float					shaderParms[MAX_GLOBAL_SHADER_PARMS];		// can be used in any way by shader
 	const idMaterial		*globalMaterial;							// used to override everything draw
-} renderView_t;
+};
 
 
 // exitPortal_t is returned by idRenderWorld::GetPortal()
@@ -292,6 +319,15 @@ typedef enum {
 	PS_BLOCK_ALL = (1<<NUM_PORTAL_ATTRIBUTES)-1
 } portalConnection_t;
 
+//
+// rvmWorldReflectionProbe_t
+//
+struct rvmWorldReflectionProbe_t {
+	idVec3 origin;
+	float radius;
+	idImage* reflectionCaptureImage;
+};
+
 
 class idRenderWorld {
 public:
@@ -299,7 +335,7 @@ public:
 
 	// The same render world can be reinitialized as often as desired
 	// a NULL or empty mapName will create an empty, single area world
-	virtual bool			InitFromMap( const char *mapName ) = 0;
+	virtual bool			InitFromMap( const char *mapName, bool fastLoad = false ) = 0;
 
 	//-------------- Entity and Light Defs -----------------
 
@@ -435,6 +471,9 @@ public:
 
 	// Returns a model from the world models given idx.
 	virtual idRenderModel   *GetWorldModel(int idx) = 0;
+
+	// Adds a reflection probe to the world.
+	virtual int				AddReflectionProbe(rvmWorldReflectionProbe_t& probe) = 0;
 // jmarshall end
 
 	//-------------- Debug Visualization  -----------------

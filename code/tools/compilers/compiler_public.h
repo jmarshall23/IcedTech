@@ -44,11 +44,6 @@ void Dmap_f( const idCmdArgs &args );
 void RenderBump_f( const idCmdArgs &args );
 void RenderBumpFlat_f( const idCmdArgs &args );
 
-// AAS file compiler
-void RunAAS_f( const idCmdArgs &args );
-void RunAASDir_f( const idCmdArgs &args );
-void RunReach_f( const idCmdArgs &args );
-
 // video file encoding
 void RoQFileEncode_f( const idCmdArgs &args );
 
@@ -57,5 +52,11 @@ void RunMegaGen_f(const idCmdArgs &args);
 
 // MegaLight compiler
 void MegaLight_f(const idCmdArgs &args);
+
+// Navmesh compiler
+void NavMesh_f(const idCmdArgs& args);
+
+// reflection probe generation.
+void RenderProbes_f(const idCmdArgs& args);
 
 #endif	/* !__COMPILER_PUBLIC_H__ */

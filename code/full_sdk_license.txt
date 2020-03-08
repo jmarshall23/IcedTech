@@ -1,0 +1,1 @@
+Darklight is a idTech 4 based engine, and is licensed under GPL. 

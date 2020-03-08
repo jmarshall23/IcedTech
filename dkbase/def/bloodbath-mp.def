@@ -1,0 +1,10 @@
+entityDef player_doommarine_mp_bot {
+	"inherit"							"player_doommarine_mp"
+	"spawnclass"							"rvmBot"
+}
+
+entityDef bot_info {
+	"death_taunt0"							"Who let this dousche into the arena?"
+	"death_taunt1"							"%s is a fucking cheater!"
+	"death_taunt2"							"Who let %s in here? He's a fucking camper!"
+}

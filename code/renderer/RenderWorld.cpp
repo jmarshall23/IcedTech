@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 #pragma hdrstop
 
 #include "tr_local.h"
@@ -142,6 +142,8 @@ idRenderWorldLocal::idRenderWorldLocal() {
 	interactionTable = 0;
 	interactionTableWidth = 0;
 	interactionTableHeight = 0;
+
+	isFastLoaded = false;
 }
 
 /*
@@ -2139,4 +2141,20 @@ const idMaterial *R_RemapShaderBySkin( const idMaterial *shader, const idDeclSki
 	}
 
 	return skin->RemapShaderBySkin( shader );
+}
+
+/*
+===============
+idRenderWorldLocal::AddReflectionProbe
+===============
+*/
+int idRenderWorldLocal::AddReflectionProbe(rvmWorldReflectionProbe_t& probe) {
+	int reflectionProbeIndex = reflectionProbes.Num();
+	
+	// Add the new reflection probe to the list.
+	reflectionProbes.Append(probe);
+
+
+
+	return reflectionProbeIndex;
 }

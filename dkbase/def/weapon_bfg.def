@@ -30,6 +30,8 @@ entityDef weapon_bfg {
 	"editor_maxs"				"16 16 32"
 	"editor_usage"				"BFG"
 	"editor_rotatable"			"1"
+	
+	"modelindex"				"MODELINDEX_BFG10K"
 
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"

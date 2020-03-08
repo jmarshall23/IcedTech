@@ -81,8 +81,8 @@ typedef enum {
 
 // jmarshall - added a constructor to renderEntity_t
 struct renderEntity_t;
+struct renderView_t;
 // jmarshall end
-typedef struct renderView_s renderView_t;
 
 typedef struct {
 	const renderEntity_t *	renderEnt;			// for shaderParms, etc

@@ -448,6 +448,8 @@ public:
 // jmarshall
 	const char				*GetKey(const char *key);
 	float					GetFloat(const char *key);
+	int						GetInt(const char* key);
+	bool					GetBool(const char* key);
 // jmarshall end
 	void					Event_GetIntKey( const char *key );
 	void					Event_GetFloatKey( const char *key );

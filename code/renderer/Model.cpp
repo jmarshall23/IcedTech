@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 #pragma hdrstop
 
 #include "tr_local.h"
@@ -560,6 +560,14 @@ int idRenderModelStatic::NearestJoint( int surfaceNum, int a, int b, int c ) con
 	return INVALID_JOINT;
 }
 
+/*
+================
+idRenderModelStatic::ForceFastLoad
+================
+*/
+void idRenderModelStatic::ForceFastLoad() {
+	fastLoad = true;
+}
 
 //=====================================================================
 

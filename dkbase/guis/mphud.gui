@@ -1,0 +1,78 @@
+windowDef Desktop
+{
+	visible	1
+	nocursor	1
+	rect	0,0,1280,720
+	windowDef unnamed
+	{
+		rect	1091,649,178,70
+		visible	1
+		background	"hud/ammo_current_bg"
+		matcolor	1,1,1,1
+	}
+	windowDef healthtxtbk
+	{
+		rect	89,650,178,70
+		visible	1
+		background	"hud/ammo_current_bg"
+		matcolor	1,1,1,1
+	}
+	windowDef healthicon
+	{
+		rect	24,649,67,70
+		visible	1
+		background	"hud/health"
+		matcolor	1,1,1,1
+	}
+	windowDef armortxt
+	{
+		rect	106,600,150,50
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::player_armor"
+		textscale	1
+		textalign	1
+		textaligny	-5
+	}
+	windowDef armortxtbk
+	{
+		rect	93,584,178,70
+		visible	1
+		background	"hud/ammo_current_bg"
+		matcolor	1,1,1,1
+	}
+	windowDef armoricon
+	{
+		rect	28,584,67,70
+		visible	1
+		background	"hud/armor"
+		matcolor	1,1,1,1
+	}
+	windowDef healthxt
+	{
+		rect	106,661,150,50
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::player_health"
+		textscale	1
+		textalign	1
+		textaligny	-5
+	}
+	windowDef ammotxt
+	{
+		rect	1106,658,150,50
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::player_ammo"
+		textscale	1
+		textalign	1
+		textaligny	-5
+	}
+	windowDef armoricon1
+	{
+		rect	1027,667,65,44
+		visible	1
+		background	"hud/ammo"
+		matcolor	1,1,1,1
+	}
+}

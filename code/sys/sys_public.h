@@ -432,6 +432,9 @@ typedef enum {
 	NA_BAD,					// an address lookup failed
 	NA_LOOPBACK,
 	NA_BROADCAST,
+// jmarshall
+	NA_BOT,
+// jmarshall end
 	NA_IP
 } netadrtype_t;
 

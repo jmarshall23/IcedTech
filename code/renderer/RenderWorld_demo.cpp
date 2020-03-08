@@ -25,7 +25,7 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-#include "precompiled.h"
+#include "engine_precompiled.h"
 #pragma hdrstop
 
 #include "tr_local.h"
@@ -114,7 +114,7 @@ bool		idRenderWorldLocal::ProcessDemoCommand( idDemoFile *readDemo, renderView_t
 		if ( r_showDemo.GetBool() ) {
 			common->Printf( "DC_LOADMAP: %s\n", header.mapname );
 		}
-		InitFromMap( header.mapname );
+		InitFromMap( header.mapname, false );
 
 		newMap = true;		// we will need to set demoTimeOffset
 

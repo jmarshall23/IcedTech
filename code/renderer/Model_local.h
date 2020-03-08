@@ -56,6 +56,7 @@ public:
 	virtual void				SetLevelLoadReferenced( bool referenced );
 	virtual bool				IsLevelLoadReferenced();
 	virtual void				TouchData();
+	virtual void				ForceFastLoad();
 	virtual void				InitEmpty( const char *name );
 	virtual void				AddSurface( modelSurface_t surface );
 	virtual void				FinishSurfaces();
@@ -188,6 +189,49 @@ private:
 	rvmHeightMap_t heightMap;
 	const idMaterial *megaTextureMaterial;
 };
+
+/*
+===============================================================================
+
+	Raven MDR animated model
+
+===============================================================================
+*/
+// jmarshall
+class rvmRenderModelMDR : public idRenderModelStatic {
+public:
+	rvmRenderModelMDR();
+	~rvmRenderModelMDR();
+
+	virtual void				InitFromFile(const char *fileName);
+	virtual dynamicModel_t		IsDynamicModel() const;
+	virtual idBounds			Bounds(const struct renderEntity_t *ent) const;
+	virtual void				TouchData();
+	virtual void				LoadModel();
+	virtual int					Memory() const;
+	virtual idRenderModel *		InstantiateDynamicModel(const struct renderEntity_t *ent, const struct viewDef_s *view, idRenderModel *cachedModel);
+	virtual int					NumJoints(void) const;
+	virtual const idMD5Joint *	GetJoints(void) const;
+	virtual jointHandle_t		GetJointHandle(const char *name) const;
+	virtual const char *		GetJointName(jointHandle_t handle) const;
+	virtual const idJointQuat *	GetDefaultPose(void) const;
+	virtual int					NearestJoint(int surfaceNum, int a, int b, int c) const;
+private:
+	bool						LoadMDRFile(void *buffer, int filesize);
+	void						RenderFramesToModel(idRenderModelStatic *staticModel, const struct renderEntity_s *ent, const struct viewDef_s *view, const idMaterial *overrideMaterial, int scale);
+
+	int							numLods;
+
+	idList<struct mdrFrame_t *>	frames;
+	idList<const idMaterial *>	materials;
+
+	int							dataSize;
+	idStr						name;
+	struct mdrHeader_t			*modelData;
+
+	idRenderModelStatic			*cachedModel;
+};
+// jmarshall end
 
 /*
 ===============================================================================

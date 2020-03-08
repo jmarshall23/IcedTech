@@ -103,7 +103,7 @@ public:
 	virtual void				SetPersistentPlayerInfo( int clientNum, const idDict &playerInfo ) = 0;
 
 	// Loads a map and spawns all the entities.
-	virtual void				InitFromNewMap( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, bool isServer, bool isClient, int randseed ) = 0;
+	virtual void				InitFromNewMap( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, bool isServer, bool isClient, int randseed, bool buildReflections ) = 0;
 
 	// Loads a map from a savegame file.
 	virtual bool				InitFromSaveGame( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, idFile *saveGameFile ) = 0;
@@ -118,7 +118,7 @@ public:
 	virtual void				CacheDictionaryMedia( const idDict *dict ) = 0;
 
 	// Spawns the player entity to be used by the client.
-	virtual void				SpawnPlayer( int clientNum ) = 0;
+	virtual void				SpawnPlayer( int clientNum, bool isBot, const char* botName) = 0;
 
 	// Runs a game frame, may return a session command for level changing, etc
 	virtual gameReturn_t		RunFrame( const usercmd_t *clientCmds ) = 0;
@@ -145,8 +145,11 @@ public:
 	// Connects a client.
 	virtual void				ServerClientConnect( int clientNum, const char *guid ) = 0;
 
+	// Gets a random bot name for a new bot.
+	virtual bool				GetRandomBotName(int clientNum, idStr& botName) = 0;
+
 	// Spawns the player entity to be used by the client.
-	virtual void				ServerClientBegin( int clientNum ) = 0;
+	virtual void				ServerClientBegin( int clientNum, bool isBot, const char *botName) = 0;
 
 	// Disconnects a client and removes the player entity from the game.
 	virtual void				ServerClientDisconnect( int clientNum ) = 0;
@@ -191,6 +194,9 @@ public:
 // jmarshall 
 	// Can be called be either the game or the tools to render the scene.
 	virtual void				RenderScene(const renderView_t *view, idRenderWorld *renderWorld) = 0;
+
+	// Resets the game render targets to be the proper resolution of the screen.
+	virtual void				ResetGameRenderTargets(void) = 0;
 // jmarshall end
 
 	virtual void				GetMapLoadingGUI( char gui[ MAX_STRING_CHARS ] ) = 0;
@@ -270,6 +276,10 @@ public:
 	// Selection methods
 	virtual void				TriggerSelected();
 
+// jmarshall
+	virtual void				BuildReflectionCaptures(void);
+// jmarshall end
+
 	// Entity defs and spawning.
 	virtual const idDict *		FindEntityDefDict( const char *name, bool makeDefault = true ) const;
 	virtual void				SpawnEntityDef( const idDict &args, idEntity **ent );
@@ -322,7 +332,7 @@ extern idGameEdit *				gameEdit;
 ===============================================================================
 */
 // jmarshall
-const int GAME_API_VERSION		= 4002;
+const int GAME_API_VERSION		= 4006;
 // jmarshall end
 
 typedef struct {
@@ -339,9 +349,9 @@ typedef struct {
 	idRenderModelManager *		renderModelManager;		// render model manager
 	idUserInterfaceManager *	uiManager;				// user interface manager
 	idDeclManager *				declManager;			// declaration manager
-	idAASFileManager *			AASFileManager;			// AAS file manager
 	idCollisionModelManager *	collisionModelManager;	// collision model manager
 	idParallelJobManager *		parallelJobManager;		// parallel job manager
+	rvmNavigationManager *		navigationManager;		// navigation manager.
 } gameImport_t;
 
 typedef struct {

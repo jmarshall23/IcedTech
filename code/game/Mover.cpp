@@ -3378,7 +3378,7 @@ idDoor::SetAASAreaState
 */
 void idDoor::SetAASAreaState( bool closed ) {
 	aas_area_closed = closed;
-	gameLocal.SetAASAreaState( physicsObj.GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL|AREACONTENTS_OBSTACLE, closed );
+//	gameLocal.SetAASAreaState( physicsObj.GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL|AREACONTENTS_OBSTACLE, closed );
 }
 
 /*

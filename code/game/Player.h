@@ -321,8 +321,8 @@ public:
 							idPlayer();
 	virtual					~idPlayer();
 
-	void					Spawn( void );
-	void					Think( void );
+	virtual void			Spawn( void );
+	virtual void			Think( void );
 
 	// save games
 	void					Save( idSaveGame *savefile ) const;					// archives object for save game file
@@ -338,7 +338,7 @@ public:
 	void					SetupWeaponEntity( void );
 	void					SelectInitialSpawnPoint( idVec3 &origin, idAngles &angles );
 	void					SpawnFromSpawnSpot( void );
-	void					SpawnToPoint( const idVec3	&spawn_origin, const idAngles &spawn_angles );
+	virtual void			SpawnToPoint( const idVec3	&spawn_origin, const idAngles &spawn_angles );
 	void					SetClipModel( void );	// spectator mode uses a different bbox size
 
 	void					SavePersistantInfo( void );
@@ -364,7 +364,6 @@ public:
 
 	virtual bool			Collide( const trace_t &collision, const idVec3 &velocity );
 
-	virtual void			GetAASLocation( idAAS *aas, idVec3 &pos, int &areaNum ) const;
 	virtual void			GetAIAimTargets( const idVec3 &lastSightPos, idVec3 &headPos, idVec3 &chestPos );
 	virtual void			DamageFeedback( idEntity *victim, idEntity *inflictor, int &damage );
 	void					CalcDamagePoints(  idEntity *inflictor, idEntity *attacker, const idDict *damageDef,
@@ -521,8 +520,6 @@ private:
 
 	idPhysics_Player		physicsObj;			// player physics
 
-	idList<aasLocation_t>	aasLocation;		// for AI tracking the player
-
 	int						bobFoot;
 	float					bobFrac;
 	float					bobfracsin;
@@ -648,8 +645,6 @@ private:
 	void					EvaluateControls( void );
 	void					AdjustSpeed( void );
 	void					AdjustBodyAngles( void );
-	void					InitAASLocation( void );
-	void					SetAASLocation( void );
 	void					Move( void );
 	void					UpdatePowerUps( void );
 	void					UpdateDeathSkin( bool state_hitch );

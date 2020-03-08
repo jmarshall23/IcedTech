@@ -128,6 +128,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "../framework/Thread.h"
 #include "../framework/ParallelJobList.h"
 
+// navigation
+#include "../navigation/Nav_public.h"
+
 // decls
 #include "../framework/DeclManager.h"
 #include "../framework/DeclTable.h"
@@ -165,10 +168,6 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 
 // collision detection system
 #include "../cm/CollisionModel.h"
-
-// AAS files and manager
-#include "../tools/compilers/aas/AASFile.h"
-#include "../tools/compilers/aas/AASFileManager.h"
 
 // game
 #if defined(_D3XP)

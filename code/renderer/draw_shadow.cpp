@@ -1,7 +1,7 @@
 // draw_shadow.cpp
 //
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 #include "tr_local.h"
 
 idCVar r_shadowMapAtlasSize("r_shadowMapAtlasSize", "8192", CVAR_INTEGER | CVAR_ROM, "The size of the shadow map atlas size to use");

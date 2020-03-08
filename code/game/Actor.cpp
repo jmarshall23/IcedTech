@@ -1849,32 +1849,6 @@ bool idActor::OnLadder( void ) const {
 	return false;
 }
 
-/*
-==============
-idActor::GetAASLocation
-==============
-*/
-void idActor::GetAASLocation( idAAS *aas, idVec3 &pos, int &areaNum ) const {
-	idVec3		size;
-	idBounds	bounds;
-
-	GetFloorPos( 64.0f, pos );
-	if ( !aas ) {
-		areaNum = 0;
-		return;
-	}
-	
-	size = aas->GetSettings()->boundingBoxes[0][1];
-	bounds[0] = -size;
-	size.z = 32.0f;
-	bounds[1] = size;
-
-	areaNum = aas->PointReachableAreaNum( pos, bounds, AREA_REACHABLE_WALK );
-	if ( areaNum ) {
-		aas->PushPointIntoAreaNum( areaNum, pos );
-	}
-}
-
 /***********************************************************************
 
 	animation state

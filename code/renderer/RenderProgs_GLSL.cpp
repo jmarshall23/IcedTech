@@ -26,13 +26,13 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 
 #include "tr_local.h"
 
 idCVar r_skipStripDeadCode( "r_skipStripDeadCode", "0", CVAR_BOOL, "Skip stripping dead code" );
 idCVar r_useUniformArrays( "r_useUniformArrays", "1", CVAR_BOOL, "" );
-
+idCVar r_renderProgVersion("r_renderProgVersion", "1", CVAR_INTEGER, "which version of renderprogs to use");
 
 #define VERTEX_UNIFORM_ARRAY_NAME				"_va_"
 #define FRAGMENT_UNIFORM_ARRAY_NAME				"_fa_"
@@ -548,6 +548,7 @@ const char * fragmentInsert = {
 	"vec4 texCUBE( samplerCubeShadow sampler, vec4 texcoord ) { return vec4( texture( sampler, texcoord.xyzw ) ); }\n"
 	"\n"
 	"vec2 texQueryLOD( sampler2D sampler, vec2 texCoord ) { return textureQueryLod(sampler, texCoord).xy; }\n"
+	"vec2 texQueryLOD( isampler2D sampler, vec2 texCoord ) { return textureQueryLod(sampler, texCoord).xy; }\n"
 	"\n"
 	"vec4 tex1Dproj( sampler1D sampler, vec2 texcoord ) { return textureProj( sampler, texcoord ); }\n"
 	"vec4 tex2Dproj( sampler2D sampler, vec3 texcoord ) { return textureProj( sampler, texcoord ); }\n"
@@ -936,11 +937,11 @@ GLuint idRenderProgManager::LoadGLSLShader( GLenum target, const char * name, id
 	idStr outFileUniforms;
 	inFile.Format( "renderprogs\\%s", name );
 	inFile.StripFileExtension();
-	outFileHLSL.Format( "generated\\renderprogs\\glsl\\%s", name );
+	outFileHLSL.Format( "generated\\renderprogs\\v%d\\glsl\\%s", r_renderProgVersion.GetInteger(), name );
 	outFileHLSL.StripFileExtension();
-	outFileGLSL.Format( "generated\\renderprogs\\glsl\\%s", name );
+	outFileGLSL.Format( "generated\\renderprogs\\v%d\\glsl\\%s", r_renderProgVersion.GetInteger(), name );
 	outFileGLSL.StripFileExtension();
-	outFileUniforms.Format( "generated\\renderprogs\\glsl\\%s", name );
+	outFileUniforms.Format( "generated\\renderprogs\\v%d\\glsl\\%s", r_renderProgVersion.GetInteger(), name );
 	outFileUniforms.StripFileExtension();
 	if ( target == GL_FRAGMENT_SHADER ) {
 		inFile += ".pixel";

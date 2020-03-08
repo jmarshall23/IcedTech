@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 #pragma hdrstop
 
 #include "AsyncNetwork.h"
@@ -2005,7 +2005,7 @@ void idAsyncClient::HandleDownloads( void ) {
 						fileSystem->CloseFile( f );
 						if ( session->MessageBox( MSG_YESNO, common->GetLanguageDict()->GetString ( "#str_04331" ), common->GetLanguageDict()->GetString ( "#str_04332" ), true, "yes" )[0] ) {
 							if ( updateMime == FILE_EXEC ) {
-								sys->StartProcess( fullPath, true, nullptr );
+								sys->StartProcess( fullPath, true, "" );
 							} else {
 								sys->OpenURL( va( "file://%s", fullPath.c_str() ), true );
 							}

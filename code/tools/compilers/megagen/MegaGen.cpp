@@ -1,7 +1,7 @@
 // MegaGen.cpp
 //
 
-#include "precompiled.h"
+#include "tools_precompiled.h"
 #pragma hdrstop
 
 #include "MegaGen.h"

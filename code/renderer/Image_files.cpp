@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 
 #include "tr_local.h"
 
@@ -947,6 +947,7 @@ bool R_LoadCubeImages( const char *imgName, cubeFiles_t extensions, byte *pics[6
 		} else {
 			R_LoadImageProgram( fullName, &pics[i], &width, &height, &thisTime );
 		}
+
 		if ( thisTime == FILE_NOT_FOUND_TIMESTAMP ) {
 			break;
 		}

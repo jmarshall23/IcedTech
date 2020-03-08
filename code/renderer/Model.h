@@ -213,6 +213,9 @@ public:
 	// Upon exit, the model will absolutely be valid, but possibly as a default model
 	virtual void				LoadModel() = 0;
 
+	// Forces fast load path.
+	virtual void				ForceFastLoad() = 0;
+
 	// internal use
 	virtual bool				IsLoaded() = 0;
 	virtual void				SetLevelLoadReferenced( bool referenced ) = 0;

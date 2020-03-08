@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 #pragma hdrstop
 
 #include "Session_local.h"
@@ -1641,17 +1641,17 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 			savegameFile = NULL;
 
 			game->SetServerInfo( mapSpawnData.serverInfo );
-			game->InitFromNewMap( fullMapName + ".map", rw, sw, idAsyncNetwork::server.IsActive(), idAsyncNetwork::client.IsActive(), Sys_Milliseconds() );
+			game->InitFromNewMap( fullMapName + ".map", rw, sw, idAsyncNetwork::server.IsActive(), idAsyncNetwork::client.IsActive(), Sys_Milliseconds(), false );
 		}
 	} else {
 		game->SetServerInfo( mapSpawnData.serverInfo );
-		game->InitFromNewMap( fullMapName + ".map", rw, sw, idAsyncNetwork::server.IsActive(), idAsyncNetwork::client.IsActive(), Sys_Milliseconds() );
+		game->InitFromNewMap( fullMapName + ".map", rw, sw, idAsyncNetwork::server.IsActive(), idAsyncNetwork::client.IsActive(), Sys_Milliseconds(), false );
 	}
 
 	if ( !idAsyncNetwork::IsActive() && !loadingSaveGame ) {
 		// spawn players
 		for ( i = 0; i < numClients; i++ ) {
-			game->SpawnPlayer( i );
+			game->SpawnPlayer( i, false, NULL );
 		}
 	}
 
@@ -2514,6 +2514,85 @@ void idSessionLocal::UpdateScreen( bool outOfSequence ) {
 
 /*
 ===============
+idSessionLocal::RunSessionTic
+===============
+*/
+void idSessionLocal::RunSessionTic(void)
+{
+	// at startup, we may be backwards
+	if (latchedTicNumber > com_ticNumber) {
+		latchedTicNumber = com_ticNumber;
+	}
+
+	// se how many tics we should have before continuing
+	int	minTic = latchedTicNumber + 1;
+	if (com_minTics.GetInteger() > 1) {
+		minTic = lastGameTic + com_minTics.GetInteger();
+	}
+
+	if (readDemo) {
+		if (!timeDemo && numDemoFrames != 1) {
+			minTic = lastDemoTic + USERCMD_PER_DEMO_FRAME;
+		}
+		else {
+			// timedemos and demoshots will run as fast as they can, other demos
+			// will not run more than 30 hz
+			minTic = latchedTicNumber;
+		}
+	}
+	else if (writeDemo) {
+		minTic = lastGameTic + USERCMD_PER_DEMO_FRAME;		// demos are recorded at 30 hz
+	}
+
+	// fixedTic lets us run a forced number of usercmd each frame without timing
+	if (com_fixedTic.GetInteger()) {
+		minTic = latchedTicNumber;
+	}
+
+	// Spin in place if needed.  The game should yield the cpu if
+	// it is running over 60 hz, because there is fundamentally
+	// nothing useful for it to do.
+	while (1) {
+		// jmarshall - remove async thread.
+		extern idCVar timescale;
+		int	msec = Sys_Milliseconds();
+		if (!lastTicMsec) {
+			lastTicMsec = msec - USERCMD_MSEC;
+		}
+
+		int ticMsec = USERCMD_MSEC;
+
+		// the number of msec per tic can be varies with the timescale cvar
+		float _timescale = timescale.GetFloat();
+		if (_timescale != 1.0f) {
+			ticMsec /= _timescale;
+			if (ticMsec < 1) {
+				ticMsec = 1;
+			}
+		}
+
+		// don't skip too many
+		if (_timescale == 1.0f) {
+			if (lastTicMsec + 10 * USERCMD_MSEC < msec) {
+				lastTicMsec = msec - 10 * USERCMD_MSEC;
+			}
+		}
+
+		while (lastTicMsec + ticMsec <= msec) {
+			com_ticNumber++;
+			lastTicMsec += ticMsec;
+		}
+		// jmarshall end			
+		latchedTicNumber = com_ticNumber;
+		if (latchedTicNumber >= minTic) {
+			break;
+		}
+		Sys_Sleep(1);
+	}
+}
+
+/*
+===============
 idSessionLocal::Frame
 ===============
 */
@@ -2556,85 +2635,7 @@ void idSessionLocal::Frame() {
 		renderSystem->TakeScreenshot( com_aviDemoWidth.GetInteger(), com_aviDemoHeight.GetInteger(), name, com_aviDemoSamples.GetInteger(), NULL );
 	}
 
-	// at startup, we may be backwards
-	if ( latchedTicNumber > com_ticNumber ) {
-		latchedTicNumber = com_ticNumber;
-	}
-
-	// se how many tics we should have before continuing
-	int	minTic = latchedTicNumber + 1;
-	if ( com_minTics.GetInteger() > 1 ) {
-		minTic = lastGameTic + com_minTics.GetInteger();
-	}
-	
-	if ( readDemo ) {
-		if ( !timeDemo && numDemoFrames != 1 ) {
-			minTic = lastDemoTic + USERCMD_PER_DEMO_FRAME;
-		} else {
-			// timedemos and demoshots will run as fast as they can, other demos
-			// will not run more than 30 hz
-			minTic = latchedTicNumber;
-		}
-	} else if ( writeDemo ) {
-		minTic = lastGameTic + USERCMD_PER_DEMO_FRAME;		// demos are recorded at 30 hz
-	}
-	
-	// fixedTic lets us run a forced number of usercmd each frame without timing
-	if ( com_fixedTic.GetInteger() ) {
-		minTic = latchedTicNumber;
-	}
-
-	// FIXME: deserves a cleanup and abstraction
-#if defined( _WIN32 )
-	// Spin in place if needed.  The game should yield the cpu if
-	// it is running over 60 hz, because there is fundamentally
-	// nothing useful for it to do.
-	while( 1 ) {
-// jmarshall - remove async thread.
-		extern idCVar timescale;
-		int	msec = Sys_Milliseconds();
-		if (!lastTicMsec) {
-			lastTicMsec = msec - USERCMD_MSEC;
-		}
-
-		int ticMsec = USERCMD_MSEC;
-
-		// the number of msec per tic can be varies with the timescale cvar
-		float _timescale = timescale.GetFloat();
-		if (_timescale != 1.0f) {
-			ticMsec /= _timescale;
-			if (ticMsec < 1) {
-				ticMsec = 1;
-			}
-		}
-
-		// don't skip too many
-		if (_timescale == 1.0f) {
-			if (lastTicMsec + 10 * USERCMD_MSEC < msec) {
-				lastTicMsec = msec - 10 * USERCMD_MSEC;
-			}
-		}
-
-		while (lastTicMsec + ticMsec <= msec) {
-			com_ticNumber++;
-			lastTicMsec += ticMsec;
-		}
-// jmarshall end			
-		latchedTicNumber = com_ticNumber;
-		if ( latchedTicNumber >= minTic ) {
-			break;
-		}
-		Sys_Sleep( 1 );
-	}
-#else
-	while( 1 ) {
-		latchedTicNumber = com_ticNumber;
-		if ( latchedTicNumber >= minTic ) {
-			break;
-		}
-		Sys_WaitForEvent( TRIGGER_EVENT_ONE );
-	}
-#endif
+	RunSessionTic();
 
 	if ( authEmitTimeout ) {
 		// waiting for a game auth

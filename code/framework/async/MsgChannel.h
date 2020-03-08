@@ -143,7 +143,6 @@ public:
 
 					// Removes any pending outgoing or incoming reliable messages.
 	void			ClearReliableMessages( void );
-
 private:
 	netadr_t		remoteAddress;	// address of remote host
 	int				id;				// our identification used instead of port number

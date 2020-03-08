@@ -1,7 +1,7 @@
 // VirtualTexture.cpp
 //
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 
 #include "tr_local.h"
 #include "DXT/DXTCodec.h"
@@ -749,4 +749,13 @@ rvmVirtualImage	*rvmVirtualTextureSystem::GetDefaultVirtualNormalTexture(int wid
 	}
 
 	return defaultNormalImage;
+}
+
+/*
+=============================
+rvmVirtualTextureSystem::ClearCache
+=============================
+*/
+void rvmVirtualTextureSystem::ClearCache(void) {
+	ClearVTPages();
 }

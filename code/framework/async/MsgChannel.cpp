@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 #pragma hdrstop
 
 #include "MsgChannel.h"
@@ -669,6 +669,11 @@ idMsgChannel::SendReliableMessage
 */
 bool idMsgChannel::SendReliableMessage( const idBitMsg &msg ) {
 	bool result;
+
+// jmarshall
+	if (remoteAddress.type == NA_BOT)
+		return false;
+// jmarshall end
 
 	assert( remoteAddress.type != NA_BAD );
 	if ( remoteAddress.type == NA_BAD ) {

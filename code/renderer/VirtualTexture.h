@@ -125,6 +125,9 @@ public:
 	// Stupid system to get around missing normal maps in Doom 3.
 	rvmVirtualImage			*GetDefaultVirtualNormalTexture(int width, int height);
 
+	// Clears the virtual texture cache.
+	void					ClearCache(void);
+
 	// Processes the feedback job.
 	void					RunFeedbackJob(idImage *feedbackImage);
 

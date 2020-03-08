@@ -1,7 +1,6 @@
 cm/CollisionModel.h
-Darklight/CMakeLists.txt
-Darklight/CMakeSettings.json
-Darklight/PrecompiledHeader.cmake
+CMakeLists.txt
+PrecompiledHeader.cmake
 MayaImport/exporter.h
 MayaImport/maya_main.cpp
 MayaImport/maya_main.h

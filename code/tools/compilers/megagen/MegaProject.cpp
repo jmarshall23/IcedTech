@@ -1,7 +1,7 @@
 // MegaProject.cpp
 //
 
-#include "precompiled.h"
+#include "tools_precompiled.h"
 
 #include "MegaGen.h"
 

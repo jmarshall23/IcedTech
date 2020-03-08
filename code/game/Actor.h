@@ -119,7 +119,7 @@ public:
 							idActor( void );
 	virtual					~idActor( void );
 
-	void					Spawn( void );
+	virtual void			Spawn( void );
 	virtual void			Restart( void );
 
 	void					Save( idSaveGame *savefile ) const;
@@ -185,8 +185,6 @@ public:
 	idActor *				EnemyWithMostHealth();
 
 	virtual bool			OnLadder( void ) const;
-
-	virtual void			GetAASLocation( idAAS *aas, idVec3 &pos, int &areaNum ) const;
 
 	void					Attach( idEntity *ent );
 

@@ -53,6 +53,8 @@ entityDef weapon_pistol {
 	"editor_maxs"				"16 16 32"
 	"editor_usage"				"Pistol"
 	"editor_rotatable"		"1"
+	
+	"modelindex"				"MODELINDEX_GRENADELAUNCHER"
 
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"

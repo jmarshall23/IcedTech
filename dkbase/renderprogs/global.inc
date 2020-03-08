@@ -137,7 +137,7 @@ static int2 ComputeMipMapLevel(isampler2D pageOffsetTexture, float2 texCoords, f
 	texCoords = texCoords * float2(width, height);
 
 	float2 mipMapLevel = texQueryLOD(pageOffsetTexture, texCoords);
-	return int2(round(mipMapLevel.x), round(mipMapLevel.y));
+	return int2(0, 0);
 }
 
 static float ComputeMippedValue(int mipmap, float value)

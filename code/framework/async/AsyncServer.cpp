@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
+#include "engine_precompiled.h"
 #pragma hdrstop
 
 #include "AsyncNetwork.h"
@@ -318,7 +318,7 @@ void idAsyncServer::ExecuteMapChange( void ) {
 	memset( userCmds, 0, sizeof( userCmds ) );
 
 	if ( idAsyncNetwork::serverDedicated.GetInteger() == 0 ) {
-		InitLocalClient( 0 );
+		InitLocalClient( 0, false );
 	} else {
 		localClientNum = -1;
 	}
@@ -703,13 +703,22 @@ void idAsyncServer::InitClient( int clientNum, int clientId, int clientRate ) {
 idAsyncServer::InitLocalClient
 ==================
 */
-void idAsyncServer::InitLocalClient( int clientNum ) {
+void idAsyncServer::InitLocalClient( int clientNum, bool isBot ) {
 	netadr_t badAddress;
 
-	localClientNum = clientNum;
 	InitClient( clientNum, 0, 0 );
 	memset( &badAddress, 0, sizeof( badAddress ) );
-	badAddress.type = NA_BAD;
+// jmarshall
+	if (isBot)
+	{
+		badAddress.type = NA_BOT;
+	}
+	else
+	{
+		badAddress.type = NA_BAD;
+		localClientNum = clientNum;
+	}
+// jmarshall end
 	clients[clientNum].channel.Init( badAddress, serverId );
 	clients[clientNum].clientState = SCS_INGAME;
 	sessLocal.mapSpawnData.userInfo[clientNum] = *cvarSystem->MoveCVarsToDict( CVAR_USERINFO );
@@ -723,7 +732,7 @@ idAsyncServer::BeginLocalClient
 void idAsyncServer::BeginLocalClient( void ) {
 	game->SetLocalClient( localClientNum );
 	game->SetUserInfo( localClientNum, sessLocal.mapSpawnData.userInfo[localClientNum], false, false );
-	game->ServerClientBegin( localClientNum );
+	game->ServerClientBegin( localClientNum, false, NULL);
 }
 
 /*
@@ -798,6 +807,11 @@ void idAsyncServer::SendReliableMessage( int clientNum, const idBitMsg &msg ) {
 	if ( clientNum == localClientNum ) {
 		return;
 	}
+// jmarshall
+	if (clients[clientNum].channel.GetRemoteAddress().type == NA_BOT)
+		return;
+// jmarshall end
+
 	if ( !clients[ clientNum ].channel.SendReliableMessage( msg ) ) {
 		clients[ clientNum ].channel.ClearReliableMessages();
 		DropClient( clientNum, "#str_07136" );
@@ -821,6 +835,11 @@ void idAsyncServer::CheckClientTimeouts( void ) {
 		if ( i == localClientNum ) {
 			continue;
 		}
+
+// jmarshall
+		if (client.channel.GetRemoteAddress().type == NA_BOT)
+			continue;
+// jmarshall end
 
 		if ( client.lastPacketTime > serverTime ) {
 			client.lastPacketTime = serverTime;
@@ -1283,7 +1302,7 @@ void idAsyncServer::ProcessUnreliableClientMessage( int clientNum, const idBitMs
 		SendEnterGameToClient( clientNum );
 
 		// get the client running in the game
-		game->ServerClientBegin( clientNum );
+		game->ServerClientBegin( clientNum, false, NULL );
 
 		// write any reliable messages to initialize the client game state
 		game->ServerWriteInitialReliableMessages( clientNum );
@@ -2823,3 +2842,82 @@ void idAsyncServer::ProcessDownloadRequestMessage( const netadr_t from, const id
 		serverPort.SendPacket( from, outMsg.GetData(), outMsg.GetSize() );
 	}
 }
+
+// jmarshall
+/*
+===============
+idAsyncServer::ServerSetBotUserCommand
+===============
+*/
+int idAsyncServer::ServerSetBotUserCommand(int clientNum, int frameNum, const usercmd_t& cmd) {
+	usercmd_t realcmd;
+
+	// Ensure this client is a bot.
+	if (clients[clientNum].channel.GetRemoteAddress().type != NA_BOT)
+		return -1;
+
+	realcmd = cmd;
+	realcmd.gameTime = gameFrame;
+	realcmd.duplicateCount = gameTime;
+
+	int index = gameFrame & (MAX_USERCMD_BACKUP - 1);
+	userCmds[index][clientNum] = realcmd;
+
+	return 1;
+}
+
+/*
+===============
+idAsyncServer::AllocOpenClientSlotForAI
+===============
+*/
+int idAsyncServer::AllocOpenClientSlotForAI(int maxPlayersOnServer) {
+	int numActivePlayers = 0;
+	int botClientId = -1;
+	idStr botName;
+	idDict spawnArgs;
+
+	// Check to see how many active players we have.
+	for (int i = 0; i < MAX_ASYNC_CLIENTS; i++)
+	{
+		if (clients[i].clientState >= SCS_PUREWAIT)
+		{
+			numActivePlayers++;
+		}
+	}
+
+	if (numActivePlayers >= maxPlayersOnServer) {
+		common->Warning("idAsyncServer::AllocateClientSlotForBot: No open slots for bot\n");
+		return -1;
+	}
+
+	// Find a free slot for the bot.
+	for (int i = 0; i < MAX_ASYNC_CLIENTS; i++)
+	{
+		if (clients[i].clientState == SCS_FREE)
+		{
+			botClientId = i;
+			break;
+		}
+	}
+
+	if (botClientId == -1)
+	{
+		common->Warning("idAsyncServer::AllocateClientSlotForBot: Invalid client number\n");
+		return -1;
+	}
+
+	game->GetRandomBotName(botClientId, botName);
+
+	idAsyncServer::InitLocalClient(botClientId, true);
+
+	// Set all the spawn args for the new bot.
+	spawnArgs.Set("ui_name", botName);
+
+	// Init the new client, and broadcast it to the rest of the players.
+	game->ServerClientBegin(botClientId, true, botName);
+	idAsyncServer::SendUserInfoBroadcast(botClientId, spawnArgs, true);
+
+	return 1;
+}
+// jmarshall end
