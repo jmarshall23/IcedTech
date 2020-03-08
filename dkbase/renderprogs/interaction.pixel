@@ -34,6 +34,8 @@ uniform sampler2D	samp2 : register(s2); // texture 3 is the light projection tex
 uniform sampler2D	samp3 : register(s3); // texture 4 is the per-surface diffuse map
 uniform sampler2D	samp4 : register(s4); // texture 5 is the per-surface specular map
 uniform isampler2D 	samp5 : register(s5); // texture 5 is the virtual texture offset map
+uniform samplerCUBE samp6 : register(s6); // texture 6 is the reflection map.
+
 struct PS_IN {
 	half4 position	: VPOS;
 	half4 texcoord0	: TEXCOORD0_centroid;
@@ -87,10 +89,17 @@ float2 GetPhysicalTexCoords(float2 texCoords, int isNormal) {
 	return   (physicalTexCoords)+(texPages / vt_scale);
 }
 
+float4 CalculateReflections(half3 normal, half3 Position, half3 cameraPos) {
+	float3 I = normalize(Position - cameraPos);
+    float3 R = reflect(I, normalize(normal));
+	
+	return float4(texture(samp6, R).rgb, 1.0);
+}
+
 void main( PS_IN fragment, out PS_OUT result ) {
 	half2 bumpST = fragment.texcoord1.xy;
 	half2 albedoST = fragment.texcoord4.xy;
-	half2 specST = fragment.texcoord5.xy;
+	half2 specST = fragment.texcoord4.zw;
 
 	// Check if we need to shift the texture coordinates into physical virtual texture space.
 	if (rpVirtualMapping.x >= 1)
@@ -111,6 +120,8 @@ void main( PS_IN fragment, out PS_OUT result ) {
 		localNormal.z = sqrt( abs( dot( localNormal.xy, localNormal.xy ) - 0.25 ) );
 		localNormal = normalize( localNormal );
 		
+		YCoCG = YCoCG + CalculateReflections(localNormal, fragment.texcoord5.xyz, rpLocalViewOrigin.xyz);
+		
 		half lightColor = dot(localNormal, float3(0, 0, 1));
 		result.color.xyz = YCoCG.xyz * lightColor * rpDiffuseModifier.xyz * 0.2;
 		result.color.w = 1;
@@ -130,13 +141,15 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	localNormal.xy = bumpMap.wy - 0.5;
 	localNormal.z = sqrt( abs( dot( localNormal.xy, localNormal.xy ) - 0.25 ) );
 	localNormal = normalize( localNormal );
+	
+	float4 reflection = CalculateReflections(localNormal, fragment.texcoord5.xyz, rpLocalViewOrigin.xyz);
 
 	//const half specularPower = 10.0f;
 	//half hDotN = dot3( normalize( fragment.texcoord6.xyz ), localNormal );
 	//half3 specularContribution = _half3( pow( hDotN, specularPower ) );
 	//half3 specularColor = float3(specMap.x, specMap.x, specMap.x) * specularContribution * rpSpecularModifier.xyz;
 
-	half3 diffuseColor = diffuseMap * rpDiffuseModifier.xyz;
+	half3 diffuseColor = diffuseMap * (rpDiffuseModifier.xyz + reflection.xyz);
 	half3 lightColor = dot3( lightVector, localNormal ) * lightProj.xyz * lightFalloff.xyz;
 	
 	 float3 H = normalize(fragment.texcoord6.xyz);

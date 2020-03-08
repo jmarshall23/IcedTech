@@ -134,6 +134,15 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 		din->surf->material->GetVirtualPageOffsetsImage()->Bind();
 	}
 
+	// texture 7 is the reflection cube map.
+	GL_SelectTextureNoClient(6);
+	if(din->surf->material->HasReflections() && din->surf->geo->reflectionCaptureImage) {
+		din->surf->geo->reflectionCaptureImage->Bind();
+	}
+	else {
+		globalImages->blackCubeMapImage->Bind();
+	}
+
 	// draw it
 	RB_DrawElementsWithCounters( din->surf->geo );
 }

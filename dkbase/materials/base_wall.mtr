@@ -4,4 +4,5 @@ textures/base_wall/c_met7_2
 	bumpmap			textures/base_wall/c_met7_2_normal.png
 	diffusemap		textures/base_wall/c_met7_2.png
 	specularmap		textures/base_wall/c_met7_2_spec.png
+	reflections
 }

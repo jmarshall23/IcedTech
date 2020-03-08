@@ -96,6 +96,8 @@ typedef struct srfTriangles_s {
 														// pointers into the original surface, and should not be freed
 // jmarshall
 	int							mapTriEntityId;			// if this is a inlined mesh, this number correlates to the entity in the idMapFile. 
+	class idImage			    *reflectionCaptureImage;// which reflection probe to render with.
+	float						reflectionProbeDist;	// distance to the choosen reflection probe.
 // jmarshall end
 
 	int							numVerts;				// number of vertices

@@ -309,6 +309,9 @@ static srfTriangles_t *R_CreateLightTris( const idRenderEntityLocal *ent,
 	// allocate a new surface for the lit triangles
 	newTri = R_AllocStaticTriSurf();
 
+	// save the reflection probe.
+	newTri->reflectionCaptureImage = tri->reflectionCaptureImage;
+
 	// save a reference to the original surface
 	newTri->ambientSurface = const_cast<srfTriangles_t *>(tri);
 
