@@ -319,6 +319,15 @@ typedef enum {
 	PS_BLOCK_ALL = (1<<NUM_PORTAL_ATTRIBUTES)-1
 } portalConnection_t;
 
+//
+// rvmWorldReflectionProbe_t
+//
+struct rvmWorldReflectionProbe_t {
+	idVec3 origin;
+	float radius;
+	idImage* reflectionCaptureImage;
+};
+
 
 class idRenderWorld {
 public:
@@ -462,6 +471,9 @@ public:
 
 	// Returns a model from the world models given idx.
 	virtual idRenderModel   *GetWorldModel(int idx) = 0;
+
+	// Adds a reflection probe to the world.
+	virtual int				AddReflectionProbe(rvmWorldReflectionProbe_t& probe) = 0;
 // jmarshall end
 
 	//-------------- Debug Visualization  -----------------

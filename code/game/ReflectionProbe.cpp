@@ -16,6 +16,25 @@ rvmReflectionProbe::Spawn
 */
 void rvmReflectionProbe::Spawn(void) {
 	captureSize = spawnArgs.GetInt("captureSize", va("%d", g_defaultCaptureSize.GetInteger()));
+
+	// If we are building reflections, don't bother loading any reflection probes off disc.
+	if (gameLocal.isBuildingReflections) {
+		return;
+	}
+		
+	rvmWorldReflectionProbe_t reflectionProbe;
+	reflectionProbe.origin = GetPhysics()->GetOrigin();
+	reflectionProbe.radius = spawnArgs.GetInt("radius", "300");
+
+	idStr imageName = va("%s/%s", gameLocal.GetMapFileName(), GetName());
+	imageName.Replace(".", "_");
+	reflectionProbe.reflectionCaptureImage = renderSystem->FindImage(imageName, true);
+	if (reflectionProbe.reflectionCaptureImage == NULL) {
+		common->Warning("Failed to load reflection probe reflection maps for %s\n", GetName());
+		return;
+	}
+
+	gameRenderWorld->AddReflectionProbe(reflectionProbe);
 }
 
 /*
@@ -25,7 +44,12 @@ rvmReflectionProbe::Capture
 */
 void rvmReflectionProbe::Capture(void) {
 	idTempArray<byte>	captureFrameBuffer(captureSize * captureSize * 4);
-	char* extensions[6] = { "_px.tga", "_nx.tga", "_py.tga", "_ny.tga", "_pz.tga", "_nz.tga" };
+	char* extensions[6] = { "_px", "_nx", "_py", "_ny", "_pz", "_nz" };
+
+	if(!gameLocal.isBuildingReflections) {
+		gameLocal.Error("rvmReflectionProbe::Capture: Can't build reflection captures during runtime.");
+		return;
+	}
 
 	for(int side = 0; side < 6; side++) {
 		renderView_t renderView;
@@ -86,7 +110,7 @@ void rvmReflectionProbe::Capture(void) {
 		renderSystem->ReadRenderTexture(gameLocal.GetGameRender()->forwardRenderPassResolvedRT, captureFrameBuffer.Ptr());
 
 		// Write out this slice to a targa.
-		idStr tgaName = va("%s/%s_reflectionprobe_%s", gameLocal.GetMapFileName(), GetName(), extensions[side]);
+		idStr tgaName = va("%s/%s%s", gameLocal.GetMapFileName(), GetName(), extensions[side]);
 		tgaName.Replace(".", "_");
 		tgaName += ".tga";
 		renderSystem->WriteTGA(tgaName.c_str(), captureFrameBuffer.Ptr(), renderView.window_width, renderView.window_height, false, "");

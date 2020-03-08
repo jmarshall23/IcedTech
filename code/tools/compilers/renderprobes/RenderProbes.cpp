@@ -56,7 +56,7 @@ void RenderProbes_f(const idCmdArgs& args) {
 	r_useLightCulling.SetInteger(0); // Disable light culling when building reflection probes.
 
 	// Load in the new map data.
-	game->InitFromNewMap(string.c_str(), renderWorld, sessLocal.menuSoundWorld, true, false, 1);
+	game->InitFromNewMap(string.c_str(), renderWorld, sessLocal.menuSoundWorld, true, false, 1, true);
 
 	// Run a couple frames to settle everything down.
 	for (int i = 0; i < 3; i++)

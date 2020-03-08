@@ -1056,8 +1056,12 @@ idImage	*idRenderSystemLocal::CreateImage(const char *name, idImageOpts *opts, t
 idRenderSystemLocal::FindImage
 ===============
 */
-idImage	*idRenderSystemLocal::FindImage(const char *name) {
-	return globalImages->ImageFromFile(name, TF_DEFAULT, TR_REPEAT, TD_DEFAULT);
+idImage	*idRenderSystemLocal::FindImage(const char *name, bool isCubemap) {
+	if (!isCubemap) {
+		return globalImages->ImageFromFile(name, TF_DEFAULT, TR_REPEAT, TD_DEFAULT, CF_2D);
+	}
+
+	return globalImages->ImageFromFile(name, TF_DEFAULT, TR_REPEAT, TD_DEFAULT, CF_NATIVE);
 }
 
 /*

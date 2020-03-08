@@ -801,7 +801,7 @@ public:
 	virtual void			GetImageSize(idImage *image, int &imageWidth, int &imageHeight);
 
 	virtual idImage	*		CreateImage(const char *name, idImageOpts *opts, textureFilter_t textureFilter);
-	virtual idImage	*		FindImage(const char *name);
+	virtual idImage	*		FindImage(const char *name, bool isCubemap);
 	virtual void			RunFeedbackJob(idRenderTexture *feedbackRT);
 	virtual void			ReadRenderTexture(idRenderTexture* renderTexture, byte* buffer);
 	virtual void			WriteTGA(const char* filename, const byte* data, int width, int height, bool flipVertical, const char* basePath);

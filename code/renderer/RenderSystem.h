@@ -235,7 +235,7 @@ public:
 	virtual idImage			*CreateImage(const char *name, idImageOpts *opts, textureFilter_t textureFilter) = 0;
 
 	// Returns the specified image.
-	virtual idImage			*FindImage(const char *name) = 0;
+	virtual idImage			*FindImage(const char *name, bool isCubemap) = 0;
 
 	// Runs the virtual texture feedback job.
 	virtual void			RunFeedbackJob(idRenderTexture *feedbackRT) = 0;

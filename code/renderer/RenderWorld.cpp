@@ -2142,3 +2142,19 @@ const idMaterial *R_RemapShaderBySkin( const idMaterial *shader, const idDeclSki
 
 	return skin->RemapShaderBySkin( shader );
 }
+
+/*
+===============
+idRenderWorldLocal::AddReflectionProbe
+===============
+*/
+int idRenderWorldLocal::AddReflectionProbe(rvmWorldReflectionProbe_t& probe) {
+	int reflectionProbeIndex = reflectionProbes.Num();
+	
+	// Add the new reflection probe to the list.
+	reflectionProbes.Append(probe);
+
+
+
+	return reflectionProbeIndex;
+}

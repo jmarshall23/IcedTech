@@ -138,6 +138,7 @@ public:
 
 	virtual void			DrawText( const char *text, const idVec3 &origin, float scale, const idVec4 &color, const idMat3 &viewAxis, const int align = 1, const int lifetime = 0, bool depthTest = false );
 
+	virtual int				AddReflectionProbe(rvmWorldReflectionProbe_t& probe);
 	//-----------------------
 
 	idStr					mapName;				// ie: maps/tim_dm2.proc, written to demoFile
@@ -267,6 +268,8 @@ private:
 // jmarshall
 	bool					isLegacyWorldFile;
 	bool					isFastLoaded;
+
+	idList<rvmWorldReflectionProbe_t> reflectionProbes;
 // jmarshall end
 };
 
