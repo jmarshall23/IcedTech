@@ -170,6 +170,11 @@ void CreateNavMesh(idStr mapName)
 
 	common->Printf("---- CreateNavMesh ----\n");
 
+	if(!strstr(mapName.c_str(), "maps/") && !strstr(mapName.c_str(), "maps\\")) {
+		idStr oldMapName = mapName;
+		mapName = va("maps/%s", oldMapName.c_str());
+	}
+
 	common->Printf("Loading Map...\n");
 	if (!LoadWorldFile(mapName, mapGeometry, mapCrc))
 		return;

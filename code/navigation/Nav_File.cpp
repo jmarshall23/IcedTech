@@ -218,7 +218,6 @@ rvmNavFileLocal::WriteNavFile
 */
 void rvmNavFileLocal::WriteNavFile(const char *name, rcPolyMesh *mesh, rcPolyMeshDetail *detailMesh, int mapCRC, const idDeclEntityDef* botNavDecl) {
 	idStr navFileName;
-	navFileName = "maps/";
 	navFileName += name;
 	navFileHeader_t header;
 
@@ -230,7 +229,7 @@ void rvmNavFileLocal::WriteNavFile(const char *name, rcPolyMesh *mesh, rcPolyMes
 	}
 
 	// Open the nav file for writing.
-	idFileScoped file(fileSystem->OpenFileWrite(navFileName));
+	idFileScoped file(fileSystem->OpenFileWrite(navFileName, "fs_basepath"));
 
 	// Fill in the header.
 	header.version = NAV_FILE_VERSION;
