@@ -128,7 +128,7 @@ void rvmBot::BotMoveToGoalOrigin(void) {
 
 	idAngles ang(0, bs.botinput.dir.ToYaw(), 0);
 	bs.botinput.viewangles = ang;
-	bs.botinput.speed = 200;
+	bs.botinput.speed = pm_runspeed.GetInteger();
 
 	bs.botinput.dir.Normalize();
 }
