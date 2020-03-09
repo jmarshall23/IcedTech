@@ -46,6 +46,8 @@ static int					importDLL = 0;
 
 bool idModelExport::initialized = false;
 
+idCVar g_mayaImportVersion("g_mayaImportVersion", "2019", CVAR_INTEGER, "specifies which version of the maya tools to use");
+
 /*
 ====================
 idModelExport::idModelExport
@@ -98,7 +100,7 @@ void idModelExport::LoadMayaDll( void ) {
 	exporterDLLEntry_t	dllEntry;
 	char				dllPath[ MAX_OSPATH ];
 
-	fileSystem->FindDLL( "MayaImport", dllPath, false );
+	fileSystem->FindDLL( va("MayaImport%d", g_mayaImportVersion.GetInteger()), dllPath, false );
 	if ( !dllPath[ 0 ] ) {
 		return;
 	}
