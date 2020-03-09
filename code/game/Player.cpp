@@ -5821,6 +5821,12 @@ void idPlayer::Move( void ) {
 	idVec3 oldVelocity;
 	idVec3 pushVelocity;
 
+// jmarshall: this fixes a physics crash with the x86 -> x64 conversion, but I like the out come,
+// the dead body disolves in the last simulated position. TODO take a look at this.
+	if (health <= 0)
+		return;
+// jmarshall end
+
 	// save old origin and velocity for crashlanding
 	oldOrigin = physicsObj.GetOrigin();
 	oldVelocity = physicsObj.GetLinearVelocity();
