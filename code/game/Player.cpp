@@ -2222,8 +2222,10 @@ void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_a
 	if ( gameLocal.isMultiplayer ) {
 		if ( !spectating ) {
 			// we may be called twice in a row in some situations. avoid a double fx and 'fly to the roof'
-			if ( lastTeleFX < gameLocal.time - 1000 ) {
-				idEntityFx::StartFx( spawnArgs.GetString( "fx_spawn" ), &spawn_origin, NULL, this, true );
+			if (lastTeleFX < gameLocal.time - 1000) {
+// jmarshall - TODO: implement a new teleport in FX
+				//idEntityFx::StartFx(spawnArgs.GetString("fx_spawn"), &spawn_origin, NULL, this, true);
+// jmarshall end
 				lastTeleFX = gameLocal.time;
 			}
 		}
