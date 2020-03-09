@@ -84,39 +84,7 @@ Determines if Maya is installed on the user's machine
 =====================
 */
 bool idModelExport::CheckMayaInstall( void ) {
-#ifndef _WIN32
-	return false;
-#elif 0
-	HKEY	hKey;
-	long	lres, lType;
-
-	lres = RegOpenKey( HKEY_LOCAL_MACHINE, "SOFTWARE\\Alias|Wavefront\\Maya\\4.5\\Setup\\InstallPath", &hKey );
-
-	if ( lres != ERROR_SUCCESS ) {
-		return false;
-	}
-
-	lres = RegQueryValueEx( hKey, "MAYA_INSTALL_LOCATION", NULL, (unsigned long*)&lType, (unsigned char*)NULL, (unsigned long*)NULL );
-
-	RegCloseKey( hKey );
-
-	if ( lres != ERROR_SUCCESS ) {
-		return false;
-	}
 	return true;
-#else
-	HKEY	hKey;
-	long	lres;
-
-	// only check the non-version specific key so that we only have to update the maya dll when new versions are released
-	lres = RegOpenKey( HKEY_LOCAL_MACHINE, "SOFTWARE\\Alias|Wavefront\\Maya", &hKey );
-	RegCloseKey( hKey );
-
-	if ( lres != ERROR_SUCCESS ) {
-		return false;
-	}
-	return true;
-#endif
 }
 
 /*
