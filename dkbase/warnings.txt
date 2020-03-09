@@ -4,8 +4,9 @@ during Darklight initialization...
 WARNING: Couldn't load image: textures/loadingicon2 : textures/loadingicon2
 WARNING: Couldn't load image: textures/loadingicon3 : textures/loadingicon3
 WARNING: file materials/base_light2.mtr, line 14: material 'textures/base_light/striplight3' previously defined at materials/base_light.mtr:81
+WARNING: RegisterFont: couldn't find font: 'fonts/english/fontImage_12.dat'
 
-3 warnings.
+4 warnings.
 
 
 -------------- Errors ---------------

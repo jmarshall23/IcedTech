@@ -61,9 +61,9 @@ public:
 	virtual bool			LockMemory( void *ptr, int bytes );
 	virtual bool			UnlockMemory( void *ptr, int bytes );
 
-	virtual int				DLL_Load( const char *dllName );
-	virtual void *			DLL_GetProcAddress( int dllHandle, const char *procName );
-	virtual void			DLL_Unload( int dllHandle );
+	virtual INT_PTR			DLL_Load( const char *dllName );
+	virtual void *			DLL_GetProcAddress(INT_PTR dllHandle, const char *procName );
+	virtual void			DLL_Unload(INT_PTR dllHandle );
 	virtual void			DLL_GetFileName( const char *baseName, char *dllName, int maxLength );
 
 	virtual sysEvent_t		GenerateMouseButtonEvent( int button, bool down );

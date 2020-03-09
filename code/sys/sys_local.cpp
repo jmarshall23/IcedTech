@@ -94,30 +94,30 @@ bool idSysLocal::UnlockMemory( void *ptr, int bytes ) {
 }
 
 void idSysLocal::GetCallStack( address_t *callStack, const int callStackSize ) {
-	Sys_GetCallStack( callStack, callStackSize );
+//	Sys_GetCallStack( callStack, callStackSize );
 }
 
 const char * idSysLocal::GetCallStackStr( const address_t *callStack, const int callStackSize ) {
-	return Sys_GetCallStackStr( callStack, callStackSize );
+	return ""; // Sys_GetCallStackStr(callStack, callStackSize);
 }
 
 const char * idSysLocal::GetCallStackCurStr( int depth ) {
-	return Sys_GetCallStackCurStr( depth );
+	return ""; // Sys_GetCallStackCurStr(depth);
 }
 
 void idSysLocal::ShutdownSymbols( void ) {
 	Sys_ShutdownSymbols();
 }
 
-int idSysLocal::DLL_Load( const char *dllName ) {
+INT_PTR idSysLocal::DLL_Load( const char *dllName ) {
 	return Sys_DLL_Load( dllName );
 }
 
-void *idSysLocal::DLL_GetProcAddress( int dllHandle, const char *procName ) {
+void *idSysLocal::DLL_GetProcAddress(INT_PTR dllHandle, const char *procName ) {
 	return Sys_DLL_GetProcAddress( dllHandle, procName );
 }
 
-void idSysLocal::DLL_Unload( int dllHandle ) {
+void idSysLocal::DLL_Unload(INT_PTR dllHandle ) {
 	Sys_DLL_Unload( dllHandle );
 }
 

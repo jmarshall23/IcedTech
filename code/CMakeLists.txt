@@ -14,6 +14,7 @@ Message("${CMAKE_CURRENT_SOURCE_DIR}/full_sdk_license.txt")#
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # idLib files
 set(src_idlib
@@ -130,18 +131,8 @@ set(src_idlib
 	./idlib/math/Rotation.h
 	./idlib/math/Simd.cpp
 	./idlib/math/Simd.h
-	./idlib/math/Simd_3DNow.cpp
-	./idlib/math/Simd_3DNow.h
 	./idlib/math/Simd_Generic.cpp
 	./idlib/math/Simd_Generic.h
-	./idlib/math/Simd_MMX.cpp
-	./idlib/math/Simd_MMX.h
-	./idlib/math/Simd_SSE.cpp
-	./idlib/math/Simd_SSE.h
-	./idlib/math/Simd_SSE2.cpp
-	./idlib/math/Simd_SSE2.h
-	./idlib/math/Simd_SSE3.cpp
-	./idlib/math/Simd_SSE3.h
 	./idlib/math/Vector.cpp
 	./idlib/math/Vector.h	
 )
@@ -318,7 +309,7 @@ set(src_game
 )
 
 # idLib project
-add_definitions(-D_AFXDLL -D_USE_32BIT_TIME_T -D_WINDOWS -D_CRT_SECURE_NO_DEPRECATE)
+add_definitions(-D_AFXDLL -D_WINDOWS -D_CRT_SECURE_NO_DEPRECATE)
 add_library(idLib STATIC ${src_idlib})
 add_precompiled_header( idLib precompiled.h SOURCE_CXX ./idlib/precompiled.cpp )
 target_compile_definitions(idLib PRIVATE NAME=$<TARGET_FILE_NAME:idLib>)
@@ -329,7 +320,7 @@ add_library(game MODULE  ${src_game} )
 target_compile_definitions(game PRIVATE GAME_DLL=1)
 target_link_libraries(game idLib)
 add_precompiled_header( game game_precompiled.h  SOURCE_CXX ./game/game_precompiled.cpp )
-set_target_properties(game PROPERTIES OUTPUT_NAME "gamex86" LINK_FLAGS "/PDB:\"Game.pdb\"")
+set_target_properties(game PROPERTIES OUTPUT_NAME "gamex64" LINK_FLAGS "/PDB:\"Game.pdb\"")
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/full_sdk_license.txt") 	
 	Message("Including Tools...")

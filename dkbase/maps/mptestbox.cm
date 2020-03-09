@@ -979,7 +979,7 @@ collisionModel "worldMap" {
 	( -1 0 )
 	( -1 0 )
 	}
-	polygons /* polygonMemory = */ 9360 {
+	polygons /* polygonMemory = */ 9880 {
 	4 ( -262 -270 -268 -272 ) ( -1 0 0 ) -712 ( 712 -768 -200 ) ( 712 296 256 ) "textures/base_wall/c_met7_2"
 	4 ( -264 271 -266 -269 ) ( 1 0 -0 ) 728 ( 728 -768 -200 ) ( 728 296 256 ) "textures/base_wall/c_met7_2"
 	4 ( 265 266 267 268 ) ( 0 -0 1 ) 256 ( 712 -768 256 ) ( 728 296 256 ) "textures/base_wall/c_met7_2"
@@ -1111,7 +1111,7 @@ collisionModel "worldMap" {
 	4 ( -134 136 -126 137 ) ( 0 -1 0 ) 895.9998168945 ( -594.9375 -895.9998168945 -27.4268112183 ) ( -521.0625 -895.9998168945 84.5 ) "textures/base_wall/c_met7_2"
 	4 ( 171 172 173 174 ) ( -1 0 0 ) 568 ( -568 -717.5319824219 -27.421875 ) ( -568 -697.0716552734 -16 ) "textures/base_wall/c_met7_2"
 	}
-	brushes /* brushMemory = */ 4480 {
+	brushes /* brushMemory = */ 4608 {
 	6 {
 		( -0 -0 -1 ) 200
 		( 0 -0 1 ) 256

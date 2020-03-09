@@ -122,7 +122,9 @@ typedef struct {
 	float				t;				// y offset in image where glyph starts
 	float				s2;
 	float				t2;
-	const idMaterial *	glyph;			// shader with the glyph
+// jmarshall
+	int					glyph;			// shader with the glyph
+// jmarshall end
 	char				shaderName[32];
 } glyphInfo_t;
 

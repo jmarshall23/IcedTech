@@ -112,6 +112,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "../sys/sys_threading.h"
 #include "../sys/sys_intrinsics.h"
 
+#ifdef _WIN32
+#include "../sys/win32/win_x64.h"
+#endif
+
 // id lib
 #include "../idlib/Lib.h"
 

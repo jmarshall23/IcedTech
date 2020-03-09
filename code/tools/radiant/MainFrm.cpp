@@ -713,8 +713,8 @@ static UINT indicators[] = {
  =======================================================================================================================
  =======================================================================================================================
  */
-void CMainFrame::OnDisplayChange(UINT wParam, long lParam) {
-	int n = wParam;
+void CMainFrame::OnDisplayChange(WPARAM wp, LPARAM lp) {
+	
 }
 
 /*
@@ -1395,7 +1395,7 @@ bool MouseDown() {
  =======================================================================================================================
  */
 
-void CMainFrame::OnTimer(UINT nIDEvent) {
+void CMainFrame::OnTimer(UINT_PTR nIDEvent) {
 	static bool autoSavePending = false;
 
 	if ( nIDEvent == QE_TIMER0 && !MouseDown() ) {

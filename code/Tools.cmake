@@ -30,6 +30,11 @@ set(src_radiant_net
 	tools/radiant.net/Properties/AssemblyInfo.cs
 )
 
+set(src_maya_import 
+	./MayaImport/maya_precompiled.cpp
+	./MayaImport/maya_main.cpp
+)
+
 set(src_tools
 	./tools/tools_precompiled.cpp
 	./tools/af/DialogAF.cpp
@@ -415,3 +420,10 @@ add_library(Tools STATIC ${src_tools})
 add_precompiled_header( Tools tools_precompiled.h  SOURCE_CXX ./tools/tools_precompiled.cpp )
 set_target_properties(Tools PROPERTIES LINK_FLAGS "/PDB:\"Tools.pdb\"")
 target_include_directories(Tools PRIVATE ./external/Recast/include)
+
+# MayaImport
+#add_library(mayaimport MODULE  ${src_maya_import} )
+#target_compile_definitions(mayaimport PRIVATE MAYA_IMPORT=1)
+#target_link_libraries(mayaimport idLib)
+#add_precompiled_header( mayaimport maya_precompiled.h  SOURCE_CXX ./MayaImport/maya_precompiled.cpp )
+#set_target_properties(mayaimport PROPERTIES OUTPUT_NAME "mayaimportx86" LINK_FLAGS "/PDB:\"MayaImport.pdb\"")

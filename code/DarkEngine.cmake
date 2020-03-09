@@ -543,10 +543,10 @@ add_definitions(-D__DOOM_DLL__)
 add_library(DoomDLL SHARED  ${src_engine} )
 target_link_libraries(DoomDLL idLib External Tools "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib")
 add_precompiled_header( DoomDLL Engine_precompiled.h  SOURCE_CXX ./framework/Engine_precompiled.cpp )
-set_target_properties(DoomDLL PROPERTIES OUTPUT_NAME "DoomDLL" LINK_FLAGS "/PDB:\"DoomDLL.pdb\" /LARGEADDRESSAWARE /DEF:${CMAKE_CURRENT_SOURCE_DIR}/exports.def")
+set_target_properties(DoomDLL PROPERTIES OUTPUT_NAME "DoomDLL" LINK_FLAGS "/STACK:16777216,16777216 /PDB:\"DoomDLL.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/exports.def")
 target_include_directories(DoomDLL PRIVATE ./external/Recast/include ./external/detour/Include)
 
 # Launcher Project
 add_executable(Launcher ${src_launcher})
 target_link_libraries(Launcher DoomDLL)
-set_target_properties(Launcher PROPERTIES OUTPUT_NAME "Darklight" LINK_FLAGS "/SUBSYSTEM:WINDOWS /PDB:\"Darklight.pdb\"")
+set_target_properties(Launcher PROPERTIES OUTPUT_NAME "Darklight" LINK_FLAGS "/STACK:16777216,16777216 /SUBSYSTEM:WINDOWS /PDB:\"Darklight.pdb\"")

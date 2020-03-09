@@ -30,13 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Simd_Generic.h"
-#include "Simd_MMX.h"
-#include "Simd_3DNow.h"
-#include "Simd_SSE.h"
-#include "Simd_SSE2.h"
-#include "Simd_SSE3.h"
-#include "Simd_AltiVec.h"
-
 
 idSIMDProcessor	*	processor = NULL;			// pointer to SIMD processor
 idSIMDProcessor *	generic = NULL;				// pointer to generic SIMD implementation
@@ -66,33 +59,7 @@ void idSIMD::InitProcessor( const char *module, bool forceGeneric ) {
 
 	cpuid = idLib::sys->GetProcessorId();
 
-	if ( forceGeneric ) {
-
-		newProcessor = generic;
-
-	} else {
-
-		if ( !processor ) {
-			if ( ( cpuid & CPUID_ALTIVEC ) ) {
-				processor = new idSIMD_AltiVec;
-			} else if ( ( cpuid & CPUID_MMX ) && ( cpuid & CPUID_SSE ) && ( cpuid & CPUID_SSE2 ) && ( cpuid & CPUID_SSE3 ) ) {
-				processor = new idSIMD_SSE3;
-			} else if ( ( cpuid & CPUID_MMX ) && ( cpuid & CPUID_SSE ) && ( cpuid & CPUID_SSE2 ) ) {
-				processor = new idSIMD_SSE2;
-			} else if ( ( cpuid & CPUID_MMX ) && ( cpuid & CPUID_SSE ) ) {
-				processor = new idSIMD_SSE;
-			} else if ( ( cpuid & CPUID_MMX ) && ( cpuid & CPUID_3DNOW ) ) {
-				processor = new idSIMD_3DNow;
-			} else if ( ( cpuid & CPUID_MMX ) ) {
-				processor = new idSIMD_MMX;
-			} else {
-				processor = generic;
-			}
-			processor->cpuid = cpuid;
-		}
-
-		newProcessor = processor;
-	}
+	newProcessor = generic;
 
 	if ( newProcessor != SIMDProcessor ) {
 		SIMDProcessor = newProcessor;
@@ -150,22 +117,20 @@ long baseClocks = 0;
 long saved_ebx = 0;
 
 #define StartRecordTime( start )			\
-	__asm mov saved_ebx, ebx				\
-	__asm xor eax, eax						\
-	__asm cpuid								\
-	__asm rdtsc								\
-	__asm mov start, eax					\
-	__asm xor eax, eax						\
-	__asm cpuid
+	{										\
+		LARGE_INTEGER li;					\
+		QueryPerformanceCounter( &li );		\
+		start = (double ) li.LowPart + (double) 0xFFFFFFFF * li.HighPart;	\
+		start *= 64; /* 50 MHz */			\
+	}
 
 #define StopRecordTime( end )				\
-	__asm xor eax, eax						\
-	__asm cpuid								\
-	__asm rdtsc								\
-	__asm mov end, eax						\
-	__asm mov ebx, saved_ebx				\
-	__asm xor eax, eax						\
-	__asm cpuid
+	{										\
+		LARGE_INTEGER li;					\
+		QueryPerformanceCounter( &li );		\
+		end = (double ) li.LowPart + (double) 0xFFFFFFFF * li.HighPart;	\
+		end *= 64; /* 50 MHz */				\
+	}
 
 #elif MACOS_X
 
@@ -4107,54 +4072,6 @@ void idSIMD::Test_f( const idCmdArgs &args ) {
 
 	p_simd = processor;
 	p_generic = generic;
-
-	if ( idStr::Length( args.Argv( 1 ) ) != 0 ) {
-		cpuid_t cpuid = idLib::sys->GetProcessorId();
-		idStr argString = args.Args();
-
-		argString.Replace( " ", "" );
-
-		if ( idStr::Icmp( argString, "MMX" ) == 0 ) {
-			if ( !( cpuid & CPUID_MMX ) ) {
-				common->Printf( "CPU does not support MMX\n" );
-				return;
-			}
-			p_simd = new idSIMD_MMX;
-		} else if ( idStr::Icmp( argString, "3DNow" ) == 0 ) {
-			if ( !( cpuid & CPUID_MMX ) || !( cpuid & CPUID_3DNOW ) ) {
-				common->Printf( "CPU does not support MMX & 3DNow\n" );
-				return;
-			}
-			p_simd = new idSIMD_3DNow;
-		} else if ( idStr::Icmp( argString, "SSE" ) == 0 ) {
-			if ( !( cpuid & CPUID_MMX ) || !( cpuid & CPUID_SSE ) ) {
-				common->Printf( "CPU does not support MMX & SSE\n" );
-				return;
-			}
-			p_simd = new idSIMD_SSE;
-		} else if ( idStr::Icmp( argString, "SSE2" ) == 0 ) {
-			if ( !( cpuid & CPUID_MMX ) || !( cpuid & CPUID_SSE ) || !( cpuid & CPUID_SSE2 ) ) {
-				common->Printf( "CPU does not support MMX & SSE & SSE2\n" );
-				return;
-			}
-			p_simd = new idSIMD_SSE2;
-		} else if ( idStr::Icmp( argString, "SSE3" ) == 0 ) {
-			if ( !( cpuid & CPUID_MMX ) || !( cpuid & CPUID_SSE ) || !( cpuid & CPUID_SSE2 ) || !( cpuid & CPUID_SSE3 ) ) {
-				common->Printf( "CPU does not support MMX & SSE & SSE2 & SSE3\n" );
-				return;
-			}
-			p_simd = new idSIMD_SSE3();
-		} else if ( idStr::Icmp( argString, "AltiVec" ) == 0 ) {
-			if ( !( cpuid & CPUID_ALTIVEC ) ) {
-				common->Printf( "CPU does not support AltiVec\n" );
-				return;
-			}
-			p_simd = new idSIMD_AltiVec();
-		} else {
-			common->Printf( "invalid argument, use: MMX, 3DNow, SSE, SSE2, SSE3, AltiVec\n" );
-			return;
-		}
-	}
 
 	idLib::common->SetRefreshOnPrint( true );
 
