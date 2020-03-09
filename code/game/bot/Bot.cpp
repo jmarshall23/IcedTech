@@ -1,7 +1,7 @@
 // Bot.cpp
 //
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #include "../Game_local.h"
 
 idCVar bot_pathdebug("bot_pathdebug", "0", CVAR_BOOL | CVAR_CHEAT, "force the bot to path to player");

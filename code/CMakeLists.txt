@@ -14,7 +14,7 @@ Message("${CMAKE_CURRENT_SOURCE_DIR}/full_sdk_license.txt")#
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../)
-set(CMAKE_VERBOSE_MAKEFILE ON)
+#set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # idLib files
 if(WIN32)
@@ -264,24 +264,24 @@ endif()
 set(src_game
 	./game/Game_precompiled.cpp
 	./game/Game_precompiled.h
-	./game/bot/bot.cpp
-	./game/bot/bot_input.cpp
-	./game/bot/bot_char.cpp
-	./game/bot/bot_char.h
-	./game/bot/bot_goal.cpp
-	./game/bot/bot_goal.h
-	./game/bot/bot_weights.cpp
-	./game/bot/bot_weights.h
-	./game/bot/bot_weapons.cpp
-	./game/bot/bot_weapons.h
-	./game/bot/bot.h
-	./game/bot/botai/BotAI.cpp
-	./game/bot/botai/BotAI_respawn.cpp
-	./game/bot/botai/BotAI_SeekLTG.cpp
-	./game/bot/botai/BotAI.h
+	./game/bot/Bot.cpp
+	./game/bot/Bot_Input.cpp
+	./game/bot/Bot_char.cpp
+	./game/bot/Bot_char.h
+	./game/bot/Bot_goal.cpp
+	./game/bot/Bot_goal.h
+	./game/bot/Bot_weights.cpp
+	./game/bot/Bot_weights.h
+	./game/bot/Bot_weapons.cpp
+	./game/bot/Bot_weapons.h
+	./game/bot/Bot.h
+	./game/bot/BotAI/BotAI.cpp
+	./game/bot/BotAI/BotAI_respawn.cpp
+	./game/bot/BotAI/BotAI_SeekLTG.cpp
+	./game/bot/BotAI/BotAI.h
 	./game/ReflectionProbe.cpp
 	./game/ReflectionProbe.h
-	./game/game_navigation.cpp
+	./game/Game_navigation.cpp
 	./game/Game_precompiled.cpp
 	./game/Game_precompiled.h
 	./game/Actor.cpp
@@ -475,7 +475,7 @@ endif()
 add_library(game MODULE  ${src_game} )
 target_compile_definitions(game PRIVATE GAME_DLL=1)
 target_link_libraries(game idLib)
-add_precompiled_header( game ./game/game_precompiled.h  SOURCE_CXX ./game/game_precompiled.cpp )
+add_precompiled_header( game ./game/Game_precompiled.h  SOURCE_CXX ./game/Game_precompiled.cpp )
 target_include_directories(game PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/game/")
 
 if(WIN32)

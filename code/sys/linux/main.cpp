@@ -46,6 +46,17 @@ static idStr	savepath;
 
 /*
 =================
+Sys_ShutdownSymbols
+=================
+*/
+
+void			Sys_ShutdownSymbols( void )
+{
+
+}
+
+/*
+=================
 Sys_AsyncThread
 =================
 */

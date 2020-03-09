@@ -1,7 +1,8 @@
 // Nav_local.h
 //
+#include <idlib/precompiled.h>
 
-#include "Recast.h"
+#include "../external/recast/Include/Recast.h"
 #include "../external/detour/Include/DetourNavMesh.h"
 #include "../external/detour/Include/DetourNavMeshBuilder.h"
 #include "../external/detour/Include/DetourNavMeshQuery.h"

@@ -18,13 +18,13 @@
 
 #include <float.h>
 #include <string.h>
-#include "../include/DetourNavMeshQuery.h"
-#include "../include/DetourNavMesh.h"
-#include "../include/DetourNode.h"
-#include "../include/DetourCommon.h"
-#include "../include/DetourMath.h"
-#include "../include/DetourAlloc.h"
-#include "../include/DetourAssert.h"
+#include "../Include/DetourNavMeshQuery.h"
+#include "../Include/DetourNavMesh.h"
+#include "../Include/DetourNode.h"
+#include "../Include/DetourCommon.h"
+#include "../Include/DetourMath.h"
+#include "../Include/DetourAlloc.h"
+#include "../Include/DetourAssert.h"
 #include <new>
 
 /// @class dtQueryFilter

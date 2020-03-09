@@ -21,9 +21,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/Recast.h"
-#include "../include/RecastAlloc.h"
-#include "../include/RecastAssert.h"
+#include "../Include/Recast.h"
+#include "../Include/RecastAlloc.h"
+#include "../Include/RecastAssert.h"
 
 
 static int getCornerHeight(int x, int y, int i, int dir,

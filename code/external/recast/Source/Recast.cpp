@@ -24,9 +24,9 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <new>
-#include "../include/Recast.h"
-#include "../include/RecastAlloc.h"
-#include "../include/RecastAssert.h"
+#include "../Include/Recast.h"
+#include "../Include/RecastAlloc.h"
+#include "../Include/RecastAssert.h"
 
 float rcSqrt(float x)
 {

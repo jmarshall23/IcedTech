@@ -539,20 +539,8 @@ else()
 		./tools/compilers/dmap/ubrush.cpp
 		./tools/compilers/dmap/usurface.cpp
 
-		#aas is also needed by the engine
-		./tools/compilers/aas/AASBuild.cpp
-		./tools/compilers/aas/AASBuild_file.cpp
-		./tools/compilers/aas/AASBuild_gravity.cpp
-		./tools/compilers/aas/AASBuild_ledge.cpp
-		./tools/compilers/aas/AASBuild_merge.cpp
-		./tools/compilers/aas/AASCluster.cpp
-		./tools/compilers/aas/AASFile.cpp
-		./tools/compilers/aas/AASFile_optimize.cpp
-		./tools/compilers/aas/AASFile_sample.cpp
-		./tools/compilers/aas/AASReach.cpp
-		./tools/compilers/aas/AASFileManager.cpp
-		./tools/compilers/aas/Brush.cpp
-		./tools/compilers/aas/BrushBSP.cpp
+		#needed by dmap
+		./tools/compilers/navmesh/NavMeshBuild.cpp
 
 		./ui/BindWindow.cpp
 		./ui/ChoiceWindow.cpp

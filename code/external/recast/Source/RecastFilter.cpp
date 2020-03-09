@@ -19,8 +19,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdio.h>
-#include "../include/Recast.h"
-#include "../include/RecastAssert.h"
+#include "../Include/Recast.h"
+#include "../Include/RecastAssert.h"
 
 /// @par
 ///

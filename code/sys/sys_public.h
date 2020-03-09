@@ -151,9 +151,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifdef __GNUC__
 #define id_attribute(x) __attribute__(x)
-#define ALIGN16( x )					__declspec(align(16)) x
-#define ALIGNTYPE16						__declspec(align(16))
-#define ALIGNTYPE128					__declspec(align(128))
+#define ALIGN16( x )					x __attribute__ ((aligned (16)))
+#define ALIGNTYPE16						__attribute__ ((aligned (16)))
+#define ALIGNTYPE128					__attribute__ ((aligned (128)))
 #else
 #define id_attribute(x)
 #define ALIGN16( x )					__declspec(align(16)) x
