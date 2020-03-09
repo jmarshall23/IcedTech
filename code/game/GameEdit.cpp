@@ -564,7 +564,7 @@ void idEditEntities::DisplayEntities( void ) {
 			selectableEntityClasses.Append( sit );
 			break;
 		case 5:
-			sit.typeInfo = &idAI::Type;
+			sit.typeInfo = &rvmBot::Type;
 			sit.textKey = "name";
 			selectableEntityClasses.Append( sit );
 			break;
@@ -1143,5 +1143,24 @@ void idGameEdit::MapEntityTranslate( const char *name, const idVec3 &v ) const {
 			origin += v;
 			mapent->epairs.SetVector( "origin", origin );
 		}
+	}
+}
+
+/*
+================
+idGameEdit::BuildReflectionCaptures
+================
+*/
+void idGameEdit::BuildReflectionCaptures(void) {
+	for(int i = 0; i < gameLocal.num_entities; i++) {
+		if (gameLocal.entities[i] == NULL)
+			continue;
+
+		rvmReflectionProbe* reflectionProbe = gameLocal.entities[i]->Cast<rvmReflectionProbe>();
+
+		if (reflectionProbe == NULL)
+			continue;
+
+		reflectionProbe->Capture();
 	}
 }

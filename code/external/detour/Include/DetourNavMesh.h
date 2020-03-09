@@ -608,7 +608,7 @@ public:
 
 	/// @}
 	
-private:
+public:
 	// Explicitly disabled copy constructor and copy assignment operator.
 	dtNavMesh(const dtNavMesh&);
 	dtNavMesh& operator=(const dtNavMesh&);

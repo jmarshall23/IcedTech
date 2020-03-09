@@ -1,0 +1,34 @@
+hud/ammo_current_bg {
+	{
+		blend GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+		map guis/hud/ammo_current_bg.tga
+	}
+}
+
+hud/armor {
+	{
+		blend GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+		map guis/hud/armor.tga
+	}
+}
+
+hud/health {
+	{
+		blend GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+		map guis/hud/health.tga
+	}
+}
+
+hud/ammo {
+	{
+		blend GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+		map guis/hud/ammo_shells.tga
+	}
+}
+
+hud/weapon_current_bg {
+	{
+		blend GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+		map guis/hud/weapon_current_bg.tga
+	}
+}

@@ -176,7 +176,6 @@ private:
 	void						DumpWarnings( void );
 	void						LoadGameDLL( void );
 	void						UnloadGameDLL( void );
-	void						PrintLoadingMessage( const char *msg );
 	void						FilterLangList( idStrList* list, idStr lang );
 
 	bool						com_fullyInitialized;
@@ -2337,18 +2336,16 @@ void idCommonLocal::InitCommands( void ) {
 	cmdSystem->AddCommand( "setMachineSpec", Com_SetMachineSpec_f, CMD_FL_SYSTEM, "detects system capabilities and sets com_machineSpec to appropriate value" );
 	cmdSystem->AddCommand( "execMachineSpec", Com_ExecMachineSpec_f, CMD_FL_SYSTEM, "execs the appropriate config files and sets cvars based on com_machineSpec" );
 
-#if	!defined( ID_DEMO_BUILD ) && !defined( ID_DEDICATED ) && defined(WIN32)
+#if	!defined( ID_DEMO_BUILD ) && !defined( ID_DEDICATED )
 	// compilers
 	cmdSystem->AddCommand( "dmap", Dmap_f, CMD_FL_TOOL, "compiles a map", idCmdSystem::ArgCompletion_MapName );
 	cmdSystem->AddCommand( "renderbump", RenderBump_f, CMD_FL_TOOL, "renders a bump map", idCmdSystem::ArgCompletion_ModelName );
 	cmdSystem->AddCommand( "renderbumpFlat", RenderBumpFlat_f, CMD_FL_TOOL, "renders a flat bump map", idCmdSystem::ArgCompletion_ModelName );
-	cmdSystem->AddCommand( "runAAS", RunAAS_f, CMD_FL_TOOL, "compiles an AAS file for a map", idCmdSystem::ArgCompletion_MapName );
-	cmdSystem->AddCommand( "runAASDir", RunAASDir_f, CMD_FL_TOOL, "compiles AAS files for all maps in a folder", idCmdSystem::ArgCompletion_MapName );
-	cmdSystem->AddCommand( "runReach", RunReach_f, CMD_FL_TOOL, "calculates reachability for an AAS file", idCmdSystem::ArgCompletion_MapName );
 	cmdSystem->AddCommand( "roq", RoQFileEncode_f, CMD_FL_TOOL, "encodes a roq file" );
 	cmdSystem->AddCommand( "megalight", MegaLight_f, CMD_FL_TOOL, "builds lightmaps for a megatexture.");
 	cmdSystem->AddCommand( "megagen", RunMegaGen_f, CMD_FL_TOOL, "builds a source megatexture(giant tga) for a mega project.");
-	
+	cmdSystem->AddCommand("navbuild", NavMesh_f, CMD_FL_TOOL, "builds a navmesh file", idCmdSystem::ArgCompletion_MapName);
+	cmdSystem->AddCommand("renderprobes", RenderProbes_f, CMD_FL_TOOL, "builds reflection probes", idCmdSystem::ArgCompletion_MapName);
 #endif
 
 #ifdef ID_ALLOW_TOOLS
@@ -2408,23 +2405,10 @@ void idCommonLocal::InitRenderSystem( void ) {
 	}
 
 	renderSystem->InitOpenGL();
-	PrintLoadingMessage( common->GetLanguageDict()->GetString( "#str_04343" ) );
-}
 
-/*
-=================
-idCommonLocal::PrintLoadingMessage
-=================
-*/
-void idCommonLocal::PrintLoadingMessage( const char *msg ) {
-	if ( !( msg && *msg ) ) {
-		return;
-	}
-	renderSystem->BeginFrame( renderSystem->GetScreenWidth(), renderSystem->GetScreenHeight() );
-	renderSystem->DrawStretchPic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1, 1, declManager->FindMaterial( "splashScreen" ) );
-	int len = strlen( msg );
-	renderSystem->DrawSmallStringExt( ( SCREEN_WIDTH - len * SMALLCHAR_WIDTH ) / 2, SCREEN_HEIGHT - 80, msg, idVec4( 0.0f, 0.81f, 0.94f, 1.0f ), true, declManager->FindMaterial( "textures/bigchars" ) );
-	renderSystem->EndFrame( NULL, NULL );
+	renderSystem->BeginFrame(renderSystem->GetScreenWidth(), renderSystem->GetScreenHeight());
+		renderSystem->DrawStretchPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1, 1, declManager->FindMaterial("splashScreen"));
+	renderSystem->EndFrame(NULL, NULL);
 }
 
 /*
@@ -2465,6 +2449,9 @@ void idCommonLocal::Frame( void ) {
 			if ( idAsyncNetwork::serverDedicated.GetInteger() != 1 ) {
 				session->GuiFrameEvents();
 				session->UpdateScreen( false );
+// jmarshall
+				session->RunSessionTic();
+// jmarshall end
 			}
 		} else {
 			session->Frame();
@@ -2490,12 +2477,6 @@ void idCommonLocal::Frame( void ) {
 
 		// set idLib frame number for frame based memory dumps
 		idLib::frameNumber = com_frameNumber;
-
-		// the FPU stack better be empty at this point or some bad code or compiler bug left values on the stack
-		if ( !Sys_FPU_StackIsEmpty() ) {
-			Printf( Sys_FPU_GetState() );
-			FatalError( "idCommon::Frame: the FPU stack is not empty at the end of the frame\n" );
-		}
 	}
 
 	catch( idException & ) {
@@ -2565,10 +2546,9 @@ void idCommonLocal::LoadGameDLL( void ) {
 	gameImport.renderModelManager		= ::renderModelManager;
 	gameImport.uiManager				= ::uiManager;
 	gameImport.declManager				= ::declManager;
-	gameImport.AASFileManager			= ::AASFileManager;
 	gameImport.collisionModelManager	= ::collisionModelManager;
 	gameImport.parallelJobManager		= ::parallelJobManager;
-
+	gameImport.navigationManager		= ::navigationManager;
 	gameExport							= *GetGameAPI( &gameImport );
 
 	if ( gameExport.version != GAME_API_VERSION ) {
@@ -2906,15 +2886,11 @@ void idCommonLocal::InitGame( void ) {
 	// initialize string database right off so we can use it for loading messages
 	InitLanguageDict();
 
-	PrintLoadingMessage( common->GetLanguageDict()->GetString( "#str_04344" ) );
-
 	// load the font, etc
 	console->LoadGraphics();
 
 	// init journalling, etc
 	eventLoop->Init();
-
-	PrintLoadingMessage( common->GetLanguageDict()->GetString( "#str_04345" ) );
 
 	// exec the startup scripts
 	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec editor.cfg\n" );
@@ -2944,12 +2920,8 @@ void idCommonLocal::InitGame( void ) {
 	// init the user command input code
 	usercmdGen->Init();
 
-	PrintLoadingMessage( common->GetLanguageDict()->GetString( "#str_04346" ) );
-
 	// start the sound system, but don't do any hardware operations yet
 	soundSystem->Init();
-
-	PrintLoadingMessage( common->GetLanguageDict()->GetString( "#str_04347" ) );
 
 	// init async network
 	idAsyncNetwork::Init();
@@ -2963,12 +2935,9 @@ void idCommonLocal::InitGame( void ) {
 		cvarSystem->SetCVarBool( "s_noSound", true );
 	} else {
 		// init OpenGL, which will open a window and connect sound and input hardware
-		PrintLoadingMessage( common->GetLanguageDict()->GetString( "#str_04348" ) );
 		InitRenderSystem();
 	}
 #endif
-
-	PrintLoadingMessage( common->GetLanguageDict()->GetString( "#str_04349" ) );
 
 	// initialize the user interfaces
 	uiManager->Init();
@@ -2976,12 +2945,8 @@ void idCommonLocal::InitGame( void ) {
 	// startup the script debugger
 	// DebuggerServerInit();
 
-	PrintLoadingMessage( common->GetLanguageDict()->GetString( "#str_04350" ) );
-
 	// load the game dll
 	LoadGameDLL();
-	
-	PrintLoadingMessage( common->GetLanguageDict()->GetString( "#str_04351" ) );
 
 	// init the session
 	session->Init();

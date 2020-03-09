@@ -79,6 +79,7 @@ class idProgram;
 class idThread;
 class idEditEntities;
 class idLocationEntity;
+class rvmBot;
 
 #define	MAX_CLIENTS				32
 #define	GENTITYNUM_BITS			12
@@ -101,8 +102,6 @@ void gameError( const char *fmt, ... );
 #include "script/Script_Program.h"
 
 #include "anim/Anim.h"
-
-#include "ai/AAS.h"
 
 #include "physics/Clip.h"
 #include "physics/Push.h"
@@ -316,6 +315,7 @@ public:
 	bool					isMultiplayer;			// set if the game is run in multiplayer mode
 	bool					isServer;				// set if the game is run for a dedicated or listen server
 	bool					isClient;				// set if the game is run for a client
+	bool					isBuildingReflections;
 													// discriminates between the RunFrame path and the ClientPrediction path
 													// NOTE: on a listen server, isClient is false
 	int						localClientNum;			// number of the local client. MP: -1 on a dedicated
@@ -344,12 +344,12 @@ public:
 
 	virtual const idDict &	GetPersistentPlayerInfo( int clientNum );
 	virtual void			SetPersistentPlayerInfo( int clientNum, const idDict &playerInfo );
-	virtual void			InitFromNewMap( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, bool isServer, bool isClient, int randSeed );
+	virtual void			InitFromNewMap( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, bool isServer, bool isClient, int randSeed, bool buildReflections);
 	virtual bool			InitFromSaveGame( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, idFile *saveGameFile );
 	virtual void			SaveGame( idFile *saveGameFile );
 	virtual void			MapShutdown( void );
 	virtual void			CacheDictionaryMedia( const idDict *dict );
-	virtual void			SpawnPlayer( int clientNum );
+	virtual void			SpawnPlayer( int clientNum, bool isBot, const char * botName);
 	virtual gameReturn_t	RunFrame( const usercmd_t *clientCmds );
 	virtual bool			Draw( int clientNum );
 	virtual escReply_t		HandleESC( idUserInterface **gui );
@@ -358,7 +358,7 @@ public:
 	virtual void			HandleMainMenuCommands( const char *menuCommand, idUserInterface *gui );
 	virtual allowReply_t	ServerAllowClient( int numClients, const char *IP, const char *guid, const char *password, char reason[MAX_STRING_CHARS] );
 	virtual void			ServerClientConnect( int clientNum, const char *guid );
-	virtual void			ServerClientBegin( int clientNum );
+	virtual void			ServerClientBegin( int clientNum, bool isBot, const char* botName);
 	virtual void			ServerClientDisconnect( int clientNum );
 	virtual void			ServerWriteInitialReliableMessages( int clientNum );
 	virtual void			ServerWriteSnapshot( int clientNum, int sequence, idBitMsg &msg, byte *clientInPVS, int numPVSClients );
@@ -375,6 +375,11 @@ public:
 	virtual bool			DownloadRequest( const char *IP, const char *guid, const char *paks, char urls[ MAX_STRING_CHARS ] );
 
 	virtual void			RenderScene(const renderView_t *view, idRenderWorld *renderWorld);
+
+// jmarshall
+	virtual bool			GetRandomBotName(int clientNum, idStr& botName);
+	virtual void			ResetGameRenderTargets(void);
+// jmarshall end
 
 	// ---------------------- Public idGameLocal Interface -------------------
 
@@ -396,15 +401,12 @@ public:
 	idMapFile *				GetLevelMap( void );
 	const char *			GetMapName( void ) const;
 
-	int						NumAAS( void ) const;
-	idAAS *					GetAAS( int num ) const;
-	idAAS *					GetAAS( const char *name ) const;
-	void					SetAASAreaState( const idBounds &bounds, const int areaContents, bool closed );
-	aasHandle_t				AddAASObstacle( const idBounds &bounds );
-	void					RemoveAASObstacle( const aasHandle_t handle );
-	void					RemoveAllAASObstacles( void );
-
 	rvmNavFile				*GetNavMeshFile() { return navMeshFile; }
+
+// jmarshall
+	void					RegisterBot(rvmBot* bot) { registeredBots.AddUnique(bot); }
+	void					UnRegisterBot(rvmBot* bot) { registeredBots.Remove(bot); }
+// jmarshall end
 
 	bool					CheatsOk( bool requirePlayer = true );
 	void					SetSkill( int value );
@@ -490,6 +492,16 @@ public:
 
 	void					DelayRemoveEntity(idEntity *entity, int delay);
 
+	bool					LoadMapNav(const char* mapName);
+	bool					NavGetPathBetweenPoints(const idVec3 p1, const idVec3 p2, idList<idVec3>& points);
+	void					GetRandomPointNearPosition(idVec3 point, idVec3& randomPoint, float radius);
+
+	int						NavTravelTime(idVec3 start, idVec3 end);
+	int						GetBotItemEntry(const char* name);
+
+	rvmGameRender_t*		GetGameRender() { return &gameRender; }
+
+	const char*				GetMapFileName() { return mapFileName.c_str(); }
 private:
 	const static int		INITIAL_SPAWN_COUNT = 1;
 
@@ -604,6 +616,14 @@ private:
 private:
 	void					InitJobSystem(void);
 	void					ShutdownJobSystem(void);
+
+// jmarshall
+	void					RunBotFrame(void);
+
+	const idDeclEntityDef*  botItemTable;
+// jmarshall end
+
+	idList<class rvmBot*>	registeredBots;
 
 	idParallelJobList		*gameParallelJobList;
 
@@ -752,6 +772,7 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "SmokeParticles.h"
 
 #include "Entity.h"
+
 #include "GameEdit.h"
 #include "AF.h"
 #include "IK.h"
@@ -776,7 +797,7 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "SecurityCamera.h"
 #include "BrittleFracture.h"
 
-#include "ai/AI.h"
+//#include "ai/AI.h"
 #include "anim/Anim_Testmodel.h"
 
 // jmarshall
@@ -790,6 +811,14 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "weapons/Weapon_chaingun.h"
 #include "weapons/Weapon_rocketlauncher.h"
 #include "weapons/Weapon_bfg.h"
+// jmarshall end
+
+// jmarshall
+#include "Bot/Bot.h"
+// jmarshall end
+
+// jmarshall
+#include "ReflectionProbe.h"
 // jmarshall end
 
 #include "script/Script_Compiler.h"

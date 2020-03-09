@@ -631,6 +631,9 @@ public:
 	int					GetPageOffsetNumMips(void) const { return virtualTexturePageOffsetNumMips; }
 
 	textureStage_t		*GetAlbedoTextureStage(void) const { return albedoLitTextureStage; }
+
+	// Returns true if reflections are enabled on this material or not.
+	bool				HasReflections(void) const { return hasReflections; }
 private:
 	// parse the entire material
 	void				CommonInit();
@@ -753,6 +756,8 @@ private:
 
 	textureStage_t		defaultNormalLitTextureStage;
 	textureStage_t		defaultSpecularLitTextureStage;
+
+	bool				hasReflections;
 
 	// This texture contains virtualPageOffsets.
 	idImage				*virtualPageOffsetsImage;

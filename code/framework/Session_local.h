@@ -129,6 +129,10 @@ public:
 
 	virtual const char *GetCurrentMapName();
 
+// jmarshall
+	virtual void	RunSessionTic(void);
+// jmarshall end
+
 	//=====================================
 
 	int					GetLocalClientNum();

@@ -44,16 +44,16 @@ If you have questions concerning this license or the applicable additional terms
 // Win32
 #if defined(WIN32) || defined(_WIN32)
 
-#define	BUILD_STRING					"win-x86"
+#define	BUILD_STRING					"win-x64"
 #define BUILD_OS_ID						0
-#define	CPUSTRING						"x86"
+#define	CPUSTRING						"x64"
 #define CPU_EASYARGS					1
 
 #define ALIGN( x, a ) ( ( ( x ) + ((a)-1) ) & ~((a)-1) )
 #define ALIGN16( x )					__declspec(align(16)) x
 #define PACKED
 
-#define _alloca16( x )					((void *)((((int)_alloca( (x)+15 )) + 15) & ~15))
+#define _alloca16( x )					((void *)((((intptr_t)_alloca( (x)+15 )) + 15) & ~15))
 
 #define PATHSEPERATOR_STR				"\\"
 #define PATHSEPERATOR_CHAR				'\\'
@@ -151,13 +151,16 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifdef __GNUC__
 #define id_attribute(x) __attribute__(x)
+#define ALIGN16( x )					__declspec(align(16)) x
+#define ALIGNTYPE16						__declspec(align(16))
+#define ALIGNTYPE128					__declspec(align(128))
 #else
-#define id_attribute(x)  
+#define id_attribute(x)
+#define ALIGN16( x )					__declspec(align(16)) x
+#define ALIGNTYPE16						__declspec(align(16))
+#define ALIGNTYPE128					__declspec(align(128))
 #endif
 
-#define ALIGN16( x )					x __attribute__ ((aligned (16)))
-#define ALIGNTYPE16						__attribute__ ((aligned (16)))
-#define ALIGNTYPE128					__attribute__ ((aligned (128)))
 
 #define MAX_TYPE( x )			( ( ( ( 1 << ( ( sizeof( x ) - 1 ) * 8 - 1 ) ) - 1 ) << 8 ) | 255 )
 #define MIN_TYPE( x )			( - MAX_TYPE( x ) - 1 )
@@ -446,6 +449,9 @@ typedef enum {
 	NA_BAD,					// an address lookup failed
 	NA_LOOPBACK,
 	NA_BROADCAST,
+// jmarshall
+	NA_BOT,
+// jmarshall end
 	NA_IP
 } netadrtype_t;
 
@@ -543,10 +549,10 @@ public:
 	virtual bool			LockMemory( void *ptr, int bytes ) = 0;
 	virtual bool			UnlockMemory( void *ptr, int bytes ) = 0;
 
-	//virtual void			GetCallStack( address_t *callStack, const int callStackSize ) = 0;
-	//virtual const char *	GetCallStackStr( const address_t *callStack, const int callStackSize ) = 0;
-	//virtual const char *	GetCallStackCurStr( int depth ) = 0;
-	//virtual void			ShutdownSymbols( void ) = 0;
+	virtual void			GetCallStack( address_t *callStack, const int callStackSize ) = 0;
+	virtual const char *	GetCallStackStr( const address_t *callStack, const int callStackSize ) = 0;
+	virtual const char *	GetCallStackCurStr( int depth ) = 0;
+	virtual void			ShutdownSymbols( void ) = 0;
 
 	virtual void *			DLL_Load( const char *dllName ) = 0;
 	virtual void *			DLL_GetProcAddress( void *dllHandle, const char *procName ) = 0;

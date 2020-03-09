@@ -39,6 +39,8 @@ entityDef weapon_rocketlauncher {
 	"editor_maxs"				"16 16 32"
 	"editor_usage"				"Rocket Launcher"
 	"editor_rotatable"			"1"
+	
+	"modelindex"				"MODELINDEX_ROCKETLAUNCHER"
 
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"

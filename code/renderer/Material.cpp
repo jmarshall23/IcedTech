@@ -81,6 +81,7 @@ void idMaterial::CommonInit() {
 	surfaceFlags = SURFTYPE_NONE;
 	materialFlags = 0;
 	inlineCollision = false;
+	hasReflections = false;
 	sort = SS_BAD;
 	coverage = MC_BAD;
 	cullType = CT_FRONT_SIDED;
@@ -2014,6 +2015,10 @@ void idMaterial::ParseMaterial( idLexer &src ) {
 		}
 		else if (!token.Icmp("inlineCollision")) {
 			inlineCollision = true;
+			continue;
+		}
+		else if (!token.Icmp("reflections")) {
+			hasReflections = true;
 			continue;
 		}
 		// polygonOffset

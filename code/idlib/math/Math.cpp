@@ -132,3 +132,15 @@ float idMath::BitsToFloat( int i, int exponentBits, int mantissaBits ) {
 	value = sign << IEEE_FLT_SIGN_BIT | ( exponent + IEEE_FLT_EXPONENT_BIAS ) << IEEE_FLT_MANTISSA_BITS | mantissa;
 	return *reinterpret_cast<float *>(&value);
 }
+
+// jmarshall
+/*
+===================
+idMath::Distance
+===================
+*/
+float idMath::Distance(idVec3 p1, idVec3 p2) {
+	idVec3 v = p2 - p1;
+	return v.Length();
+}
+// jmarshall end

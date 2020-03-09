@@ -33,6 +33,8 @@ entityDef weapon_chaingun {
 	"editor_maxs"				"16 16 32"
 	"editor_usage"				"Chaingun"
 	"editor_rotatable"			"1"
+	
+	"modelindex"				"MODELINDEX_MACHINEGUN"
 
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"

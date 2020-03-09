@@ -1,7 +1,6 @@
 ﻿# CMakeList.txt : CMake project for Darklight, include source and define
 # project specific logic here.
 #
-#set(CMAKE_VERBOSE_MAKEFILE ON)
 cmake_minimum_required (VERSION 3.8)
 
 include( PrecompiledHeader.cmake )
@@ -9,9 +8,13 @@ project(Darklight)
 
 set(CMAKE_CXX_FLAGS "")
 
+#Check to see if we are wanting a SDK project or a full engine project
+Message("${CMAKE_CURRENT_SOURCE_DIR}/full_sdk_license.txt")#
+
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # idLib files
 if(WIN32)
@@ -129,18 +132,8 @@ if(WIN32)
 	./idlib/math/Rotation.h
 	./idlib/math/Simd.cpp
 	./idlib/math/Simd.h
-	./idlib/math/Simd_3DNow.cpp
-	./idlib/math/Simd_3DNow.h
 	./idlib/math/Simd_Generic.cpp
 	./idlib/math/Simd_Generic.h
-	./idlib/math/Simd_MMX.cpp
-	./idlib/math/Simd_MMX.h
-	./idlib/math/Simd_SSE.cpp
-	./idlib/math/Simd_SSE.h
-	./idlib/math/Simd_SSE2.cpp
-	./idlib/math/Simd_SSE2.h
-	./idlib/math/Simd_SSE3.cpp
-	./idlib/math/Simd_SSE3.h
 	./idlib/math/Vector.cpp
 	./idlib/math/Vector.h
 	)
@@ -260,18 +253,8 @@ else() #linux
 	./idlib/math/Rotation.h
 	./idlib/math/Simd.cpp
 	./idlib/math/Simd.h
-	./idlib/math/Simd_3DNow.cpp
-	./idlib/math/Simd_3DNow.h
 	./idlib/math/Simd_Generic.cpp
 	./idlib/math/Simd_Generic.h
-	./idlib/math/Simd_MMX.cpp
-	./idlib/math/Simd_MMX.h
-	./idlib/math/Simd_SSE.cpp
-	./idlib/math/Simd_SSE.h
-	./idlib/math/Simd_SSE2.cpp
-	./idlib/math/Simd_SSE2.h
-	./idlib/math/Simd_SSE3.cpp
-	./idlib/math/Simd_SSE3.h
 	./idlib/math/Vector.cpp
 	./idlib/math/Vector.h
 	)
@@ -281,13 +264,32 @@ endif()
 set(src_game
 	./game/Game_precompiled.cpp
 	./game/Game_precompiled.h
+	./game/bot/bot.cpp
+	./game/bot/bot_input.cpp
+	./game/bot/bot_char.cpp
+	./game/bot/bot_char.h
+	./game/bot/bot_goal.cpp
+	./game/bot/bot_goal.h
+	./game/bot/bot_weights.cpp
+	./game/bot/bot_weights.h
+	./game/bot/bot_weapons.cpp
+	./game/bot/bot_weapons.h
+	./game/bot/bot.h
+	./game/bot/botai/BotAI.cpp
+	./game/bot/botai/BotAI_respawn.cpp
+	./game/bot/botai/BotAI_SeekLTG.cpp
+	./game/bot/botai/BotAI.h
+	./game/ReflectionProbe.cpp
+	./game/ReflectionProbe.h
+	./game/game_navigation.cpp
+	./game/Game_precompiled.cpp
+	./game/Game_precompiled.h
 	./game/Actor.cpp
 	./game/Actor.h
 	./game/AF.cpp
 	./game/AF.h
 	./game/AFEntity.cpp
 	./game/AFEntity.h
-	./game/ai
 	./game/anim
 	./game/BrittleFracture.cpp
 	./game/BrittleFracture.h
@@ -348,17 +350,6 @@ set(src_game
 	./game/weapons
 	./game/WorldSpawn.cpp
 	./game/WorldSpawn.h
-	./game/ai/AAS.cpp
-	./game/ai/AAS.h
-	./game/ai/AAS_debug.cpp
-	./game/ai/AAS_local.h
-	./game/ai/AAS_pathing.cpp
-	./game/ai/AAS_routing.cpp
-	./game/ai/AI.cpp
-	./game/ai/AI.h
-	./game/ai/AI_events.cpp
-	./game/ai/AI_pathing.cpp
-	./game/ai/AI_Vagary.cpp
 	./game/anim/Anim.cpp
 	./game/anim/Anim.h
 	./game/anim/Anim_Blend.cpp
@@ -445,7 +436,7 @@ set(src_game
 
 #Global Cmake Options
 if(WIN32)
-	add_definitions(-D_AFXDLL -D_USE_32BIT_TIME_T -D_WINDOWS -D_CRT_SECURE_NO_DEPRECATE)
+	add_definitions(-D_AFXDLL -D_WINDOWS -D_CRT_SECURE_NO_DEPRECATE)
 else()
 	#C and C++ flags
 	set(CMAKE_C_FLAGS_DEBUG "-ggdb -D_DEBUG -O0 -fno-strict-aliasing -Woverloaded-virtual")
@@ -484,11 +475,11 @@ endif()
 add_library(game MODULE  ${src_game} )
 target_compile_definitions(game PRIVATE GAME_DLL=1)
 target_link_libraries(game idLib)
-add_precompiled_header( game ./game/Game_precompiled.h  SOURCE_CXX ./game/Game_precompiled.cpp )
+add_precompiled_header( game ./game/game_precompiled.h  SOURCE_CXX ./game/game_precompiled.cpp )
 target_include_directories(game PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/game/")
 
 if(WIN32)
-	set_target_properties(game PROPERTIES OUTPUT_NAME "gamex86" LINK_FLAGS "/PDB:\"Game.pdb\"")
+	set_target_properties(game PROPERTIES OUTPUT_NAME "gamex64" LINK_FLAGS "/PDB:\"Game.pdb\"")
 else()
 	set_target_properties(game PROPERTIES #POSITION_INDEPENDENT_CODE ON #turn on -fPIC
 			OUTPUT_NAME "gamex64" # set game dll name
@@ -508,6 +499,5 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/full_sdk_license.txt")
 	Message("Including Engine...")
 	include( DarkEngine.cmake )
 endif()
-
 
 Message("Generated Projects.")

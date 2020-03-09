@@ -2142,3 +2142,34 @@ const idMaterial *R_RemapShaderBySkin( const idMaterial *shader, const idDeclSki
 
 	return skin->RemapShaderBySkin( shader );
 }
+
+/*
+===============
+idRenderWorldLocal::AddReflectionProbe
+===============
+*/
+int idRenderWorldLocal::AddReflectionProbe(rvmWorldReflectionProbe_t& probe) {
+	int reflectionProbeIndex = reflectionProbes.Num();
+	
+	// Add the new reflection probe to the list.
+	reflectionProbes.Append(probe);
+
+	for (int i = 0; i < numPortalAreas; i++) {
+		idRenderModel* model = renderModelManager->FindModel(va("_area%i", i));
+
+		for (int d = 0; d < model->NumSurfaces(); d++)
+		{
+			modelSurface_t* surface = (modelSurface_t*)model->Surface(d);
+
+			idVec3 center = surface->geometry->bounds.GetCenter();
+			float dist = idMath::Distance(probe.origin, center);
+
+			if(surface->geometry->reflectionProbeDist == 0 || dist < surface->geometry->reflectionProbeDist) {
+				surface->geometry->reflectionProbeDist = dist;
+				surface->geometry->reflectionCaptureImage = reflectionProbes[reflectionProbeIndex].reflectionCaptureImage;
+			}
+		}
+	}
+
+	return reflectionProbeIndex;
+}

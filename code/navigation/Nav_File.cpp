@@ -1,10 +1,20 @@
 // NavFile.cpp
 //
 
-#include "Engine_precompiled.h"
+#include "engine_precompiled.h"
 #include "Nav_local.h"
 
 idCVar nav_dumpobj("nav_dumpobj", "0", CVAR_BOOL, "writes a obj represenation of the navmesh");
+
+idVec3 NavConvertCoordsToDoom(idVec3 pt) {
+	idVec3 v = idVec3(pt.x, pt.y, pt.z) * idAngles(0, 0, -90).ToMat3();
+	return v;
+}
+
+idVec3 ConvertNavToDoomCoords(idVec3 pt) {
+	idVec3 v = idVec3(pt.x, pt.y, pt.z) * idAngles(0, 0, 90).ToMat3();
+	return v;
+}
 
 /*
 ===================
@@ -35,14 +45,70 @@ rvmNavFileLocal::~rvmNavFileLocal() {
 rvmNavFileLocal::GetRandomPointNearPosition
 ===================
 */
-void rvmNavFileLocal::GetRandomPointNearPosition(idVec3 point, idVec3 &randomPoint) {
-	//m_navquery->queryPolygons()
-	//const dtMeshTile *meshTile = m_navMesh-
-	//bool posOverPoly;
-	//
-	//dtPolyRef polyRef = m_navMesh->getPolyRefBase(meshTile);
-	//
-	//m_navquery->closestPointOnPoly(polyRef, point.ToFloatPtr(), randomPoint.ToFloatPtr(), &posOverPoly);
+void rvmNavFileLocal::GetRandomPointNearPosition(idVec3 point, idVec3 &randomPoint, float radius) {
+	idVec3 extents = idVec3(280, 480, 280);
+	dtQueryFilter filter;
+	dtPolyRef polyRef;
+	idVec3 nearestPoint;
+
+	m_navquery->findNearestPoly(NavConvertCoordsToDoom(point).ToFloatPtr(), extents.ToFloatPtr(), &filter, &polyRef, nearestPoint.ToFloatPtr());
+
+	dtPolyRef randomPolyRef;
+	m_navquery->findRandomPointAroundCircle(polyRef, point.ToFloatPtr(), radius, &filter, idMath::FRand, &randomPolyRef, randomPoint.ToFloatPtr());
+	randomPoint = ConvertNavToDoomCoords(randomPoint);
+}
+
+/*
+===================
+rvmNavFileLocal::GetPathBetweenPoints
+===================
+*/
+bool rvmNavFileLocal::GetPathBetweenPoints(const idVec3 p1, const idVec3 p2, idList<idVec3>& waypoints) {
+	idVec3 extents = idVec3(280, 480, 280);
+	
+	dtQueryFilter filter;
+	dtPolyRef startPolyRef, endPolyRef;
+	idVec3 startNearestPt, endNearestPt;
+
+	m_navquery->findNearestPoly(NavConvertCoordsToDoom(p1).ToFloatPtr(), extents.ToFloatPtr(), &filter, &startPolyRef, startNearestPt.ToFloatPtr());
+	m_navquery->findNearestPoly(NavConvertCoordsToDoom(p2).ToFloatPtr(), extents.ToFloatPtr(), &filter, &endPolyRef, endNearestPt.ToFloatPtr());
+
+	
+	dtPolyRef path[NAV_MAX_PATHSTEPS];
+	int numPaths = -1;
+	m_navquery->findPath(startPolyRef, endPolyRef, NavConvertCoordsToDoom(p1).ToFloatPtr(), NavConvertCoordsToDoom(p2).ToFloatPtr(), &filter, &path[0], &numPaths, NAV_MAX_PATHSTEPS);
+
+	if (numPaths <= 0)
+		return false;
+
+	waypoints.Clear();
+
+	for (int i = 0; i < numPaths; i++)
+	{
+		idVec3 origin;
+		bool ignored;
+
+		const dtMeshTile* meshTile;
+		const dtPoly* meshPoly;
+
+		m_navMesh->getTileAndPolyByRef(path[i], &meshTile, &meshPoly);
+
+		idBounds polyBounds;
+		polyBounds.Clear();
+		
+		for (int i = 0; i < meshPoly->vertCount; i++)
+		{
+			idVec3 vertex(meshTile->verts[(meshPoly->verts[i] * 3) + 0], meshTile->verts[(meshPoly->verts[i] * 3) + 1], meshTile->verts[(meshPoly->verts[i] * 3) + 2]);
+			polyBounds.AddPoint(vertex);
+		}
+
+		m_navquery->closestPointOnPoly(path[i], polyBounds.GetCenter().ToFloatPtr(), origin.ToFloatPtr(), &ignored);
+		waypoints.Append(ConvertNavToDoomCoords(origin));
+	}
+
+	waypoints.Append(p2);
+
+	return true;
 }
 
 /*
@@ -66,25 +132,37 @@ bool rvmNavFileLocal::LoadFromFile(void) {
 		return false;
 	}
 	
-	idTempArray<byte> navData(header.blobLength);
-	file->Read(navData.Ptr(), header.blobLength);
-	
 	m_navMesh = dtAllocNavMesh();
 	if (!m_navMesh)
 	{
-		common->FatalError("Could not create Detour navmesh");
 		return false;
 	}
-	
-	dtStatus status;
-	
-	status = m_navMesh->init(navData.Ptr(), header.blobLength, DT_TILE_FREE_DATA);
+
+	dtNavMeshParams params;
+	file->Read(&params, sizeof(dtNavMeshParams));
+
+	dtStatus status = m_navMesh->init(&params);
 	if (dtStatusFailed(status))
 	{
-		common->FatalError("Could not init Detour navmesh");
 		return false;
 	}
-	
+
+	// Read tiles.
+	for (int i = 0; i < header.numTiles; ++i)
+	{
+		NavMeshTileHeader tileHeader;
+		file->Read(&tileHeader, sizeof(NavMeshTileHeader));
+		
+		if (!tileHeader.tileRef || !tileHeader.dataSize)
+			break;
+
+		unsigned char* data = (unsigned char*)dtAlloc(tileHeader.dataSize, DT_ALLOC_PERM);
+		if (!data) break;
+		memset(data, 0, tileHeader.dataSize);
+		file->Read(data, tileHeader.dataSize);
+		m_navMesh->addTile(data, tileHeader.dataSize, DT_TILE_FREE_DATA, tileHeader.tileRef, 0);
+	}
+
 	m_navquery = dtAllocNavMeshQuery();
 	status = m_navquery->init(m_navMesh, 2048);
 	if (dtStatusFailed(status))
@@ -138,9 +216,8 @@ void rvmNavFileLocal::WriteNavToOBJ(const char *name, rcPolyMeshDetail *mesh) {
 rvmNavFileLocal::WriteNavFile
 ===================
 */
-void rvmNavFileLocal::WriteNavFile(const char *name, rcPolyMesh *mesh, rcPolyMeshDetail *detailMesh, int mapCRC) {
+void rvmNavFileLocal::WriteNavFile(const char *name, rcPolyMesh *mesh, rcPolyMeshDetail *detailMesh, int mapCRC, const idDeclEntityDef* botNavDecl) {
 	idStr navFileName;
-	navFileName = "maps/";
 	navFileName += name;
 	navFileHeader_t header;
 
@@ -152,7 +229,7 @@ void rvmNavFileLocal::WriteNavFile(const char *name, rcPolyMesh *mesh, rcPolyMes
 	}
 
 	// Open the nav file for writing.
-	idFileScoped file(fileSystem->OpenFileWrite(navFileName));
+	idFileScoped file(fileSystem->OpenFileWrite(navFileName, "fs_basepath"));
 
 	// Fill in the header.
 	header.version = NAV_FILE_VERSION;
@@ -180,14 +257,14 @@ void rvmNavFileLocal::WriteNavFile(const char *name, rcPolyMesh *mesh, rcPolyMes
 	//params.offMeshConFlags = m_geom->getOffMeshConnectionFlags();
 	//params.offMeshConUserID = m_geom->getOffMeshConnectionId();
 	//params.offMeshConCount = m_geom->getOffMeshConnectionCount();
-	params.walkableHeight = m_agentHeight;
-	params.walkableRadius = m_agentRadius;
-	params.walkableClimb = m_agentMaxClimb;
+	params.walkableHeight = BOT_GET_VALUE(m_agentHeight);
+	params.walkableRadius = BOT_GET_VALUE(m_agentRadius);
+	params.walkableClimb = BOT_GET_VALUE(m_agentMaxClimb);
 	rcVcopy(params.bmin, mesh->bmin);
 	rcVcopy(params.bmax, mesh->bmax);
-	params.cs = m_cellSize;
-	params.ch = m_cellHeight;
-	params.buildBvTree = true;
+	params.cs = BOT_GET_VALUE(m_cellSize);
+	params.ch = BOT_GET_VALUE(m_cellHeight);
+	params.buildBvTree = false;
 
 	unsigned char* navData = 0;
 	int navDataSize = 0;
@@ -198,11 +275,46 @@ void rvmNavFileLocal::WriteNavFile(const char *name, rcPolyMesh *mesh, rcPolyMes
 		return;
 	}
 
-	header.blobLength = navDataSize;
+	dtNavMesh* dtmesh = dtAllocNavMesh();
+	if (!mesh)
+	{
+		common->FatalError("Could not create Detour navmesh");
+		return;
+	}
+
+	dtStatus status;
+
+	status = dtmesh->init(navData, navDataSize, DT_TILE_FREE_DATA);
+	if (dtStatusFailed(status))
+	{
+		common->FatalError("Could not init Detour navmesh");
+		return;
+	}
+
+	header.numTiles = 0;
+	for (int i = 0; i < dtmesh->getMaxTiles(); ++i)
+	{
+		const dtMeshTile* tile = dtmesh->getTile(i);
+		if (!tile || !tile->header || !tile->dataSize) continue;
+		header.numTiles++;
+	}
 
 	// Write out the header.
 	file->Write(&header, sizeof(navFileHeader_t));
 
-	// Write out the nav data.
-	file->Write(navData, navDataSize);
+	file->Write(dtmesh->getParams(), sizeof(dtNavMeshParams));
+
+	// Store tiles.
+	for (int i = 0; i < dtmesh->getMaxTiles(); ++i)
+	{
+		const dtMeshTile* tile = dtmesh->getTile(i);
+		if (!tile || !tile->header || !tile->dataSize) continue;
+
+		NavMeshTileHeader tileHeader;
+		tileHeader.tileRef = dtmesh->getTileRef(tile);
+		tileHeader.dataSize = tile->dataSize;
+		file->Write(&tileHeader, sizeof(tileHeader));
+
+		file->Write(tile->data, tile->dataSize);
+	};
 }

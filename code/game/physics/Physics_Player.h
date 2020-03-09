@@ -98,6 +98,11 @@ public:
 	bool					OnLadder( void ) const;
 	const idVec3 &			PlayerGetOrigin( void ) const;	// != GetOrigin
 
+// jmarshall
+	bool					IsGrounded(void) const { return groundPlane; }
+	const idVec3&			GetGroundNormal(void) const { return groundTrace.c.normal; }
+// jmarshall end
+
 public:	// common physics interface
 	bool					Evaluate( int timeStepMSec, int endTimeMSec );
 	void					UpdateTime( int endTimeMSec );

@@ -288,6 +288,10 @@ void idItem::Spawn( void ) {
 		GetPhysics()->SetContents( CONTENTS_TRIGGER );
 	}
 
+// jmarshall
+	modelindex = gameLocal.GetBotItemEntry(spawnArgs.GetString("modelindex"));
+// jmarshall end
+
 	giveTo = spawnArgs.GetString( "owner" );
 	if ( giveTo.Length() ) {
 		ent = gameLocal.FindEntity( giveTo );

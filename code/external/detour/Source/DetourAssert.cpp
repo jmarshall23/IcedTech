@@ -16,7 +16,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-#include "DetourAssert.h"
+#include "../include/DetourAssert.h"
 
 #ifndef NDEBUG
 

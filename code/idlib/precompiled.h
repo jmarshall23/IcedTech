@@ -52,12 +52,12 @@ If you have questions concerning this license or the applicable additional terms
 #define	WIN32_LEAN_AND_MEAN
 #else
 // non-dedicated includes MFC and sets windows version here
-#include <tools/comafx/StdAfx.h>			// this will go away when MFC goes away
+#include "../tools/comafx/StdAfx.h"			// this will go away when MFC goes away
 #endif
 
 #else
 
-#include <tools/comafx/StdAfx.h>
+#include "../tools/comafx/StdAfx.h"
 
 #endif
 
@@ -110,6 +110,10 @@ If you have questions concerning this license or the applicable additional terms
 #include <sys/sys_public.h>
 #include <sys/sys_threading.h>
 #include <sys/sys_intrinsics.h>
+
+#ifdef _WIN32
+#include "../sys/win32/win_x64.h"
+#endif
 
 // id lib
 #include <idlib/Lib.h>
@@ -168,10 +172,6 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 
 // collision detection system
 #include <cm/CollisionModel.h>
-
-// AAS files and manager
-#include <tools/compilers/aas/AASFile.h>
-#include <tools/compilers/aas/AASFileManager.h>
 
 // game
 #if defined(_D3XP)

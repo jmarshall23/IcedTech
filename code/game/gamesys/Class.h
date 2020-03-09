@@ -197,6 +197,14 @@ public:
 	const char *				GetSuperclass( void ) const;
 	void						FindUninitializedMemory( void );
 
+// jmarshall
+	template< typename T >
+	T* Cast(void) { return this ? (IsType(T::Type) ? static_cast<T*>(this) : NULL) : NULL; }
+
+	template< typename T >
+	const T* Cast(void) const { return this ? (IsType(T::Type) ? static_cast<const T*>(this) : NULL) : NULL; }
+// jmarshall end
+
 	void						Save( idSaveGame *savefile ) const {};
 	void						Restore( idRestoreGame *savefile ) {};
 
@@ -232,7 +240,7 @@ public:
 	bool						ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7 );
 	bool						ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7, idEventArg arg8 );
 
-	bool						ProcessEventArgPtr( const idEventDef *ev, intptr_t *data );
+	bool						ProcessEventArgPtr( const idEventDef *ev, intptr_t*data );
 	void						CancelEvents( const idEventDef *ev );
 
 	void						Event_Remove( void );

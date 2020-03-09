@@ -20,9 +20,9 @@
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include "Recast.h"
-#include "RecastAlloc.h"
-#include "RecastAssert.h"
+#include "../include/Recast.h"
+#include "../include/RecastAlloc.h"
+#include "../include/RecastAssert.h"
 
 struct rcEdge
 {

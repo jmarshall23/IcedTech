@@ -97,9 +97,10 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	result.texcoord4.y = dot4( vertex.texcoord.xy, rpDiffuseMatrixT );
 
 	//# textures 5 takes the base coordinates by the texture matrix
-	result.texcoord5 = defaultTexCoord;
-	result.texcoord5.x = dot4( vertex.texcoord.xy, rpSpecularMatrixS );
-	result.texcoord5.y = dot4( vertex.texcoord.xy, rpSpecularMatrixT );
+	result.texcoord4.z = dot4( vertex.texcoord.xy, rpSpecularMatrixS );
+	result.texcoord4.w = dot4( vertex.texcoord.xy, rpSpecularMatrixT );
+	
+	result.texcoord5.xyz = vertex.position.xyz;
 
 	//# texture 6's texcoords will be the halfangle in texture space
 

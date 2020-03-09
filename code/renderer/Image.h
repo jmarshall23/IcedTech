@@ -313,6 +313,7 @@ public:
 // jmarshall: arb program images that need to be deprecated
 	idImage *			ambientNormalMap; 
 	idImage *			normalCubeMapImage;
+	idImage	*			blackCubeMapImage;
 	idImage *			specularTableImage;
 	idImage *			specular2DTableImage;
 	idImage *			borderClampImage;			// white inside, black outside

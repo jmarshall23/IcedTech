@@ -102,6 +102,15 @@ void idGameLocal::ResizeRenderTextures(int width, int height) {
 
 /*
 ====================
+idGameLocal::ResetGameRenderTargets
+====================
+*/
+void idGameLocal::ResetGameRenderTargets(void) {
+	ResizeRenderTextures(renderSystem->GetScreenWidth(), renderSystem->GetScreenHeight());
+}
+
+/*
+====================
 idGameLocal::RenderScene
 ====================
 */
@@ -155,11 +164,14 @@ void idGameLocal::RenderScene(const renderView_t *view, idRenderWorld *renderWor
 	// Resolve our MSAA buffer.
 	renderSystem->ResolveMSAA(gameRender.forwardRenderPassRT, gameRender.forwardRenderPassResolvedRT);
 
-	// Render to the back buffer.
-	renderSystem->DrawStretchPic(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f, 1.0f, 0.0f, gameRender.noPostProcessMaterial);
+	if (!view->skipPostProcess)
+	{
+		// Render to the back buffer.
+		renderSystem->DrawStretchPic(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f, 1.0f, 0.0f, gameRender.noPostProcessMaterial);
 
-	// Copy everything to _currentRender
-	renderSystem->CaptureRenderToImage("_currentRender");
+		// Copy everything to _currentRender
+		renderSystem->CaptureRenderToImage("_currentRender");
+	}
 
 	gameRender.feedbackBufferId = !gameRender.feedbackBufferId;
 }

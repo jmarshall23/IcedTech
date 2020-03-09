@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).
+This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -145,7 +145,7 @@ idCVar r_testGammaBias( "r_testGammaBias", "0", CVAR_RENDERER | CVAR_FLOAT, "if 
 idCVar r_testStepGamma( "r_testStepGamma", "0", CVAR_RENDERER | CVAR_FLOAT, "if > 0 draw a grid pattern to test gamma levels" );
 idCVar r_lightScale( "r_lightScale", "2", CVAR_RENDERER | CVAR_FLOAT, "all light intensities are multiplied by this" );
 idCVar r_lightSourceRadius( "r_lightSourceRadius", "0", CVAR_RENDERER | CVAR_FLOAT, "for soft-shadow sampling" );
-idCVar r_flareSize( "r_flareSize", "1", CVAR_RENDERER | CVAR_FLOAT, "scale the flare deforms from the material def" );
+idCVar r_flareSize( "r_flareSize", "1", CVAR_RENDERER | CVAR_FLOAT, "scale the flare deforms from the material def" ); 
 
 idCVar r_useExternalShadows( "r_useExternalShadows", "1", CVAR_RENDERER | CVAR_INTEGER, "1 = skip drawing caps when outside the light volume, 2 = force to no caps for testing", 0, 2, idCmdSystem::ArgCompletion_Integer<0,2> );
 idCVar r_useOptimizedShadows( "r_useOptimizedShadows", "1", CVAR_RENDERER | CVAR_BOOL, "use the dmap generated static shadow volumes" );
@@ -211,7 +211,7 @@ idCVar r_showSkel( "r_showSkel", "0", CVAR_RENDERER | CVAR_INTEGER, "draw the sk
 idCVar r_jointNameScale( "r_jointNameScale", "0.02", CVAR_RENDERER | CVAR_FLOAT, "size of joint names when r_showskel is set to 1" );
 idCVar r_jointNameOffset( "r_jointNameOffset", "0.5", CVAR_RENDERER | CVAR_FLOAT, "offset of joint names when r_showskel is set to 1" );
 
-idCVar r_cgVertexProfile( "r_cgVertexProfile", "best", CVAR_RENDERER | CVAR_ARCHIVE, "arbvp1, vp20, vp30" );
+idCVar r_cgVertexProfile( "r_cgVertexProfile", "best", CVAR_RENDERER | CVAR_ARCHIVE, "arbvp1, vp20, vp30" );     
 idCVar r_cgFragmentProfile( "r_cgFragmentProfile", "best", CVAR_RENDERER | CVAR_ARCHIVE, "arbfp1, fp30" );
 
 idCVar r_debugLineDepthTest( "r_debugLineDepthTest", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "perform depth test on debug lines" );
@@ -586,7 +586,7 @@ void R_InitOpenGL( void ) {
 
 	glConfig.isInitialized = true;
 
-	// recheck all the extensions
+	// recheck all the extensions (FIXME: this might be dangerous)
 	R_CheckPortableExtensions();
 
 	renderProgManager.Init();
@@ -1267,91 +1267,6 @@ void R_StencilShot( void ) {
 	Mem_Free( byteBuffer );	
 }
 
-/* 
-================== 
-R_EnvShot_f
-
-envshot <basename>
-
-Saves out env/<basename>_ft.tga, etc
-================== 
-*/  
-void R_EnvShot_f( const idCmdArgs &args ) {
-	idStr		fullname;
-	const char	*baseName;
-	int			i;
-	idMat3		axis[6];
-	renderView_t	ref;
-	viewDef_t	primary;
-	int			blends;
-	const char	*extensions[6] =  { "_px.tga", "_nx.tga", "_py.tga", "_ny.tga",
-		"_pz.tga", "_nz.tga" };
-	int			size;
-
-	if ( args.Argc() != 2 && args.Argc() != 3 && args.Argc() != 4 ) {
-		common->Printf( "USAGE: envshot <basename> [size] [blends]\n" );
-		return;
-	}
-	baseName = args.Argv( 1 );
-
-	blends = 1;
-	if ( args.Argc() == 4 ) {
-		size = atoi( args.Argv( 2 ) );
-		blends = atoi( args.Argv( 3 ) );
-	} else if ( args.Argc() == 3 ) {
-		size = atoi( args.Argv( 2 ) );
-		blends = 1;
-	} else {
-		size = 256;
-		blends = 1;
-	}
-
-	if ( !tr.primaryView ) {
-		common->Printf( "No primary view.\n" );
-		return;
-	}
-
-	primary = *tr.primaryView;
-
-	memset( &axis, 0, sizeof( axis ) );
-	axis[0][0][0] = 1;
-	axis[0][1][2] = 1;
-	axis[0][2][1] = 1;
-
-	axis[1][0][0] = -1;
-	axis[1][1][2] = -1;
-	axis[1][2][1] = 1;
-
-	axis[2][0][1] = 1;
-	axis[2][1][0] = -1;
-	axis[2][2][2] = -1;
-
-	axis[3][0][1] = -1;
-	axis[3][1][0] = -1;
-	axis[3][2][2] = 1;
-
-	axis[4][0][2] = 1;
-	axis[4][1][0] = -1;
-	axis[4][2][1] = 1;
-
-	axis[5][0][2] = -1;
-	axis[5][1][0] = 1;
-	axis[5][2][1] = 1;
-
-	for ( i = 0 ; i < 6 ; i++ ) {
-		ref = primary.renderView;
-		ref.x = ref.y = 0;
-		ref.fov_x = ref.fov_y = 90;
-		ref.width = glConfig.vidWidth;
-		ref.height = glConfig.vidHeight;
-		ref.viewaxis = axis[i];
-		sprintf( fullname, "env/%s%s", baseName, extensions[i] );
-		tr.TakeScreenshot( size, size, fullname, blends, &ref );
-	}
-
-	common->Printf( "Wrote %s, etc\n", fullname.c_str() );
-} 
-
 //============================================================================
 
 static idMat3		cubeAxis[6];
@@ -1883,7 +1798,6 @@ void R_InitCommands( void ) {
 	cmdSystem->AddCommand( "listGuis", R_ListGuis_f, CMD_FL_RENDERER, "lists guis" );
 	cmdSystem->AddCommand( "touchGui", R_TouchGui_f, CMD_FL_RENDERER, "touches a gui" );
 	cmdSystem->AddCommand( "screenshot", R_ScreenShot_f, CMD_FL_RENDERER, "takes a screenshot" );
-	cmdSystem->AddCommand( "envshot", R_EnvShot_f, CMD_FL_RENDERER, "takes an environment shot" );
 	cmdSystem->AddCommand( "makeAmbientMap", R_MakeAmbientMap_f, CMD_FL_RENDERER|CMD_FL_CHEAT, "makes an ambient map" );
 	cmdSystem->AddCommand( "benchmark", R_Benchmark_f, CMD_FL_RENDERER, "benchmark" );
 	cmdSystem->AddCommand( "gfxInfo", GfxInfo_f, CMD_FL_RENDERER, "show graphics info" );

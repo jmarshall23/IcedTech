@@ -2950,6 +2950,37 @@ int idParser::Parse1DMatrix( int x, float *m ) {
 
 /*
 ================
+idParser::Parse1DMatrixLegacy
+================
+*/
+// jmarshall
+int idParser::Parse1DMatrixLegacy(int x, float* m) {
+	int i;
+
+	if (!idParser::ExpectTokenString("{")) {
+		return false;
+	}
+
+	for (i = 0; i < x; i++) {
+		m[i] = idParser::ParseFloat();
+
+		if (i < x - 1)
+		{
+			if (!idParser::ExpectTokenString(",")) {
+				return false;
+			}
+		}
+	}
+
+	if (!idParser::ExpectTokenString("}")) {
+		return false;
+	}
+	return true;
+}
+// jmarshall end
+
+/*
+================
 idParser::Parse2DMatrix
 ================
 */

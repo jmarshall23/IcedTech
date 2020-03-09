@@ -30,6 +30,8 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "NetworkSystem.h"
+#include "AsyncServer.h"
+#include "AsyncNetwork.h"
 
 idNetworkSystem		networkSystemLocal;
 idNetworkSystem *	networkSystem = &networkSystemLocal;
@@ -212,4 +214,31 @@ float idNetworkSystem::ClientGetIncomingPacketLoss( void ) {
 		return idAsyncNetwork::client.GetIncomingPacketLoss();
 	}
 	return 0.0f;
+}
+
+/*
+==================
+idNetworkSystem::AllocateClientSlotForBot
+==================
+*/
+int idNetworkSystem::AllocateClientSlotForBot(int maxPlayersOnServer) {
+	return idAsyncNetwork::server.AllocOpenClientSlotForAI(maxPlayersOnServer);
+}
+
+/*
+==================
+idNetworkSystem::ServerSetBotUserCommand
+==================
+*/
+int idNetworkSystem::ServerSetBotUserCommand(int clientNum, int frameNum, const usercmd_t& cmd) {
+	return idAsyncNetwork::server.ServerSetBotUserCommand(clientNum, frameNum, cmd);
+}
+
+/*
+==================
+idNetworkSystem::ServerSetBotUserName
+==================
+*/
+int idNetworkSystem::ServerSetBotUserName(int clientNum, const char* playerName) {
+	return 0;
 }

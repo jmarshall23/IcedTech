@@ -1,0 +1,7 @@
+textures/base_floor/clang_floor2
+{
+	qer_editorimage textures/base_floor/clang_floor2
+	bumpmap			textures/base_floor/clang_floor2_normal.png
+	diffusemap		textures/base_floor/clang_floor2.png
+	specularmap		textures/base_floor/clang_floor2_spec.png
+}

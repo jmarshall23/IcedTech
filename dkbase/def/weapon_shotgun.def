@@ -43,6 +43,8 @@ entityDef weapon_shotgun {
 	"editor_maxs"				"16 16 32"
 	"editor_usage"				"Shotgun"
 	"editor_rotatable"		"1"
+	
+	"modelindex"				"MODELINDEX_SHOTGUN"
 
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"

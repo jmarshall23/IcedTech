@@ -30,6 +30,11 @@ set(src_radiant_net
 	tools/radiant.net/Properties/AssemblyInfo.cs
 )
 
+set(src_maya_import 
+	./MayaImport/maya_precompiled.cpp
+	./MayaImport/maya_main.cpp
+)
+
 set(src_tools
 	./tools/tools_precompiled.cpp
 	./tools/af/DialogAF.cpp
@@ -73,19 +78,6 @@ set(src_tools
 	./tools/common/PropTree/PropTreeItemStatic.cpp
 	./tools/common/PropTree/PropTreeList.cpp
 	./tools/common/PropTree/PropTreeView.cpp
-	./tools/compilers/aas/AASBuild.cpp
-	./tools/compilers/aas/AASBuild_file.cpp
-	./tools/compilers/aas/AASBuild_gravity.cpp
-	./tools/compilers/aas/AASBuild_ledge.cpp
-	./tools/compilers/aas/AASBuild_merge.cpp
-	./tools/compilers/aas/AASCluster.cpp
-	./tools/compilers/aas/AASFile.cpp
-	./tools/compilers/aas/AASFileManager.cpp
-	./tools/compilers/aas/AASFile_optimize.cpp
-	./tools/compilers/aas/AASFile_sample.cpp
-	./tools/compilers/aas/AASReach.cpp
-	./tools/compilers/aas/Brush.cpp
-	./tools/compilers/aas/BrushBSP.cpp
 	./tools/compilers/dmap/dmap.cpp
 	./tools/compilers/dmap/facebsp.cpp
 	./tools/compilers/dmap/gldraw.cpp
@@ -105,6 +97,7 @@ set(src_tools
 	./tools/compilers/megagen/MegaProject.cpp
 	./tools/compilers/megalight/MegaLight.cpp
 	./tools/compilers/renderbump/renderbump.cpp
+	./tools/compilers/renderprobes/renderprobes.cpp
 	./tools/compilers/roqvq/codec.cpp
 	./tools/compilers/roqvq/NSBitmapImageRep.cpp
 	./tools/compilers/roqvq/roq.cpp
@@ -269,14 +262,6 @@ set(src_tools
 	./tools/common/PropTree/PropTreeList.h
 	./tools/common/PropTree/PropTreeView.h
 	./tools/compilers/compiler_public.h
-	./tools/compilers/aas/AASBuild_local.h
-	./tools/compilers/aas/AASCluster.h
-	./tools/compilers/aas/AASFile.h
-	./tools/compilers/aas/AASFileManager.h
-	./tools/compilers/aas/AASFile_local.h
-	./tools/compilers/aas/AASReach.h
-	./tools/compilers/aas/Brush.h
-	./tools/compilers/aas/BrushBSP.h
 	./tools/compilers/dmap/dmap.h
 	./tools/compilers/megagen/MegaGen.h
 	./tools/compilers/megalight/MegaLight_file.h
@@ -435,3 +420,18 @@ add_library(Tools STATIC ${src_tools})
 add_precompiled_header( Tools tools_precompiled.h  SOURCE_CXX ./tools/tools_precompiled.cpp )
 set_target_properties(Tools PROPERTIES LINK_FLAGS "/PDB:\"Tools.pdb\"")
 target_include_directories(Tools PRIVATE ./external/Recast/include)
+
+# MayaImport
+if(EXISTS "C:\\Program Files\\Autodesk\\Maya2019\\include\\qt-5.6.1_vc14-include.zip") 
+	Message("Found Maya 2019 SDK...")
+	add_library(mayaimport MODULE  ${src_maya_import} )
+	target_compile_definitions(mayaimport PRIVATE MAYA_IMPORT=1)
+	target_link_libraries(mayaimport idLib "foundation.lib" "OpenMaya.lib" "OpenMayaAnim.lib")
+	add_precompiled_header( mayaimport maya_precompiled.h  SOURCE_CXX ./MayaImport/maya_precompiled.cpp )
+	set_target_properties(mayaimport PROPERTIES OUTPUT_NAME "MayaImport2019x64" LINK_FLAGS "/PDB:\"MayaImport.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/MayaImport/mayaimport.def")
+	# MayaImport 2019 Maya Folders
+	target_include_directories(mayaimport PUBLIC "C:\\Program Files\\Autodesk\\Maya2019\\include")
+	target_link_directories(mayaimport PUBLIC "C:\\Program Files\\Autodesk\\Maya2019\\lib")
+else()
+	Message("Maya 2019 SDK not found, not building MayaImport...")
+endif()

@@ -2,7 +2,7 @@
 //
 
 #include "tools_precompiled.h"
-#include "Recast.h"
+#include "../../../external/recast/include/Recast.h"
 #include "../../../navigation/Nav_local.h"
 
 idCVar nav_dumpInputGeometry("nav_dumpInputGeometry", "0", CVAR_BOOL, "dumps input geometry to recast for debugging.");
@@ -11,8 +11,8 @@ idCVar nav_dumpInputGeometry("nav_dumpInputGeometry", "0", CVAR_BOOL, "dumps inp
 // WorldGeometry_t
 //
 struct WorldGeometry_t {
-	rvmListSTL<idDrawVert> vertexes;
-	rvmListSTL<unsigned int> indexes;
+	idList<idDrawVert> vertexes;
+	idList<unsigned int> indexes;
 };
 
 /*
@@ -26,15 +26,17 @@ void AddModelToMegaGeometry(WorldGeometry_t &geometry, idVec3 origin, idMat3 axi
 	{
 		const modelSurface_t *surface = renderModel->Surface(i);
 
-		int startIndex = geometry.vertexes.Num();
-		for (int d = 0; d < surface->geometry->numIndexes; d++)
-		{
-			geometry.indexes.Append(startIndex + surface->geometry->indexes[d]);
-		}
-
 		// Don't add shadow geometry.
 		if (surface->geometry->numShadowIndexesNoCaps > 0 || surface->geometry->numShadowIndexesNoFrontCaps)
 			continue;
+
+		int startIndex = geometry.vertexes.Num();
+		for (int d = 0; d < surface->geometry->numIndexes; d+=3)
+		{
+			geometry.indexes.Append(startIndex + surface->geometry->indexes[d + 2]);
+			geometry.indexes.Append(startIndex + surface->geometry->indexes[d + 1]);
+			geometry.indexes.Append(startIndex + surface->geometry->indexes[d + 0]);
+		}
 
 		for (int d = 0; d < surface->geometry->numVerts; d++)
 		{
@@ -52,11 +54,11 @@ void AddModelToMegaGeometry(WorldGeometry_t &geometry, idVec3 origin, idMat3 axi
 bool LoadWorldFile(idStr mapName, WorldGeometry_t &geometry, int &crcMAP)
 {
 	mapName.StripFileExtension();
-	idStr procName = "maps/";
+	idStr procName;// = "maps/";
 	procName += mapName;
 
 	idRenderWorld *world = renderSystem->AllocRenderWorld();
-	if (!world->InitFromMap(procName, true))
+	if (!world->InitFromMap(procName))
 	{
 		renderSystem->FreeRenderWorld(world);
 		common->Warning("Failed to load renderworld %s\n", procName.c_str());
@@ -100,27 +102,30 @@ bool LoadWorldFile(idStr mapName, WorldGeometry_t &geometry, int &crcMAP)
 		const char *className = entity->epairs.GetString("classname");
 
 		if (!idStr::Icmp(className, "func_static")) {
-			const char *modelName = entity->epairs.GetString("model");
-			if (!modelName) {
+			// Mesh's are opt in for the navmesh.
+			if (entity->epairs.GetBool("navmesh")) {
+				const char* modelName = entity->epairs.GetString("model");
+				if (!modelName) {
+					continue;
+				}
+				idRenderModel* model = renderModelManager->FindModel(modelName);
+
+				idMat3	axis;
+				// get the rotation matrix in either full form, or single angle form
+				if (!entity->epairs.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", axis)) {
+					float angle = entity->epairs.GetFloat("angle");
+					if (angle != 0.0f) {
+						axis = idAngles(0.0f, angle, 0.0f).ToMat3();
+					}
+					else {
+						axis.Identity();
+					}
+				}
+
+				idVec3 origin = entity->epairs.GetVec4("origin").ToVec3();
+				AddModelToMegaGeometry(geometry, origin, axis, model);
 				continue;
 			}
-			idRenderModel	*model = renderModelManager->FindModel(modelName);
-
-			idMat3	axis;
-			// get the rotation matrix in either full form, or single angle form
-			if (!entity->epairs.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", axis)) {
-				float angle = entity->epairs.GetFloat("angle");
-				if (angle != 0.0f) {
-					axis = idAngles(0.0f, angle, 0.0f).ToMat3();
-				}
-				else {
-					axis.Identity();
-				}
-			}
-
-			idVec3 origin = entity->epairs.GetVec4("origin").ToVec3();
-			AddModelToMegaGeometry(geometry, origin, axis, model);
-			continue;
 		}
 	}
 
@@ -165,6 +170,11 @@ void CreateNavMesh(idStr mapName)
 
 	common->Printf("---- CreateNavMesh ----\n");
 
+	if(!strstr(mapName.c_str(), "maps/") && !strstr(mapName.c_str(), "maps\\")) {
+		idStr oldMapName = mapName;
+		mapName = va("maps/%s", oldMapName.c_str());
+	}
+
 	common->Printf("Loading Map...\n");
 	if (!LoadWorldFile(mapName, mapGeometry, mapCrc))
 		return;
@@ -182,9 +192,16 @@ void CreateNavMesh(idStr mapName)
 	float *verts = new float[mapGeometry.vertexes.Num() * 3];
 	for (int n = 0; n < mapGeometry.vertexes.Num(); n++)
 	{
-		verts[(n * 3) + 0] = mapGeometry.vertexes[n].xyz[0];
-		verts[(n * 3) + 1] = mapGeometry.vertexes[n].xyz[2];
-		verts[(n * 3) + 2] = -mapGeometry.vertexes[n].xyz[1];
+		idVec3 xyz;
+		xyz[0] = mapGeometry.vertexes[n].xyz[0];
+		xyz[1] = mapGeometry.vertexes[n].xyz[1];
+		xyz[2] = mapGeometry.vertexes[n].xyz[2];
+
+		xyz = NavConvertCoordsToDoom(xyz);
+
+		verts[(n * 3) + 0] = xyz.x;
+		verts[(n * 3) + 1] = xyz.y;
+		verts[(n * 3) + 2] = xyz.z;
 	}
 
 	int numTris = mapGeometry.indexes.Num() / 3;
@@ -202,21 +219,24 @@ void CreateNavMesh(idStr mapName)
 
 	common->Printf("1/7: Initialize build config.\n");
 
+	// Grab the navmesh options decl and grab the options from it. 
+	const idDeclEntityDef* botNavDecl = (const idDeclEntityDef * )declManager->FindType(DECL_ENTITYDEF, "navBot");
+
 	// Init build configuration from GUI
 	memset(&m_cfg, 0, sizeof(m_cfg));
-	m_cfg.cs = m_cellSize;
-	m_cfg.ch = m_cellHeight;
-	m_cfg.walkableSlopeAngle = m_agentMaxSlope;
-	m_cfg.walkableHeight = (int)ceilf(m_agentHeight / m_cfg.ch);
-	m_cfg.walkableClimb = (int)floorf(m_agentMaxClimb / m_cfg.ch);
-	m_cfg.walkableRadius = (int)ceilf(m_agentRadius / m_cfg.cs);
-	m_cfg.maxEdgeLen = (int)(m_edgeMaxLen / m_cellSize);
-	m_cfg.maxSimplificationError = m_edgeMaxError;
-	m_cfg.minRegionArea = (int)rcSqr(m_regionMinSize);		// Note: area = size*size
-	m_cfg.mergeRegionArea = (int)rcSqr(m_regionMergeSize);	// Note: area = size*size
-	m_cfg.maxVertsPerPoly = (int)m_vertsPerPoly;
-	m_cfg.detailSampleDist = m_detailSampleDist < 0.9f ? 0 : m_cellSize * m_detailSampleDist;
-	m_cfg.detailSampleMaxError = m_cellHeight * m_detailSampleMaxError;
+	m_cfg.cs = BOT_GET_VALUE(m_cellSize);
+	m_cfg.ch = BOT_GET_VALUE(m_cellHeight);
+	m_cfg.walkableSlopeAngle = BOT_GET_VALUE(m_agentMaxSlope);
+	m_cfg.walkableHeight = (int)ceilf(BOT_GET_VALUE(m_agentHeight) / m_cfg.ch);
+	m_cfg.walkableClimb = (int)floorf(BOT_GET_VALUE(m_agentMaxClimb) / m_cfg.ch);
+	m_cfg.walkableRadius = (int)ceilf(BOT_GET_VALUE(m_agentRadius) / m_cfg.cs);
+	m_cfg.maxEdgeLen = (int)(BOT_GET_VALUE(m_edgeMaxLen) / BOT_GET_VALUE(m_cellSize));
+	m_cfg.maxSimplificationError = BOT_GET_VALUE(m_edgeMaxError);
+	m_cfg.minRegionArea = (int)rcSqr(BOT_GET_VALUE(m_regionMinSize));		// Note: area = size*size
+	m_cfg.mergeRegionArea = (int)rcSqr(BOT_GET_VALUE(m_regionMergeSize));	// Note: area = size*size
+	m_cfg.maxVertsPerPoly = (int)BOT_GET_VALUE(m_vertsPerPoly);
+	m_cfg.detailSampleDist = BOT_GET_VALUE(m_detailSampleDist) < 0.9f ? 0 : BOT_GET_VALUE(m_cellSize) * BOT_GET_VALUE(m_detailSampleDist);
+	m_cfg.detailSampleMaxError = BOT_GET_VALUE(m_cellHeight) * BOT_GET_VALUE(m_detailSampleMaxError);
 
 	// Set the area where the navigation will be build.
 	// Here the bounds of the input mesh are used, but the
@@ -357,7 +377,7 @@ void CreateNavMesh(idStr mapName)
 	}
 
 	common->Printf("Writing Navigation File..\n");
-	rvmNavFileLocal::WriteNavFile(mapName, m_pmesh, m_dmesh, mapCrc);
+	rvmNavFileLocal::WriteNavFile(mapName, m_pmesh, m_dmesh, mapCrc, botNavDecl);
 }
 
 void NavMesh_f(const idCmdArgs &args) {

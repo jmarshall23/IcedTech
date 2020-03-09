@@ -150,7 +150,7 @@ void DmapHelp( void ) {
 	"Options:\n"
 	"noCurves          = don't process curves\n"
 	"noCM              = don't create collision map\n"
-	"noAAS             = don't create AAS files\n"
+	"noNAV            = don't create NAV files\n"
 	
 	);
 }
@@ -200,7 +200,7 @@ void Dmap( const idCmdArgs &args ) {
 	idStr		passedName;
 	bool		leaked = false;
 	bool		noCM = false;
-	bool		noAAS = false;
+	bool		noNAV = false;
 
 	ResetDmapGlobals();
 
@@ -278,9 +278,9 @@ void Dmap( const idCmdArgs &args ) {
 		} else if ( !idStr::Icmp( s, "noCM" ) ) {
 			noCM = true;
 			common->Printf( "noCM = true\n" );
-		} else if ( !idStr::Icmp( s, "noAAS" ) ) {
-			noAAS = true;
-			common->Printf( "noAAS = true\n" );
+		} else if ( !idStr::Icmp( s, "noNAV" ) ) {
+			noNAV = true;
+			common->Printf( "noNAV = true\n" );
 		} else if ( !idStr::Icmp( s, "editorOutput" ) ) {
 #ifdef _WIN32
 			com_outputMsg = true;
@@ -363,9 +363,9 @@ void Dmap( const idCmdArgs &args ) {
 			common->Printf( "%5.0f seconds to create collision map\n", ( end - start ) * 0.001f );
 		}
 
-		if ( !noAAS && !region ) {
-			// create AAS files
-			RunAAS_f( args );
+		if ( !noNAV && !region ) {
+			// create NAV files
+			NavMesh_f( args );
 		}
 	}
 

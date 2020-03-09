@@ -146,7 +146,6 @@ rvmWeaponBFG::Fire
 */
 void rvmWeaponBFG::Fire() {
 	float time_held;
-	float power;
 	float intensity;
 	
 	enum FIRE_State
@@ -220,9 +219,6 @@ void rvmWeaponBFG::Fire() {
 			else
 			{
 				time_held = gameLocal.time - fuse_start;
-				if (power > BFG_MAXPOWER) {
-					power = BFG_MAXPOWER;
-				}
 
 				owner->Event_PlayAnim(ANIMCHANNEL_ALL, "fire", false);
 				fire_time = gameLocal.time;

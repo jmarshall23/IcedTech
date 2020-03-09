@@ -1,9 +1,12 @@
 ------------- Warnings ---------------
 
-during game/erebus1...
-WARNING: rvmVirtualTextureSystem::LoadVirtualImage: Failed to load image generated/image_programs/textures/base_trim/a_sfltrim5_d05a_bump.tga
+during Darklight initialization...
+WARNING: Couldn't load image: textures/loadingicon2 : textures/loadingicon2
+WARNING: Couldn't load image: textures/loadingicon3 : textures/loadingicon3
+WARNING: file materials/base_light2.mtr, line 14: material 'textures/base_light/striplight3' previously defined at materials/base_light.mtr:81
+WARNING: RegisterFont: couldn't find font: 'fonts/english/fontImage_12.dat'
 
-1 warnings.
+4 warnings.
 
 
 -------------- Errors ---------------

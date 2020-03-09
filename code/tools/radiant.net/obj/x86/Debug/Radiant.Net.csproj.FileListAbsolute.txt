@@ -11,3 +11,14 @@ D:\Projects\Darklight\code\tools\radiant.net\obj\x86\Debug\radiant.net.forms.Ins
 D:\Projects\Darklight\code\tools\radiant.net\obj\x86\Debug\radiant.net.forms.ProgressDialog.resources
 D:\Projects\Darklight\code\tools\radiant.net\obj\x86\Debug\radiant.net.forms.XYWndDialog.resources
 D:\Projects\Darklight\code\tools\radiant.net\obj\x86\Debug\Radiant.Net.csprojAssemblyReference.cache
+D:\projects\IcedTech\code\tools\radiant.net\obj\x86\Debug\radiant.net.forms.CamWndDialog.resources
+D:\projects\IcedTech\code\tools\radiant.net\obj\x86\Debug\radiant.net.forms.EntityCreateDialog.resources
+D:\projects\IcedTech\code\tools\radiant.net\obj\x86\Debug\radiant.net.forms.EntitySelection.resources
+D:\projects\IcedTech\code\tools\radiant.net\obj\x86\Debug\radiant.net.forms.InspectorDialog.resources
+D:\projects\IcedTech\code\tools\radiant.net\obj\x86\Debug\radiant.net.forms.ProgressDialog.resources
+D:\projects\IcedTech\code\tools\radiant.net\obj\x86\Debug\radiant.net.forms.XYWndDialog.resources
+D:\projects\IcedTech\code\tools\radiant.net\obj\x86\Debug\Radiant.Net.csproj.GenerateResource.cache
+D:\projects\IcedTech\code\tools\radiant.net\obj\x86\Debug\radiant.net.dll
+D:\projects\IcedTech\code\tools\radiant.net\obj\x86\Debug\radiant.net.pdb
+D:\projects\IcedTech\radiant.net.dll
+D:\projects\IcedTech\radiant.net.pdb

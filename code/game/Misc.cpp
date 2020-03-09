@@ -338,7 +338,7 @@ idPathCorner
 */
 
 CLASS_DECLARATION( idEntity, idPathCorner )
-	EVENT( AI_RandomPath,		idPathCorner::Event_RandomPath )
+	//EVENT( AI_RandomPath,		idPathCorner::Event_RandomPath )
 END_CLASS
 
 /*
@@ -2707,7 +2707,7 @@ idFuncAASPortal::Restore
 */
 void idFuncAASPortal::Restore( idRestoreGame *savefile ) {
 	savefile->ReadBool( state );
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
+//	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
 }
 
 /*
@@ -2717,7 +2717,7 @@ idFuncAASPortal::Spawn
 */
 void idFuncAASPortal::Spawn( void ) {
 	state = spawnArgs.GetBool( "start_on" );
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
+//	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
 }
 
 /*
@@ -2727,7 +2727,7 @@ idFuncAASPortal::Event_Activate
 */
 void idFuncAASPortal::Event_Activate( idEntity *activator ) {
 	state ^= 1;
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
+//	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
 }
 
 /*
@@ -2767,7 +2767,7 @@ idFuncAASObstacle::Restore
 */
 void idFuncAASObstacle::Restore( idRestoreGame *savefile ) {
 	savefile->ReadBool( state );
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
+//	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
 }
 
 /*
@@ -2777,7 +2777,7 @@ idFuncAASObstacle::Spawn
 */
 void idFuncAASObstacle::Spawn( void ) {
 	state = spawnArgs.GetBool( "start_on" );
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
+//	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
 }
 
 /*
@@ -2787,7 +2787,7 @@ idFuncAASObstacle::Event_Activate
 */
 void idFuncAASObstacle::Event_Activate( idEntity *activator ) {
 	state ^= 1;
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
+//	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
 }
 
 
@@ -3122,8 +3122,10 @@ void idPhantomObjects::Think( void ) {
 		}
 
 		if ( time < 0.0f ) {
-			idAI::PredictTrajectory( entPhys->GetOrigin(), lastTargetPos[ i ], speed, entPhys->GetGravity(), 
-				entPhys->GetClipModel(), entPhys->GetClipMask(), 256.0f, ent, targetEnt, ai_debugTrajectory.GetBool() ? 1 : 0, vel );
+// jmarshall - look into fixing this.
+			//idAI::PredictTrajectory( entPhys->GetOrigin(), lastTargetPos[ i ], speed, entPhys->GetGravity(), 
+			//	entPhys->GetClipModel(), entPhys->GetClipMask(), 256.0f, ent, targetEnt, ai_debugTrajectory.GetBool() ? 1 : 0, vel );
+// jmarshall end
 			vel *= speed;
 			entPhys->SetLinearVelocity( vel );
 			if ( !end_time ) {

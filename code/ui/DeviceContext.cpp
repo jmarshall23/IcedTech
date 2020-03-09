@@ -698,6 +698,7 @@ int idDeviceContext::DrawText(float x, float y, float scale, idVec4 color, const
 				continue;
 			}
 			glyph = &useFont->glyphs[*s];
+			const idMaterial* mat = (const idMaterial * )declManager->DeclByIndex(DECL_MATERIAL, glyph->glyph);
 
 			//
 			// int yadj = Assets.textFont.glyphs[text[i]].bottom +
@@ -727,7 +728,7 @@ int idDeviceContext::DrawText(float x, float y, float scale, idVec4 color, const
 				continue;
 			} else {
 				float yadj = useScale * glyph->top;
-				PaintChar(x,y - yadj,glyph->imageWidth,glyph->imageHeight,useScale,glyph->s,glyph->t,glyph->s2,glyph->t2,glyph->glyph);
+				PaintChar(x,y - yadj,glyph->imageWidth,glyph->imageHeight,useScale,glyph->s,glyph->t,glyph->s2,glyph->t2, mat);
 
 				if (cursor == count) {
 					DrawEditCursor(x, y, scale);
@@ -931,7 +932,9 @@ void idDeviceContext::DrawEditCursor( float x, float y, float scale ) {
 	float useScale = scale * useFont->glyphScale;
 	const glyphInfo_t *glyph2 = &useFont->glyphs[(overStrikeMode) ? '_' : '|'];
 	float	yadj = useScale * glyph2->top;
- 	PaintChar(x, y - yadj,glyph2->imageWidth,glyph2->imageHeight,useScale,glyph2->s,glyph2->t,glyph2->s2,glyph2->t2,glyph2->glyph);
+
+	const idMaterial* mat = (const idMaterial * )declManager->DeclByIndex(DECL_MATERIAL, glyph2->glyph);
+ 	PaintChar(x, y - yadj,glyph2->imageWidth,glyph2->imageHeight,useScale,glyph2->s,glyph2->t,glyph2->s2,glyph2->t2, mat);
 }
 
 int idDeviceContext::DrawText( const char *text, float textScale, int textAlign, idVec4 color, idRectangle rectDraw, bool wrap, int cursor, bool calcOnly, idList<int> *breaks, int limit ) {

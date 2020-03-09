@@ -4338,9 +4338,26 @@ const char *idEntity::GetKey(const char *key) {
 idEntity::GetFloat
 ==============
 */
-
 float idEntity::GetFloat(const char *key) {
 	return spawnArgs.GetFloat(key, "0");
+}
+
+/*
+==============
+idEntity::GetInt
+==============
+*/
+int idEntity::GetInt(const char* key) {
+	return spawnArgs.GetInt(key, "0");
+}
+
+/*
+==============
+idEntity::GetBool
+==============
+*/
+bool idEntity::GetBool(const char* key) {
+	return spawnArgs.GetBool(key, "0");
 }
 // jmarshall end
 

@@ -135,6 +135,9 @@ public:
 					// read a floating point number
 	float			ParseFloat( void );
 					// parse matrices with floats
+// jmarshall
+	int				Parse1DMatrixLegacy(int x, float* m);
+// jmarshall end
 	int				Parse1DMatrix( int x, float *m );
 	int				Parse2DMatrix( int y, int x, float *m );
 	int				Parse3DMatrix( int z, int y, int x, float *m );
