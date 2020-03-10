@@ -91,6 +91,8 @@ void rvmVirtualTextureSystem::TranscodePage(idImage *image, rvmVirtualImage *vir
 	// Clamp page LOD between 0 and max mips.
 	//pageLOD = 0;// idMath::ClampInt(0, virtualImage->numMips - 1, pageLOD);
 
+	assert( pageLOD <= virtualImage->numMips && pageLOD >= 0 );
+
 	int tilePagePosition = virtualImage->GetStartPageOffset(pageLOD) + (pageMemSize * pageY * virtualImage->GetWidthInPages(pageLOD)) + (pageMemSize * pageX);
 	virtualTextureFile->Seek(tilePagePosition, FS_SEEK_SET);
 

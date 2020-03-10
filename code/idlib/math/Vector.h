@@ -1978,8 +1978,8 @@ ID_INLINE idPolar3 &idPolar3::operator=( const idPolar3 &a ) {
 
 ID_INLINE idVec3 idPolar3::ToVec3( void ) const {
 	float sp, cp, st, ct;
-	idMath::SinCos( phi, sp, cp );
-	idMath::SinCos( theta, st, ct );
+	idMath::SinCos( phi, &sp, &cp );
+	idMath::SinCos( theta, &st, &ct );
  	return idVec3( cp * radius * ct, cp * radius * st, radius * sp );
 }
 

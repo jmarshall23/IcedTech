@@ -1655,7 +1655,7 @@ bool idWeapon::BloodSplat( float size ) {
 	normal = idVec3( gameLocal.random.CRandomFloat(), -gameLocal.random.RandomFloat(), -1 );
 	normal.Normalize();
 
-	idMath::SinCos16( gameLocal.random.RandomFloat() * idMath::TWO_PI, s, c );
+	idMath::SinCos16( gameLocal.random.RandomFloat() * idMath::TWO_PI, &s, &c );
 
 	localAxis[2] = -normal;
 	localAxis[2].NormalVectors( axistemp[0], axistemp[1] );

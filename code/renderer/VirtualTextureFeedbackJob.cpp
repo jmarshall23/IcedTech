@@ -72,7 +72,15 @@ void rvmVirtualTextureSystem::RunFeedbackJob(idImage *feedbackImage) {
 
 	if (feedbackCPUbuffer == nullptr) {
 		feedbackCPUbuffer = new feedbackPixel_t[feedbackImage->GetUploadWidth() * feedbackImage->GetUploadHeight()];
+		feedbackCPUbufferLen = feedbackImage->GetUploadWidth() * feedbackImage->GetUploadHeight();
+	} else if( feedbackCPUbufferLen != feedbackImage->GetUploadWidth() * feedbackImage->GetUploadHeight() ){
+	    common->Error("Buffersize mismatch!. Allocated(%d) - currentImage(%d)\n", feedbackCPUbufferLen, feedbackImage->GetUploadWidth() * feedbackImage->GetUploadHeight() );
 	}
+
+	// This function is called more than once.
+	//	--->	if(feedbackCPUbuffer[i].packed == 0)
+	// Buffer must be reset in order to check for this. Could be optimized.
+	memset( feedbackCPUbuffer, 0, (feedbackCPUbufferLen * sizeof(feedbackPixel_t)) );
 
 	// If the transcode show pages cvar has been changed, reset the current available pages so we can resubmit the transcoded buffers.
 	if (vt_transcodeShowPages.IsModified())
@@ -80,7 +88,15 @@ void rvmVirtualTextureSystem::RunFeedbackJob(idImage *feedbackImage) {
 		ClearVTPages();
 	}
 
-	glGetTextureImage(feedbackImage->texnum, 0, GL_RGBA, GL_HALF_FLOAT, feedbackImage->GetUploadWidth() * feedbackImage->GetUploadHeight() * sizeof(feedbackPixel_t), feedbackCPUbuffer);
+    assert( feedbackImage->dataFormat == GL_RGBA );
+	assert( feedbackImage->dataType == GL_HALF_FLOAT );
+    if( glConfig.directStateAccess ){
+        glGetTextureImage(feedbackImage->texnum, 0, GL_RGBA, GL_HALF_FLOAT, feedbackCPUbufferLen * sizeof(feedbackPixel_t), feedbackCPUbuffer);
+    } else {
+        glBindTexture( GL_TEXTURE_2D, feedbackImage->texnum );
+        glGetTexImage( GL_TEXTURE_2D, 0, GL_RGBA, GL_HALF_FLOAT, feedbackCPUbuffer );
+    }
+
 	for (int i = 0; i < feedbackImage->GetUploadWidth() * feedbackImage->GetUploadHeight(); i++)
 	{
 		if(feedbackCPUbuffer[i].packed == 0)

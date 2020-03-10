@@ -76,7 +76,7 @@ typedef unsigned char			byte;		// 8 bits
 typedef unsigned short			word;		// 16 bits
 typedef unsigned int			dword;		// 32 bits
 typedef unsigned int			uint;
-typedef unsigned long			ulong;
+//typedef unsigned long			ulong;      // varies based on platform, should be removed
 
 typedef int						qhandle_t;
 
@@ -135,6 +135,19 @@ void    SixtetsForIntLittle( byte *out, int src);
 int		IntForSixtets( byte *in );
 int     IntForSixtetsLittle( byte *in );
 
+// little/big endian conversion
+short	BigShort( short l );
+short	LittleShort( short l );
+int		BigInt( int l );
+int		LittleInt( int l );
+float	BigFloat( float l );
+float	LittleFloat( float l );
+void	BigRevBytes( void *bp, int elsize, int elcount );
+void	LittleRevBytes( void *bp, int elsize, int elcount );
+void	LittleBitField( void *bp, int elsize );
+void	Swap_Init( void );
+
+bool	Swap_IsBigEndian( void );
 
 #ifdef _DEBUG
 void AssertFailed( const char *file, int line, const char *expression );

@@ -3700,7 +3700,7 @@ void idGameLocal::ProjectDecal( const idVec3 &origin, const idVec3 &dir, float d
 	}
 
 	// randomly rotate the decal winding
-	idMath::SinCos16( ( angle ) ? angle : random.RandomFloat() * idMath::TWO_PI, s, c );
+	idMath::SinCos16( ( angle ) ? angle : random.RandomFloat() * idMath::TWO_PI, &s, &c );
 
 	// winding orientation
 	axis[2] = dir;

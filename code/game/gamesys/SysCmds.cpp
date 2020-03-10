@@ -1467,7 +1467,7 @@ static void Cmd_TestDamage_f( const idCmdArgs &args ) {
 	if ( args.Argc() == 3 ) {
 		float angle = atof( args.Argv( 2 ) );
 
-		idMath::SinCos( DEG2RAD( angle ), dir[1], dir[0] );
+		idMath::SinCos( DEG2RAD( angle ), &dir[1], &dir[0] );
 		dir[2] = 0;
 	} else {
 		dir.Zero();
@@ -1519,7 +1519,7 @@ static void Cmd_TestDeath_f( const idCmdArgs &args ) {
 	}
 
 	idVec3 dir;
-	idMath::SinCos( DEG2RAD( 45.0f ), dir[1], dir[0] );
+	idMath::SinCos( DEG2RAD( 45.0f ), &dir[1], &dir[0] );
 	dir[2] = 0;
 
 	g_testDeath.SetBool( 1 );

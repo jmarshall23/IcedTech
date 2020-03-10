@@ -331,9 +331,9 @@ public:
 	static float				Cos16( float a );			// cosine with 16 bits precision, maximum absolute error is 2.3082e-09
 	static double				Cos64( float a );			// cosine with 64 bits precision
 
-	static void					SinCos( float a, float &s, float &c );		// sine and cosine with 32 bits precision
-	static void					SinCos16( float a, float &s, float &c );	// sine and cosine with 16 bits precision
-	static void					SinCos64( float a, double &s, double &c );	// sine and cosine with 64 bits precision
+	static void					SinCos( float a, float *s, float *c );		// sine and cosine with 32 bits precision
+	static void					SinCos16( float a, float *s, float *c );	// sine and cosine with 16 bits precision
+	static void					SinCos64( float a, double *s, double *c );	// sine and cosine with 64 bits precision
 
 	static float				Tan( float a );				// tangent with 32 bits precision
 	static float				Tan16( float a );			// tangent with 16 bits precision, maximum absolute error is 1.8897e-08
@@ -603,14 +603,18 @@ ID_INLINE double idMath::Cos64( float a ) {
 	return cos( a );
 }
 
-ID_INLINE void idMath::SinCos( float a, float &s, float &c ) {
+ID_INLINE void idMath::SinCos( float a, float *s, float *c ) {
+#if defined(WIN32)
     //FIXME: sincos simultaneous
     //TODO
-	s = sinf( a );
-	c = cosf( a );
+    *s = sinf( a );
+	*c = cosf( a );
+#else
+    sincosf( a, s, c );
+#endif
 }
 
-ID_INLINE void idMath::SinCos16( float a, float &s, float &c ) {
+ID_INLINE void idMath::SinCos16( float a, float *s, float *c ) {
 	float t, d;
 
 	if ( ( a < 0.0f ) || ( a >= idMath::TWO_PI ) ) {
@@ -643,15 +647,19 @@ ID_INLINE void idMath::SinCos16( float a, float &s, float &c ) {
 	}
 #endif
 	t = a * a;
-	s = a * ( ( ( ( ( -2.39e-08f * t + 2.7526e-06f ) * t - 1.98409e-04f ) * t + 8.3333315e-03f ) * t - 1.666666664e-01f ) * t + 1.0f );
-	c = d * ( ( ( ( ( -2.605e-07f * t + 2.47609e-05f ) * t - 1.3888397e-03f ) * t + 4.16666418e-02f ) * t - 4.999999963e-01f ) * t + 1.0f );
+	*s = a * ( ( ( ( ( -2.39e-08f * t + 2.7526e-06f ) * t - 1.98409e-04f ) * t + 8.3333315e-03f ) * t - 1.666666664e-01f ) * t + 1.0f );
+	*c = d * ( ( ( ( ( -2.605e-07f * t + 2.47609e-05f ) * t - 1.3888397e-03f ) * t + 4.16666418e-02f ) * t - 4.999999963e-01f ) * t + 1.0f );
 }
 
-ID_INLINE void idMath::SinCos64( float a, double &s, double &c ) {
+ID_INLINE void idMath::SinCos64( float a, double *s, double *c ) {
+#if defined(WIN32)
     //FIXME: sincos simultaneous
     //TODO
-	s = sin( a );
-	c = cos( a );
+    *s = sinf( a );
+	*c = cosf( a );
+#else
+    sincos( a, s, c );
+#endif
 }
 
 ID_INLINE float idMath::Tan( float a ) {

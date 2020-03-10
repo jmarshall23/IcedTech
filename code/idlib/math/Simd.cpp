@@ -3753,7 +3753,7 @@ void TestMath( void ) {
 	tst = rnd.CRandomFloat();
 	for ( i = 0; i < NUMTESTS; i++ ) {
 		StartRecordTime( start );
-		idMath::SinCos( tst, tst, tst2 );
+		idMath::SinCos( tst, &tst, &tst2 );
 		StopRecordTime( end );
 		GetBest( start, end, bestClocks );
 		testvar = ( testvar + tst ) * tst;
@@ -3765,7 +3765,7 @@ void TestMath( void ) {
 	tst = rnd.CRandomFloat();
 	for ( i = 0; i < NUMTESTS; i++ ) {
 		StartRecordTime( start );
-		idMath::SinCos16( tst, tst, tst2 );
+		idMath::SinCos16( tst, &tst, &tst2 );
 		StopRecordTime( end );
 		GetBest( start, end, bestClocks );
 		testvar = ( testvar + tst ) * tst;

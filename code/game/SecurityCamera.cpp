@@ -245,7 +245,7 @@ void idSecurityCamera::DrawFov( void ) {
 	center = GetPhysics()->GetOrigin() + dir * scanDist;
 	for ( i = 1; i < 12; i++ ) {
 		a = idMath::TWO_PI * i / 12.0f;
-		idMath::SinCos( a, s, c );
+		idMath::SinCos( a, &s, &c );
 		point = dir + right * s * radius + up * c * radius;
 		point.Normalize();
 		point = GetPhysics()->GetOrigin() + point * scanDist;
