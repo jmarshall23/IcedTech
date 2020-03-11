@@ -394,9 +394,5 @@ Image Channel Manipulations
 
 ====================================================================
 */
-#if defined(WIN32)
-#define ChannelBlend_Add(B,L)         ((byte)(min(255, (B + L))))
-#else
-#define ChannelBlend_Add(B,L)         ((byte)(MIN(255, (B + L))))
-#endif
+#define ChannelBlend_Add(B,L)         ((byte)(Min(255, (B + L))))
 #define ChannelBlend_Multiply(A,B)   ((byte)((A * B) / 255))
