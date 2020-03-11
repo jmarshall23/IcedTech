@@ -367,9 +367,9 @@ entityDef player_doommarine_mp {
 	"deplete_armor"						"100"	// deplete the armor when above this
 	"deplete_rate"						"1.5"	// every x seconds
 	"deplete_ammount"					"2"		// how much
-	"weapon"							"weapon_fists,weapon_pistol,weapon_flashlight,weapon_handgrenade"
-	"current_weapon"					"1"
-	"ammo_grenades"						"2"
+	"weapon"							"weapon_fists,weapon_machinegun"
+	"current_weapon"					"3"
+	"ammo_clip"							"100"
 	"damage_scale head"					"2"
 	
 	// ignore flashlight when cycling weapons

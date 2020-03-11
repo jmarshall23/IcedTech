@@ -7,7 +7,7 @@
 CLASS_DECLARATION(rvmWeaponObject, rvmWeaponMachineGun)
 END_CLASS
 
-#define MACHINEGUN_FIRERATE			0.1		// ~10 per second
+#define MACHINEGUN_FIRERATE			0.075
 #define MACHINEGUN_LOWAMMO			10
 #define MACHINEGUN_NUMPROJECTILES	1
 
@@ -163,7 +163,7 @@ void rvmWeaponMachineGun::Fire() {
 	switch (firingState)
 	{
 	case FIRE_NOTSET:
-		next_attack = gameLocal.realClientTime + MS2SEC(MACHINEGUN_FIRERATE);
+		next_attack = gameLocal.realClientTime + SEC2MS(MACHINEGUN_FIRERATE);
 		owner->Event_LaunchProjectiles(MACHINEGUN_NUMPROJECTILES, spread, 0, 1, 1);
 
 		owner->Event_PlayAnim(ANIMCHANNEL_ALL, "fire", false);

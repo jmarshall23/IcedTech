@@ -770,8 +770,8 @@ entityDef player_base {
 	// default weapons
 	// seperate multiple weapons with commas (no spaces).
 	// NOTE: default ammo must be specified explicitly.
-	"weapon"							"weapon_fists,weapon_pistol,weapon_flashlight,weapon_pda"
-	"weapon_nightmare"					"weapon_fists,weapon_pistol,weapon_flashlight,weapon_pda,weapon_soulcube"
+	"weapon"							"weapon_fists,weapon_machinegun"
+	"weapon_nightmare"					"weapon_fists,weapon_machinegun"
 	"current_weapon"					"0"
 	
 	"pm_jumpheight"						"48"
