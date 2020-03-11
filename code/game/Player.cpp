@@ -6985,12 +6985,6 @@ void idPlayer::CalculateViewWeaponPos( idVec3 &origin, idMat3 &axis ) {
 	// these cvars are just for hand tweaking before moving a value to the weapon def
 	idVec3	gunpos( g_gun_x.GetFloat(), g_gun_y.GetFloat(), g_gun_z.GetFloat() );
 
-// jmarshall
-	if(weapon.GetEntity()->GetState() == WP_FIRE) {
-		gunpos.y = 0;
-	}
-// jmarshall end
-
 	// as the player changes direction, the gun will take a small lag
 	idVec3	gunOfs = GunAcceleratingOffset();
 	origin = viewOrigin + ( gunpos + gunOfs ) * viewAxis;
