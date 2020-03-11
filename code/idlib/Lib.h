@@ -92,6 +92,9 @@ class idVec4;
 #define BIT( num )				( 1 << ( num ) )
 #endif
 
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
 #define	MAX_STRING_CHARS		1024		// max length of a string
 #define MAX_PRINT_MSG			16384		// buffer size for our various printf routines
 

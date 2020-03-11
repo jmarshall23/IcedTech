@@ -10,7 +10,7 @@
 #include <renderer/qgllib/glew.h>
 #include <renderer/qgllib/qgllib.h>
 #else
-#include <gl/glew.h>
+#include <GL/glew.h>
 #endif
 
 extern "C" {

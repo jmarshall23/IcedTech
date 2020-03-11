@@ -716,11 +716,13 @@ else()
 endif()
 target_include_directories(External PRIVATE ./external/recast/Include ./external/detour/Include ${CMAKE_CURRENT_SOURCE_DIR})
 
+if(WIN32)
 # Part of the cmake process for libjpeg-turbo is to create a jconfig.h, this basically contains the build settings that are best for your system.
 # we need to include these directories to grab it after it's generated.
 include_directories(./out/build/x64-Release/renderer/libjpeg-turbo-master/ ./out/build/x64-Debug/renderer/libjpeg-turbo-master/ )
 # Build libjpeg-turbo-master using it's own cmake project
 add_subdirectory( ./renderer/libjpeg-turbo-master/ )
+endif()
 
 # DoomDLL Project
 add_definitions(-D__DOOM_DLL__)
@@ -737,7 +739,8 @@ else()
 	target_link_libraries(DoomDLL idLib External ${OPENAL_LIBRARY} jpeg ${PNG_LIBRARIES} z ${SDL2_LIBRARIES} ${GLEW_LIBRARIES} GL pthread)
 endif()
 target_include_directories(DoomDLL PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" )
-target_include_directories(DoomDLL PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/framework" )
+target_include_directories(DoomDLL PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/framework/" )
+target_include_directories(DoomDLL PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tools/" )
 target_include_directories(DoomDLL PRIVATE ./external/Recast/include ./external/detour/Include)
 if(WIN32) #todo: fix this difference
 	add_precompiled_header( DoomDLL Engine_precompiled.h  SOURCE_CXX ./framework/Engine_precompiled.cpp )
