@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar r_skipStripDeadCode( "r_skipStripDeadCode", "0", CVAR_BOOL, "Skip stripping dead code" );
 idCVar r_useUniformArrays( "r_useUniformArrays", "1", CVAR_BOOL, "" );
-idCVar r_renderProgVersion("r_renderProgVersion", "1", CVAR_INTEGER, "which version of renderprogs to use");
+idCVar r_renderProgVersion("r_renderProgVersion", "2", CVAR_INTEGER, "which version of renderprogs to use");
 
 #define VERTEX_UNIFORM_ARRAY_NAME				"_va_"
 #define FRAGMENT_UNIFORM_ARRAY_NAME				"_fa_"
