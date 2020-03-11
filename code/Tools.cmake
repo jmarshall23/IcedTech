@@ -417,9 +417,15 @@ set(src_tools
 
 # Add tools library
 add_library(Tools STATIC ${src_tools})
-add_precompiled_header( Tools tools_precompiled.h  SOURCE_CXX ./tools/tools_precompiled.cpp )
+if(WIN32) #todo: fix this difference
+	add_precompiled_header( Tools tools_precompiled.h  SOURCE_CXX ./tools/tools_precompiled.cpp )
+else()
+endif()
+target_include_directories(Tools PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/")
+
 set_target_properties(Tools PROPERTIES LINK_FLAGS "/PDB:\"Tools.pdb\"")
-target_include_directories(Tools PRIVATE ./external/Recast/include)
+target_include_directories(Tools PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tools/" ./external/Recast/include)
+
 
 # MayaImport
 if(EXISTS "C:\\Program Files\\Autodesk\\Maya2019\\include\\qt-5.6.1_vc14-include.zip") 

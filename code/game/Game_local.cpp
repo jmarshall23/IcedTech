@@ -76,14 +76,11 @@ const char *idGameLocal::sufaceTypeNames[ MAX_SURFACE_TYPES ] = {
 GetGameAPI
 ============
 */
-#if __MWERKS__
-#pragma export on
-#endif
 #if __GNUC__ >= 4
 extern "C" __attribute__((visibility ("default"))) gameExport_t *GetGameAPI( gameImport_t *import ) {
-#endif
-#if __MWERKS__
-extern "C" gameExport_t *GetGameAPI( gameImport_t *import ) {
+#else
+#pragma export on
+extern "C" gameExport_t* GetGameAPI( gameImport_t* import ) {
 #pragma export off
 #endif
     //lwss

@@ -26,8 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include <idlib/precompiled.h>
-
+#include "tools_precompiled.h"
 
 #include "dmap.h"
 

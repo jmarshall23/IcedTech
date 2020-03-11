@@ -116,8 +116,12 @@ Mem_Alloc16
 ==================
 */
 void *Mem_Alloc16( const int size ) {
+	// This is from id doom3bfg
+	if( !size ){
+		return nullptr;
+	}
 #ifdef _WIN32
-    // this should work with MSVC and mingw, as long as __MSVCRT_VERSION__ >= 0x0700
+	const int paddedSize = ( size + 15 ) & ~15;
 	return _aligned_malloc( paddedSize, 16 );
 #else // not _WIN32
     // DG: the POSIX solution for linux etc

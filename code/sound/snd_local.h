@@ -426,9 +426,7 @@ public:
 
 	virtual void *			GetIXAudio2() const;
 
-#if !defined(WIN32)
     virtual void *			GetOpenALDevice() const;
-#endif
 
 	// for the sound level meter window
 	virtual cinData_t		ImageForTime( const int milliseconds, const bool waveform );

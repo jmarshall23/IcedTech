@@ -26,8 +26,6 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-//#include <renderer/qgllib/glew.h>
-#include <GL/glew.h>
 #include "Engine_precompiled.h"
 
 #include "tr_local.h"

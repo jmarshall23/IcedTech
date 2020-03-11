@@ -28,7 +28,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "Engine_precompiled.h"
 
+#if !defined(WIN32)
 #include <unistd.h> // _exit
+#endif
 /*
 ================================================================================================
 Contains the vartious ThreadingClass implementations.

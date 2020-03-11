@@ -33,6 +33,8 @@ code/libpng.pc
 dkbase/config.spec
 dkbase/generated/*
 dkbase/virtualtextures/*
+dkbase/consoleHistory.txt
+dkbase/DarkLightConfig.cfg
 
 #binaries
 *.exe
@@ -42,3 +44,9 @@ Launcher
 
 #gdb crap
 .gdb*
+
+#debugging info
+*.pdb
+
+#visual studio linker
+*.ilk

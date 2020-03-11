@@ -41,12 +41,13 @@ If you have questions concerning this license or the applicable additional terms
 ** related functions that are relevant ONLY to win_glimp.c
 */
 #include "Engine_precompiled.h"
-#pragma hdrstop
 
+#include "../../renderer/qgllib/qgllib.h"
 #include "win_local.h"
 #include "rc/AFEditor_resource.h"
 #include "rc/doom_resource.h"
 #include "../../renderer/tr_local.h"
+#pragma hdrstop
 
 static void		GLW_InitExtensions( void );
 void *GLimp_ExtensionPointer(const char *name);

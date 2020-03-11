@@ -454,17 +454,21 @@ else()
 
 	add_compile_options(-fno-strict-aliasing)
 	#add_compile_options(-fvisibility=hidden) #dont export by default.
-
 endif()
 
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}" )
 
 # idLib project
 add_library( idLib STATIC ${src_idlib} )
-add_precompiled_header( idLib ./idlib/precompiled.h SOURCE_CXX ./idlib/precompiled.cpp )
+if(WIN32) #todo: fix this difference
+	add_precompiled_header( idLib precompiled.h SOURCE_CXX ./idlib/precompiled.cpp )
+else()
+	add_precompiled_header( idLib ./idlib/precompiled.h SOURCE_CXX ./idlib/precompiled.cpp )
+endif()
 target_compile_definitions( idLib PRIVATE NAME=$<TARGET_FILE_NAME:idLib> )
 target_include_directories( idLib PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/idlib/" )
 
-if(WIN32)
+if(WIN32)#todo: fix this difference
 	set_target_properties(idLib PROPERTIES LINK_FLAGS "/PDB:\"idlib.pdb\"")
 else()
 	set_target_properties(idLib PROPERTIES POSITION_INDEPENDENT_CODE ON) #turn on -fPIC
@@ -475,8 +479,12 @@ endif()
 add_library(game MODULE  ${src_game} )
 target_compile_definitions(game PRIVATE GAME_DLL=1)
 target_link_libraries(game idLib)
-add_precompiled_header( game ./game/Game_precompiled.h  SOURCE_CXX ./game/Game_precompiled.cpp )
 target_include_directories(game PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/game/")
+if(WIN32)
+	add_precompiled_header( game Game_precompiled.h  SOURCE_CXX ./game/Game_precompiled.cpp )
+else()
+	add_precompiled_header( game ./game/Game_precompiled.h  SOURCE_CXX ./game/Game_precompiled.cpp )
+endif()
 
 if(WIN32)
 	set_target_properties(game PROPERTIES OUTPUT_NAME "gamex64" LINK_FLAGS "/PDB:\"Game.pdb\"")
@@ -491,6 +499,7 @@ endif()
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/full_sdk_license.txt")
 	if(WIN32)
 		Message("Including Tools...")
+		add_definitions(-DID_ALLOW_TOOLS)
 		include( Tools.cmake )
 	else()
 		Message("Tools not supported on Non-Windows...")

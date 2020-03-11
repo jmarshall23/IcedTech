@@ -25,8 +25,8 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
+#include "tools_precompiled.h"
 
-#include <idlib/precompiled.h>
 #include "dmap.h"
 
 dmapGlobals_t	dmapGlobals;

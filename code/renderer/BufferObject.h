@@ -28,6 +28,9 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __BUFFEROBJECT_H__
 #define __BUFFEROBJECT_H__
 
+#if defined(WIN32)
+#include "renderer/qgllib/glew.h"
+#endif
 /*
 ================================================================================================
 

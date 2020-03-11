@@ -361,8 +361,7 @@ idSoundSystemLocal::GetOpenALDevice
 ========================
 */
 // RB begin
-void* idSoundSystemLocal::GetOpenALDevice() const
-{
+void* idSoundSystemLocal::GetOpenALDevice() const {
 #if defined(WIN32)
     return ( void* )hardware.GetIXAudio2();
 #else

@@ -26,6 +26,12 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 #include "tools_precompiled.h"
+extern "C"{
+#include <renderer/libjpeg-turbo-master/jpegint.h>
+#include <renderer/libjpeg-turbo-master/jpeglib.h>
+#include <renderer/libjpeg-turbo-master/jerror.h>
+}
+
 #pragma hdrstop
 
 #include "roq.h"

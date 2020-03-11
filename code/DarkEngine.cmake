@@ -129,7 +129,6 @@ if(WIN32)
 		./renderer/Image_program.cpp
 		./renderer/Interaction.cpp
 		./renderer/Interaction.h
-		./renderer/jpeg-6
 		./renderer/Material.cpp
 		./renderer/Material.h
 		./renderer/MegaTexture.cpp
@@ -214,63 +213,7 @@ if(WIN32)
 		./renderer/DXT/DXTCodec.h
 		./renderer/DXT/DXTDecoder.cpp
 		./renderer/DXT/DXTEncoder.cpp
-		./renderer/jpeg-6/jcapimin.c
-		./renderer/jpeg-6/jcapistd.c
-		./renderer/jpeg-6/jccoefct.c
-		./renderer/jpeg-6/jccolor.c
-		./renderer/jpeg-6/jcdctmgr.c
-		./renderer/jpeg-6/jchuff.c
-		./renderer/jpeg-6/jchuff.h
-		./renderer/jpeg-6/jcinit.c
-		./renderer/jpeg-6/jcmainct.c
-		./renderer/jpeg-6/jcmarker.c
-		./renderer/jpeg-6/jcmaster.c
-		./renderer/jpeg-6/jcomapi.c
-		./renderer/jpeg-6/jconfig.h
-		./renderer/jpeg-6/jcparam.c
-		./renderer/jpeg-6/jcphuff.c
-		./renderer/jpeg-6/jcprepct.c
-		./renderer/jpeg-6/jcsample.c
-		./renderer/jpeg-6/jctrans.c
-		./renderer/jpeg-6/jdapimin.c
-		./renderer/jpeg-6/jdapistd.c
-		./renderer/jpeg-6/jdatadst.c
-		./renderer/jpeg-6/jdatasrc.c
-		./renderer/jpeg-6/jdcoefct.c
-		./renderer/jpeg-6/jdcolor.c
-		./renderer/jpeg-6/jdct.h
-		./renderer/jpeg-6/jddctmgr.c
-		./renderer/jpeg-6/jdhuff.c
-		./renderer/jpeg-6/jdhuff.h
-		./renderer/jpeg-6/jdinput.c
-		./renderer/jpeg-6/jdmainct.c
-		./renderer/jpeg-6/jdmarker.c
-		./renderer/jpeg-6/jdmaster.c
-		./renderer/jpeg-6/jdmerge.c
-		./renderer/jpeg-6/jdphuff.c
-		./renderer/jpeg-6/jdpostct.c
-		./renderer/jpeg-6/jdsample.c
-		./renderer/jpeg-6/jdtrans.c
-		./renderer/jpeg-6/jerror.c
-		./renderer/jpeg-6/jerror.h
-		./renderer/jpeg-6/jfdctflt.c
-		./renderer/jpeg-6/jfdctfst.c
-		./renderer/jpeg-6/jfdctint.c
-		./renderer/jpeg-6/jidctflt.c
-		./renderer/jpeg-6/jidctfst.c
-		./renderer/jpeg-6/jidctint.c
-		./renderer/jpeg-6/jidctred.c
-		./renderer/jpeg-6/jinclude.h
-		./renderer/jpeg-6/jmemmgr.c
-		./renderer/jpeg-6/jmemnobs.c
-		./renderer/jpeg-6/jmemsys.h
-		./renderer/jpeg-6/jmorecfg.h
-		./renderer/jpeg-6/jpegint.h
-		./renderer/jpeg-6/jpeglib.h
-		./renderer/jpeg-6/jquant1.c
-		./renderer/jpeg-6/jquant2.c
-		./renderer/jpeg-6/jutils.c
-		./renderer/jpeg-6/jversion.h
+
 		./renderer/qgllib/glew.c
 		./renderer/qgllib/glew.h
 		./renderer/qgllib/qgllib.h
@@ -436,7 +379,6 @@ else()
 		./renderer/Image_process.cpp
 		./renderer/Image_program.cpp
 		./renderer/Interaction.cpp
-		./renderer/jpeg-6
 		./renderer/Material.cpp
 		./renderer/MegaTexture.cpp
 		./renderer/MegaTextureBuild.cpp
@@ -759,7 +701,7 @@ else()
 endif()
 
 
-# Engine Directories
+# External Directories
 include_directories(./external/dxsdk/Include)
 include_directories(./external/zlib)
 include_directories(./external/png)
@@ -774,12 +716,17 @@ else()
 endif()
 target_include_directories(External PRIVATE ./external/recast/Include ./external/detour/Include ${CMAKE_CURRENT_SOURCE_DIR})
 
+# Part of the cmake process for libjpeg-turbo is to create a jconfig.h, this basically contains the build settings that are best for your system.
+# we need to include these directories to grab it after it's generated.
+include_directories(./out/build/x64-Release/renderer/libjpeg-turbo-master/ ./out/build/x64-Debug/renderer/libjpeg-turbo-master/ )
+# Build libjpeg-turbo-master using it's own cmake project
+add_subdirectory( ./renderer/libjpeg-turbo-master/ )
 
 # DoomDLL Project
 add_definitions(-D__DOOM_DLL__)
 add_library(DoomDLL SHARED  ${src_engine} )
 if(WIN32)
-	target_link_libraries(DoomDLL idLib External Tools "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib")
+	target_link_libraries(DoomDLL idLib External Tools jpeg-static "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib")
 else()
 	find_package(SDL2 REQUIRED)
 	find_package(GLEW REQUIRED)
@@ -792,7 +739,12 @@ endif()
 target_include_directories(DoomDLL PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" )
 target_include_directories(DoomDLL PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/framework" )
 target_include_directories(DoomDLL PRIVATE ./external/Recast/include ./external/detour/Include)
-add_precompiled_header( DoomDLL ./framework/Engine_precompiled.h  SOURCE_CXX ./framework/Engine_precompiled.cpp )
+if(WIN32) #todo: fix this difference
+	add_precompiled_header( DoomDLL Engine_precompiled.h  SOURCE_CXX ./framework/Engine_precompiled.cpp )
+else()
+	add_precompiled_header( DoomDLL ./framework/Engine_precompiled.h  SOURCE_CXX ./framework/Engine_precompiled.cpp )
+endif()
+
 if(WIN32)
 	set_target_properties(DoomDLL PROPERTIES OUTPUT_NAME "DoomDLL" LINK_FLAGS "/STACK:16777216,16777216 /PDB:\"DoomDLL.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/exports.def")
 else()

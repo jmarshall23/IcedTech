@@ -1,8 +1,6 @@
 // draw_shadow.cpp
 //
 
-//#include <renderer/qgllib/glew.h>
-#include <GL/glew.h>
 #include "Engine_precompiled.h"
 #include "tr_local.h"
 
@@ -273,9 +271,9 @@ void RB_DrawPointlightShadow(viewLight_t *viewLight) {
 	idRenderMatrix::CreateViewMatrix(viewLight->lightDef->parms.origin, lightAxis, renderMatrix);
 
 	float lightradius = 0.0f;
-	lightradius = std::max(lightradius, viewLight->lightDef->parms.lightRadius.x);
-	lightradius = std::max(lightradius, viewLight->lightDef->parms.lightRadius.y);
-	lightradius = std::max(lightradius, viewLight->lightDef->parms.lightRadius.z);
+	lightradius = max(lightradius, viewLight->lightDef->parms.lightRadius.x);
+	lightradius = max(lightradius, viewLight->lightDef->parms.lightRadius.y);
+	lightradius = max(lightradius, viewLight->lightDef->parms.lightRadius.z);
 	
 	renderProgManager.BindShader_ShadowDualParaboloid();
 	

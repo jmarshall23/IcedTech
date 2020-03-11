@@ -31,10 +31,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
-#define JPEG_INTERNALS
 extern "C" {
 #if defined(WIN32)
-#include "jpeg-6/jpeglib.h"
+#include <renderer/libjpeg-turbo-master/jpeglib.h>
 #else
 #include <jpeglib.h>
 #endif

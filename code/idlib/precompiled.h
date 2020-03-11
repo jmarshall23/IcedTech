@@ -36,12 +36,13 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifdef _WIN32
 
+#include <sdkddkver.h>
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// prevent auto literal to string conversion
 
 #ifndef _D3SDK
 #ifndef GAME_DLL
 
-#define WINVER				0x501
+//#define WINVER				0x501 // REEEEEEEEEEEEEEEEEE this was breaking everything
 
 #if 0
 // Dedicated server hits unresolved when trying to link this way now. Likely because of the 2010/Win7 transition? - TTimo

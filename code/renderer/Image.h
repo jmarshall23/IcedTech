@@ -37,9 +37,11 @@ No texture is ever used that does not have a corresponding idImage.
 
 ====================================================================
 */
-
+#if defined(WIN32)
+#include <renderer/qgllib/glew.h>
+#else
 #include <GL/gl.h>
-
+#endif
 static const int	MAX_TEXTURE_LEVELS = 14;
 
 // How is this texture used?  Determines the storage and color format
@@ -392,5 +394,9 @@ Image Channel Manipulations
 
 ====================================================================
 */
+#if defined(WIN32)
+#define ChannelBlend_Add(B,L)         ((byte)(min(255, (B + L))))
+#else
 #define ChannelBlend_Add(B,L)         ((byte)(std::min(255, (B + L))))
+#endif
 #define ChannelBlend_Multiply(A,B)   ((byte)((A * B) / 255))

@@ -28,7 +28,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "Engine_precompiled.h"
 
-#include <sys/posix/posix_public.h>
 #include "Session_local.h"
 
 idCVar	idSessionLocal::com_showAngles( "com_showAngles", "0", CVAR_SYSTEM | CVAR_BOOL, "" );
