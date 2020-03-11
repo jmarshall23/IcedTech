@@ -842,7 +842,7 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 
 	// find some joints in the model for locating effects
 	barrelJointView = animator.GetJointHandle( "barrel" );
-	flashJointView = animator.GetJointHandle( "flash" );
+	flashJointView = animator.GetJointHandle( "barrel" );
 	ejectJointView = animator.GetJointHandle( "eject" );
 	guiLightJointView = animator.GetJointHandle( "guiLight" );
 	ventLightJointView = animator.GetJointHandle( "ventLight" );

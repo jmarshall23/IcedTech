@@ -64,6 +64,8 @@ entityDef weapon_machinegun {
 	"muzzle_kick_offset"		"1 1 2"
 	"recoilTime"				"145"
 	"recoilAngles"				"-1 0 0"
+	
+	"flashPointLight"			"2"
 
 	"hide_time"					"0.3"								// time to hide weapon when talking to npcs or looking at guis
 	"hide_distance"				"-15"								// distance to offset weapon when talking to npcs or looking at guis

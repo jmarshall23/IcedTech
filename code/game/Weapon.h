@@ -155,6 +155,7 @@ public:
 	void					WeaponStolen(void);
 
 	void					SetState(weaponStatus_t state, int blendFrames);
+	weaponStatus_t			GetState(void) { return state; }
 	void					EnterCinematic(void);
 	void					ExitCinematic(void);
 	void					NetCatchup(void);
