@@ -167,6 +167,8 @@ void rvmWeaponMachineGun::Fire() {
 		owner->Event_LaunchProjectiles(MACHINEGUN_NUMPROJECTILES, spread, 0, 1, 1);
 
 		owner->Event_PlayAnim(ANIMCHANNEL_ALL, "fire", false);
+		owner->Event_FireSound();
+
 		firingState = FIRE_WAIT;
 		break;
 

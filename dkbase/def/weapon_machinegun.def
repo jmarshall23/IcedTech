@@ -78,6 +78,8 @@ entityDef weapon_machinegun {
 	"snd_glass"					"bullet_impact_glass"
 	"skin_invisible"			"skins/machinegun_invis"
 	
+	"snd_fire"					"player_machinegun_fire"
+	
 	"spread"					"1"
 }
 
