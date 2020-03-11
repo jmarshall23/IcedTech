@@ -1470,6 +1470,9 @@ void idPlayer::Spawn( void ) {
 	// load the armor sound feedback
 	declManager->FindSound( "player_sounds_hitArmor" );
 
+	// load the teleport in sound effect.
+	teleportInSFX = declManager->FindSound(spawnArgs.GetString("snd_teleport_enter"));
+
 	// set up conditions for animation
 	LinkScriptVariables();
 
@@ -2225,6 +2228,7 @@ void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_a
 			if (lastTeleFX < gameLocal.time - 1000) {
 // jmarshall - TODO: implement a new teleport in FX
 				//idEntityFx::StartFx(spawnArgs.GetString("fx_spawn"), &spawn_origin, NULL, this, true);
+				StartSoundShader(teleportInSFX, SND_CHANNEL_BODY, 0, false, NULL);
 // jmarshall end
 				lastTeleFX = gameLocal.time;
 			}

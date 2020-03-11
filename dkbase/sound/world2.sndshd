@@ -1,0 +1,7 @@
+world_teleportin {
+	minDistance 5
+	maxDistance 25
+	volume 0
+
+	sound/world/telein.wav
+}
