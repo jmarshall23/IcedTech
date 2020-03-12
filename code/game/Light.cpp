@@ -312,6 +312,8 @@ void idLight::Spawn( void ) {
 	bool needBroken;
 	const char *demonic_shader;
 
+	BaseSpawn();
+
 	// do the parsing the same way dmap and the editor do
 	gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &renderLight );
 

@@ -2808,7 +2808,7 @@ void idMayaExport::ConvertModel( void ) {
 		fclose( file );
 	}
 
-	MString	filename( options.src );
+	MString	filename( options.src.c_str() );
 	MFileIO::newFile( true );
 
 	// Load the file into Maya
@@ -2817,6 +2817,7 @@ void idMayaExport::ConvertModel( void ) {
 	if ( !status ) {
 		MayaError( "Error loading '%s': '%s'\n", filename.asChar(), status.errorString().asChar() );
 	}
+	common->Printf("Maya File loaded successfully...\n");
 
 	// force Maya to update the frame.  When using references, sometimes
 	// the model is posed the way it is in the source.  Since Maya only

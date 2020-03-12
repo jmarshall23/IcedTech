@@ -434,7 +434,7 @@ if(EXISTS "C:\\Program Files\\Autodesk\\Maya2019\\include\\qt-5.6.1_vc14-include
 	target_compile_definitions(mayaimport PRIVATE MAYA_IMPORT=1)
 	target_link_libraries(mayaimport idLib "foundation.lib" "OpenMaya.lib" "OpenMayaAnim.lib")
 	add_precompiled_header( mayaimport maya_precompiled.h  SOURCE_CXX ./MayaImport/maya_precompiled.cpp )
-	set_target_properties(mayaimport PROPERTIES OUTPUT_NAME "MayaImport2019x64" LINK_FLAGS "/PDB:\"MayaImport.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/MayaImport/mayaimport.def")
+	set_target_properties(mayaimport PROPERTIES OUTPUT_NAME "MayaImport2019x64" LINK_FLAGS "/STACK:36777216,36777216 /PDB:\"MayaImport.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/MayaImport/mayaimport.def")
 	# MayaImport 2019 Maya Folders
 	target_include_directories(mayaimport PUBLIC "C:\\Program Files\\Autodesk\\Maya2019\\include")
 	target_link_directories(mayaimport PUBLIC "C:\\Program Files\\Autodesk\\Maya2019\\lib")

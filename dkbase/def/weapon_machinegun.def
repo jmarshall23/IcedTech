@@ -5,30 +5,13 @@
 ***********************************************************************/
 
 export fred {
-	// view model machinegun
-	options -prefix MGUN_ -keep barrel eject guilight flash -parent barrel Ext -parent eject Ext -parent guilight Bod -parent flash Bod -rename origin blah -sourcedir models/weapons/machinegun/cycles -destdir models/md5/weapons/machinegun_view
+	mesh 	models/weapons/machinegun/machinegun.mb -dest models/weapons/machinegun/machinegun
+	anim 	models/weapons/machinegun/machinegun.mb -range 1 5 -dest models/weapons/machinegun/idle
+}
 
-	mesh	idle1.ma -dest viewmachinegun
-	anim	idle1.ma -range 1 45 -dest idle
-	anim	fire1.ma -range 1 4 -dest fire1
-	anim	fire2.ma -range 1 4 -dest fire2
-	anim	fire4.ma -range 1 4 -dest fire4
-	anim	putaway.ma -dest putaway
-	anim	pullup1.ma -dest pullup
-	anim	reload1.ma -range 1 60 -dest reload
-	anim	empty.ma -dest empty
-
-	// world model machinegun
-	options -ignorescale -prefix PLAYER_MG -keep ATTACHER barrel guilight eject flash -parent guilight Body -parent flash Body -parent eject Body -rename MGbarrel barrel -rename ATTACHER origin -clearorigin
-	addoptions -skipmesh PLAYER_mgdisplaymesh		
-	addoptions -skipmesh PLAYER_mgextendermesh
-	addoptions -skipmesh PLAYER_mgbodymesh
-	addoptions -skipmesh PLAYER_mgclipmesh
-	addoptions -skipmesh PLAYER_mgtriggermesh
-
-	mesh	models/characters/player/mocap/machinegun_idle.mb -dest models/md5/weapons/machinegun_world/worldmachinegun
-	anim	models/characters/player/mocap/machinegun_idle.mb -dest models/md5/weapons/machinegun_world/machinegun_idle
-	anim	models/characters/player/mocap/machinegun_reload.mb -dest models/md5/weapons/machinegun_world/machinegun_reload
+model view_weapon_machinegun2_mp {
+	mesh models/weapons/machinegun/machinegun.md5mesh
+	anim idle models/weapons/machinegun/idle.md5anim
 }
 
 entityDef weapon_machinegun {
@@ -43,7 +26,7 @@ entityDef weapon_machinegun {
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"
 	"model"						"models/weapons/machinegun/w_machinegun.lwo"
-	"model_view" 				"viewmodel_machinegun"
+	"model_view" 				"view_weapon_machinegun2_mp"
 	"model_world" 				"worldmodel_machinegun"
 	"joint_attach"				"MGATTACHER"
 	"def_dropItem"				"moveable_item_machinegun"
@@ -81,6 +64,8 @@ entityDef weapon_machinegun {
 	"muzzle_kick_offset"		"1 1 2"
 	"recoilTime"				"145"
 	"recoilAngles"				"-1 0 0"
+	
+	"flashPointLight"			"2"
 
 	"hide_time"					"0.3"								// time to hide weapon when talking to npcs or looking at guis
 	"hide_distance"				"-15"								// distance to offset weapon when talking to npcs or looking at guis
@@ -94,6 +79,8 @@ entityDef weapon_machinegun {
 	"snd_lowammo" 				"player_machinegun_lowammo"
 	"snd_glass"					"bullet_impact_glass"
 	"skin_invisible"			"skins/machinegun_invis"
+	
+	"snd_fire"					"player_machinegun_fire"
 	
 	"spread"					"1"
 }

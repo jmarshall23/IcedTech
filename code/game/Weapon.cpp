@@ -166,6 +166,8 @@ idWeapon::Spawn
 ================
 */
 void idWeapon::Spawn( void ) {
+	BaseSpawn();
+
 	if ( !gameLocal.isClient ) {
 		// setup the world model
 		worldModel = static_cast< idAnimatedEntity * >( gameLocal.SpawnEntityType( idAnimatedEntity::Type, NULL ) );
@@ -842,7 +844,7 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 
 	// find some joints in the model for locating effects
 	barrelJointView = animator.GetJointHandle( "barrel" );
-	flashJointView = animator.GetJointHandle( "flash" );
+	flashJointView = animator.GetJointHandle( "barrel" );
 	ejectJointView = animator.GetJointHandle( "eject" );
 	guiLightJointView = animator.GetJointHandle( "guiLight" );
 	ventLightJointView = animator.GetJointHandle( "ventLight" );

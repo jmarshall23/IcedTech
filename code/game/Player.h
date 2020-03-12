@@ -680,6 +680,8 @@ public:
 	void					Event_LevelTrigger( void );
 	void					Event_Gibbed( void );
 	void					Event_GetIdealWeapon( void );
+private:
+	const idSoundShader*	teleportInSFX;
 };
 
 ID_INLINE bool idPlayer::IsReady( void ) {

@@ -244,38 +244,35 @@ int		idClass::typeNumBits	= 0;
 int		idClass::memused		= 0;
 int		idClass::numobjects		= 0;
 
+// jmarshall
+/*
+=============
+idClass::idClass
+=============
+*/
+idClass::idClass() {
+	spawnedProperly = false;
+}
+// jmarshall end
+
 /*
 ================
 idClass::CallSpawn
 ================
 */
 void idClass::CallSpawn( void ) {
-	idTypeInfo *type;
-
+// jmarshall
+	idTypeInfo* type;
 	type = GetType();
-	CallSpawnFunc( type );
-}
 
-/*
-================
-idClass::CallSpawnFunc
-================
-*/
-classSpawnFunc_t idClass::CallSpawnFunc( idTypeInfo *cls ) {
-	classSpawnFunc_t func;
+	spawnedProperly = false;
+	Spawn();
 
-	if ( cls->super ) {
-		func = CallSpawnFunc( cls->super );
-		if ( func == cls->Spawn ) {
-			// don't call the same function twice in a row.
-			// this can happen when subclasses don't have their own spawn function.
-			return func;
-		}
+	if (spawnedProperly == false) {
+		common->FatalError("Entity type %s has incorrect spawn vtable. Please ensure you have called BaseSpawn();", type->classname);
+		return;
 	}
-
-	( this->*cls->Spawn )();
-
-	return cls->Spawn;
+// jmarshall end
 }
 
 /*
@@ -304,6 +301,7 @@ idClass::Spawn
 ================
 */
 void idClass::Spawn( void ) {
+	spawnedProperly = true;
 }
 
 /*

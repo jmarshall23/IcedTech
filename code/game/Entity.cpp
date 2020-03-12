@@ -450,6 +450,8 @@ void idEntity::Spawn( void ) {
 	const char			*classname;
 	const char			*scriptObjectName;
 
+	BaseSpawn();
+
 	gameLocal.RegisterEntity( this );
 
 	spawnArgs.GetString( "classname", NULL, &classname );

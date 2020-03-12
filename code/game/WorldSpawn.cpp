@@ -60,6 +60,8 @@ void idWorldspawn::Spawn( void ) {
 	const function_t	*func;
 	const idKeyValue	*kv;
 
+	BaseSpawn();
+
 	assert( gameLocal.world == NULL );
 	gameLocal.world = this;
 
