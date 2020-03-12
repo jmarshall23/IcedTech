@@ -66,7 +66,7 @@ idCursor3D::Spawn
 ===============
 */
 void idCursor3D::Spawn( void ) {
-	BaseSpawn();
+    idEntity::Spawn();
 }
 
 /*

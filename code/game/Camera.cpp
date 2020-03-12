@@ -50,7 +50,7 @@ idCamera::Spawn
 =====================
 */
 void idCamera::Spawn( void ) {
-	BaseSpawn();
+    idEntity::Spawn();
 }
 
 /*
@@ -175,7 +175,7 @@ idCameraView::Spawn
 =====================
 */
 void idCameraView::Spawn( void ) {
-	BaseSpawn();
+    idCamera::Spawn();
 
 	// if no target specified use ourself
 	const char *cam = spawnArgs.GetString("cameraTarget");
@@ -303,7 +303,7 @@ idCameraAnim::Spawn
 =====================
 */
 void idCameraAnim::Spawn( void ) {
-	BaseSpawn();
+    idCamera::Spawn();
 
 	if ( spawnArgs.GetVector( "old_origin", "0 0 0", offset ) ) {
 		offset = GetPhysics()->GetOrigin() - offset;

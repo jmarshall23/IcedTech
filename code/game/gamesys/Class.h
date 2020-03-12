@@ -93,8 +93,6 @@ Use this on single inheritance concrete classes only.
 */
 // jmarshall - added rvmClassHelper
 #define CLASS_PROTOTYPE( nameofclass )									\
-private:																\
-	void BaseSpawn() { __super::Spawn(); }								\
 public:																	\
 	static	idTypeInfo						Type;						\
 	static	idClass							*CreateInstance( void );	\
@@ -143,8 +141,6 @@ Use this on single inheritance abstract classes only.
 ================
 */
 #define ABSTRACT_PROTOTYPE( nameofclass )								\
-private:																\
-	void BaseSpawn() { __super::Spawn(); }								\
 public:																	\
 	static	idTypeInfo						Type;						\
 	static	idClass							*CreateInstance( void );	\

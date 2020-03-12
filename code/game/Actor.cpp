@@ -499,7 +499,7 @@ void idActor::Spawn( void ) {
 	float			fovDegrees;
 	copyJoints_t	copyJoint;
 
-	BaseSpawn();
+    idAFEntity_Gibbable::Spawn();
 
 	animPrefix	= "";
 	state		= NULL;

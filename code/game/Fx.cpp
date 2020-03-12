@@ -571,7 +571,7 @@ idEntityFx::Spawn
 ================
 */
 void idEntityFx::Spawn( void ) {
-	BaseSpawn();
+    idEntity::Spawn();
 
 	if ( g_skipFX.GetBool() ) {
 		return;

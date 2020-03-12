@@ -15,7 +15,7 @@ rvmReflectionProbe::Spawn
 ======================
 */
 void rvmReflectionProbe::Spawn(void) {
-	BaseSpawn();
+    idEntity::Spawn();
 
 	captureSize = spawnArgs.GetInt("captureSize", va("%d", g_defaultCaptureSize.GetInteger()));
 

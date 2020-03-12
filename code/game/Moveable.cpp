@@ -96,7 +96,7 @@ void idMoveable::Spawn( void ) {
 	int clipShrink;
 	idStr clipModelName;
 
-	BaseSpawn();
+    idEntity::Spawn();
 
 	// check if a clip model is set
 	spawnArgs.GetString( "clipmodel", "", clipModelName );
@@ -698,7 +698,7 @@ idBarrel::Spawn
 void idBarrel::Spawn( void ) {
 	const idBounds &bounds = GetPhysics()->GetBounds();
 
-	BaseSpawn();
+    idMoveable::Spawn();
 
 	// radius of the barrel cylinder
 	radius = ( bounds[1][0] - bounds[0][0] ) * 0.5f;
@@ -820,7 +820,7 @@ idExplodingBarrel::Spawn
 ================
 */
 void idExplodingBarrel::Spawn( void ) {
-	BaseSpawn();
+    idBarrel::Spawn();
 
 	health = spawnArgs.GetInt( "health", "5" );
 	fl.takedamage = true;

@@ -123,7 +123,7 @@ idSecurityCamera::Spawn
 void idSecurityCamera::Spawn( void ) {
 	idStr	str;
 
-	BaseSpawn();
+    idEntity::Spawn();
 
 	sweepAngle	= spawnArgs.GetFloat( "sweepAngle", "90" );
 	health		= spawnArgs.GetInt( "health", "100" );

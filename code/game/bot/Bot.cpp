@@ -81,7 +81,7 @@ void rvmBot::Spawn(void) {
 	char filename[256];
 	int errnum;
 
-	BaseSpawn();
+    idPlayer::Spawn();
 
 	botName = spawnArgs.GetString("botname");
 

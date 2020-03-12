@@ -166,7 +166,7 @@ idWeapon::Spawn
 ================
 */
 void idWeapon::Spawn( void ) {
-	BaseSpawn();
+    idAnimatedEntity::Spawn();
 
 	if ( !gameLocal.isClient ) {
 		// setup the world model

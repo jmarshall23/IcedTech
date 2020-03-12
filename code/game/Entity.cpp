@@ -450,7 +450,7 @@ void idEntity::Spawn( void ) {
 	const char			*classname;
 	const char			*scriptObjectName;
 
-	BaseSpawn();
+    idClass::Spawn();
 
 	gameLocal.RegisterEntity( this );
 

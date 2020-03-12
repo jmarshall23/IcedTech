@@ -247,7 +247,7 @@ idBrittleFracture::Spawn
 ================
 */
 void idBrittleFracture::Spawn( void ) {
-	BaseSpawn();
+    idEntity::Spawn();
 
 	// get shard properties
 	decalMaterial = declManager->FindMaterial( spawnArgs.GetString( "mtr_decal" ) );

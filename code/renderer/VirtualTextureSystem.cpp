@@ -723,6 +723,7 @@ rvmVirtualTextureSystem::SetVirtualMaterial
 =============================
 */
 void rvmVirtualTextureSystem::SetVirtualMaterial(int idx, idMaterial *material) {
+    assert( idx >= 0 && idx < MAXVIRTUALMATERIALS );
 	virtualMaterials[idx] = material;
 }
 

@@ -269,7 +269,7 @@ void idClass::CallSpawn( void ) {
 	Spawn();
 
 	if (spawnedProperly == false) {
-		common->FatalError("Entity type %s has incorrect spawn vtable. Please ensure you have called BaseSpawn();", type->classname);
+		common->FatalError("Entity type %s has incorrect spawn vtable. Please ensure you have called idClass::Spawn();", type->classname);
 		return;
 	}
 // jmarshall end

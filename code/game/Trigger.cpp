@@ -221,7 +221,7 @@ idTrigger::Spawn
 ================
 */
 void idTrigger::Spawn( void ) {
-	BaseSpawn();
+    idEntity::Spawn();
 
 	GetPhysics()->SetContents( CONTENTS_TRIGGER );
 
@@ -323,7 +323,7 @@ so, the basic time between firing is a random time between
 ================
 */
 void idTrigger_Multi::Spawn( void ) {
-	BaseSpawn();
+    idTrigger::Spawn();
 
 	spawnArgs.GetFloat( "wait", "0.5", wait );
 	spawnArgs.GetFloat( "random", "0", random );
@@ -573,7 +573,7 @@ idTrigger_EntityName::Spawn
 ================
 */
 void idTrigger_EntityName::Spawn( void ) {
-	BaseSpawn();
+    idTrigger::Spawn();
 
 	spawnArgs.GetFloat( "wait", "0.5", wait );
 	spawnArgs.GetFloat( "random", "0", random );
@@ -762,7 +762,7 @@ Can be turned on or off by using.
 ================
 */
 void idTrigger_Timer::Spawn( void ) {
-	BaseSpawn();
+    idTrigger::Spawn();
 
 	spawnArgs.GetFloat( "random", "1", random );
 	spawnArgs.GetFloat( "wait", "1", wait );
@@ -896,7 +896,7 @@ idTrigger_Count::Spawn
 ================
 */
 void idTrigger_Count::Spawn( void ) {
-	BaseSpawn();
+    idTrigger::Spawn();
 
 	spawnArgs.GetInt( "count", "1", goal );
 	spawnArgs.GetFloat( "delay", "0", delay );
@@ -992,7 +992,7 @@ idTrigger_Hurt::Spawn
 ================
 */
 void idTrigger_Hurt::Spawn( void ) {
-	BaseSpawn();
+    idTrigger::Spawn();
 
 	spawnArgs.GetBool( "on", "1", on );
 	spawnArgs.GetFloat( "delay", "1.0", delay );
@@ -1088,7 +1088,7 @@ idTrigger_Touch::Spawn
 ================
 */
 void idTrigger_Touch::Spawn( void ) {
-	BaseSpawn();
+    idTrigger::Spawn();
 
 	// get the clip model
 	clipModel = new idClipModel( GetPhysics()->GetClipModel() );
