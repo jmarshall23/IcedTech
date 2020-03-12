@@ -499,6 +499,8 @@ void idActor::Spawn( void ) {
 	float			fovDegrees;
 	copyJoints_t	copyJoint;
 
+	BaseSpawn();
+
 	animPrefix	= "";
 	state		= NULL;
 	idealState	= NULL;

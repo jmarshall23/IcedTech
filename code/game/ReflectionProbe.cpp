@@ -15,6 +15,8 @@ rvmReflectionProbe::Spawn
 ======================
 */
 void rvmReflectionProbe::Spawn(void) {
+	BaseSpawn();
+
 	captureSize = spawnArgs.GetInt("captureSize", va("%d", g_defaultCaptureSize.GetInteger()));
 
 	// If we are building reflections, don't bother loading any reflection probes off disc.

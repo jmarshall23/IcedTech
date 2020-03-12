@@ -89,13 +89,16 @@ It prototypes variables used in class instanciation and type checking.
 Use this on single inheritance concrete classes only.
 ================
 */
+// jmarshall - added rvmClassHelper
 #define CLASS_PROTOTYPE( nameofclass )									\
+private:																\
+	void BaseSpawn() { __super::Spawn(); }								\
 public:																	\
 	static	idTypeInfo						Type;						\
 	static	idClass							*CreateInstance( void );	\
 	virtual	idTypeInfo						*GetType( void ) const;		\
 	static	idEventFunc<nameofclass>		eventCallbacks[]
-
+// jmarshall end
 /*
 ================
 CLASS_DECLARATION
@@ -107,6 +110,7 @@ proper superclass is indicated or the run-time type information will be
 incorrect.  Use this on concrete classes only.
 ================
 */
+
 #define CLASS_DECLARATION( nameofsuperclass, nameofclass )											\
 	idTypeInfo nameofclass::Type( #nameofclass, #nameofsuperclass,									\
 		( idEventFunc<idClass> * )nameofclass::eventCallbacks,	nameofclass::CreateInstance, ( void ( idClass::* )( void ) )&nameofclass::Spawn,	\
@@ -126,6 +130,7 @@ incorrect.  Use this on concrete classes only.
 	}																								\
 idEventFunc<nameofclass> nameofclass::eventCallbacks[] = {
 
+
 /*
 ================
 ABSTRACT_PROTOTYPE
@@ -136,6 +141,15 @@ Use this on single inheritance abstract classes only.
 ================
 */
 #define ABSTRACT_PROTOTYPE( nameofclass )								\
+private:																\
+	void BaseSpawn() { __super::Spawn(); }								\
+public:																	\
+	static	idTypeInfo						Type;						\
+	static	idClass							*CreateInstance( void );	\
+	virtual	idTypeInfo						*GetType( void ) const;		\
+	static	idEventFunc<nameofclass>		eventCallbacks[]
+
+#define ABSTRACT_PROTOTYPE_BASE( nameofclass )							\
 public:																	\
 	static	idTypeInfo						Type;						\
 	static	idClass							*CreateInstance( void );	\
@@ -173,7 +187,7 @@ class idRestoreGame;
 
 class idClass {
 public:
-	ABSTRACT_PROTOTYPE( idClass );
+	ABSTRACT_PROTOTYPE_BASE( idClass );
 
 #ifdef ID_REDIRECT_NEWDELETE
 #undef new
@@ -186,9 +200,10 @@ public:
 #define new ID_DEBUG_NEW
 #endif
 
+								idClass();
 	virtual						~idClass();
 
-	void						Spawn( void );
+	virtual void				Spawn( void );
 	void						CallSpawn( void );
 	bool						IsType( const idTypeInfo &c ) const;
 	const char *				GetClassname( void ) const;
@@ -255,12 +270,12 @@ public:
 	static idTypeInfo *			GetType( int num );
 
 private:
-	classSpawnFunc_t			CallSpawnFunc( idTypeInfo *cls );
-
 	bool						PostEventArgs( const idEventDef *ev, int time, int numargs, ... );
 	bool						ProcessEventArgs( const idEventDef *ev, int numargs, ... );
 
 	void						Event_SafeRemove( void );
+
+	bool						spawnedProperly;
 
 	static bool					initialized;
 	static idList<idTypeInfo *>	types;

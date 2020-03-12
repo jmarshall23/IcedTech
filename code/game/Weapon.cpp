@@ -166,6 +166,8 @@ idWeapon::Spawn
 ================
 */
 void idWeapon::Spawn( void ) {
+	BaseSpawn();
+
 	if ( !gameLocal.isClient ) {
 		// setup the world model
 		worldModel = static_cast< idAnimatedEntity * >( gameLocal.SpawnEntityType( idAnimatedEntity::Type, NULL ) );

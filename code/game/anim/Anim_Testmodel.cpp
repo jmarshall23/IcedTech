@@ -108,6 +108,8 @@ void idTestModel::Spawn( void ) {
 	const idKeyValue	*kv;
 	copyJoints_t		copyJoint;
 
+	BaseSpawn();
+
 	if ( renderEntity.hModel && renderEntity.hModel->IsDefaultModel() && !animator.ModelDef() ) {
 		gameLocal.Warning( "Unable to create testmodel for '%s' : model defaulted", spawnArgs.GetString( "model" ) );
 		PostEventMS( &EV_Remove, 0 );

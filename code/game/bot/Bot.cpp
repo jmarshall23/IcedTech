@@ -18,6 +18,7 @@ rvmBot::rvmBot
 */
 rvmBot::rvmBot() {
 	bs.action = NULL;
+	hasSpawned = false;
 	currentWaypoint = BOT_NOWAYPOINT;
 	gameLocal.RegisterBot(this);
 }
@@ -76,9 +77,13 @@ rvmBot::Spawn
 ===================
 */
 void rvmBot::Spawn(void) {	
-	idStr botName = spawnArgs.GetString("botname");
+	idStr botName;
 	char filename[256];
 	int errnum;
+
+	BaseSpawn();
+
+	botName = spawnArgs.GetString("botname");
 
 	// Load in the bot character.
 	bs.character = botCharacterStatsManager.BotLoadCharacterFromFile(va("bots/%s_c.c", botName.c_str()), 1);
@@ -115,7 +120,7 @@ void rvmBot::Spawn(void) {
 	bs.setupcount = 4;
 	bs.entergame_time = Bot_Time();
 
-	idPlayer::Spawn();
+	hasSpawned = true;
 }
 
 /*
@@ -278,6 +283,9 @@ rvmBot::Think
 ===================
 */
 void rvmBot::Think(void) {
+	if (!hasSpawned)
+		return;
+
 	if(gameLocal.isServer)
 	{
 		ServerThink();

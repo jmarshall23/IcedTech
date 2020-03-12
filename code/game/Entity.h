@@ -154,7 +154,7 @@ public:
 							idEntity();
 							~idEntity();
 
-	void					Spawn( void );
+	virtual void			Spawn( void );
 
 	void					Save( idSaveGame *savefile ) const;
 	void					Restore( idRestoreGame *savefile );

@@ -272,6 +272,8 @@ void idItem::Spawn( void ) {
 	idEntity *	ent;
 	float		tsize;
 
+	BaseSpawn();
+
 	if ( spawnArgs.GetBool( "dropToFloor" ) ) {
 		PostEventMS( &EV_DropToFloor, 0 );
 	}
@@ -623,6 +625,7 @@ idItemPowerup::Spawn
 ================
 */
 void idItemPowerup::Spawn( void ) {
+	BaseSpawn();
 	time = spawnArgs.GetInt( "time", "30" );
 	type = spawnArgs.GetInt( "type", "0" );
 }
@@ -689,6 +692,8 @@ idObjective::Spawn
 ================
 */
 void idObjective::Spawn( void ) {
+	BaseSpawn();
+
 	Hide();
 	PostEventMS( &EV_CamShot, 250 );
 }
@@ -812,6 +817,7 @@ idVideoCDItem::Spawn
 ================
 */
 void idVideoCDItem::Spawn( void ) {
+	BaseSpawn();
 }
 
 /*
@@ -925,6 +931,8 @@ void idMoveableItem::Spawn( void ) {
 	float density, friction, bouncyness, tsize;
 	idStr clipModelName;
 	idBounds bounds;
+
+	BaseSpawn();
 
 	// create a trigger for item pickup
 	spawnArgs.GetFloat( "triggersize", "16.0", tsize );
@@ -1227,6 +1235,7 @@ idItemRemover::Spawn
 ================
 */
 void idItemRemover::Spawn( void ) {
+	BaseSpawn();
 }
 
 /*
@@ -1299,6 +1308,8 @@ idObjectiveComplete::Spawn
 ================
 */
 void idObjectiveComplete::Spawn( void ) {
+	BaseSpawn();
+
 	spawnArgs.SetBool( "objEnabled", false );
 	Hide();
 }

@@ -91,6 +91,8 @@ idProjectile::Spawn
 ================
 */
 void idProjectile::Spawn( void ) {
+	BaseSpawn();
+
 	physicsObj.SetSelf( this );
 	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetContents( 0 );
@@ -1259,6 +1261,7 @@ idGuidedProjectile::Spawn
 ================
 */
 void idGuidedProjectile::Spawn( void ) {
+	BaseSpawn();
 }
 
 /*
@@ -1452,6 +1455,8 @@ idSoulCubeMissile::Spawn( void )
 ================
 */
 void idSoulCubeMissile::Spawn( void ) {
+	BaseSpawn();
+
 	startingVelocity.Zero();
 	endingVelocity.Zero();
 	accelTime = 0.0f;
@@ -1700,6 +1705,8 @@ idBFGProjectile::Spawn
 ================
 */
 void idBFGProjectile::Spawn( void ) {
+	BaseSpawn();
+
 	beamTargets.Clear();
 	memset( &secondModel, 0, sizeof( secondModel ) );
 	secondModelDefHandle = -1;

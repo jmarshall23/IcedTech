@@ -105,6 +105,8 @@ idSound::Spawn
 ================
 */
 void idSound::Spawn( void ) {
+	BaseSpawn();
+
 	spawnArgs.GetVector( "move", "0 0 0", shakeTranslate );
 	spawnArgs.GetAngles( "rotate", "0 0 0", shakeRotate );
 	spawnArgs.GetFloat( "random", "0", random );

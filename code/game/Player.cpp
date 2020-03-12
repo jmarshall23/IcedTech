@@ -1454,12 +1454,12 @@ void idPlayer::Spawn( void ) {
 		}
 
 		// load cursor
-		if ( spawnArgs.GetString( "cursor", "", temp ) ) {
-			cursor = uiManager->FindGui( temp, true, gameLocal.isMultiplayer, gameLocal.isMultiplayer );
-		}
-		if ( cursor ) {
-			cursor->Activate( true, gameLocal.time );
-		}
+		//if ( spawnArgs.GetString( "cursor", "", temp ) ) {
+		//	cursor = uiManager->FindGui( temp, true, gameLocal.isMultiplayer, gameLocal.isMultiplayer );
+		//}
+		//if ( cursor ) {
+		//	cursor->Activate( true, gameLocal.time );
+		//}
 
 		objectiveSystem = uiManager->FindGui( "guis/pda.gui", true, false, true );
 		objectiveSystemOpen = false;
@@ -5825,8 +5825,7 @@ void idPlayer::Move( void ) {
 	idVec3 oldVelocity;
 	idVec3 pushVelocity;
 
-// jmarshall: this fixes a physics crash with the x86 -> x64 conversion, but I like the out come,
-// the dead body disolves in the last simulated position. TODO take a look at this.
+// jmarshall: this is a hack that has turned into a cool mechanic
 	if (health <= 0)
 		return;
 // jmarshall end

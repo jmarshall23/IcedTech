@@ -594,6 +594,8 @@ idTarget_Give::Spawn
 ================
 */
 void idTarget_Give::Spawn( void ) {
+	BaseSpawn();
+
 	if ( spawnArgs.GetBool( "onSpawn" ) ) {
 		PostEventMS( &EV_Activate, 50 );
 	}
@@ -649,6 +651,7 @@ idTarget_GiveEmail::Spawn
 ================
 */
 void idTarget_GiveEmail::Spawn( void ) {
+	BaseSpawn();
 }
 
 /*
@@ -686,6 +689,8 @@ idTarget_SetModel::Spawn
 */
 void idTarget_SetModel::Spawn( void ) {
 	const char *model;
+
+	BaseSpawn();
 
 	model = spawnArgs.GetString( "newmodel" );
 	if ( declManager->FindType( DECL_MODELDEF, model, false ) == NULL ) {
@@ -856,6 +861,8 @@ idTarget_SetInfluence::Spawn
 ================
 */
 void idTarget_SetInfluence::Spawn() {
+	BaseSpawn();
+
 	PostEventMS( &EV_GatherEntities, 0 );
 	flashIn = spawnArgs.GetFloat( "flashIn", "0" );
 	flashOut = spawnArgs.GetFloat( "flashOut", "0" );
@@ -1538,6 +1545,7 @@ idTarget_Tip::Spawn
 ================
 */
 void idTarget_Tip::Spawn( void ) {
+	BaseSpawn();
 }
 
 /*
