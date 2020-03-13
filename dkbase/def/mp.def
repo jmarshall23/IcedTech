@@ -293,7 +293,6 @@ entityDef moveable_item_plasmagun_mp {
 
 entityDef weapon_rocketlauncher_mp {
 	"inherit"			"weapon_rocketlauncher"
-	"model"				"models/weapons/rocketlauncher/mp_rocketlauncher.lwo"
 }
 
 entityDef projectile_rocket_mp {

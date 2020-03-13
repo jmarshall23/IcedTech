@@ -26,3 +26,11 @@ models/weapons/shotgun/shotgun_world/Shotgun
 	diffusemap		models/weapons/shotgun/Shotgun_diffuse.tga
 	specularmap		models/weapons/shotgun/Shotgun_spec_gloss.tga
 }
+
+models/weapons/rocketlauncher/rocketlauncher_world/RocketLauncher_Material
+{
+	qer_editorimage		models/weapons/rocketlauncher/rocketlauncher_diffuse.tga
+	bumpmap			models/weapons/rocketlauncher/rocketlauncher_normal.tga
+	diffusemap		models/weapons/rocketlauncher/rocketlauncher_diffuse.tga
+	specularmap		models/weapons/rocketlauncher/rocketlauncher_spec.tga	
+}

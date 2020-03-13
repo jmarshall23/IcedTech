@@ -44,7 +44,7 @@ entityDef weapon_rocketlauncher {
 
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"
-	"model" 					"models/weapons/rocketlauncher/w_rocketlauncher.lwo"
+	"model" 					"models/weapons/rocketlauncher/rocketlauncher_world.mdr"
 	"model_view" 				"viewmodel_rocketlauncher"
 	"model_world" 				"worldmodel_rocketlauncher"
 	"joint_attach"				"RL_ATTACHER"
