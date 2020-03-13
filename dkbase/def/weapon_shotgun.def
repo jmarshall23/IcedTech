@@ -48,7 +48,7 @@ entityDef weapon_shotgun {
 
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"
-	"model"						"models/weapons/shotgun/w_shotgun2.lwo"
+	"model"						"models/weapons/shotgun/shotgun_world.mdr"
 	"model_view" 				"viewmodel_shotgun"
 	"model_world" 				"worldmodel_shotgun"
 	"joint_attach"				"SHOTGUN_ATTACHER"

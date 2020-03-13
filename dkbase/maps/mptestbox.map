@@ -447,7 +447,7 @@ Version 2
 {
 "classname" "weapon_shotgun_mp"
 "name" "weapon_shotgun_mp_2"
-"origin" "600 -680 8"
+"origin" "632 -656 40"
 }
 // entity 10
 {
