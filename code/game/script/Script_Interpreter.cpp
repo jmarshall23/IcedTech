@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "../Game_local.h"
@@ -425,7 +425,7 @@ idInterpreter::Error
 Aborts the currently executing function
 ============
 */
-void idInterpreter::Error( char *fmt, ... ) const {
+void idInterpreter::Error( const char *fmt, ... ) const {
 	va_list argptr;
 	char	text[ 1024 ];
 
@@ -450,7 +450,7 @@ idInterpreter::Warning
 Prints file and line number information with warning.
 ============
 */
-void idInterpreter::Warning( char *fmt, ... ) const {
+void idInterpreter::Warning( const char *fmt, ... ) const {
 	va_list argptr;
 	char	text[ 1024 ];
 
@@ -681,14 +681,16 @@ idInterpreter::CallEvent
 ================
 */
 void idInterpreter::CallEvent( const function_t *func, int argsize ) {
-	int 				i;
-	int					j;
-	varEval_t			var;
-	int 				pos;
-	int 				start;
-	int					data[ D_EVENT_MAXARGS ];
-	const idEventDef	*evdef;
-	const char			*format;
+    int 				i;
+    int					j;
+    varEval_t			var;
+    int 				pos;
+    int 				start;
+    // RB: 64 bit fixes, changed int to intptr_t
+    intptr_t			data[ D_EVENT_MAXARGS ];
+    // RB end
+    const idEventDef*	evdef;
+    const char*			format;
 
 	if ( !func ) {
 		Error( "NULL function" );
@@ -740,13 +742,18 @@ void idInterpreter::CallEvent( const function_t *func, int argsize ) {
 		return;
 	}
 
-	format = evdef->GetArgFormat();
-	for( j = 0, i = 0, pos = type_object.Size(); ( pos < argsize ) || ( format[ i ] != 0 ); i++ ) {
-		switch( format[ i ] ) {
-		case D_EVENT_INTEGER :
-			var.intPtr = ( int * )&localstack[ start + pos ];
-			data[ i ] = int( *var.floatPtr );
-			break;
+    format = evdef->GetArgFormat();
+    for( j = 0, i = 0, pos = type_object.Size(); ( pos < argsize ) || ( format[ i ] != 0 ); i++ )
+    {
+        switch( format[ i ] )
+        {
+            case D_EVENT_INTEGER :
+                var.intPtr = ( int* )&localstack[ start + pos ];
+                // RB: fixed data alignment
+                //data[ i ] = int( *var.floatPtr );
+                ( *( int* )&data[ i ] ) = int( *var.floatPtr );
+                // RB end
+                break;
 
 		case D_EVENT_FLOAT :
 			var.intPtr = ( int * )&localstack[ start + pos ];
@@ -852,14 +859,16 @@ idInterpreter::CallSysEvent
 ================
 */
 void idInterpreter::CallSysEvent( const function_t *func, int argsize ) {
-	int 				i;
-	int					j;
-	varEval_t			source;
-	int 				pos;
-	int 				start;
-	int					data[ D_EVENT_MAXARGS ];
-	const idEventDef	*evdef;
-	const char			*format;
+    int 				i;
+    int					j;
+    varEval_t			source;
+    int 				pos;
+    int 				start;
+    // RB: 64 bit fixes, changed int to intptr_t
+    intptr_t			data[ D_EVENT_MAXARGS ];
+    // RB end
+    const idEventDef*	evdef;
+    const char*			format;
 
 	if ( !func ) {
 		Error( "NULL function" );
@@ -1807,10 +1816,15 @@ bool idInterpreter::Execute( void ) {
 			break;
 
 		case OP_PUSH_V:
-			var_a = GetVariable( st->a );
-			Push( *reinterpret_cast<int *>( &var_a.vectorPtr->x ) );
-			Push( *reinterpret_cast<int *>( &var_a.vectorPtr->y ) );
-			Push( *reinterpret_cast<int *>( &var_a.vectorPtr->z ) );
+            var_a = GetVariable( st->a );
+            // RB: 64 bit fix, changed individual pushes with PushVector
+            /*
+            Push( *reinterpret_cast<int *>( &var_a.vectorPtr->x ) );
+            Push( *reinterpret_cast<int *>( &var_a.vectorPtr->y ) );
+            Push( *reinterpret_cast<int *>( &var_a.vectorPtr->z ) );
+            */
+            PushVector( *var_a.vectorPtr );
+            // RB end
 			break;
 
 		case OP_PUSH_OBJ:
@@ -1833,3 +1847,41 @@ bool idInterpreter::Execute( void ) {
 
 	return threadDying;
 }
+
+// RB: moved from Script_Interpreter.h to avoid include problems with the script debugger
+/*
+================
+idInterpreter::GetEntity
+================
+*/
+idEntity* idInterpreter::GetEntity( int entnum ) const
+{
+    assert( entnum <= MAX_GENTITIES );
+    if( ( entnum > 0 ) && ( entnum <= MAX_GENTITIES ) )
+    {
+        return gameLocal.entities[ entnum - 1 ];
+    }
+    return NULL;
+}
+
+/*
+================
+idInterpreter::GetScriptObject
+================
+*/
+idScriptObject* idInterpreter::GetScriptObject( int entnum ) const
+{
+    idEntity* ent;
+
+    assert( entnum <= MAX_GENTITIES );
+    if( ( entnum > 0 ) && ( entnum <= MAX_GENTITIES ) )
+    {
+        ent = gameLocal.entities[ entnum - 1 ];
+        if( ent && ent->scriptObject.data )
+        {
+            return &ent->scriptObject;
+        }
+    }
+    return NULL;
+}
+// RB end

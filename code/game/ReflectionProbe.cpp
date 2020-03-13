@@ -1,7 +1,7 @@
 // ReflectionProbe.cpp
 //
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #include "Game_local.h"
 
 idCVar g_defaultCaptureSize("g_defaultCaptureSize", "256", CVAR_INTEGER, "default capture size for reflection probes");
@@ -15,6 +15,8 @@ rvmReflectionProbe::Spawn
 ======================
 */
 void rvmReflectionProbe::Spawn(void) {
+    idEntity::Spawn();
+
 	captureSize = spawnArgs.GetInt("captureSize", va("%d", g_defaultCaptureSize.GetInteger()));
 
 	// If we are building reflections, don't bother loading any reflection probes off disc.

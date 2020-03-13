@@ -92,9 +92,9 @@ idAngles::ToVectors
 void idAngles::ToVectors( idVec3 *forward, idVec3 *right, idVec3 *up ) const {
 	float sr, sp, sy, cr, cp, cy;
 	
-	idMath::SinCos( DEG2RAD( yaw ), sy, cy );
-	idMath::SinCos( DEG2RAD( pitch ), sp, cp );
-	idMath::SinCos( DEG2RAD( roll ), sr, cr );
+	idMath::SinCos( DEG2RAD( yaw ), &sy, &cy );
+	idMath::SinCos( DEG2RAD( pitch ), &sp, &cp );
+	idMath::SinCos( DEG2RAD( roll ), &sr, &cr );
 
 	if ( forward ) {
 		forward->Set( cp * cy, cp * sy, -sp );
@@ -117,8 +117,8 @@ idAngles::ToForward
 idVec3 idAngles::ToForward( void ) const {
 	float sp, sy, cp, cy;
 	
-	idMath::SinCos( DEG2RAD( yaw ), sy, cy );
-	idMath::SinCos( DEG2RAD( pitch ), sp, cp );
+	idMath::SinCos( DEG2RAD( yaw ), &sy, &cy );
+	idMath::SinCos( DEG2RAD( pitch ), &sp, &cp );
 
 	return idVec3( cp * cy, cp * sy, -sp );
 }
@@ -132,9 +132,9 @@ idQuat idAngles::ToQuat( void ) const {
 	float sx, cx, sy, cy, sz, cz;
 	float sxcy, cxcy, sxsy, cxsy;
 
-	idMath::SinCos( DEG2RAD( yaw ) * 0.5f, sz, cz );
-	idMath::SinCos( DEG2RAD( pitch ) * 0.5f, sy, cy );
-	idMath::SinCos( DEG2RAD( roll ) * 0.5f, sx, cx );
+	idMath::SinCos( DEG2RAD( yaw ) * 0.5f, &sz, &cz );
+	idMath::SinCos( DEG2RAD( pitch ) * 0.5f, &sy, &cy );
+	idMath::SinCos( DEG2RAD( roll ) * 0.5f, &sx, &cx );
 
 	sxcy = sx * cy;
 	cxcy = cx * cy;
@@ -166,9 +166,9 @@ idRotation idAngles::ToRotation( void ) const {
 		return idRotation( vec3_origin, idVec3( 0.0f, -1.0f, 0.0f ), pitch );
 	}
 
-	idMath::SinCos( DEG2RAD( yaw ) * 0.5f, sz, cz );
-	idMath::SinCos( DEG2RAD( pitch ) * 0.5f, sy, cy );
-	idMath::SinCos( DEG2RAD( roll ) * 0.5f, sx, cx );
+	idMath::SinCos( DEG2RAD( yaw ) * 0.5f, &sz, &cz );
+	idMath::SinCos( DEG2RAD( pitch ) * 0.5f, &sy, &cy );
+	idMath::SinCos( DEG2RAD( roll ) * 0.5f, &sx, &cx );
 
 	sxcy = sx * cy;
 	cxcy = cx * cy;
@@ -200,9 +200,9 @@ idMat3 idAngles::ToMat3( void ) const {
 	idMat3 mat;
 	float sr, sp, sy, cr, cp, cy;
 
-	idMath::SinCos( DEG2RAD( yaw ), sy, cy );
-	idMath::SinCos( DEG2RAD( pitch ), sp, cp );
-	idMath::SinCos( DEG2RAD( roll ), sr, cr );
+	idMath::SinCos( DEG2RAD( yaw ), &sy, &cy );
+	idMath::SinCos( DEG2RAD( pitch ), &sp, &cp );
+	idMath::SinCos( DEG2RAD( roll ), &sr, &cr );
 
 	mat[ 0 ].Set( cp * cy, cp * sy, -sp );
 	mat[ 1 ].Set( sr * sp * cy + cr * -sy, sr * sp * sy + cr * cy, sr * cp );

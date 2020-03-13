@@ -30,7 +30,9 @@ If you have questions concerning this license or the applicable additional terms
 #define __SCRIPT_INTERPRETER_H__
 
 #define MAX_STACK_DEPTH 	64
-#define LOCALSTACK_SIZE 	6144
+// RB: doubled local stack size
+#define LOCALSTACK_SIZE 	(6144 * 2)
+// RB end
 
 typedef struct prstack_s {
 	int 				s;
@@ -60,7 +62,10 @@ private:
 
 	void				PopParms( int numParms );
 	void				PushString( const char *string );
-	void				Push( int value );
+	void				Push( intptr_t value );
+    // RB: added PushVector for new E_EVENT_SIZEOF_VEC
+    void				PushVector( const idVec3& vector );
+    // RB end
 	const char			*FloatToString( float value );
 	void				AppendString( idVarDef *def, const char *from );
 	void				SetString( idVarDef *def, const char *from );
@@ -93,8 +98,8 @@ public:
 	int					CurrentLine( void ) const;
 	const char			*CurrentFile( void ) const;
 
-	void				Error( char *fmt, ... ) const id_attribute((format(printf,2,3)));
-	void				Warning( char *fmt, ... ) const id_attribute((format(printf,2,3)));
+	void				Error( const char *fmt, ... ) const id_attribute((format(printf,2,3)));
+	void				Warning( const char *fmt, ... ) const id_attribute((format(printf,2,3)));
 	void				DisplayInfo( void ) const;
 
 	bool				BeginMultiFrameEvent( idEntity *ent, const idEventDef *event );
@@ -135,13 +140,30 @@ ID_INLINE void idInterpreter::PopParms( int numParms ) {
 idInterpreter::Push
 ====================
 */
-ID_INLINE void idInterpreter::Push( int value ) {
-	if ( localstackUsed + sizeof( int ) > LOCALSTACK_SIZE ) {
+ID_INLINE void idInterpreter::Push( intptr_t value ) {
+	if ( localstackUsed + sizeof( intptr_t ) > LOCALSTACK_SIZE ) {
 		Error( "Push: locals stack overflow\n" );
 	}
-	*( int * )&localstack[ localstackUsed ]	= value;
-	localstackUsed += sizeof( int );
+	*( intptr_t * )&localstack[ localstackUsed ]	= value;
+	localstackUsed += sizeof( intptr_t );
 }
+
+// RB begin
+/*
+====================
+idInterpreter::PushVector
+====================
+*/
+ID_INLINE void idInterpreter::PushVector( const idVec3& vector )
+{
+    if( localstackUsed + E_EVENT_SIZEOF_VEC > LOCALSTACK_SIZE )
+    {
+        Error( "Push: locals stack overflow\n" );
+    }
+    *( idVec3* )&localstack[ localstackUsed ] = vector;
+    localstackUsed += E_EVENT_SIZEOF_VEC;
+}
+// RB end
 
 /*
 ====================
@@ -224,37 +246,6 @@ ID_INLINE varEval_t idInterpreter::GetVariable( idVarDef *def ) {
 	} else {
 		return def->value;
 	}
-}
-
-/*
-================
-idInterpreter::GetEntity
-================
-*/
-ID_INLINE idEntity *idInterpreter::GetEntity( int entnum ) const{
-	assert( entnum <= MAX_GENTITIES );
-	if ( ( entnum > 0 ) && ( entnum <= MAX_GENTITIES ) ) {
-		return gameLocal.entities[ entnum - 1 ];
-	}
-	return NULL;
-}
-
-/*
-================
-idInterpreter::GetScriptObject
-================
-*/
-ID_INLINE idScriptObject *idInterpreter::GetScriptObject( int entnum ) const {
-	idEntity *ent;
-
-	assert( entnum <= MAX_GENTITIES );
-	if ( ( entnum > 0 ) && ( entnum <= MAX_GENTITIES ) ) {
-		ent = gameLocal.entities[ entnum - 1 ];
-		if ( ent && ent->scriptObject.data ) {
-			return &ent->scriptObject;
-		}
-	}
-	return NULL;
 }
 
 /*

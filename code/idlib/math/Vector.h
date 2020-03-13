@@ -1758,7 +1758,7 @@ ID_INLINE void idVecX::SetData( int length, float *data ) {
 	if ( p && ( p < idVecX::tempPtr || p >= idVecX::tempPtr + VECX_MAX_TEMP ) && alloced != -1 ) {
 		Mem_Free16( p );
 	}
-	assert( ( ( (int) data ) & 15 ) == 0 ); // data must be 16 byte aligned
+	assert( ( ( (uintptr_t) data ) & 15 ) == 0 ); // data must be 16 byte aligned
 	p = data;
 	size = length;
 	alloced = -1;
@@ -1978,8 +1978,8 @@ ID_INLINE idPolar3 &idPolar3::operator=( const idPolar3 &a ) {
 
 ID_INLINE idVec3 idPolar3::ToVec3( void ) const {
 	float sp, cp, st, ct;
-	idMath::SinCos( phi, sp, cp );
-	idMath::SinCos( theta, st, ct );
+	idMath::SinCos( phi, &sp, &cp );
+	idMath::SinCos( theta, &st, &ct );
  	return idVec3( cp * radius * ct, cp * radius * st, radius * sp );
 }
 

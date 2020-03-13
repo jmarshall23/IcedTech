@@ -282,6 +282,7 @@ public:
 	void BotShutdownGoalAI(void);
 	void BotFreeItemWeights(int goalstate);
 public:
+	bool BotNearGoal(idVec3 p1, idVec3 p2);
 	int BotGetTopGoal(int goalstate, bot_goal_t* goal);
 	int BotGetSecondGoal(int goalstate, bot_goal_t* goal);
 public:

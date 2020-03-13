@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -95,6 +95,8 @@ void idMoveable::Spawn( void ) {
 	float density, friction, bouncyness, mass;
 	int clipShrink;
 	idStr clipModelName;
+
+    idEntity::Spawn();
 
 	// check if a clip model is set
 	spawnArgs.GetString( "clipmodel", "", clipModelName );
@@ -696,6 +698,8 @@ idBarrel::Spawn
 void idBarrel::Spawn( void ) {
 	const idBounds &bounds = GetPhysics()->GetBounds();
 
+    idMoveable::Spawn();
+
 	// radius of the barrel cylinder
 	radius = ( bounds[1][0] - bounds[0][0] ) * 0.5f;
 
@@ -816,6 +820,8 @@ idExplodingBarrel::Spawn
 ================
 */
 void idExplodingBarrel::Spawn( void ) {
+    idBarrel::Spawn();
+
 	health = spawnArgs.GetInt( "health", "5" );
 	fl.takedamage = true;
 	spawnOrigin = GetPhysics()->GetOrigin();

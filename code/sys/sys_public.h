@@ -29,6 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __SYS_PUBLIC__
 #define __SYS_PUBLIC__
 
+#include <stdarg.h>     /* va_list, va_start, va_arg, va_end */
+#include <cstdint> // uint64_t
 /*
 ===============================================================================
 
@@ -37,20 +39,21 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
+#define ID_TIME_T time_t
 
 // Win32
 #if defined(WIN32) || defined(_WIN32)
 
-#define	BUILD_STRING					"win-x86"
+#define	BUILD_STRING					"win-x64"
 #define BUILD_OS_ID						0
-#define	CPUSTRING						"x86"
+#define	CPUSTRING						"x64"
 #define CPU_EASYARGS					1
 
 #define ALIGN( x, a ) ( ( ( x ) + ((a)-1) ) & ~((a)-1) )
 #define ALIGN16( x )					__declspec(align(16)) x
 #define PACKED
 
-#define _alloca16( x )					((void *)((((int)_alloca( (x)+15 )) + 15) & ~15))
+#define _alloca16( x )					((void *)((((intptr_t)_alloca( (x)+15 )) + 15) & ~15))
 
 #define PATHSEPERATOR_STR				"\\"
 #define PATHSEPERATOR_CHAR				'\\'
@@ -104,63 +107,74 @@ If you have questions concerning this license or the applicable additional terms
 
 #endif
 
-
 // Linux
 #ifdef __linux__
 
-#ifdef __i386__
-	#define	BUILD_STRING				"linux-x86"
-	#define BUILD_OS_ID					2
-	#define CPUSTRING					"x86"
-	#define CPU_EASYARGS				1
-#elif defined(__ppc__)
-	#define	BUILD_STRING				"linux-ppc"
-	#define CPUSTRING					"ppc"
-	#define CPU_EASYARGS				0
-#endif
 
-#define _alloca							alloca
-#define _alloca16( x )					((void *)((((int)alloca( (x)+15 )) + 15) & ~15))
+    #define ID_INLINE                       inline
+    #define ID_INLINE_EXTERN				extern inline
+    #define ID_FORCE_INLINE_EXTERN			extern inline
+    #define ID_STATIC_TEMPLATE
 
-#define ALIGN16( x )					x
-#define PACKED							__attribute__((packed))
+    #ifdef __i386__
+        #define	BUILD_STRING				"linux-x86"
+        #define BUILD_OS_ID					2
+        #define CPUSTRING					"x86"
+        #define CPU_EASYARGS				1
+    #elif defined(__x86_64__)
+        #define BUILD_STRING                "linux-x86_64"
+        #define BUILD_OS_ID					2
+        #define CPUSTRING                   "x64"
+        #define CPU_EASYARGS				1
+    #elif defined(__ppc__)
+        #define	BUILD_STRING				"linux-ppc"
+        #define CPUSTRING					"ppc"
+        #define CPU_EASYARGS				0
+    #endif
 
-#define PATHSEPERATOR_STR				"/"
-#define PATHSEPERATOR_CHAR				'/'
+    #define ALIGN( x, a ) ( ( ( x ) + ((a)-1) ) & ~((a)-1) )
 
-#define __cdecl
-#define ASSERT							assert
+    #define _alloca							alloca
+    #define _alloca16( x )					((void *)ALIGN( (uintptr_t)_alloca( ALIGN( x, 16 ) + 16 ), 16 ) )
 
-#define ID_INLINE						inline
-#define ID_STATIC_TEMPLATE
+    #define PACKED							__attribute__((packed))
 
-#define assertmem( x, y )
+    #define PATHSEPERATOR_STR				"/"
+    #define PATHSEPERATOR_CHAR				'/'
+
+    #define __cdecl
+    #define ASSERT							assert
+
+    #define assertmem( x, y )
 
 #endif
 
 #ifdef __GNUC__
 #define id_attribute(x) __attribute__(x)
+#define ALIGN16( x )					x __attribute__ ((aligned (16)))
+#define ALIGNTYPE16						__attribute__ ((aligned (16)))
+#define ALIGNTYPE128					__attribute__ ((aligned (128)))
 #else
-#define id_attribute(x)  
-#endif
-
+#define id_attribute(x)
 #define ALIGN16( x )					__declspec(align(16)) x
 #define ALIGNTYPE16						__declspec(align(16))
 #define ALIGNTYPE128					__declspec(align(128))
+#endif
+
 
 #define MAX_TYPE( x )			( ( ( ( 1 << ( ( sizeof( x ) - 1 ) * 8 - 1 ) ) - 1 ) << 8 ) | 255 )
 #define MIN_TYPE( x )			( - MAX_TYPE( x ) - 1 )
 #define MAX_UNSIGNED_TYPE( x )	( ( ( ( 1U << ( ( sizeof( x ) - 1 ) * 8 ) ) - 1 ) << 8 ) | 255U )
 #define MIN_UNSIGNED_TYPE( x )	0
 
-#define assert_2_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) &  1 ) == 0 )
-#define assert_4_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) &  3 ) == 0 )
-#define assert_8_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) &  7 ) == 0 )
-#define assert_16_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) & 15 ) == 0 )
-#define assert_32_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) & 31 ) == 0 )
-#define assert_64_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) & 63 ) == 0 )
-#define assert_128_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) & 127 ) == 0 )
-#define assert_aligned_to_type_size( ptr )	assert( ( ((UINT_PTR)(ptr)) & ( sizeof( (ptr)[0] ) - 1 ) ) == 0 )
+#define assert_2_byte_aligned( ptr )		assert( ( ((uintptr_t)(ptr)) &  1 ) == 0 )
+#define assert_4_byte_aligned( ptr )		assert( ( ((uintptr_t)(ptr)) &  3 ) == 0 )
+#define assert_8_byte_aligned( ptr )		assert( ( ((uintptr_t)(ptr)) &  7 ) == 0 )
+#define assert_16_byte_aligned( ptr )		assert( ( ((uintptr_t)(ptr)) & 15 ) == 0 )
+#define assert_32_byte_aligned( ptr )		assert( ( ((uintptr_t)(ptr)) & 31 ) == 0 )
+#define assert_64_byte_aligned( ptr )		assert( ( ((uintptr_t)(ptr)) & 63 ) == 0 )
+#define assert_128_byte_aligned( ptr )		assert( ( ((uintptr_t)(ptr)) & 127 ) == 0 )
+#define assert_aligned_to_type_size( ptr )	assert( ( ((uintptr_t)(ptr)) & ( sizeof( (ptr)[0] ) - 1 ) ) == 0 )
 
 typedef enum {
 	CPUID_NONE							= 0x00000,
@@ -254,7 +268,7 @@ typedef struct sysMemoryStats_s {
 	int availExtendedVirtual;
 } sysMemoryStats_t;
 
-typedef unsigned long address_t;
+typedef uintptr_t address_t;
 
 template<class type> class idList;		// for Sys_ListFiles
 
@@ -272,6 +286,9 @@ void			Sys_Quit( void );
 #define ID_LANG_JAPANESE	"japanese"
 int Sys_NumLangs();
 const char * Sys_Lang(int idx);
+
+void            Sys_InitThreads();
+void            Sys_ShutdownThreads();
 
 bool			Sys_AlreadyRunning( void );
 
@@ -360,9 +377,9 @@ const char *	Sys_GetCallStackCurAddressStr( int depth );
 void			Sys_ShutdownSymbols( void );
 
 // DLL loading, the path should be a fully qualified OS path to the DLL file to be loaded
-int				Sys_DLL_Load( const char *dllName );
-void *			Sys_DLL_GetProcAddress( int dllHandle, const char *procName );
-void			Sys_DLL_Unload( int dllHandle );
+void *			Sys_DLL_Load( const char *dllName );
+void *			Sys_DLL_GetProcAddress( void *dllHandle, const char *procName );
+void			Sys_DLL_Unload( void *dllHandle );
 
 // event generation
 void			Sys_GenerateEvents( void );
@@ -537,9 +554,9 @@ public:
 	virtual const char *	GetCallStackCurStr( int depth ) = 0;
 	virtual void			ShutdownSymbols( void ) = 0;
 
-	virtual int				DLL_Load( const char *dllName ) = 0;
-	virtual void *			DLL_GetProcAddress( int dllHandle, const char *procName ) = 0;
-	virtual void			DLL_Unload( int dllHandle ) = 0;
+	virtual void *			DLL_Load( const char *dllName ) = 0;
+	virtual void *			DLL_GetProcAddress( void *dllHandle, const char *procName ) = 0;
+	virtual void			DLL_Unload( void *dllHandle ) = 0;
 	virtual void			DLL_GetFileName( const char *baseName, char *dllName, int maxLength ) = 0;
 
 	virtual sysEvent_t		GenerateMouseButtonEvent( int button, bool down ) = 0;

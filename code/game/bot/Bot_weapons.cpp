@@ -1,7 +1,7 @@
 // Bot_weapons.cpp
 //
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #include "../Game_local.h"
 
 idCVar bot_weaponsfile("bot_weaponsfile", "weapons.c", CVAR_GAME | CVAR_CHEAT, "which file to load the weapons weights from");

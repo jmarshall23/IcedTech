@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "tr_local.h"
@@ -129,7 +129,11 @@ void idMD5Mesh::ParseMesh( idLexer &parser, int numJoints, const idJointMat *joi
 	parser.ReadToken( &token );
 	shaderName = token;
 
-    shader = declManager->FindMaterial( shaderName );
+    shader = declManager->FindMaterial( shaderName, false );
+	if (shader == NULL) {
+		common->Warning("Mesh missing material %s\n", shaderName.c_str());
+		shader = declManager->FindMaterial(shaderName);
+	}
 
 	//
 	// parse texture coordinates

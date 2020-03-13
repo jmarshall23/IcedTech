@@ -35,6 +35,8 @@ instancing of objects.
 #ifndef __SYS_CLASS_H__
 #define __SYS_CLASS_H__
 
+#include <cstdint>
+
 class idClass;
 class idTypeInfo;
 
@@ -57,16 +59,16 @@ struct idEventFunc {
 class idEventArg {
 public:
 	int			type;
-	int			value;
+	intptr_t	value;
 
 	idEventArg()								{ type = D_EVENT_INTEGER; value = 0; };
 	idEventArg( int data )						{ type = D_EVENT_INTEGER; value = data; };
 	idEventArg( float data )					{ type = D_EVENT_FLOAT; value = *reinterpret_cast<int *>( &data ); };
-	idEventArg( idVec3 &data )					{ type = D_EVENT_VECTOR; value = reinterpret_cast<int>( &data ); };
-	idEventArg( const idStr &data )				{ type = D_EVENT_STRING; value = reinterpret_cast<int>( data.c_str() ); };
-	idEventArg( const char *data )				{ type = D_EVENT_STRING; value = reinterpret_cast<int>( data ); };
-	idEventArg( const class idEntity *data )	{ type = D_EVENT_ENTITY; value = reinterpret_cast<int>( data ); };
-	idEventArg( const struct trace_s *data )	{ type = D_EVENT_TRACE; value = reinterpret_cast<int>( data ); };
+	idEventArg( idVec3 &data )					{ type = D_EVENT_VECTOR; value = reinterpret_cast<intptr_t>( &data ); };
+	idEventArg( const idStr &data )				{ type = D_EVENT_STRING; value = reinterpret_cast<intptr_t>( data.c_str() ); };
+	idEventArg( const char *data )				{ type = D_EVENT_STRING; value = reinterpret_cast<intptr_t>( data ); };
+	idEventArg( const class idEntity *data )	{ type = D_EVENT_ENTITY; value = reinterpret_cast<intptr_t>( data ); };
+	idEventArg( const struct trace_s *data )	{ type = D_EVENT_TRACE; value = reinterpret_cast<intptr_t>( data ); };
 };
 
 class idAllocError : public idException {
@@ -89,13 +91,14 @@ It prototypes variables used in class instanciation and type checking.
 Use this on single inheritance concrete classes only.
 ================
 */
+// jmarshall - added rvmClassHelper
 #define CLASS_PROTOTYPE( nameofclass )									\
 public:																	\
 	static	idTypeInfo						Type;						\
 	static	idClass							*CreateInstance( void );	\
 	virtual	idTypeInfo						*GetType( void ) const;		\
 	static	idEventFunc<nameofclass>		eventCallbacks[]
-
+// jmarshall end
 /*
 ================
 CLASS_DECLARATION
@@ -107,6 +110,7 @@ proper superclass is indicated or the run-time type information will be
 incorrect.  Use this on concrete classes only.
 ================
 */
+
 #define CLASS_DECLARATION( nameofsuperclass, nameofclass )											\
 	idTypeInfo nameofclass::Type( #nameofclass, #nameofsuperclass,									\
 		( idEventFunc<idClass> * )nameofclass::eventCallbacks,	nameofclass::CreateInstance, ( void ( idClass::* )( void ) )&nameofclass::Spawn,	\
@@ -126,6 +130,7 @@ incorrect.  Use this on concrete classes only.
 	}																								\
 idEventFunc<nameofclass> nameofclass::eventCallbacks[] = {
 
+
 /*
 ================
 ABSTRACT_PROTOTYPE
@@ -136,6 +141,13 @@ Use this on single inheritance abstract classes only.
 ================
 */
 #define ABSTRACT_PROTOTYPE( nameofclass )								\
+public:																	\
+	static	idTypeInfo						Type;						\
+	static	idClass							*CreateInstance( void );	\
+	virtual	idTypeInfo						*GetType( void ) const;		\
+	static	idEventFunc<nameofclass>		eventCallbacks[]
+
+#define ABSTRACT_PROTOTYPE_BASE( nameofclass )							\
 public:																	\
 	static	idTypeInfo						Type;						\
 	static	idClass							*CreateInstance( void );	\
@@ -173,7 +185,7 @@ class idRestoreGame;
 
 class idClass {
 public:
-	ABSTRACT_PROTOTYPE( idClass );
+	ABSTRACT_PROTOTYPE_BASE( idClass );
 
 #ifdef ID_REDIRECT_NEWDELETE
 #undef new
@@ -186,9 +198,10 @@ public:
 #define new ID_DEBUG_NEW
 #endif
 
+								idClass();
 	virtual						~idClass();
 
-	void						Spawn( void );
+	virtual void				Spawn( void );
 	void						CallSpawn( void );
 	bool						IsType( const idTypeInfo &c ) const;
 	const char *				GetClassname( void ) const;
@@ -238,7 +251,7 @@ public:
 	bool						ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7 );
 	bool						ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7, idEventArg arg8 );
 
-	bool						ProcessEventArgPtr( const idEventDef *ev, int *data );
+	bool						ProcessEventArgPtr( const idEventDef *ev, intptr_t*data );
 	void						CancelEvents( const idEventDef *ev );
 
 	void						Event_Remove( void );
@@ -255,12 +268,12 @@ public:
 	static idTypeInfo *			GetType( int num );
 
 private:
-	classSpawnFunc_t			CallSpawnFunc( idTypeInfo *cls );
-
 	bool						PostEventArgs( const idEventDef *ev, int time, int numargs, ... );
 	bool						ProcessEventArgs( const idEventDef *ev, int numargs, ... );
 
 	void						Event_SafeRemove( void );
+
+	bool						spawnedProperly;
 
 	static bool					initialized;
 	static idList<idTypeInfo *>	types;

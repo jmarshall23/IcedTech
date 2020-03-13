@@ -44,9 +44,7 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	float2 texCoords = frac(fragment.texcoord0.xy);
 	texCoords.y = 1.0 - texCoords.y;
 	
-	int feedbackMipLevel = ComputeMipMapLevel(samp0, texCoords * 0.05, rpVirtualTextureFeedback.y, rpVirtualTextureFeedback.z).x;
-
-	ivec2 pageOffsetTextureSizeMip = textureSize(samp0, feedbackMipLevel).xy;
+	ivec2 pageOffsetTextureSizeMip = textureSize(samp0, 0).xy;
 
 	float widthInPages = pageOffsetTextureSizeMip.x;
 	float heightInPages = pageOffsetTextureSizeMip.y;
@@ -62,5 +60,5 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	result.color.x = lookup.x;
 	result.color.y = lookup.y;
 	result.color.z = rpVirtualTextureFeedback.x;
-	result.color.w = feedbackMipLevel;
+	result.color.w = 0;
 }

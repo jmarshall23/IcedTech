@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "tr_local.h"
@@ -132,6 +132,15 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	{
 		GL_SelectTextureNoClient(5);
 		din->surf->material->GetVirtualPageOffsetsImage()->Bind();
+	}
+
+	// texture 7 is the reflection cube map.
+	GL_SelectTextureNoClient(6);
+	if(din->surf->material->HasReflections() && din->surf->geo->reflectionCaptureImage) {
+		din->surf->geo->reflectionCaptureImage->Bind();
+	}
+	else {
+		globalImages->blackCubeMapImage->Bind();
 	}
 
 	// draw it

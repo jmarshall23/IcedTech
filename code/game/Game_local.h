@@ -772,6 +772,7 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "SmokeParticles.h"
 
 #include "Entity.h"
+
 #include "GameEdit.h"
 #include "AF.h"
 #include "IK.h"
@@ -813,7 +814,7 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 // jmarshall end
 
 // jmarshall
-#include "Bot/Bot.h"
+#include "bot/Bot.h"
 // jmarshall end
 
 // jmarshall

@@ -27,7 +27,7 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "tr_local.h"
@@ -344,8 +344,8 @@ bool idRenderSystemLocal::RegisterFont( const char *fontName, fontInfoEx_t &font
 		idStr::Copynz( outFont->name, name, sizeof( outFont->name ) );
 
 		len = fileSystem->ReadFile( name, NULL, &ftime );
-		if ( len != sizeof( fontInfo_t ) ) {
-			common->Warning( "RegisterFont: couldn't find font: '%s'", name );
+		if ( len != sizeof( fontInfo_t ) && len != 20548) {
+			common->Warning( "RegisterFont: couldn't find font: '%s' size=(%d) supposed to be(%d)", name, len, sizeof( fontInfo_t ) );
 			return false;
 		}
 
@@ -375,8 +375,11 @@ bool idRenderSystemLocal::RegisterFont( const char *fontName, fontInfoEx_t &font
 		int mh = 0;
 		for (i = GLYPH_START; i < GLYPH_END; i++) {
 			idStr::snPrintf(name, sizeof(name), "%s/%s", fontName, outFont->glyphs[i].shaderName);
-			outFont->glyphs[i].glyph = declManager->FindMaterial(name);
-			outFont->glyphs[i].glyph->SetSort( SS_GUI );
+			idMaterial* material = (idMaterial *)declManager->FindMaterial(name);
+			material->SetSort(SS_GUI);
+
+			outFont->glyphs[i].glyph = material->base->Index();
+			
 			if (mh < outFont->glyphs[i].height) {
 				mh = outFont->glyphs[i].height;
 			}

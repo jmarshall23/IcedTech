@@ -242,6 +242,10 @@ class idGameEdit {
 public:
 	virtual						~idGameEdit( void ) {}
 
+	// lwss
+    static void                 SetGameEditPointer();
+	// lwss end
+
 	// These are the canonical idDict to parameter parsing routines used by both the game and tools.
 	virtual void				ParseSpawnArgsToRenderLight( const idDict *args, renderLight_t *renderLight );
 	virtual void				ParseSpawnArgsToRenderEntity( const idDict *args, renderEntity_t *renderEntity );

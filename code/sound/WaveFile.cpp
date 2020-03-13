@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 
 /*
 ================================================================================================
@@ -150,33 +150,35 @@ uint32_t idWaveFile::GetChunkOffset( uint32_t id ) {
 }
 
 // Used in XMA2WAVEFORMAT for per-stream data
-typedef struct XMA2STREAMFORMAT {
-    byte Channels;			// Number of channels in the stream (1 or 2)
-    byte RESERVED;			// Reserved for future use
-    uint16_t ChannelMask;		// Spatial positions of the channels in the stream
-} XMA2STREAMFORMAT;
+//typedef struct XMA2STREAMFORMAT {
+//    byte Channels;			// Number of channels in the stream (1 or 2)
+//    byte RESERVED;			// Reserved for future use
+//    uint16_t ChannelMask;		// Spatial positions of the channels in the stream
+//} XMA2STREAMFORMAT;
+struct XMA2STREAMFORMAT;
 
 // Legacy XMA2 format structure (big-endian byte ordering)
-typedef struct XMA2WAVEFORMAT {
-    byte Version;			// XMA encoder version that generated the file.
-							// Always 3 or higher for XMA2 files.
-    byte NumStreams;		// Number of interleaved audio streams
-    byte RESERVED;			// Reserved for future use
-    byte LoopCount;			// Number of loop repetitions; 255 = infinite
-    uint32_t LoopBegin;		// Loop begin point, in samples
-    uint32_t LoopEnd;			// Loop end point, in samples
-    uint32_t SampleRate;		// The file's decoded sample rate
-    uint32_t EncodeOptions;		// Options for the XMA encoder/decoder
-    uint32_t PsuedoBytesPerSec;	// Used internally by the XMA encoder
-    uint32_t BlockSizeInBytes;	// Size in bytes of this file's XMA blocks (except
-								// possibly the last one).  Always a multiple of
-								// 2Kb, since XMA blocks are arrays of 2Kb packets.
-    uint32_t SamplesEncoded;		// Total number of PCM samples encoded in this file
-    uint32_t SamplesInSource;		// Actual number of PCM samples in the source
-								// material used to generate this file
-    uint32_t BlockCount;			// Number of XMA blocks in this file (and hence
-								// also the number of entries in its seek table)
-} XMA2WAVEFORMAT;
+//typedef struct XMA2WAVEFORMAT {
+//    byte Version;			// XMA encoder version that generated the file.
+//							// Always 3 or higher for XMA2 files.
+//    byte NumStreams;		// Number of interleaved audio streams
+//    byte RESERVED;			// Reserved for future use
+//    byte LoopCount;			// Number of loop repetitions; 255 = infinite
+//    uint32_t LoopBegin;		// Loop begin point, in samples
+//    uint32_t LoopEnd;			// Loop end point, in samples
+//    uint32_t SampleRate;		// The file's decoded sample rate
+//    uint32_t EncodeOptions;		// Options for the XMA encoder/decoder
+//    uint32_t PsuedoBytesPerSec;	// Used internally by the XMA encoder
+//    uint32_t BlockSizeInBytes;	// Size in bytes of this file's XMA blocks (except
+//								// possibly the last one).  Always a multiple of
+//								// 2Kb, since XMA blocks are arrays of 2Kb packets.
+//    uint32_t SamplesEncoded;		// Total number of PCM samples encoded in this file
+//    uint32_t SamplesInSource;		// Actual number of PCM samples in the source
+//								// material used to generate this file
+//    uint32_t BlockCount;			// Number of XMA blocks in this file (and hence
+//								// also the number of entries in its seek table)
+//} XMA2WAVEFORMAT;
+struct XMA2WAVEFORMAT;
 
 /*
 ========================

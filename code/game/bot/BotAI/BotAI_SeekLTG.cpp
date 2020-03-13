@@ -1,7 +1,7 @@
 // BotAI_SeekLTG.cpp
 //
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #include "../../Game_local.h"
 
 rvmBotAIBotSeekLTG botAIActionSeekLTG;

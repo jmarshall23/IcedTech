@@ -31,9 +31,13 @@ If you have questions concerning this license or the applicable additional terms
 #include "gdefs.h"
 #include "roqParam.h"
 #include "quaddefs.h"
-#define JPEG_INTERNALS
+
 extern "C" {
-#include "../../../renderer/jpeg-6/jpeglib.h"
+#if defined(WIN32)
+#include <renderer/libjpeg-turbo-master/jpeglib.h>
+#else
+#include <jpeglib.h>
+#endif
 }
 #pragma once
 

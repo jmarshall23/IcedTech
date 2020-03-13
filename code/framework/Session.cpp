@@ -26,8 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
-#pragma hdrstop
+#include "Engine_precompiled.h"
 
 #include "Session_local.h"
 
@@ -2582,7 +2581,7 @@ void idSessionLocal::RunSessionTic(void)
 			com_ticNumber++;
 			lastTicMsec += ticMsec;
 		}
-		// jmarshall end			
+		// jmarshall end
 		latchedTicNumber = com_ticNumber;
 		if (latchedTicNumber >= minTic) {
 			break;
@@ -2789,7 +2788,7 @@ void idSessionLocal::RunGameTic() {
 		} else {
 			cmd = logCmd.cmd;
 			cmd.ByteSwap();
-			logCmd.consistencyHash = LittleLong( logCmd.consistencyHash );
+			logCmd.consistencyHash = LittleInt( logCmd.consistencyHash );
 		}
 	}
 	

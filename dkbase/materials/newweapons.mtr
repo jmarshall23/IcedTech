@@ -1,0 +1,8 @@
+models/weapons/machinegun/machinegun
+{
+	qer_editorimage		models/weapons/machinegun/machinegun_d.tga
+	bumpmap			models/weapons/machinegun/machinegun_normal.tga
+	diffusemap		models/weapons/machinegun/machinegun_d.tga
+	specularmap		models/weapons/machinegun/machinegun_spec.tga
+} 
+

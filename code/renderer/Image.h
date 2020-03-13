@@ -37,7 +37,11 @@ No texture is ever used that does not have a corresponding idImage.
 
 ====================================================================
 */
-
+#if defined(WIN32)
+#include <renderer/qgllib/glew.h>
+#else
+#include <GL/gl.h>
+#endif
 static const int	MAX_TEXTURE_LEVELS = 14;
 
 // How is this texture used?  Determines the storage and color format
@@ -311,6 +315,7 @@ public:
 // jmarshall: arb program images that need to be deprecated
 	idImage *			ambientNormalMap; 
 	idImage *			normalCubeMapImage;
+	idImage	*			blackCubeMapImage;
 	idImage *			specularTableImage;
 	idImage *			specular2DTableImage;
 	idImage *			borderClampImage;			// white inside, black outside
@@ -389,5 +394,5 @@ Image Channel Manipulations
 
 ====================================================================
 */
-#define ChannelBlend_Add(B,L)         ((byte)(min(255, (B + L))))
+#define ChannelBlend_Add(B,L)         ((byte)(Min(255, (B + L))))
 #define ChannelBlend_Multiply(A,B)   ((byte)((A * B) / 255))

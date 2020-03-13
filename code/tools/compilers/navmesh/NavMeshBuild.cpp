@@ -2,8 +2,8 @@
 //
 
 #include "tools_precompiled.h"
-#include "../../../external/recast/include/Recast.h"
-#include "../../../navigation/Nav_local.h"
+#include <external/recast/Include/Recast.h>
+#include <navigation/Nav_local.h>
 
 idCVar nav_dumpInputGeometry("nav_dumpInputGeometry", "0", CVAR_BOOL, "dumps input geometry to recast for debugging.");
 
@@ -169,6 +169,11 @@ void CreateNavMesh(idStr mapName)
 	int mapCrc;
 
 	common->Printf("---- CreateNavMesh ----\n");
+
+	if(!strstr(mapName.c_str(), "maps/") && !strstr(mapName.c_str(), "maps\\")) {
+		idStr oldMapName = mapName;
+		mapName = va("maps/%s", oldMapName.c_str());
+	}
 
 	common->Printf("Loading Map...\n");
 	if (!LoadWorldFile(mapName, mapGeometry, mapCrc))

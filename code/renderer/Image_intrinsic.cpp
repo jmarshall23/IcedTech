@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #include "tr_local.h"
 
 #define	DEFAULT_SIZE	16
@@ -479,6 +479,34 @@ static void makeNormalizeVectorCubeMap(idImage *image) {
 	Mem_Free(pixels[0]);
 }
 
+static void makeBlackCubeMapImage(idImage* image) {
+	float vector[3];
+	int i, x, y;
+	byte* pixels[6];
+	int		size;
+
+	size = NORMAL_MAP_SIZE;
+
+	pixels[0] = (GLubyte*)Mem_Alloc(size * size * 4 * 6);
+
+	for (i = 0; i < 6; i++) {
+		pixels[i] = pixels[0] + i * size * size * 4;
+		for (y = 0; y < size; y++) {
+			for (x = 0; x < size; x++) {
+				pixels[i][4 * (y * size + x) + 0] = 0;
+				pixels[i][4 * (y * size + x) + 1] = 0;
+				pixels[i][4 * (y * size + x) + 2] = 0;
+				pixels[i][4 * (y * size + x) + 3] = 255;
+			}
+		}
+	}
+
+	image->GenerateCubeImage((const byte**)pixels, size,
+		TF_LINEAR, TD_DEFAULT);
+
+	Mem_Free(pixels[0]);
+}
+
 static void R_AmbientNormalImage(idImage *image) {
 	byte	data[DEFAULT_SIZE][DEFAULT_SIZE][4];
 	int		i;
@@ -649,6 +677,8 @@ void idImageManager::CreateIntrinsicImages() {
 
 	ambientNormalMap = ImageFromFunction("_ambient", R_AmbientNormalImage);
 	normalCubeMapImage = ImageFromFunction("_normalCubeMap", makeNormalizeVectorCubeMap);
+
+	blackCubeMapImage = ImageFromFunction("_blackCubeMapImage", makeBlackCubeMapImage);
 
 	specularTableImage = ImageFromFunction("_specularTable", R_SpecularTableImage);
 	specular2DTableImage = ImageFromFunction("_specular2DTable", R_Specular2DTableImage);

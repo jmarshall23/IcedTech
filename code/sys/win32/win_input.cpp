@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "win_local.h"
@@ -143,7 +143,7 @@ static const unsigned char s_scantokey_french[256] = {
 	'a',        'z',    'e',       'r',        't',    'y',         'u',      'i', 
 	'o',        'p',    '^',       '$',        K_ENTER,K_CTRL,      'q',      's',      // 1 
 	'd',        'f',    'g',       'h',        'j',    'k',         'l',      'm', 
-	'ù',        '`',    K_SHIFT,   '*',        'w',    'x',         'c',      'v',      // 2 
+	'ï¿½',        '`',    K_SHIFT,   '*',        'w',    'x',         'c',      'v',      // 2 
 	'b',        'n',    ',',       ';',        ':',    '!',         K_SHIFT,  K_KP_STAR,
 	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
 	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME, 
@@ -155,12 +155,12 @@ static const unsigned char s_scantokey_french[256] = {
 	0,          0,      0,         0,          0,      0,           0,        0, 
 	0,          0,      0,         0,          0,      0,           0,        0,      // 7
 // shifted
-	0,           27,    '&',       'é',        '\"',    '\'',         '(',      '-', 
-	'è',        '_',    'ç',       'à',        '°',    '+',         K_BACKSPACE, 9, // 0 
+	0,           27,    '&',       'ï¿½',        '\"',    '\'',         '(',      '-', 
+	'ï¿½',        '_',    'ï¿½',       'ï¿½',        'ï¿½',    '+',         K_BACKSPACE, 9, // 0 
 	'a',        'z',    'e',       'r',        't',    'y',         'u',      'i', 
 	'o',        'p',    '^',       '$',        K_ENTER,K_CTRL,      'q',      's',      // 1 
 	'd',        'f',    'g',       'h',        'j',    'k',         'l',      'm', 
-	'ù',        0,    K_SHIFT,   '*',        'w',    'x',         'c',      'v',      // 2 
+	'ï¿½',        0,    K_SHIFT,   '*',        'w',    'x',         'c',      'v',      // 2 
 	'b',        'n',    ',',       ';',        ':',    '!',         K_SHIFT,  K_KP_STAR,
 	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
 	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME, 
@@ -177,11 +177,11 @@ static const unsigned char s_scantokey_spanish[256] = {
 //  0            1       2          3          4       5            6         7
 //  8            9       A          B          C       D            E         F
 	0,           27,    '1',       '2',        '3',    '4',         '5',      '6', 
-	'7',        '8',    '9',       '0',        '\'',   '¡',         K_BACKSPACE, 9,  // 0 
+	'7',        '8',    '9',       '0',        '\'',   'ï¿½',         K_BACKSPACE, 9,  // 0 
 	'q',        'w',    'e',       'r',        't',    'y',         'u',      'i', 
 	'o',        'p',    '`',       '+',        K_ENTER,K_CTRL,      'a',      's',   // 1 
-	'd',        'f',    'g',       'h',        'j',    'k',         'l',      'ñ', 
-	'´',        'º',    K_SHIFT,   'ç',        'z',    'x',         'c',      'v',   // 2 
+	'd',        'f',    'g',       'h',        'j',    'k',         'l',      'ï¿½', 
+	'ï¿½',        'ï¿½',    K_SHIFT,   'ï¿½',        'z',    'x',         'c',      'v',   // 2 
 	'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR, 
 	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
 	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME, 
@@ -193,12 +193,12 @@ static const unsigned char s_scantokey_spanish[256] = {
 	0,          0,      0,         0,          0,      0,           0,        0, 
 	0,          0,      0,         0,          0,      0,           0,        0,      // 7
 // shifted
-	0,           27,    '!',       '\"',        '·',    '$',         '%',      '&', 
-	'/',        '(',    ')',       '=',        '?',   '¿',         K_BACKSPACE, 9,  // 0 
+	0,           27,    '!',       '\"',        'ï¿½',    '$',         '%',      '&', 
+	'/',        '(',    ')',       '=',        '?',   'ï¿½',         K_BACKSPACE, 9,  // 0 
 	'q',        'w',    'e',       'r',        't',    'y',         'u',      'i', 
 	'o',        'p',    '^',       '*',        K_ENTER,K_CTRL,      'a',      's',   // 1 
-	'd',        'f',    'g',       'h',        'j',    'k',         'l',      'Ñ', 
-	'¨',        'ª',    K_SHIFT,   'Ç',        'z',    'x',         'c',      'v',   // 2 
+	'd',        'f',    'g',       'h',        'j',    'k',         'l',      'ï¿½', 
+	'ï¿½',        'ï¿½',    K_SHIFT,   'ï¿½',        'z',    'x',         'c',      'v',   // 2 
 	'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR, 
 	K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
 	K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME, 
@@ -215,11 +215,11 @@ static const unsigned char s_scantokey_italian[256] = {
 //  0            1       2          3          4       5            6         7
 //  8            9       A          B          C       D            E         F
 		0,           27,    '1',       '2',        '3',    '4',         '5',      '6', 
-		'7',        '8',    '9',       '0',        '\'',   'ì',         K_BACKSPACE, 9,  // 0 
+		'7',        '8',    '9',       '0',        '\'',   'ï¿½',         K_BACKSPACE, 9,  // 0 
 		'q',        'w',    'e',       'r',        't',    'y',         'u',      'i', 
-		'o',        'p',    'è',       '+',        K_ENTER,K_CTRL,      'a',      's',   // 1 
-		'd',        'f',    'g',       'h',        'j',    'k',         'l',      'ò', 
-		'à',        '\\',    K_SHIFT,   'ù',        'z',    'x',         'c',      'v',   // 2 
+		'o',        'p',    'ï¿½',       '+',        K_ENTER,K_CTRL,      'a',      's',   // 1 
+		'd',        'f',    'g',       'h',        'j',    'k',         'l',      'ï¿½', 
+		'ï¿½',        '\\',    K_SHIFT,   'ï¿½',        'z',    'x',         'c',      'v',   // 2 
 		'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR, 
 		K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
 		K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME, 
@@ -231,12 +231,12 @@ static const unsigned char s_scantokey_italian[256] = {
 		0,          0,      0,         0,          0,      0,           0,        0, 
 		0,          0,      0,         0,          0,      0,           0,        0,      // 7
 // shifted
-		0,           27,    '!',       '\"',        '£',    '$',         '%',      '&', 
+		0,           27,    '!',       '\"',        'ï¿½',    '$',         '%',      '&', 
 		'/',        '(',    ')',       '=',        '?',   '^',         K_BACKSPACE, 9,  // 0 
 		'q',        'w',    'e',       'r',        't',    'y',         'u',      'i', 
-		'o',        'p',    'é',       '*',        K_ENTER,K_CTRL,      'a',      's',   // 1 
-		'd',        'f',    'g',       'h',        'j',    'k',         'l',      'ç', 
-		'°',        '|',    K_SHIFT,   '§',        'z',    'x',         'c',      'v',   // 2 
+		'o',        'p',    'ï¿½',       '*',        K_ENTER,K_CTRL,      'a',      's',   // 1 
+		'd',        'f',    'g',       'h',        'j',    'k',         'l',      'ï¿½', 
+		'ï¿½',        '|',    K_SHIFT,   'ï¿½',        'z',    'x',         'c',      'v',   // 2 
 		'b',        'n',    'm',       ',',        '.',    '-',         K_SHIFT,  K_KP_STAR, 
 		K_ALT,      ' ',    K_CAPSLOCK,K_F1,       K_F2,   K_F3,        K_F4,     K_F5,  // 3
 		K_F6,       K_F7,   K_F8,      K_F9,       K_F10,  K_PAUSE,     K_SCROLL, K_HOME, 

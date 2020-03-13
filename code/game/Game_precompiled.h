@@ -3,5 +3,5 @@
 
 #pragma once
 
-#include "../idlib/precompiled.h"
-#include "Game_local.h"
+#include <idlib/precompiled.h>
+#include <game/Game_local.h>

@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -49,6 +49,7 @@ idMultiModelAF::Spawn
 ================
 */
 void idMultiModelAF::Spawn( void ) {
+    idEntity::Spawn();
 	physicsObj.SetSelf( this );
 }
 
@@ -216,6 +217,8 @@ void idChain::Spawn( void ) {
 	bool drop;
 	idVec3 origin;
 
+    idMultiModelAF::Spawn();
+
 	spawnArgs.GetBool( "drop", "0", drop );
 	spawnArgs.GetInt( "links", "3", numLinks );
 	spawnArgs.GetFloat( "length", idStr( numLinks * 32.0f ), length );
@@ -275,6 +278,7 @@ idAFAttachment::Spawn
 =====================
 */
 void idAFAttachment::Spawn( void ) {
+    idAnimatedEntity::Spawn();
 	idleAnim = animator.GetAnim( "idle" );
 }
 
@@ -581,6 +585,7 @@ idAFEntity_Base::Spawn
 ================
 */
 void idAFEntity_Base::Spawn( void ) {
+    idAnimatedEntity::Spawn();
 	spawnOrigin = GetPhysics()->GetOrigin();
 	spawnAxis = GetPhysics()->GetAxis();
 	nextSoundTime = 0;
@@ -1009,6 +1014,8 @@ idAFEntity_Gibbable::Spawn
 ================
 */
 void idAFEntity_Gibbable::Spawn( void ) {
+    idAFEntity_Base::Spawn();
+
 	InitSkeletonModel();
 
 	gibbed = false;
@@ -1102,6 +1109,8 @@ void idAFEntity_Gibbable::SpawnGibs( const idVec3 &dir, const char *damageDefNam
 	bool gibNonSolid;
 	idVec3 entityCenter, velocity;
 	idList<idEntity *> list;
+
+    idAFEntity_Base::Spawn();
 
 	assert( !gameLocal.isClient );
 
@@ -1259,6 +1268,8 @@ idAFEntity_Generic::Spawn
 ================
 */
 void idAFEntity_Generic::Spawn( void ) {
+    idAFEntity_Gibbable::Spawn();
+
 	if ( !LoadAF() ) {
 		gameLocal.Error( "Couldn't load af file on entity '%s'", name.c_str() );
 	}
@@ -1348,6 +1359,8 @@ idAFEntity_WithAttachedHead::Spawn
 ================
 */
 void idAFEntity_WithAttachedHead::Spawn( void ) {
+    idAFEntity_Gibbable::Spawn();
+
 	SetupHead();
 
 	LoadAF();
@@ -1605,6 +1618,8 @@ void idAFEntity_Vehicle::Spawn( void ) {
 	const char *eyesJointName = spawnArgs.GetString( "eyesJoint", "eyes" );
 	const char *steeringWheelJointName = spawnArgs.GetString( "steeringWheelJoint", "steeringWheel" );
 
+    idAFEntity_Base::Spawn();
+
 	LoadAF();
 
 	SetCombatModel();
@@ -1737,6 +1752,8 @@ void idAFEntity_VehicleSimple::Spawn( void ) {
 	idVec3 origin;
 	idMat3 axis;
 	idTraceModel trm;
+
+    idAFEntity_Vehicle::Spawn();
 
 	trm.SetupPolygon( wheelPoly, 4 );
 	trm.Translate( idVec3( 0, 0, -wheelRadius ) );
@@ -1934,6 +1951,8 @@ void idAFEntity_VehicleFourWheels::Spawn( void ) {
 
 	const char *wheelBodyName, *wheelJointName, *steeringHingeName;
 
+    idAFEntity_Vehicle::Spawn();
+
 	for ( i = 0; i < 4; i++ ) {
 		wheelBodyName = spawnArgs.GetString( wheelBodyKeys[i], "" );
 		if ( !wheelBodyName[0] ) {
@@ -2115,6 +2134,8 @@ void idAFEntity_VehicleSixWheels::Spawn( void ) {
 		"steeringHingeRearLeft",
 		"steeringHingeRearRight"
 	};
+
+    idAFEntity_Vehicle::Spawn();
 
 	const char *wheelBodyName, *wheelJointName, *steeringHingeName;
 
@@ -2308,6 +2329,8 @@ void idAFEntity_SteamPipe::Spawn( void ) {
 	idVec3 steamDir;
 	const char *steamBodyName;
 
+    idAFEntity_Base::Spawn();
+
 	LoadAF();
 
 	SetCombatModel();
@@ -2463,6 +2486,8 @@ idAFEntity_ClawFourFingers::Spawn
 */
 void idAFEntity_ClawFourFingers::Spawn( void ) {
 	int i;
+
+    idAFEntity_Base::Spawn();
 
 	LoadAF();
 

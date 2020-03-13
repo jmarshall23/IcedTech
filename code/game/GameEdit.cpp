@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -66,6 +66,7 @@ idCursor3D::Spawn
 ===============
 */
 void idCursor3D::Spawn( void ) {
+    idEntity::Spawn();
 }
 
 /*
@@ -668,6 +669,11 @@ idGameEdit			gameEditLocal;
 idGameEdit *		gameEdit = &gameEditLocal;
 
 
+//lwss
+void idGameEdit::SetGameEditPointer() {
+    gameEdit = &gameEditLocal;
+}
+//lwss end
 /*
 =============
 idGameEdit::GetSelectedEntities

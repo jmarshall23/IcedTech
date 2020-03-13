@@ -26,13 +26,13 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 
 #include "tr_local.h"
 
 idCVar r_skipStripDeadCode( "r_skipStripDeadCode", "0", CVAR_BOOL, "Skip stripping dead code" );
 idCVar r_useUniformArrays( "r_useUniformArrays", "1", CVAR_BOOL, "" );
-idCVar r_renderProgVersion("r_renderProgVersion", "1", CVAR_INTEGER, "which version of renderprogs to use");
+idCVar r_renderProgVersion("r_renderProgVersion", "2", CVAR_INTEGER, "which version of renderprogs to use");
 
 #define VERTEX_UNIFORM_ARRAY_NAME				"_va_"
 #define FRAGMENT_UNIFORM_ARRAY_NAME				"_fa_"
@@ -121,18 +121,18 @@ attribInfo_t attribsPC[] = {
 	{ "float",		"depth",		"DEPTH",		"gl_FragDepth",		4,	AT_PS_OUT,		0 },
 
 	// vertex to fragment program pass through
-	{ "float4",		"color",		"COLOR",		"gl_FrontColor",			0,	AT_VS_OUT,	0 },
-	{ "float4",		"color0",		"COLOR0",		"gl_FrontColor",			0,	AT_VS_OUT,	0 },
-	{ "float4",		"color1",		"COLOR1",		"gl_FrontSecondaryColor",	0,	AT_VS_OUT,	0 },
+	{ "float4",		"color",		"COLOR",		"vofi_Color",			0,	AT_VS_OUT,	0 },
+	{ "float4",		"color0",		"COLOR0",		"vofi_Color",			0,	AT_VS_OUT,	0 },
+	{ "float4",		"color1",		"COLOR1",		"vofi_SecondaryColor",	0,	AT_VS_OUT,	0 },
 
 
-	{ "float4",		"color",		"COLOR",		"gl_Color",				0,	AT_PS_IN,	0 },
-	{ "float4",		"color0",		"COLOR0",		"gl_Color",				0,	AT_PS_IN,	0 },
-	{ "float4",		"color1",		"COLOR1",		"gl_SecondaryColor",	0,	AT_PS_IN,	0 },
+	{ "float4",		"color",		"COLOR",		"vofi_Color",				0,	AT_PS_IN,	0 },
+	{ "float4",		"color0",		"COLOR0",		"vofi_Color",				0,	AT_PS_IN,	0 },
+	{ "float4",		"color1",		"COLOR1",		"vofi_SecondaryColor",	0,	AT_PS_IN,	0 },
 
-	{ "half4",		"hcolor",		"COLOR",		"gl_Color",				0,	AT_PS_IN,		0 },
-	{ "half4",		"hcolor0",		"COLOR0",		"gl_Color",				0,	AT_PS_IN,		0 },
-	{ "half4",		"hcolor1",		"COLOR1",		"gl_SecondaryColor",	0,	AT_PS_IN,		0 },
+	{ "half4",		"hcolor",		"COLOR",		"vofi_Color",				0,	AT_PS_IN,		0 },
+	{ "half4",		"hcolor0",		"COLOR0",		"vofi_Color",				0,	AT_PS_IN,		0 },
+	{ "half4",		"hcolor1",		"COLOR1",		"vofi_SecondaryColor",	0,	AT_PS_IN,		0 },
 
 	{ "float4",		"texcoord0",	"TEXCOORD0_centroid",	"vofi_TexCoord0",	0,	AT_PS_IN,	0 },
 	{ "float4",		"texcoord1",	"TEXCOORD1_centroid",	"vofi_TexCoord1",	0,	AT_PS_IN,	0 },
@@ -508,24 +508,32 @@ struct typeConversion_t {
 
 	{ "sampler2DMS",		"sampler2DMS" },
 
+    // RB: HACK convert all text2D stuff to modern texture() usage
+    { "texCUBE",			"texture" },
+    { "tex2Dproj",			"textureProj" },
+    { "tex2D",				"texture" },
+
 	{ NULL, NULL }
 };
 
 const char * vertexInsert = {
-	"#version 400\n"
+	"#version 450\n"
 	"#define PC\n"
-	"\n"
+    "#pragma shader_stage( vertex )\n"
+    "\n"
+ /*
 	"float saturate( float v ) { return clamp( v, 0.0, 1.0 ); }\n"
 	"vec2 saturate( vec2 v ) { return clamp( v, 0.0, 1.0 ); }\n"
 	"vec3 saturate( vec3 v ) { return clamp( v, 0.0, 1.0 ); }\n"
 	"vec4 saturate( vec4 v ) { return clamp( v, 0.0, 1.0 ); }\n"
-	"vec4 tex2Dlod( sampler2D sampler, vec4 texcoord ) { return textureLod( sampler, texcoord.xy, texcoord.w ); }\n"
-	"\n"
+	//"vec4 tex2Dlod( sampler2D sampler, vec4 texcoord ) { return textureLod( sampler, texcoord.xy, texcoord.w ); }\n"
+	"\n"*/
 };
 
 const char * fragmentInsert = {
-	"#version 400\n"
-	"#extension GL_ARB_explicit_attrib_location : enable\n"
+	"#version 450\n"
+    "#pragma shader_stage( fragment )\n"
+    "#extension GL_ARB_separate_shader_objects : enable\n"
 	"#define PC\n"
 	"\n"
 	"void clip( float v ) { if ( v < 0.0 ) { discard; } }\n"
@@ -538,6 +546,7 @@ const char * fragmentInsert = {
 	"vec3 saturate( vec3 v ) { return clamp( v, 0.0, 1.0 ); }\n"
 	"vec4 saturate( vec4 v ) { return clamp( v, 0.0, 1.0 ); }\n"
 	"\n"
+ /*
 	"vec4 tex2D( sampler2D sampler, vec2 texcoord ) { return texture( sampler, texcoord.xy ); }\n"
 	"vec4 tex2D( sampler2DShadow sampler, vec3 texcoord ) { return vec4( texture( sampler, texcoord.xyz ) ); }\n"
 	"\n"
@@ -564,6 +573,7 @@ const char * fragmentInsert = {
 	"vec4 tex3Dlod( sampler3D sampler, vec4 texcoord ) { return textureLod( sampler, texcoord.xyz, texcoord.w ); }\n"
 	"vec4 texCUBElod( samplerCube sampler, vec4 texcoord ) { return textureLod( sampler, texcoord.xyz, texcoord.w ); }\n"
 	"\n"
+  */
 };
 
 struct builtinConversion_t {
@@ -632,13 +642,61 @@ void ParseInOutStruct( idLexer & src, int attribType, idList< inOutVariable_t > 
 			}
 		}
 
-		// check if it was defined previously
-		var.declareInOut = true;
+		//HACK: change type for feedback.pixel
+        //if( strstr(src.GetFileName(), "feedback.pixel")
+        //&& !strcmp( var.type, "sampler2D" )
+        //&& !strcmp( var.nameGLSL.c_str(), "samp0" ) ) {
+        //    var.type = "isampler2D";
+        //}
+
+        var.declareInOut = true;
+
+        // check if it was defined previously
 		for ( int i = 0; i < inOutVars.Num(); i++ ) {
 			if ( var.nameGLSL == inOutVars[i].nameGLSL ) {
 				var.declareInOut = false;
 				break;
 			}
+		}
+
+        // Handle some edge-cases for GLSL built-ins.
+        switch( attribType ){
+		    case AT_VS_IN: // vertex input
+                if( !var.nameGLSL.Cmp("gl_VertexID" )
+                 || !var.nameGLSL.Cmp("gl_InstanceID" )
+                 || !var.nameGLSL.Cmp("gl_DrawID" )              // GLSL >= 4.60 OR ARB_shader_draw_parameters
+                 || !var.nameGLSL.Cmp("gl_BaseVertex" )          // GLSL >= 4.60 OR ARB_shader_draw_parameters
+                 || !var.nameGLSL.Cmp("gl_BaseInstance" )        // GLSL >= 4.60 OR ARB_shader_draw_parameters
+                ){
+                    var.declareInOut = false;
+                }
+		        break;
+		    case AT_VS_OUT:// vertex output
+                if( !var.nameGLSL.Cmp("gl_Position" )
+                 || !var.nameGLSL.Cmp("gl_PointSize" )
+                 || !var.nameGLSL.Cmp("gl_ClipDistance" )
+                ){
+                    var.declareInOut = false;
+                }
+		        break;
+		    case AT_PS_IN: // pixel/fragment input
+                if( !var.nameGLSL.Cmp("gl_FrontFacing" )
+                 || !var.nameGLSL.Cmp("gl_PointCoord" )
+                 || !var.nameGLSL.Cmp("gl_SampleID" )       // GLSL >= 4.0
+                 || !var.nameGLSL.Cmp("gl_SamplePosition" ) // GLSL >= 4.0
+                 || !var.nameGLSL.Cmp("gl_SampleMaskIn" )   // GLSL >= 4.0
+                 || !var.nameGLSL.Cmp("gl_Layer" )          // GLSL >= 4.3
+                 || !var.nameGLSL.Cmp("gl_ViewportIndex" )  // GLSL >= 4.3
+                ){
+                    var.declareInOut = false;
+                }
+		        break;
+		    case AT_PS_OUT:// pixel/fragment output
+                if(  !var.nameGLSL.Cmp("gl_FragDepth" )      // You *CAN* do this one, but we don't. GLSL >= 4.2 OR ARB_conservative_depth
+                ){
+                    var.declareInOut = false;
+                }
+		        break;
 		}
 
 		inOutVars.Append( var );
@@ -1036,53 +1094,54 @@ GLuint idRenderProgManager::LoadGLSLShader( GLenum target, const char * name, id
 
 	// create and compile the shader
 	const GLuint shader = glCreateShader( target );
-	if ( shader ) {
-		const char * source[1] = { programGLSL.c_str() };
-
-		glShaderSource( shader, 1, source, NULL );
-		glCompileShader( shader );
-
-		int infologLength = 0;
-		glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &infologLength );
-		if ( infologLength > 1 ) {
-			idTempArray<char> infoLog( infologLength );
-			int charsWritten = 0;
-			glGetShaderInfoLog( shader, infologLength, &charsWritten, infoLog.Ptr() );
-
-			// catch the strings the ATI and Intel drivers output on success
-			if ( strstr( infoLog.Ptr(), "successfully compiled to run on hardware" ) != NULL || 
-					strstr( infoLog.Ptr(), "No errors." ) != NULL ) {
-				//common->Printf( "%s program %s from %s compiled to run on hardware\n", typeName, GetName(), GetFileName() );
-			} else {
-				common->Printf( "While compiling %s program %s\n", ( target == GL_FRAGMENT_SHADER ) ? "fragment" : "vertex" , inFile.c_str() );
-
-				const char separator = '\n';
-				idList<idStr> lines;
-				lines.Clear();
-				idStr source( programGLSL );
-				lines.Append( source );
-				for ( int index = 0, ofs = lines[index].Find( separator ); ofs != -1; index++, ofs = lines[index].Find( separator ) ) {
-					lines.Append( lines[index].c_str() + ofs + 1 );
-					lines[index].CapLength( ofs );
-				}
-
-				common->Printf( "-----------------\n" );
-				for ( int i = 0; i < lines.Num(); i++ ) {
-					common->Printf( "%3d: %s\n", i+1, lines[i].c_str() );
-				}
-				common->Printf( "-----------------\n" );
-
-				common->Printf( "%s\n", infoLog.Ptr() );
-			}
-		}
-
-		GLint compiled = GL_FALSE;
-		glGetShaderiv( shader, GL_COMPILE_STATUS, &compiled );
-		if ( compiled == GL_FALSE ) {
-			glDeleteShader( shader );
-			return INVALID_PROGID;
-		}
+	if( !shader ){
+	    idLib::Error( "Couldn't create shader for: (%s)\n", name );
+	    return 0;
 	}
+    const char * source[1] = { programGLSL.c_str() };
+
+    glShaderSource( shader, 1, source, NULL );
+    glCompileShader( shader );
+
+    int infologLength = 0;
+    glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &infologLength );
+    if ( infologLength > 1 ) {
+        idTempArray<char> infoLog( infologLength );
+        int charsWritten = 0;
+        glGetShaderInfoLog( shader, infologLength, &charsWritten, infoLog.Ptr() );
+
+        // catch the strings the ATI and Intel drivers output on success
+        if ( strstr( infoLog.Ptr(), "successfully compiled to run on hardware" ) != NULL ||
+                strstr( infoLog.Ptr(), "No errors." ) != NULL ) {
+            //common->Printf( "%s program %s from %s compiled to run on hardware\n", typeName, GetName(), GetFileName() );
+        }
+        common->Printf( "While compiling %s program %s\n", ( target == GL_FRAGMENT_SHADER ) ? "fragment" : "vertex" , inFile.c_str() );
+
+        const char separator = '\n';
+        idList<idStr> lines;
+        lines.Clear();
+        idStr source( programGLSL );
+        lines.Append( source );
+        for ( int index = 0, ofs = lines[index].Find( separator ); ofs != -1; index++, ofs = lines[index].Find( separator ) ) {
+            lines.Append( lines[index].c_str() + ofs + 1 );
+            lines[index].CapLength( ofs );
+        }
+
+        common->Printf( "-----------------\n" );
+        for ( int i = 0; i < lines.Num(); i++ ) {
+            common->Printf( "%3d: %s\n", i+1, lines[i].c_str() );
+        }
+        common->Printf( "-----------------\n" );
+
+        common->Printf( "%s\n", infoLog.Ptr() );
+    }
+
+    GLint compiled = GL_FALSE;
+    glGetShaderiv( shader, GL_COMPILE_STATUS, &compiled );
+    if ( compiled == GL_FALSE ) {
+        glDeleteShader( shader );
+        return INVALID_PROGID;
+    }
 
 	return shader;
 }
@@ -1188,6 +1247,10 @@ void idRenderProgManager::LoadGLSLProgram( const int programIndex, const int ver
 	glslProgram_t & prog = glslPrograms[programIndex];
 
 	if ( prog.progId != INVALID_PROGID ) {
+		idLib::Warning( "Tried to load already loaded GLSL program(%d) with vertexShader %s and fragmentShader %s\n",
+						programIndex,
+						( vertexShaderIndex >= 0 ) ? vertexShaders[vertexShaderIndex].name.c_str() : "<Invalid>",
+						( fragmentShaderIndex >= 0 ) ? fragmentShaders[ fragmentShaderIndex ].name.c_str() : "<Invalid>" );
 		return; // Already loaded
 	}
 
@@ -1195,45 +1258,45 @@ void idRenderProgManager::LoadGLSLProgram( const int programIndex, const int ver
 	GLuint fragmentProgID = ( fragmentShaderIndex != -1 ) ? fragmentShaders[ fragmentShaderIndex ].progId : INVALID_PROGID;
 
 	const GLuint program = glCreateProgram();
-	if ( program ) {
+	if ( !program ) {
+		idLib::Error("Couldn't create glsl program! glCreateProgram() failed!\n");
+	}
 
-		if ( vertexProgID != INVALID_PROGID ) {
-			glAttachShader( program, vertexProgID );
+	if ( vertexProgID != INVALID_PROGID ) {
+		glAttachShader( program, vertexProgID );
+	}
+
+	if ( fragmentProgID != INVALID_PROGID ) {
+		glAttachShader( program, fragmentProgID );
+	}
+
+	// bind vertex attribute locations
+	for ( int i = 0; attribsPC[i].glsl != NULL; i++ ) {
+		if ( ( attribsPC[i].flags & AT_VS_IN ) != 0 ) {
+			glBindAttribLocation( program, attribsPC[i].bind, attribsPC[i].glsl );
 		}
+	}
 
-		if ( fragmentProgID != INVALID_PROGID ) {
-			glAttachShader( program, fragmentProgID );
+	glLinkProgram( program );
+
+	int infologLength = 0;
+	glGetProgramiv( program, GL_INFO_LOG_LENGTH, &infologLength );
+	if ( infologLength > 1 ) {
+		char * infoLog = (char *)malloc( infologLength );
+		int charsWritten = 0;
+		glGetProgramInfoLog( program, infologLength, &charsWritten, infoLog );
+
+		// catch the strings the ATI and Intel drivers output on success
+		if ( strstr( infoLog, "Vertex shader(s) linked, fragment shader(s) linked." ) != NULL || strstr( infoLog, "No errors." ) != NULL ) {
+			//common->Printf( "render prog %s from %s linked\n", GetName(), GetFileName() );
 		}
+		common->Printf( "While linking GLSL program %d with vertexShader %s and fragmentShader %s\n",
+			programIndex,
+			( vertexShaderIndex >= 0 ) ? vertexShaders[vertexShaderIndex].name.c_str() : "<Invalid>",
+			( fragmentShaderIndex >= 0 ) ? fragmentShaders[ fragmentShaderIndex ].name.c_str() : "<Invalid>" );
+		common->Printf( "%s\n", infoLog );
 
-		// bind vertex attribute locations
-		for ( int i = 0; attribsPC[i].glsl != NULL; i++ ) {
-			if ( ( attribsPC[i].flags & AT_VS_IN ) != 0 ) {
-				glBindAttribLocation( program, attribsPC[i].bind, attribsPC[i].glsl );
-			}
-		}
-
-		glLinkProgram( program );
-
-		int infologLength = 0;
-		glGetProgramiv( program, GL_INFO_LOG_LENGTH, &infologLength );
-		if ( infologLength > 1 ) {
-			char * infoLog = (char *)malloc( infologLength );
-			int charsWritten = 0;
-			glGetProgramInfoLog( program, infologLength, &charsWritten, infoLog );
-
-			// catch the strings the ATI and Intel drivers output on success
-			if ( strstr( infoLog, "Vertex shader(s) linked, fragment shader(s) linked." ) != NULL || strstr( infoLog, "No errors." ) != NULL ) {
-				//common->Printf( "render prog %s from %s linked\n", GetName(), GetFileName() );
-			} else {
-				common->Printf( "While linking GLSL program %d with vertexShader %s and fragmentShader %s\n", 
-					programIndex, 
-					( vertexShaderIndex >= 0 ) ? vertexShaders[vertexShaderIndex].name.c_str() : "<Invalid>", 
-					( fragmentShaderIndex >= 0 ) ? fragmentShaders[ fragmentShaderIndex ].name.c_str() : "<Invalid>" );
-				common->Printf( "%s\n", infoLog );
-			}
-
-			free( infoLog );
-		}
+		free( infoLog );
 	}
 
 	int linked = GL_FALSE;

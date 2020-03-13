@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -571,6 +571,7 @@ idEntityFx::Spawn
 ================
 */
 void idEntityFx::Spawn( void ) {
+    idEntity::Spawn();
 
 	if ( g_skipFX.GetBool() ) {
 		return;

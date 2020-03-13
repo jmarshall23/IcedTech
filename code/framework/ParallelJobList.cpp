@@ -25,7 +25,7 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #include "ParallelJobListLocal.h"
 
 idCVar jobs_prioritize("jobs_prioritize", "1", CVAR_BOOL | CVAR_NOCHEAT, "prioritize job lists");
@@ -418,6 +418,8 @@ void idParallelJobList_Threads::Submit( idParallelJobList_Threads * waitForJobLi
 idParallelJobList_Threads::Wait
 ========================
 */
+#define verify( x )		( ( x ) ? true : false )
+
 void idParallelJobList_Threads::Wait() {
 	if ( jobList.Num() > 0 ) {
 		// don't lock up but return if the job list was never properly submitted

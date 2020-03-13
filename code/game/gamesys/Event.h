@@ -36,6 +36,11 @@ Event are used for scheduling tasks and for linking script commands.
 #define D_EVENT_MAXARGS				8			// if changed, enable the CREATE_EVENT_CODE define in Event.cpp to generate switch statement for idClass::ProcessEventArgPtr.
 												// running the game will then generate c:\doom\base\events.txt, the contents of which should be copied into the switch statement.
 
+// RB: from dhewm3
+// stack size of idVec3, aligned to native pointer size
+#define E_EVENT_SIZEOF_VEC			((sizeof(idVec3) + (sizeof(intptr_t) - 1)) & ~(sizeof(intptr_t) - 1))
+// RB end
+
 #define D_EVENT_VOID				( ( char )0 )
 #define D_EVENT_INTEGER				'd'
 #define D_EVENT_FLOAT				'f'
@@ -71,7 +76,7 @@ public:
 	const char					*GetName( void ) const;
 	const char					*GetArgFormat( void ) const;
 	unsigned int				GetFormatspecIndex( void ) const;
-	char						GetReturnType( void ) const;
+	int 						GetReturnType( void ) const;
 	int							GetEventNum( void ) const;
 	int							GetNumArgs( void ) const;
 	size_t						GetArgSize( void ) const;
@@ -104,7 +109,7 @@ public:
 								~idEvent();
 
 	static idEvent				*Alloc( const idEventDef *evdef, int numargs, va_list args );
-	static void					CopyArgs( const idEventDef *evdef, int numargs, va_list args, int data[ D_EVENT_MAXARGS ]  );
+	static void					CopyArgs( const idEventDef *evdef, int numargs, va_list args, intptr_t data[ D_EVENT_MAXARGS ]  );
 	
 	void						Free( void );
 	void						Schedule( idClass *object, const idTypeInfo *cls, int time );
@@ -165,7 +170,7 @@ ID_INLINE unsigned int idEventDef::GetFormatspecIndex( void ) const {
 idEventDef::GetReturnType
 ================
 */
-ID_INLINE char idEventDef::GetReturnType( void ) const {
+ID_INLINE int idEventDef::GetReturnType( void ) const {
 	return returnType;
 }
 

@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "tr_local.h"
@@ -1388,7 +1388,7 @@ srfTriangles_t *R_CreateShadowVolume( const idRenderEntityLocal *ent,
 	}
 
 	if ( optimize == SG_OFFLINE ) {
-		CleanupOptimizedShadowTris( newTri );
+        CleanupOptimizedShadowTris( newTri );
 	}
 
 	return newTri;

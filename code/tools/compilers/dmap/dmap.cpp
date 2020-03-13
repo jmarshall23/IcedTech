@@ -25,9 +25,7 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-
 #include "tools_precompiled.h"
-#pragma hdrstop
 
 #include "dmap.h"
 

@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -166,6 +166,8 @@ idWeapon::Spawn
 ================
 */
 void idWeapon::Spawn( void ) {
+    idAnimatedEntity::Spawn();
+
 	if ( !gameLocal.isClient ) {
 		// setup the world model
 		worldModel = static_cast< idAnimatedEntity * >( gameLocal.SpawnEntityType( idAnimatedEntity::Type, NULL ) );
@@ -842,7 +844,7 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 
 	// find some joints in the model for locating effects
 	barrelJointView = animator.GetJointHandle( "barrel" );
-	flashJointView = animator.GetJointHandle( "flash" );
+	flashJointView = animator.GetJointHandle( "barrel" );
 	ejectJointView = animator.GetJointHandle( "eject" );
 	guiLightJointView = animator.GetJointHandle( "guiLight" );
 	ventLightJointView = animator.GetJointHandle( "ventLight" );
@@ -1655,7 +1657,7 @@ bool idWeapon::BloodSplat( float size ) {
 	normal = idVec3( gameLocal.random.CRandomFloat(), -gameLocal.random.RandomFloat(), -1 );
 	normal.Normalize();
 
-	idMath::SinCos16( gameLocal.random.RandomFloat() * idMath::TWO_PI, s, c );
+	idMath::SinCos16( gameLocal.random.RandomFloat() * idMath::TWO_PI, &s, &c );
 
 	localAxis[2] = -normal;
 	localAxis[2].NormalVectors( axistemp[0], axistemp[1] );

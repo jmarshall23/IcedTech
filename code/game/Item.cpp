@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -272,6 +272,8 @@ void idItem::Spawn( void ) {
 	idEntity *	ent;
 	float		tsize;
 
+    idEntity::Spawn();
+
 	if ( spawnArgs.GetBool( "dropToFloor" ) ) {
 		PostEventMS( &EV_DropToFloor, 0 );
 	}
@@ -298,7 +300,7 @@ void idItem::Spawn( void ) {
 		if ( !ent ) {
 			gameLocal.Error( "Item couldn't find owner '%s'", giveTo.c_str() );
 		}
-		PostEventMS( &EV_Touch, 0, ent, NULL );
+		PostEventMS( &EV_Touch, 0, ent, 0 );
 	}
 
 	if ( spawnArgs.GetBool( "spin" ) || gameLocal.isMultiplayer ) {
@@ -623,6 +625,7 @@ idItemPowerup::Spawn
 ================
 */
 void idItemPowerup::Spawn( void ) {
+    idItem::Spawn();
 	time = spawnArgs.GetInt( "time", "30" );
 	type = spawnArgs.GetInt( "type", "0" );
 }
@@ -689,6 +692,8 @@ idObjective::Spawn
 ================
 */
 void idObjective::Spawn( void ) {
+    idItem::Spawn();
+
 	Hide();
 	PostEventMS( &EV_CamShot, 250 );
 }
@@ -812,6 +817,7 @@ idVideoCDItem::Spawn
 ================
 */
 void idVideoCDItem::Spawn( void ) {
+    idItem::Spawn();
 }
 
 /*
@@ -925,6 +931,8 @@ void idMoveableItem::Spawn( void ) {
 	float density, friction, bouncyness, tsize;
 	idStr clipModelName;
 	idBounds bounds;
+
+    idItem::Spawn();
 
 	// create a trigger for item pickup
 	spawnArgs.GetFloat( "triggersize", "16.0", tsize );
@@ -1227,6 +1235,7 @@ idItemRemover::Spawn
 ================
 */
 void idItemRemover::Spawn( void ) {
+    idEntity::Spawn();
 }
 
 /*
@@ -1299,6 +1308,8 @@ idObjectiveComplete::Spawn
 ================
 */
 void idObjectiveComplete::Spawn( void ) {
+    idItemRemover::Spawn();
+
 	spawnArgs.SetBool( "objEnabled", false );
 	Hide();
 }

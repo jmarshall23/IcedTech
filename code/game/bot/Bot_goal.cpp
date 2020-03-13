@@ -1,7 +1,7 @@
 // Bot_goal.cpp
 //
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #include "../Game_local.h"
 
 idCVar bot_droppedweight("bot_droppedweight", "1000", CVAR_CHEAT | CVAR_INTEGER, "");
@@ -1800,4 +1800,29 @@ void idBotGoalManager::BotShutdownGoalAI(void)
 			BotFreeGoalState(i);
 		}
 	}
+}
+
+
+/*
+=======================
+idBotGoalManager::BotNearGoal(
+=======================
+*/
+bool idBotGoalManager::BotNearGoal(idVec3 p1, idVec3 p2) {
+	idVec3 p1_z, p2_z;
+
+	p1_z[0] = p1[0];
+	p1_z[1] = p1[1];
+	p1_z[2] = 0;
+
+	p2_z[0] = p2[0];
+	p2_z[1] = p2[1];
+	p2_z[2] = 0;
+
+	float distToGoal = idMath::Distance(p1_z, p2_z);
+	if (distToGoal <= 50) {
+		return true;
+	}
+
+	return false;
 }

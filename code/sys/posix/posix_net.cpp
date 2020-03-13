@@ -52,8 +52,8 @@ idCVar net_ip( "net_ip", "localhost", CVAR_SYSTEM, "local IP address" );
 idCVar net_port( "net_port", "", CVAR_SYSTEM | CVAR_INTEGER, "local IP port number" );
 
 typedef struct {
-	unsigned long ip;
-	unsigned long mask;
+	unsigned int ip;
+	unsigned int mask;
 } net_interface;
 
 #define 		MAX_INTERFACES	32
@@ -122,46 +122,44 @@ static bool ExtractPort( const char *src, char *buf, int bufsize, int *port ) {
 }
 
 /*
-=============
-StringToSockaddr
-=============
+========================
+Net_StringToSockaddr
+========================
 */
-static bool StringToSockaddr( const char *s, struct sockaddr_in *sadr, bool doDNSResolve ) {
-	struct hostent *h;
-	char buf[256];
-	int port;
+static bool StringToSockaddr( const char* s, sockaddr_in* sadr, bool doDNSResolve )
+{
+    /* NOTE: the doDNSResolve argument is ignored for two reasons:
+     * 1. domains can start with numbers nowadays so the old heuristic to find out if it's
+     *    an IP (check if the first char is a digit) isn't reliable
+     * 2. gethostbyname() works fine for IPs and doesn't do a lookup if the passed string
+     *    is an IP
+     */
+    struct hostent*	h;
+    char buf[256];
+    int port;
 
-	memset( sadr, 0, sizeof( *sadr ) );
-	sadr->sin_family = AF_INET;
+    memset( sadr, 0, sizeof( *sadr ) );
 
-	sadr->sin_port = 0;
+    sadr->sin_family = AF_INET;
+    sadr->sin_port = 0;
 
-	if (s[0] >= '0' && s[0] <= '9') {
-		if ( !inet_aton( s, &sadr->sin_addr ) ) {
-			// check for port
-			if ( !ExtractPort( s, buf, sizeof( buf ), &port ) ) {
-				return false;
-			}
-			if ( !inet_aton( buf, &sadr->sin_addr ) ) {
-				return false;
-			}
-			sadr->sin_port = htons( port );
-		}
-	} else if ( doDNSResolve ) {
-		// try to remove the port first, otherwise the DNS gets confused into multiple timeouts
-		// failed or not failed, buf is expected to contain the appropriate host to resolve
-		if ( ExtractPort( s, buf, sizeof( buf ), &port ) ) {
-			sadr->sin_port = htons( port );			
-		}		
-		if ( !( h = gethostbyname( buf ) ) ) {
-			return false;
-		}
-		*(int *) &sadr->sin_addr =
-			*(int *) h->h_addr_list[0];
-	}
+    // try to remove the port first, otherwise the DNS gets confused into multiple timeouts
+    // failed or not failed, buf is expected to contain the appropriate host to resolve
+    if( ExtractPort( s, buf, sizeof( buf ), &port ) )
+    {
+        sadr->sin_port = htons( port );
+    }
+    // buf contains the host, even if Net_ExtractPort returned false
+    h = gethostbyname( buf );
+    if( h == NULL )
+    {
+        return false;
+    }
+    sadr->sin_addr.s_addr = *( in_addr_t* ) h->h_addr_list[0];
 
-	return true;
+    return true;
 }
+
 
 /*
 =============
@@ -206,36 +204,34 @@ Sys_IsLANAddress
 ==================
 */
 bool Sys_IsLANAddress( const netadr_t adr ) {
-	int i;
-	unsigned long *p_ip;
-	unsigned long ip;
+    int i;
+    unsigned int ip;
 
 #if ID_NOLANADDRESS
-	common->Printf( "Sys_IsLANAddress: ID_NOLANADDRESS\n" );
+    common->Printf( "Sys_IsLANAddress: ID_NOLANADDRESS\n" );
 	return false;
 #endif
 
-	if ( adr.type == NA_LOOPBACK ) {
-		return true;
-	}
+    if ( adr.type == NA_LOOPBACK ) {
+        return true;
+    }
 
-	if ( adr.type != NA_IP ) {
-		return false;
-	}
+    if ( adr.type != NA_IP ) {
+        return false;
+    }
 
-	if ( !num_interfaces ) {
-		return false;	// well, if there's no networking, there are no LAN addresses, right
-	}
+    if ( !num_interfaces ) {
+        return false;	// well, if there's no networking, there are no LAN addresses, right
+    }
 
-	for ( i = 0; i < num_interfaces; i++ ) {
-		p_ip = (unsigned long *)&adr.ip[0];
-		ip = ntohl( *p_ip );
-		if( ( netint[i].ip & netint[i].mask ) == ( ip & netint[i].mask ) ) {
-			return true;
-		}
-	}
+    for ( i = 0; i < num_interfaces; i++ ) {
+        ip = ntohl( *( unsigned int *)&adr.ip );
+        if( ( netint[i].ip & netint[i].mask ) == ( ip & netint[i].mask ) ) {
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 /*
@@ -299,8 +295,8 @@ void Sys_InitNetworking(void)
 		if ( !ifp->ifa_netmask )
 			continue;
 		
-		ip = ntohl( *( unsigned long *)&ifp->ifa_addr->sa_data[2] );
-		mask = ntohl( *( unsigned long *)&ifp->ifa_netmask->sa_data[2] );
+		ip = ntohl( *( unsigned int *)&ifp->ifa_addr->sa_data[2] );
+		mask = ntohl( *( unsigned int *)&ifp->ifa_netmask->sa_data[2] );
 		
 		if ( ip == INADDR_LOOPBACK ) {
 			common->Printf( "loopback\n" );
@@ -348,7 +344,7 @@ void Sys_InitNetworking(void)
 			if ( ifr->ifr_addr.sa_family != AF_INET ) {
 				common->Printf( "not AF_INET\n" );
 			} else {
-				ip = ntohl( *( unsigned long *)&ifr->ifr_addr.sa_data[2] );
+				ip = ntohl( *( unsigned int *)&ifr->ifr_addr.sa_data[2] );
 				if ( ip == INADDR_LOOPBACK ) {
 					common->Printf( "loopback\n" );
 				} else {
@@ -361,7 +357,7 @@ void Sys_InitNetworking(void)
 				if ( ioctl( s, SIOCGIFNETMASK, ifr ) < 0 ) {
 					common->Printf( " SIOCGIFNETMASK failed: %s\n", strerror( errno ) );
 				} else {
-					mask = ntohl( *( unsigned long *)&ifr->ifr_addr.sa_data[2] );
+					mask = ntohl( *( unsigned int *)&ifr->ifr_addr.sa_data[2] );
 					if ( ip != INADDR_LOOPBACK ) {
 						common->Printf( "/%d.%d.%d.%d\n",
 										(unsigned char)ifr->ifr_addr.sa_data[2],

@@ -672,6 +672,7 @@ private:
 
 private:
 	bot_state_t		bs;
+	bool			hasSpawned;
 private:
 	int currentWaypoint;
 	idList<idVec3>	navWaypoints;

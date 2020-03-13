@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -311,6 +311,8 @@ void idLight::Spawn( void ) {
 	bool start_off;
 	bool needBroken;
 	const char *demonic_shader;
+
+    idEntity::Spawn();
 
 	// do the parsing the same way dmap and the editor do
 	gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &renderLight );

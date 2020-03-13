@@ -76,7 +76,7 @@ typedef unsigned char			byte;		// 8 bits
 typedef unsigned short			word;		// 16 bits
 typedef unsigned int			dword;		// 32 bits
 typedef unsigned int			uint;
-typedef unsigned long			ulong;
+//typedef unsigned long			ulong;      // varies based on platform, should be removed
 
 typedef int						qhandle_t;
 
@@ -124,11 +124,22 @@ void	UnpackColor( const dword color, idVec3 &unpackedColor );
 dword	PackColor( const idVec4 &color );
 void	UnpackColor( const dword color, idVec4 &unpackedColor );
 
+
+bool	Swap_IsBigEndian( void );
+float   FloatSwap( float f );
+void    RevBytesSwap( void *bp, int elsize, int elcount );
+
+// for base64
+void	SixtetsForInt( byte *out, int src);
+void    SixtetsForIntLittle( byte *out, int src);
+int		IntForSixtets( byte *in );
+int     IntForSixtetsLittle( byte *in );
+
 // little/big endian conversion
 short	BigShort( short l );
 short	LittleShort( short l );
-int		BigLong( int l );
-int		LittleLong( int l );
+int		BigInt( int l );
+int		LittleInt( int l );
 float	BigFloat( float l );
 float	LittleFloat( float l );
 void	BigRevBytes( void *bp, int elsize, int elcount );
@@ -137,11 +148,6 @@ void	LittleBitField( void *bp, int elsize );
 void	Swap_Init( void );
 
 bool	Swap_IsBigEndian( void );
-
-// for base64
-void	SixtetsForInt( byte *out, int src);
-int		IntForSixtets( byte *in );
-
 
 #ifdef _DEBUG
 void AssertFailed( const char *file, int line, const char *expression );

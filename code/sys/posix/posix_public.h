@@ -34,14 +34,9 @@ If you have questions concerning this license or the applicable additional terms
 void		Posix_QueEvent( sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
 const char*	Posix_Cwd( void );
 
-// called first thing. does InitSigs and various things
-void		Posix_EarlyInit( );
-// called after common has been initialized
-void		Posix_LateInit( );
-
 void		Posix_InitPThreads( );
 void		Posix_InitSigs( );
-void		Posix_ClearSigs( );
+//void		Posix_ClearSigs( );
 
 void		Posix_Exit( int ret );
 void		Posix_SetExit(int ret); // override the exit code
@@ -61,6 +56,18 @@ void		Sys_FPE_handler( int signum, siginfo_t *info, void *context );
 void		Sys_DoStartProcess( const char *exeName, bool dofork = true ); // if not forking, current process gets replaced
 
 void		Sys_AsyncThread( void );
+
+void        Sys_WaitForEvent( int index );
+void        Sys_TriggerEvent( int index );
+
+const int MAX_TRIGGER_EVENTS		= 4;
+
+enum {
+    TRIGGER_EVENT_ZERO = 0,
+    TRIGGER_EVENT_ONE,
+    TRIGGER_EVENT_TWO,
+    TRIGGER_EVENT_THREE
+};
 
 #endif
 

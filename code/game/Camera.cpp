@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -50,6 +50,7 @@ idCamera::Spawn
 =====================
 */
 void idCamera::Spawn( void ) {
+    idEntity::Spawn();
 }
 
 /*
@@ -174,6 +175,8 @@ idCameraView::Spawn
 =====================
 */
 void idCameraView::Spawn( void ) {
+    idCamera::Spawn();
+
 	// if no target specified use ourself
 	const char *cam = spawnArgs.GetString("cameraTarget");
 	if ( strlen ( cam ) == 0) {
@@ -300,6 +303,8 @@ idCameraAnim::Spawn
 =====================
 */
 void idCameraAnim::Spawn( void ) {
+    idCamera::Spawn();
+
 	if ( spawnArgs.GetVector( "old_origin", "0 0 0", offset ) ) {
 		offset = GetPhysics()->GetOrigin() - offset;
 	} else {

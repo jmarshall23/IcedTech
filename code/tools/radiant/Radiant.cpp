@@ -47,7 +47,7 @@ static char THIS_FILE[] = __FILE__;
 
 idCVar radiant_entityMode( "radiant_entityMode", "0", CVAR_TOOL | CVAR_ARCHIVE, "" );
 
-int g_radiant_net_dll = 0;
+void *g_radiant_net_dll = 0;
 
 RadiantNetInterface_t radiantNetInterface;
 

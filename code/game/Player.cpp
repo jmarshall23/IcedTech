@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -1454,12 +1454,12 @@ void idPlayer::Spawn( void ) {
 		}
 
 		// load cursor
-		if ( spawnArgs.GetString( "cursor", "", temp ) ) {
-			cursor = uiManager->FindGui( temp, true, gameLocal.isMultiplayer, gameLocal.isMultiplayer );
-		}
-		if ( cursor ) {
-			cursor->Activate( true, gameLocal.time );
-		}
+		//if ( spawnArgs.GetString( "cursor", "", temp ) ) {
+		//	cursor = uiManager->FindGui( temp, true, gameLocal.isMultiplayer, gameLocal.isMultiplayer );
+		//}
+		//if ( cursor ) {
+		//	cursor->Activate( true, gameLocal.time );
+		//}
 
 		objectiveSystem = uiManager->FindGui( "guis/pda.gui", true, false, true );
 		objectiveSystemOpen = false;
@@ -1469,6 +1469,9 @@ void idPlayer::Spawn( void ) {
 
 	// load the armor sound feedback
 	declManager->FindSound( "player_sounds_hitArmor" );
+
+	// load the teleport in sound effect.
+	teleportInSFX = declManager->FindSound(spawnArgs.GetString("snd_teleport_enter"));
 
 	// set up conditions for animation
 	LinkScriptVariables();
@@ -2222,8 +2225,11 @@ void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_a
 	if ( gameLocal.isMultiplayer ) {
 		if ( !spectating ) {
 			// we may be called twice in a row in some situations. avoid a double fx and 'fly to the roof'
-			if ( lastTeleFX < gameLocal.time - 1000 ) {
-				idEntityFx::StartFx( spawnArgs.GetString( "fx_spawn" ), &spawn_origin, NULL, this, true );
+			if (lastTeleFX < gameLocal.time - 1000) {
+// jmarshall - TODO: implement a new teleport in FX
+				//idEntityFx::StartFx(spawnArgs.GetString("fx_spawn"), &spawn_origin, NULL, this, true);
+				StartSoundShader(teleportInSFX, SND_CHANNEL_BODY, 0, false, NULL);
+// jmarshall end
 				lastTeleFX = gameLocal.time;
 			}
 		}
@@ -5819,6 +5825,11 @@ void idPlayer::Move( void ) {
 	idVec3 oldVelocity;
 	idVec3 pushVelocity;
 
+// jmarshall: this is a hack that has turned into a cool mechanic
+	if (health <= 0)
+		return;
+// jmarshall end
+
 	// save old origin and velocity for crashlanding
 	oldOrigin = physicsObj.GetOrigin();
 	oldVelocity = physicsObj.GetLinearVelocity();
@@ -6977,6 +6988,12 @@ void idPlayer::CalculateViewWeaponPos( idVec3 &origin, idMat3 &axis ) {
 	// these cvars are just for hand tweaking before moving a value to the weapon def
 	idVec3	gunpos( g_gun_x.GetFloat(), g_gun_y.GetFloat(), g_gun_z.GetFloat() );
 
+// jmarshall
+	if (weapon.GetEntity()->GetState() == WP_FIRE) {
+		gunpos.y = -1;
+	}
+// jmarshall end
+
 	// as the player changes direction, the gun will take a small lag
 	idVec3	gunOfs = GunAcceleratingOffset();
 	origin = viewOrigin + ( gunpos + gunOfs ) * viewAxis;
@@ -7058,7 +7075,7 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	angles.pitch *= 0.5f;
 	renderView->viewaxis = angles.ToMat3() * physicsObj.GetGravityAxis();
 
-	idMath::SinCos( DEG2RAD( angle ), sideScale, forwardScale );
+	idMath::SinCos( DEG2RAD( angle ), &sideScale, &forwardScale );
 	view -= range * forwardScale * renderView->viewaxis[ 0 ];
 	view += range * sideScale * renderView->viewaxis[ 1 ];
 

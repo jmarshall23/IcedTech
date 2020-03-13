@@ -1,7 +1,7 @@
 // NavFile.cpp
 //
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #include "Nav_local.h"
 
 idCVar nav_dumpobj("nav_dumpobj", "0", CVAR_BOOL, "writes a obj represenation of the navmesh");
@@ -218,7 +218,6 @@ rvmNavFileLocal::WriteNavFile
 */
 void rvmNavFileLocal::WriteNavFile(const char *name, rcPolyMesh *mesh, rcPolyMeshDetail *detailMesh, int mapCRC, const idDeclEntityDef* botNavDecl) {
 	idStr navFileName;
-	navFileName = "maps/";
 	navFileName += name;
 	navFileHeader_t header;
 
@@ -230,7 +229,7 @@ void rvmNavFileLocal::WriteNavFile(const char *name, rcPolyMesh *mesh, rcPolyMes
 	}
 
 	// Open the nav file for writing.
-	idFileScoped file(fileSystem->OpenFileWrite(navFileName));
+	idFileScoped file(fileSystem->OpenFileWrite(navFileName, "fs_basepath"));
 
 	// Fill in the header.
 	header.version = NAV_FILE_VERSION;

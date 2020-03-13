@@ -26,11 +26,9 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
-#pragma hdrstop
 
-#include "Maya5.0/maya.h"
-//#include "Maya6.0/maya.h"			// must also change include directory in project from "MayaImport\Maya4.5\include" to "MayaImport\Maya6.0\include" (requires MSDev 7.1)
+#include "maya_precompiled.h"
+#include "maya.h"
 #include "exporter.h"
 #include "maya_main.h"
 
@@ -2810,7 +2808,7 @@ void idMayaExport::ConvertModel( void ) {
 		fclose( file );
 	}
 
-	MString	filename( options.src );
+	MString	filename( options.src.c_str() );
 	MFileIO::newFile( true );
 
 	// Load the file into Maya
@@ -2819,6 +2817,7 @@ void idMayaExport::ConvertModel( void ) {
 	if ( !status ) {
 		MayaError( "Error loading '%s': '%s'\n", filename.asChar(), status.errorString().asChar() );
 	}
+	common->Printf("Maya File loaded successfully...\n");
 
 	// force Maya to update the frame.  When using references, sometimes
 	// the model is posed the way it is in the source.  Since Maya only
@@ -2919,7 +2918,7 @@ void idMayaExport::ConvertToMD3( void ) {
 
 	pinmodel = (md3Header_t *)buffer;
 
-	version = LittleLong (pinmodel->version);
+	version = LittleInt (pinmodel->version);
 	if (version != MD3_VERSION) {
 		common->Printf( "R_LoadMD3: %s has wrong version (%i should be %i)\n",
 				 mod_name, version, MD3_VERSION);
@@ -2927,11 +2926,11 @@ void idMayaExport::ConvertToMD3( void ) {
 	}
 
 	mod->type = MOD_MESH;
-	size = LittleLong(pinmodel->ofsEnd);
+	size = LittleInt(pinmodel->ofsEnd);
 	mod->dataSize += size;
 	mod->md3[lod] = ri.Hunk_Alloc( size );
 
-	memcpy (mod->md3[lod], buffer, LittleLong(pinmodel->ofsEnd) );
+	memcpy (mod->md3[lod], buffer, LittleInt(pinmodel->ofsEnd) );
 
     LL(mod->md3[lod]->ident);
     LL(mod->md3[lod]->version);

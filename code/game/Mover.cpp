@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -330,6 +330,8 @@ idMover::Spawn
 ================
 */
 void idMover::Spawn( void ) {
+    idEntity::Spawn();
+
 	move_thread		= 0;
 	rotate_thread	= 0;
 	stopRotation	= false;
@@ -1558,6 +1560,7 @@ idSplinePath::Spawn
 ================
 */
 void idSplinePath::Spawn( void ) {
+    idEntity::Spawn();
 }
 
 
@@ -1661,6 +1664,8 @@ idElevator::Spawn
 void idElevator::Spawn( void ) {
 	idStr str;
 	int len1;
+
+    idMover::Spawn();
 
 	lastFloor = 0;
 	currentFloor = 0;
@@ -2278,6 +2283,8 @@ Base class for all movers.
 void idMover_Binary::Spawn( void ) {
 	idEntity	*ent;
 	const char	*temp;
+
+    idEntity::Spawn();
 
 	move_thread		= 0;
 	enabled			= true;
@@ -3222,6 +3229,8 @@ void idDoor::Spawn( void ) {
 	float		time;
 	float		speed;
 
+    idMover_Binary::Spawn();
+
 	// get the direction to move
 	if ( !spawnArgs.GetFloat( "movedir", "0", dir ) ) {
 		// no movedir, so angle defines movement direction and not orientation,
@@ -4061,6 +4070,8 @@ void idPlat::Spawn( void ) {
 	float	decel;
 	bool	noTouch;
 
+    idMover_Binary::Spawn();
+
 	spawnArgs.GetFloat( "speed", "100", speed );
 	spawnArgs.GetFloat( "damage", "0", damage );
 	spawnArgs.GetFloat( "wait", "1", wait );
@@ -4164,6 +4175,8 @@ void idPlat::SpawnPlatTrigger( idVec3 &pos ) {
 	idVec3			tmin;
 	idVec3			tmax;
 
+    idMover_Binary::Spawn();
+
 	// the middle trigger will be a thin trigger just
 	// above the starting position
 
@@ -4257,6 +4270,8 @@ idMover_Periodic::Spawn
 ===============
 */
 void idMover_Periodic::Spawn( void ) {
+    idEntity::Spawn();
+
 	spawnArgs.GetFloat( "damage", "0", damage );
 	if ( !spawnArgs.GetBool( "solid", "1" ) ) {
 		GetPhysics()->SetContents( 0 );
@@ -4370,6 +4385,8 @@ idRotater::Spawn
 ===============
 */
 void idRotater::Spawn( void ) {
+    idMover_Periodic::Spawn();
+
 	physicsObj.SetSelf( this );
 	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetOrigin( GetPhysics()->GetOrigin() );
@@ -4474,6 +4491,8 @@ void idBobber::Spawn( void ) {
 	bool	y_axis;
 	idVec3	delta;
 
+    idMover_Periodic::Spawn();
+
 	spawnArgs.GetFloat( "speed", "4", speed );
 	spawnArgs.GetFloat( "height", "32", height );
 	spawnArgs.GetFloat( "phase", "0", phase );
@@ -4533,6 +4552,8 @@ void idPendulum::Spawn( void ) {
 	float	length;
 	float	phase;
 
+    idMover_Periodic::Spawn();
+
 	spawnArgs.GetFloat( "speed", "30", speed );
 	spawnArgs.GetFloat( "phase", "0", phase );
 
@@ -4590,6 +4611,8 @@ idRiser::Spawn
 ===============
 */
 void idRiser::Spawn( void ) {
+    idMover_Periodic::Spawn();
+
 	physicsObj.SetSelf( this );
 	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetOrigin( GetPhysics()->GetOrigin() );

@@ -31,7 +31,7 @@ Various utility objects and functions.
 
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -57,6 +57,7 @@ idSpawnableEntity::Spawn
 ======================
 */
 void idSpawnableEntity::Spawn() {
+    idEntity::Spawn();
 	// this just holds dict information
 }
 
@@ -90,6 +91,7 @@ idPlayerStart::Spawn
 ================
 */
 void idPlayerStart::Spawn( void ) {
+    idEntity::Spawn();
 	teleportStage = 0;
 }
 
@@ -287,6 +289,8 @@ idActivator::Spawn
 void idActivator::Spawn( void ) {
 	bool start_off;
 
+    idEntity::Spawn();
+
 	spawnArgs.GetBool( "stay_on", "0", stay_on );
 	spawnArgs.GetBool( "start_off", "0", start_off );
 
@@ -347,6 +351,7 @@ idPathCorner::Spawn
 =====================
 */
 void idPathCorner::Spawn( void ) {
+    idEntity::Spawn();
 }
 
 /*
@@ -463,6 +468,8 @@ idDamagable::Spawn
 */
 void idDamagable::Spawn( void ) {
 	idStr broken;
+
+    idEntity::Spawn();
 
 	health = spawnArgs.GetInt( "health", "5" );
 	spawnArgs.GetInt( "count", "1", count );	
@@ -593,6 +600,7 @@ idExplodable::Spawn
 ================
 */
 void idExplodable::Spawn( void ) {
+    idEntity::Spawn();
 	Hide();
 }
 
@@ -715,6 +723,8 @@ idSpring::Spawn
 void idSpring::Spawn( void ) {
 	float Kstretch, damping, restLength;
 
+    idEntity::Spawn();
+
 	spawnArgs.GetInt( "id1", "0", id1 );
 	spawnArgs.GetInt( "id2", "0", id2 );
 	spawnArgs.GetVector( "point1", "0 0 0", p1 );
@@ -798,6 +808,8 @@ idForceField::Spawn
 void idForceField::Spawn( void ) {
 	idVec3 uniform;
 	float explosion, implosion, randomTorque;
+
+    idEntity::Spawn();
 
 	if ( spawnArgs.GetVector( "uniform", "0 0 0", uniform ) ) {
 		forceField.Uniform( uniform );
@@ -963,6 +975,8 @@ void idAnimated::Spawn( void ) {
 	int			anim2;
 	float		wait;
 	const char	*joint;
+
+    idAFEntity_Gibbable::Spawn();
 
 	joint = spawnArgs.GetString( "sound_bone", "origin" ); 
 	soundJoint = animator.GetJointHandle( joint );
@@ -1392,6 +1406,8 @@ void idStaticEntity::Spawn( void ) {
 	bool solid;
 	bool hidden;
 
+    idEntity::Spawn();
+
 	// an inline static model will not do anything at all
 	if ( gameLocal.world->spawnArgs.GetBool( "inlineworld" ) ) {
 		Hide();
@@ -1603,6 +1619,8 @@ idFuncEmitter::Spawn
 ===============
 */
 void idFuncEmitter::Spawn( void ) {
+    idStaticEntity::Spawn();
+
 	if ( spawnArgs.GetBool( "start_off" ) ) {
 		hidden = true;
 		renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] = MS2SEC( 1 );
@@ -1702,6 +1720,7 @@ idFuncSplat::Spawn
 ===============
 */
 void idFuncSplat::Spawn( void ) {
+    idFuncEmitter::Spawn();
 }
 
 /*
@@ -1786,7 +1805,10 @@ idFuncSmoke::Spawn
 ===============
 */
 void idFuncSmoke::Spawn( void ) {
+    idEntity::Spawn();
+
 	const char *smokeName = spawnArgs.GetString( "smoke" );
+
 	if ( *smokeName != '\0' ) {
 		smoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
 	} else {
@@ -1862,6 +1884,8 @@ idTextEntity::Spawn
 ================
 */
 void idTextEntity::Spawn( void ) {
+    idEntity::Spawn();
+
 	// these are cached as the are used each frame
 	text = spawnArgs.GetString( "text" );
 	playerOriented = spawnArgs.GetBool( "playerOriented" );
@@ -1966,6 +1990,8 @@ idVacuumSeparatorEntity::Spawn
 void idVacuumSeparatorEntity::Spawn() {
 	idBounds b;
 
+    idEntity::Spawn();
+
 	b = idBounds( spawnArgs.GetVector( "origin" ) ).Expand( 16 );
 	portal = gameRenderWorld->FindPortal( b );
 	if ( !portal ) {
@@ -2007,6 +2033,8 @@ idLocationSeparatorEntity::Spawn
 void idLocationSeparatorEntity::Spawn() {
 	idBounds b;
 
+    idEntity::Spawn();
+
 	b = idBounds( spawnArgs.GetVector( "origin" ) ).Expand( 16 );
 	qhandle_t portal = gameRenderWorld->FindPortal( b );
 	if ( !portal ) {
@@ -2035,6 +2063,8 @@ idVacuumEntity::Spawn
 ================
 */
 void idVacuumEntity::Spawn() {
+    idEntity::Spawn();
+
 	if ( gameLocal.vacuumAreaNum != -1 ) {
 		gameLocal.Warning( "idVacuumEntity::Spawn: multiple idVacuumEntity in level" );
 		return;
@@ -2064,6 +2094,8 @@ idLocationEntity::Spawn
 */
 void idLocationEntity::Spawn() {
 	idStr realName;
+
+    idEntity::Spawn();
 
 	// this just holds dict information
 
@@ -2132,6 +2164,8 @@ idBeam::Spawn
 */
 void idBeam::Spawn( void ) {
 	float width;
+
+    idEntity::Spawn();
 
 	if ( spawnArgs.GetFloat( "width", "0", width ) ) {
 		renderEntity.shaderParms[ SHADERPARM_BEAM_WIDTH ] = width;
@@ -2321,6 +2355,7 @@ idLiquid::Spawn
 ================
 */
 void idLiquid::Spawn() {
+    idEntity::Spawn();
 /*
 	model = dynamic_cast<idRenderModelLiquid *>( renderEntity.hModel );
 	if ( !model ) {
@@ -2395,6 +2430,8 @@ idShaking::Spawn
 ===============
 */
 void idShaking::Spawn( void ) {
+    idEntity::Spawn();
+
 	physicsObj.SetSelf( this );
 	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetOrigin( GetPhysics()->GetOrigin() );
@@ -2509,6 +2546,8 @@ idEarthQuake::Spawn
 ===============
 */
 void idEarthQuake::Spawn( void ) {
+    idEntity::Spawn();
+
 	nextTriggerTime = 0;
 	shakeStopTime = 0;
 	wait = spawnArgs.GetFloat( "wait", "15" );
@@ -2651,6 +2690,7 @@ idFuncPortal::Spawn
 ===============
 */
 void idFuncPortal::Spawn( void ) {
+	idEntity::Spawn();
 	portal = gameRenderWorld->FindPortal( GetPhysics()->GetAbsBounds().Expand( 32.0f ) );
 	if ( portal > 0 ) {
 		state = spawnArgs.GetBool( "start_on" );
@@ -2716,6 +2756,7 @@ idFuncAASPortal::Spawn
 ===============
 */
 void idFuncAASPortal::Spawn( void ) {
+    idEntity::Spawn();
 	state = spawnArgs.GetBool( "start_on" );
 //	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
 }
@@ -2776,6 +2817,8 @@ idFuncAASObstacle::Spawn
 ===============
 */
 void idFuncAASObstacle::Spawn( void ) {
+    idEntity::Spawn();
+
 	state = spawnArgs.GetBool( "start_on" );
 //	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
 }
@@ -2841,6 +2884,8 @@ idFuncRadioChatter::Spawn
 ===============
 */
 void idFuncRadioChatter::Spawn( void ) {
+    idEntity::Spawn();
+
 	time = spawnArgs.GetFloat( "time", "5.0" );
 }
 
@@ -2988,6 +3033,8 @@ idPhantomObjects::Spawn
 ===============
 */
 void idPhantomObjects::Spawn( void ) {
+    idEntity::Spawn();
+
 	throw_time = spawnArgs.GetFloat( "time", "5" );
 	speed = spawnArgs.GetFloat( "speed", "1200" );
 	shake_time = spawnArgs.GetFloat( "shake_time", "1" );

@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -49,7 +49,23 @@ const char *idMultiplayerGame::GlobalSoundStrings[] = {
 	"sound/feedback/two.wav",
 	"sound/feedback/one.wav",
 	"sound/feedback/sudden_death.wav",
+// jmarshall
+	"sound/feedback/firstfrag.ogg",
+	"sound/feedback/welcomedom.ogg",
+	"sound/feedback/onefrag.ogg",
+	"sound/feedback/twofrag.ogg",
+	"sound/feedback/threefrag.ogg",
+// jmarshall end
 };
+
+// jmarshall
+snd_evt_t idMultiplayerGame::fragFeedbackSndTable[4] = {
+	(snd_evt_t)-1,
+	SND_ONEFRAG,
+	SND_TWOFRAG,
+	SND_THREEFRAG
+};
+// jmarshall end
 
 // handy verbose
 const char *idMultiplayerGame::GameStateStrings[] = {
@@ -199,6 +215,11 @@ void idMultiplayerGame::SpawnPlayer( int clientNum ) {
 		if ( gameLocal.gameType == GAME_TDM ) {
 			SwitchToTeam( clientNum, -1, p->team );
 		}
+
+// jmarshall
+		PlayGlobalSound(clientNum, SND_WELCOMEDOM, NULL);
+// jmarshall end
+
 		p->tourneyRank = 0;
 		if ( gameLocal.gameType == GAME_TOURNEY && gameState == GAMEON ) {
 			p->tourneyRank++;
@@ -215,6 +236,11 @@ idMultiplayerGame::Clear
 void idMultiplayerGame::Clear() {
 	int i;
 
+// jmarshall
+	firstBlood = false;
+	for (int i = 0; i < 4; i++)
+		fragWarningFeedback[i] = false;
+// jmarshall end
 	gameState = INACTIVE;
 	nextState = INACTIVE;
 	pingUpdateTime = 0;
@@ -904,6 +930,30 @@ void idMultiplayerGame::PlayerDeath( idPlayer *dead, idPlayer *killer, bool tele
 		} else {
 			PrintMessageEvent( -1, MSG_KILLED, dead->entityNumber, killer->entityNumber );
 		}
+
+// jmarshall
+			//if(playerState[killer->entityNumber].fragCount)
+		if (gameState == GAMEON)
+		{
+			if (!firstBlood)
+			{
+				PlayGlobalSound(-1, SND_FIRSTFRAG, NULL);
+				firstBlood = true;
+			}
+
+			int fragLimit = gameLocal.serverInfo.GetInt("si_fragLimit");
+
+			if (playerState[killer->entityNumber].fragCount >= fragLimit - 3) {
+				int fragFeedback = fragLimit - playerState[killer->entityNumber].fragCount;
+
+				if (fragFeedback > 0 && fragWarningFeedback[fragFeedback] == false) {
+					fragWarningFeedback[fragFeedback] = true;
+					PlayGlobalSound(-1, fragFeedbackSndTable[fragFeedback], NULL);
+				}
+			}
+
+		}
+// jmarshall end
 	} else {
 		PrintMessageEvent( -1, MSG_DIED, dead->entityNumber );
 		playerState[ dead->entityNumber ].fragCount--;
@@ -984,6 +1034,10 @@ void idMultiplayerGame::NewState( gameState_t news, idPlayer *player ) {
 			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_RESTART );
 			outMsg.WriteBits( 0, 1 );
 			networkSystem->ServerSendReliableMessage( -1, outMsg );
+
+// jmarshall
+			firstBlood = false;
+// jmarshall end
 
 			PlayGlobalSound( -1, SND_FIGHT );
 			matchStartedTime = gameLocal.time;

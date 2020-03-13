@@ -1,7 +1,7 @@
 // Bot.cpp
 //
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #include "../Game_local.h"
 
 idCVar bot_pathdebug("bot_pathdebug", "0", CVAR_BOOL | CVAR_CHEAT, "force the bot to path to player");
@@ -18,6 +18,7 @@ rvmBot::rvmBot
 */
 rvmBot::rvmBot() {
 	bs.action = NULL;
+	hasSpawned = false;
 	currentWaypoint = BOT_NOWAYPOINT;
 	gameLocal.RegisterBot(this);
 }
@@ -76,9 +77,13 @@ rvmBot::Spawn
 ===================
 */
 void rvmBot::Spawn(void) {	
-	idStr botName = spawnArgs.GetString("botname");
+	idStr botName;
 	char filename[256];
 	int errnum;
+
+    idPlayer::Spawn();
+
+	botName = spawnArgs.GetString("botname");
 
 	// Load in the bot character.
 	bs.character = botCharacterStatsManager.BotLoadCharacterFromFile(va("bots/%s_c.c", botName.c_str()), 1);
@@ -115,7 +120,7 @@ void rvmBot::Spawn(void) {
 	bs.setupcount = 4;
 	bs.entergame_time = Bot_Time();
 
-	idPlayer::Spawn();
+	hasSpawned = true;
 }
 
 /*
@@ -128,7 +133,7 @@ void rvmBot::BotMoveToGoalOrigin(void) {
 
 	idAngles ang(0, bs.botinput.dir.ToYaw(), 0);
 	bs.botinput.viewangles = ang;
-	bs.botinput.speed = 200;
+	bs.botinput.speed = pm_runspeed.GetInteger();
 
 	bs.botinput.dir.Normalize();
 }
@@ -194,9 +199,7 @@ void rvmBot::ServerThink(void) {
 	{
 		if (currentWaypoint < navWaypoints.Num())
 		{
-			float dist = idMath::Distance(GetPhysics()->GetOrigin(), navWaypoints[currentWaypoint]);
-
-			if (dist <= bot_goaldist.GetInteger())
+			if (botGoalManager.BotNearGoal(GetPhysics()->GetOrigin(), navWaypoints[currentWaypoint]))
 			{
 				currentWaypoint++;
 				if (currentWaypoint >= navWaypoints.Num())
@@ -280,6 +283,9 @@ rvmBot::Think
 ===================
 */
 void rvmBot::Think(void) {
+	if (!hasSpawned)
+		return;
+
 	if(gameLocal.isServer)
 	{
 		ServerThink();

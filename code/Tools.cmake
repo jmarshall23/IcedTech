@@ -30,6 +30,11 @@ set(src_radiant_net
 	tools/radiant.net/Properties/AssemblyInfo.cs
 )
 
+set(src_maya_import 
+	./MayaImport/maya_precompiled.cpp
+	./MayaImport/maya_main.cpp
+)
+
 set(src_tools
 	./tools/tools_precompiled.cpp
 	./tools/af/DialogAF.cpp
@@ -412,6 +417,27 @@ set(src_tools
 
 # Add tools library
 add_library(Tools STATIC ${src_tools})
-add_precompiled_header( Tools tools_precompiled.h  SOURCE_CXX ./tools/tools_precompiled.cpp )
+if(WIN32) #todo: fix this difference
+	add_precompiled_header( Tools tools_precompiled.h  SOURCE_CXX ./tools/tools_precompiled.cpp )
+else()
+endif()
+target_include_directories(Tools PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/")
+
 set_target_properties(Tools PROPERTIES LINK_FLAGS "/PDB:\"Tools.pdb\"")
-target_include_directories(Tools PRIVATE ./external/Recast/include)
+target_include_directories(Tools PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tools/" ./external/Recast/include)
+
+
+# MayaImport
+if(EXISTS "C:\\Program Files\\Autodesk\\Maya2019\\include\\qt-5.6.1_vc14-include.zip") 
+	Message("Found Maya 2019 SDK...")
+	add_library(mayaimport MODULE  ${src_maya_import} )
+	target_compile_definitions(mayaimport PRIVATE MAYA_IMPORT=1)
+	target_link_libraries(mayaimport idLib "foundation.lib" "OpenMaya.lib" "OpenMayaAnim.lib")
+	add_precompiled_header( mayaimport maya_precompiled.h  SOURCE_CXX ./MayaImport/maya_precompiled.cpp )
+	set_target_properties(mayaimport PROPERTIES OUTPUT_NAME "MayaImport2019x64" LINK_FLAGS "/STACK:36777216,36777216 /PDB:\"MayaImport.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/MayaImport/mayaimport.def")
+	# MayaImport 2019 Maya Folders
+	target_include_directories(mayaimport PUBLIC "C:\\Program Files\\Autodesk\\Maya2019\\include")
+	target_link_directories(mayaimport PUBLIC "C:\\Program Files\\Autodesk\\Maya2019\\lib")
+else()
+	Message("Maya 2019 SDK not found, not building MayaImport...")
+endif()

@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -221,6 +221,8 @@ idTrigger::Spawn
 ================
 */
 void idTrigger::Spawn( void ) {
+    idEntity::Spawn();
+
 	GetPhysics()->SetContents( CONTENTS_TRIGGER );
 
 	idStr funcname = spawnArgs.GetString( "call", "" );
@@ -321,6 +323,8 @@ so, the basic time between firing is a random time between
 ================
 */
 void idTrigger_Multi::Spawn( void ) {
+    idTrigger::Spawn();
+
 	spawnArgs.GetFloat( "wait", "0.5", wait );
 	spawnArgs.GetFloat( "random", "0", random );
 	spawnArgs.GetFloat( "delay", "0", delay );
@@ -569,6 +573,8 @@ idTrigger_EntityName::Spawn
 ================
 */
 void idTrigger_EntityName::Spawn( void ) {
+    idTrigger::Spawn();
+
 	spawnArgs.GetFloat( "wait", "0.5", wait );
 	spawnArgs.GetFloat( "random", "0", random );
 	spawnArgs.GetFloat( "delay", "0", delay );
@@ -756,6 +762,8 @@ Can be turned on or off by using.
 ================
 */
 void idTrigger_Timer::Spawn( void ) {
+    idTrigger::Spawn();
+
 	spawnArgs.GetFloat( "random", "1", random );
 	spawnArgs.GetFloat( "wait", "1", wait );
 	spawnArgs.GetBool( "start_on", "0", on );
@@ -888,6 +896,8 @@ idTrigger_Count::Spawn
 ================
 */
 void idTrigger_Count::Spawn( void ) {
+    idTrigger::Spawn();
+
 	spawnArgs.GetInt( "count", "1", goal );
 	spawnArgs.GetFloat( "delay", "0", delay );
 	count = 0;
@@ -982,6 +992,8 @@ idTrigger_Hurt::Spawn
 ================
 */
 void idTrigger_Hurt::Spawn( void ) {
+    idTrigger::Spawn();
+
 	spawnArgs.GetBool( "on", "1", on );
 	spawnArgs.GetFloat( "delay", "1.0", delay );
 	nextTime = gameLocal.time;
@@ -1076,6 +1088,8 @@ idTrigger_Touch::Spawn
 ================
 */
 void idTrigger_Touch::Spawn( void ) {
+    idTrigger::Spawn();
+
 	// get the clip model
 	clipModel = new idClipModel( GetPhysics()->GetClipModel() );
 

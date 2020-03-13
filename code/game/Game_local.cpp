@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -76,17 +76,18 @@ const char *idGameLocal::sufaceTypeNames[ MAX_SURFACE_TYPES ] = {
 GetGameAPI
 ============
 */
-#if __MWERKS__
-#pragma export on
-#endif
 #if __GNUC__ >= 4
-#pragma GCC visibility push(default)
-#endif
-extern "C" gameExport_t *GetGameAPI( gameImport_t *import ) {
-#if __MWERKS__
+extern "C" __attribute__((visibility ("default"))) gameExport_t *GetGameAPI( gameImport_t *import ) {
+#else
+#pragma export on
+extern "C" gameExport_t* GetGameAPI( gameImport_t* import ) {
 #pragma export off
 #endif
-
+    //lwss
+    // having issue with static pointers being NULL after dll loading. might be a FIXME
+    //game = &gameLocal;
+    //gameEdit->SetGameEditPointer();
+    //lwss end
 	if ( import->version == GAME_API_VERSION ) {
 
 		// set interface pointers used by the game
@@ -119,9 +120,6 @@ extern "C" gameExport_t *GetGameAPI( gameImport_t *import ) {
 
 	return &gameExport;
 }
-#if __GNUC__ >= 4
-#pragma GCC visibility pop
-#endif
 
 /*
 ===========
@@ -1259,7 +1257,7 @@ bool idGameLocal::InitFromSaveGame( const char *mapName, idRenderWorld *renderWo
 		if ( !InhibitEntitySpawn( mapEnt->epairs ) ) {
 			CacheDictionaryMedia( &mapEnt->epairs );
 			const char *classname = mapEnt->epairs.GetString( "classname" );
-			if ( classname != '\0' ) {
+			if ( classname != 0 ) {
 				FindEntityDef( classname, false );
 			}
 		}
@@ -1633,7 +1631,7 @@ void idGameLocal::GetShakeSounds( const idDict *dict ) {
 	idStr soundName;
 
 	soundShaderName = dict->GetString( "s_shader" );
-	if ( soundShaderName != '\0' && dict->GetFloat( "s_shakes" ) != 0.0f ) {
+	if ( soundShaderName != 0 && dict->GetFloat( "s_shakes" ) != 0.0f ) {
 		soundShader = declManager->FindSound( soundShaderName );
 
 		for ( int i = 0; i < soundShader->GetNumSounds(); i++ ) {
@@ -2429,11 +2427,6 @@ void idGameLocal::CalcFov( float base_fov, float &fov_x, float &fov_y ) const {
 	float	y;
 	float	ratio_x;
 	float	ratio_y;
-	
-	if ( !sys->FPU_StackIsEmpty() ) {
-		Printf( sys->FPU_GetState() );
-		Error( "idGameLocal::CalcFov: FPU stack not empty" );
-	}
 
 	// first, calculate the vertical fov based on a 640x480 view
 	x = SCREEN_WIDTH / tan( base_fov / 360.0f * idMath::PI );
@@ -3704,7 +3697,7 @@ void idGameLocal::ProjectDecal( const idVec3 &origin, const idVec3 &dir, float d
 	}
 
 	// randomly rotate the decal winding
-	idMath::SinCos16( ( angle ) ? angle : random.RandomFloat() * idMath::TWO_PI, s, c );
+	idMath::SinCos16( ( angle ) ? angle : random.RandomFloat() * idMath::TWO_PI, &s, &c );
 
 	// winding orientation
 	axis[2] = dir;

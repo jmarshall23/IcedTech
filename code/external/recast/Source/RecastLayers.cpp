@@ -22,9 +22,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "../include/Recast.h"
-#include "../include/RecastAlloc.h"
-#include "../include/RecastAssert.h"
+#include "../Include/Recast.h"
+#include "../Include/RecastAlloc.h"
+#include "../Include/RecastAssert.h"
 
 
 // Must be 255 or smaller (not 256) because layer IDs are stored as

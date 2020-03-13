@@ -33,16 +33,16 @@ If you have questions concerning this license or the applicable additional terms
 
 //-----------------------------------------------------
 
-#define ID_TIME_T time_t
 
 #ifdef _WIN32
 
+#include <sdkddkver.h>
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// prevent auto literal to string conversion
 
 #ifndef _D3SDK
 #ifndef GAME_DLL
 
-#define WINVER				0x501
+//#define WINVER				0x501 // REEEEEEEEEEEEEEEEEE this was breaking everything
 
 #if 0
 // Dedicated server hits unresolved when trying to link this way now. Likely because of the 2010/Win7 transition? - TTimo
@@ -108,38 +108,42 @@ If you have questions concerning this license or the applicable additional terms
 //-----------------------------------------------------
 
 // non-portable system services
-#include "../sys/sys_public.h"
-#include "../sys/sys_threading.h"
-#include "../sys/sys_intrinsics.h"
+#include <sys/sys_public.h>
+#include <sys/sys_threading.h>
+#include <sys/sys_intrinsics.h>
+
+#ifdef _WIN32
+#include "../sys/win32/win_x64.h"
+#endif
 
 // id lib
-#include "../idlib/Lib.h"
+#include <idlib/Lib.h>
 
 // framework
-#include "../framework/BuildVersion.h"
-#include "../framework/BuildDefines.h"
-#include "../framework/Licensee.h"
-#include "../framework/CmdSystem.h"
-#include "../framework/CVarSystem.h"
-#include "../framework/Common.h"
-#include "../framework/File.h"
-#include "../framework/FileSystem.h"
-#include "../framework/UsercmdGen.h"
-#include "../framework/Thread.h"
-#include "../framework/ParallelJobList.h"
+#include <framework/BuildVersion.h>
+#include <framework/BuildDefines.h>
+#include <framework/Licensee.h>
+#include <framework/CmdSystem.h>
+#include <framework/CVarSystem.h>
+#include <framework/Common.h>
+#include <framework/File.h>
+#include <framework/FileSystem.h>
+#include <framework/UsercmdGen.h>
+#include <framework/Thread.h>
+#include <framework/ParallelJobList.h>
 
 // navigation
-#include "../navigation/Nav_public.h"
+#include <navigation/Nav_public.h>
 
 // decls
-#include "../framework/DeclManager.h"
-#include "../framework/DeclTable.h"
-#include "../framework/DeclSkin.h"
-#include "../framework/DeclEntityDef.h"
-#include "../framework/DeclFX.h"
-#include "../framework/DeclParticle.h"
-#include "../framework/DeclAF.h"
-#include "../framework/DeclPDA.h"
+#include <framework/DeclManager.h>
+#include <framework/DeclTable.h>
+#include <framework/DeclSkin.h>
+#include <framework/DeclEntityDef.h>
+#include <framework/DeclFX.h>
+#include <framework/DeclParticle.h>
+#include <framework/DeclAF.h>
+#include <framework/DeclPDA.h>
 
 // We have expression parsing and evaluation code in multiple places:
 // materials, sound shaders, and guis. We should unify them.
@@ -147,33 +151,34 @@ const int MAX_EXPRESSION_OPS = 4096;
 const int MAX_EXPRESSION_REGISTERS = 4096;
 
 // renderer
-#include "../renderer/qgllib/qgllib.h"
-#include "../renderer/Cinematic.h"
-#include "../renderer/Material.h"
-#include "../renderer/Model.h"
-#include "../renderer/ModelManager.h"
-#include "../renderer/ImageOpts.h"
-#include "../renderer/RenderSystem.h"
-#include "../renderer/RenderWorld.h"
+//#include <renderer/qgllib/qgllib.h>
+#include <renderer/Cinematic.h>
+#include <renderer/Material.h>
+#include <renderer/Model.h>
+#include <renderer/ModelManager.h>
+#include <renderer/ImageOpts.h>
+#include <renderer/RenderSystem.h>
+#include <renderer/RenderWorld.h>
 
 // sound engine
-#include "../sound/sound.h"
+#include <sound/sound.h>
+#include <sound/snd_local.h>
 
 // asynchronous networking
-#include "../framework/async/NetworkSystem.h"
+#include <framework/async/NetworkSystem.h>
 
 // user interfaces
-#include "../ui/ListGUI.h"
-#include "../ui/UserInterface.h"
+#include <ui/ListGUI.h>
+#include <ui/UserInterface.h>
 
 // collision detection system
-#include "../cm/CollisionModel.h"
+#include <cm/CollisionModel.h>
 
 // game
 #if defined(_D3XP)
-#include "../d3xp/Game.h"
+#include <d3xp/Game.h>
 #else
-#include "../game/Game.h"
+#include <game/Game.h>
 #endif
 
 //-----------------------------------------------------
@@ -183,33 +188,33 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 #ifdef GAME_DLL
 
 #if defined(_D3XP)
-#include "../d3xp/Game_local.h"
+#include <d3xp/Game_local.h>
 #else
-#include "../game/Game_local.h"
+#include <game/Game_local.h>
 #endif
 
 #else
 
-#include "../framework/DemoChecksum.h"
+#include <framework/DemoChecksum.h>
 
 // framework
-#include "../framework/Compressor.h"
-#include "../framework/EventLoop.h"
-#include "../framework/KeyInput.h"
-#include "../framework/EditField.h"
-#include "../framework/Console.h"
-#include "../framework/DemoFile.h"
-#include "../framework/Session.h"
+#include <framework/Compressor.h>
+#include <framework/EventLoop.h>
+#include <framework/KeyInput.h>
+#include <framework/EditField.h>
+#include <framework/Console.h>
+#include <framework/DemoFile.h>
+#include <framework/Session.h>
 
 // asynchronous networking
-#include "../framework/async/AsyncNetwork.h"
+#include <framework/async/AsyncNetwork.h>
 
 // The editor entry points are always declared, but may just be
 // stubbed out on non-windows platforms.
-#include "../tools/edit_public.h"
+#include <tools/edit_public.h>
 
 // Compilers for map, model, video etc. processing.
-#include "../tools/compilers/compiler_public.h"
+#include <tools/compilers/compiler_public.h>
 
 #endif /* !GAME_DLL */
 

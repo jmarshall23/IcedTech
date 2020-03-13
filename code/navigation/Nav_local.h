@@ -1,10 +1,11 @@
 // Nav_local.h
 //
+#include <idlib/precompiled.h>
 
 #include "../external/recast/Include/Recast.h"
-#include "../external/detour/include/DetourNavMesh.h"
-#include "../external/detour/include/DetourNavMeshBuilder.h"
-#include "../external/detour/include/DetourNavMeshQuery.h"
+#include "../external/detour/Include/DetourNavMesh.h"
+#include "../external/detour/Include/DetourNavMeshBuilder.h"
+#include "../external/detour/Include/DetourNavMeshQuery.h"
 
 struct rcPolyMesh;
 class dtNavMesh;

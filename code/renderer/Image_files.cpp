@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 
 #include "tr_local.h"
 
@@ -46,7 +46,11 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height, bool ma
  * You may also wish to include "jerror.h".
  */
 extern "C" {
-	#include "jpeg-6/jpeglib.h"
+#if defined(WIN32)
+#include <renderer/libjpeg-turbo-master/jpeglib.h>
+#else
+#include <jpeglib.h>
+#endif
 
 	// hooks from jpeg lib to our system
 
@@ -657,6 +661,7 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
   int row_stride;		/* physical row width in output buffer */
   unsigned char *out;
   byte	*fbuffer;
+  int fbuffer_size;
   byte  *bbuf;
 
   /* In this example we want to open the input file before doing anything else,
@@ -687,6 +692,7 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
 			return;	// just getting timestamp
 		}
 		fbuffer = (byte *)Mem_ClearedAlloc( len + 4096 );
+		fbuffer_size = len + 4096;
 		f->Read( fbuffer, len );
 		fileSystem->CloseFile( f );
   }
@@ -706,7 +712,10 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
 
   /* Step 2: specify data source (eg, a file) */
 
-  jpeg_stdio_src(&cinfo, fbuffer);
+  //lwss - I see you rewrote some of libjpeg, but we can actually just use jpeg_mem_src here.
+  //jpeg_stdio_src(&cinfo, fbuffer);
+  jpeg_mem_src(&cinfo, fbuffer, fbuffer_size);
+  //lwss end
 
   /* Step 3: read file parameters with jpeg_read_header() */
 
@@ -915,11 +924,11 @@ Loads six files with proper extensions
 */
 bool R_LoadCubeImages( const char *imgName, cubeFiles_t extensions, byte *pics[6], int *outSize, ID_TIME_T *timestamp ) {
 	int		i, j;
-	char	*cameraSides[6] =  { "_forward.tga", "_back.tga", "_left.tga", "_right.tga", 
+	const char	*cameraSides[6] =  { "_forward.tga", "_back.tga", "_left.tga", "_right.tga",
 		"_up.tga", "_down.tga" };
-	char	*axisSides[6] =  { "_px.tga", "_nx.tga", "_py.tga", "_ny.tga", 
+	const char	*axisSides[6] =  { "_px.tga", "_nx.tga", "_py.tga", "_ny.tga",
 		"_pz.tga", "_nz.tga" };
-	char	**sides;
+	const char	**sides;
 	char	fullName[MAX_IMAGE_NAME];
 	int		width, height, size = 0;
 

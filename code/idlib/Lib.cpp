@@ -265,31 +265,72 @@ void idLib::Warning( const char *fmt, ... ) {
 ===============================================================================
 */
 
+/*
+===============================================================================
+
+	Byte order functions
+
+===============================================================================
+*/
+
 // can't just use function pointers, or dll linkage can mess up
-static short	(*_BigShort)( short l );
-static short	(*_LittleShort)( short l );
-static int		(*_BigLong)( int l );
-static int		(*_LittleLong)( int l );
-static float	(*_BigFloat)( float l );
-static float	(*_LittleFloat)( float l );
-static void		(*_BigRevBytes)( void *bp, int elsize, int elcount );
-static void		(*_LittleRevBytes)( void *bp, int elsize, int elcount );
-static void     (*_LittleBitField)( void *bp, int elsize );
-static void		(*_SixtetsForInt)( byte *out, int src );
-static int		(*_IntForSixtets)( byte *in );
+static short( *_BigShort )( short l );
+static short( *_LittleShort )( short l );
+static int	( *_BigInt )( int l );
+static int	( *_LittleInt )( int l );
+static float( *_BigFloat )( float l );
+static float( *_LittleFloat )( float l );
+static void	( *_BigRevBytes )( void* bp, int elsize, int elcount );
+static void	( *_LittleRevBytes )( void* bp, int elsize, int elcount );
+static void ( *_LittleBitField )( void* bp, int elsize );
+static void	( *_SixtetsForInt )( byte* out, int src );
+static int	( *_IntForSixtets )( byte* in );
 
-short	BigShort( short l ) { return _BigShort( l ); }
-short	LittleShort( short l ) { return _LittleShort( l ); }
-int		BigLong( int l ) { return _BigLong( l ); }
-int		LittleLong( int l ) { return _LittleLong( l ); }
-float	BigFloat( float l ) { return _BigFloat( l ); }
-float	LittleFloat( float l ) { return _LittleFloat( l ); }
-void	BigRevBytes( void *bp, int elsize, int elcount ) { _BigRevBytes( bp, elsize, elcount ); }
-void	LittleRevBytes( void *bp, int elsize, int elcount ){ _LittleRevBytes( bp, elsize, elcount ); }
-void	LittleBitField( void *bp, int elsize ){ _LittleBitField( bp, elsize ); }
+short	BigShort( short l )
+{
+    return _BigShort( l );
+}
+short	LittleShort( short l )
+{
+    return _LittleShort( l );
+}
+int		BigInt( int l )
+{
+    return _BigInt( l );
+}
+int		LittleInt( int l )
+{
+    return _LittleInt( l );
+}
+float	BigFloat( float l )
+{
+    return _BigFloat( l );
+}
+float	LittleFloat( float l )
+{
+    return _LittleFloat( l );
+}
+void	BigRevBytes( void* bp, int elsize, int elcount )
+{
+    _BigRevBytes( bp, elsize, elcount );
+}
+void	LittleRevBytes( void* bp, int elsize, int elcount )
+{
+    _LittleRevBytes( bp, elsize, elcount );
+}
+void	LittleBitField( void* bp, int elsize )
+{
+    _LittleBitField( bp, elsize );
+}
 
-void	SixtetsForInt( byte *out, int src) { _SixtetsForInt( out, src ); }
-int		IntForSixtets( byte *in ) { return _IntForSixtets( in ); }
+void	SixtetsForInt( byte* out, int src )
+{
+    _SixtetsForInt( out, src );
+}
+int		IntForSixtets( byte* in )
+{
+    return _IntForSixtets( in );
+}
 
 /*
 ================
@@ -319,7 +360,7 @@ short ShortNoSwap( short l ) {
 LongSwap
 ================
 */
-int LongSwap ( int l ) {
+int IntSwap ( int l ) {
 	byte    b1,b2,b3,b4;
 
 	b1 = l&255;
@@ -335,7 +376,7 @@ int LongSwap ( int l ) {
 LongNoSwap
 ================
 */
-int	LongNoSwap( int l ) {
+int	IntNoSwap( int l ) {
 	return l;
 }
 
@@ -526,46 +567,39 @@ Swap_Init
 ================
 */
 void Swap_Init( void ) {
-	byte	swaptest[2] = {1,0};
+    byte	swaptest[2] = {1, 0};
 
-	// set the byte swapping variables in a portable manner	
-	if ( *(short *)swaptest == 1) {
-		// little endian ex: x86
-		_BigShort = ShortSwap;
-		_LittleShort = ShortNoSwap;
-		_BigLong = LongSwap;
-		_LittleLong = LongNoSwap;
-		_BigFloat = FloatSwap;
-		_LittleFloat = FloatNoSwap;
-		_BigRevBytes = RevBytesSwap;
-		_LittleRevBytes = RevBytesNoSwap;
-		_LittleBitField = RevBitFieldNoSwap;
-		_SixtetsForInt = SixtetsForIntLittle;
-		_IntForSixtets = IntForSixtetsLittle;
-	} else {
-		// big endian ex: ppc
-		_BigShort = ShortNoSwap;
-		_LittleShort = ShortSwap;
-		_BigLong = LongNoSwap;
-		_LittleLong = LongSwap;
-		_BigFloat = FloatNoSwap;
-		_LittleFloat = FloatSwap;
-		_BigRevBytes = RevBytesNoSwap;
-		_LittleRevBytes = RevBytesSwap;
-		_LittleBitField = RevBitFieldSwap;
-		_SixtetsForInt = SixtetsForIntBig;
-		_IntForSixtets = IntForSixtetsBig;
-	}
-}
-
-/*
-==========
-Swap_IsBigEndian
-==========
-*/
-bool Swap_IsBigEndian( void ) {
-	byte	swaptest[2] = {1,0};
-	return *(short *)swaptest != 1;
+    // set the byte swapping variables in a portable manner
+    if( *( short* )swaptest == 1 )
+    {
+        // little endian ex: x86
+        _BigShort = ShortSwap;
+        _LittleShort = ShortNoSwap;
+        _BigInt = IntSwap;
+        _LittleInt = IntNoSwap;
+        _BigFloat = FloatSwap;
+        _LittleFloat = FloatNoSwap;
+        _BigRevBytes = RevBytesSwap;
+        _LittleRevBytes = RevBytesNoSwap;
+        _LittleBitField = RevBitFieldNoSwap;
+        _SixtetsForInt = SixtetsForIntLittle;
+        _IntForSixtets = IntForSixtetsLittle;
+    }
+    else
+    {
+        // big endian ex: ppc
+        _BigShort = ShortNoSwap;
+        _LittleShort = ShortSwap;
+        _BigInt = IntNoSwap;
+        _LittleInt = IntSwap;
+        _BigFloat = FloatNoSwap;
+        _LittleFloat = FloatSwap;
+        _BigRevBytes = RevBytesNoSwap;
+        _LittleRevBytes = RevBytesSwap;
+        _LittleBitField = RevBitFieldSwap;
+        _SixtetsForInt = SixtetsForIntBig;
+        _IntForSixtets = IntForSixtetsBig;
+    }
 }
 
 /*
@@ -579,7 +613,7 @@ bool Swap_IsBigEndian( void ) {
 void AssertFailed( const char *file, int line, const char *expression ) {
 	idLib::sys->DebugPrintf( "\n\nASSERTION FAILED!\n%s(%d): '%s'\n", file, line, expression );
 #ifdef _WIN32
-	__asm int 0x03
+	__debugbreak();
 #elif defined( __linux__ )
 	__asm__ __volatile__ ("int $0x03");
 #elif defined( MACOS_X )
