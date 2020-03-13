@@ -607,7 +607,7 @@ Version 2
 }
 // entity 23
 {
-"classname" "weapon_bfg_mp"
+"classname" "weapon_plasmagun_mp"
 "name" "weapon_bfg_mp_2"
 "origin" "-496 -544 112"
 }

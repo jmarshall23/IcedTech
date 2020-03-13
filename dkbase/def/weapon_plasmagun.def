@@ -48,7 +48,7 @@ entityDef weapon_plasmagun {
 
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"
-	"model" 					"models/weapons/plasmagun/plasmagun_world.lwo"
+	"model" 					"models/weapons/plasmagun/plasmagun_world.mdr"
 	"model_view"				"viewmodel_plasmagun"
 	"model_world" 				"worldmodel_plasmagun"
 	"joint_attach"				"pgATTACHER"
