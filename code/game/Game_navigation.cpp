@@ -1,7 +1,7 @@
 // Game_navigation.cpp
 //
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #include "Game_local.h"
 
 #define DISTANCEFACTOR_CROUCH		1.3f		//crouch speed = 100

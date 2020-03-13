@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -330,7 +330,7 @@ idMover::Spawn
 ================
 */
 void idMover::Spawn( void ) {
-	BaseSpawn();
+    idEntity::Spawn();
 
 	move_thread		= 0;
 	rotate_thread	= 0;
@@ -1560,7 +1560,7 @@ idSplinePath::Spawn
 ================
 */
 void idSplinePath::Spawn( void ) {
-	BaseSpawn();
+    idEntity::Spawn();
 }
 
 
@@ -1665,7 +1665,7 @@ void idElevator::Spawn( void ) {
 	idStr str;
 	int len1;
 
-	BaseSpawn();
+    idMover::Spawn();
 
 	lastFloor = 0;
 	currentFloor = 0;
@@ -2284,7 +2284,7 @@ void idMover_Binary::Spawn( void ) {
 	idEntity	*ent;
 	const char	*temp;
 
-	BaseSpawn();
+    idEntity::Spawn();
 
 	move_thread		= 0;
 	enabled			= true;
@@ -3229,7 +3229,7 @@ void idDoor::Spawn( void ) {
 	float		time;
 	float		speed;
 
-	BaseSpawn();
+    idMover_Binary::Spawn();
 
 	// get the direction to move
 	if ( !spawnArgs.GetFloat( "movedir", "0", dir ) ) {
@@ -4070,7 +4070,7 @@ void idPlat::Spawn( void ) {
 	float	decel;
 	bool	noTouch;
 
-	BaseSpawn();
+    idMover_Binary::Spawn();
 
 	spawnArgs.GetFloat( "speed", "100", speed );
 	spawnArgs.GetFloat( "damage", "0", damage );
@@ -4175,7 +4175,7 @@ void idPlat::SpawnPlatTrigger( idVec3 &pos ) {
 	idVec3			tmin;
 	idVec3			tmax;
 
-	BaseSpawn();
+    idMover_Binary::Spawn();
 
 	// the middle trigger will be a thin trigger just
 	// above the starting position
@@ -4270,7 +4270,7 @@ idMover_Periodic::Spawn
 ===============
 */
 void idMover_Periodic::Spawn( void ) {
-	BaseSpawn();
+    idEntity::Spawn();
 
 	spawnArgs.GetFloat( "damage", "0", damage );
 	if ( !spawnArgs.GetBool( "solid", "1" ) ) {
@@ -4385,7 +4385,7 @@ idRotater::Spawn
 ===============
 */
 void idRotater::Spawn( void ) {
-	BaseSpawn();
+    idMover_Periodic::Spawn();
 
 	physicsObj.SetSelf( this );
 	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
@@ -4491,7 +4491,7 @@ void idBobber::Spawn( void ) {
 	bool	y_axis;
 	idVec3	delta;
 
-	BaseSpawn();
+    idMover_Periodic::Spawn();
 
 	spawnArgs.GetFloat( "speed", "4", speed );
 	spawnArgs.GetFloat( "height", "32", height );
@@ -4552,7 +4552,7 @@ void idPendulum::Spawn( void ) {
 	float	length;
 	float	phase;
 
-	BaseSpawn();
+    idMover_Periodic::Spawn();
 
 	spawnArgs.GetFloat( "speed", "30", speed );
 	spawnArgs.GetFloat( "phase", "0", phase );
@@ -4611,7 +4611,7 @@ idRiser::Spawn
 ===============
 */
 void idRiser::Spawn( void ) {
-	BaseSpawn();
+    idMover_Periodic::Spawn();
 
 	physicsObj.SetSelf( this );
 	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );

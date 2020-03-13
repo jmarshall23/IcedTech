@@ -112,7 +112,7 @@ idCVar zip_avgSeekDistance( "zip_avgSeekDistance", "0", CVAR_INTEGER, "" );
 #else // 0
 // doom3 headers are included through precompiled.h at the beginning of the file
 /*
-#include "sys/platform.h"
+#include "sys/sys_public.h"
 #include "idlib/Heap.h"
 #include "idlib/Lib.h"
 */

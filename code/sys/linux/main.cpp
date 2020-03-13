@@ -45,12 +45,14 @@ static idStr	basepath;
 static idStr	savepath;
 
 /*
-===========
-Sys_InitScanTable
-===========
+=================
+Sys_ShutdownSymbols
+=================
 */
-void Sys_InitScanTable( void ) {
-	common->DPrintf( "TODO: Sys_InitScanTable\n" );
+
+void			Sys_ShutdownSymbols( void )
+{
+
 }
 
 /*
@@ -102,9 +104,9 @@ void Sys_AsyncThread( void ) {
 		#endif
 		
 		while ( ticked < to_ticked ) {
-			common->Async();
+			//common->Async();
 			ticked++;
-			Sys_TriggerEvent( TRIGGER_EVENT_ONE );
+			Sys_TriggerEvent( 1 ); // TRIGGER_EVENT_ONE
 		}
 		// thread exit
 		pthread_testcancel();
@@ -183,21 +185,13 @@ const char *Sys_DefaultBasePath(void) {
 
 /*
 ===============
-Sys_GetConsoleKey
-===============
-*/
-unsigned char Sys_GetConsoleKey( bool shifted ) {
-	return shifted ? '~' : '`';
-}
-
-/*
-===============
 Sys_Shutdown
 ===============
 */
 void Sys_Shutdown( void ) {
 	basepath.Clear();
 	savepath.Clear();
+	Sys_ShutdownThreads();
 	Posix_Shutdown();
 }
 
@@ -244,7 +238,7 @@ Sys_GetClockticks
 */
 double Sys_GetClockTicks( void ) {
 #if defined( __i386__ )
-	unsigned long lo, hi;
+	unsigned int lo, hi;
 
 	__asm__ __volatile__ (
 						  "push %%ebx\n"			\
@@ -257,7 +251,12 @@ double Sys_GetClockTicks( void ) {
 						  : "=r" (lo), "=r" (hi) );
 	return (double) lo + (double) 0xFFFFFFFF * hi;
 #else
-#error unsupported CPU
+//#error unsupported CPU
+	struct timespec now;
+
+	clock_gettime( CLOCK_MONOTONIC, &now );
+
+	return now.tv_sec * 1000000000LL + now.tv_nsec;
 #endif
 }
 
@@ -457,7 +456,7 @@ void idSysLocal::OpenURL( const char *url, bool quit ) {
 
 	// StartProcess is going to execute a system() call with that - hence the &
 	idStr::snPrintf( cmdline, 1024, "%s '%s' &",  script_path, url );
-	sys->StartProcess( cmdline, quit );
+	sys->StartProcess( cmdline, quit, nullptr );
 }
 
 /*
@@ -466,52 +465,6 @@ void idSysLocal::OpenURL( const char *url, bool quit ) {
  ==================
  */
 void Sys_DoPreferences( void ) { }
-
-/*
-================
-Sys_FPU_SetDAZ
-================
-*/
-void Sys_FPU_SetDAZ( bool enable ) {
-	/*
-	DWORD dwData;
-
-	_asm {
-		movzx	ecx, byte ptr enable
-		and		ecx, 1
-		shl		ecx, 6
-		STMXCSR	dword ptr dwData
-		mov		eax, dwData
-		and		eax, ~(1<<6)	// clear DAX bit
-		or		eax, ecx		// set the DAZ bit
-		mov		dwData, eax
-		LDMXCSR	dword ptr dwData
-	}
-	*/
-}
-
-/*
-================
-Sys_FPU_SetFTZ
-================
-*/
-void Sys_FPU_SetFTZ( bool enable ) {
-	/*
-	DWORD dwData;
-
-	_asm {
-		movzx	ecx, byte ptr enable
-		and		ecx, 1
-		shl		ecx, 15
-		STMXCSR	dword ptr dwData
-		mov		eax, dwData
-		and		eax, ~(1<<15)	// clear FTZ bit
-		or		eax, ecx		// set the FTZ bit
-		mov		dwData, eax
-		LDMXCSR	dword ptr dwData
-	}
-	*/
-}
 
 /*
 ===============
@@ -542,14 +495,16 @@ void abrt_func( mcheck_status status ) {
 main
 ===============
 */
-int main(int argc, const char **argv) {
+
+
+extern "C" int __attribute__((visibility ("default")))  DoomMain(int argc, const char **argv) {
 #ifdef ID_MCHECK
 	// must have -lmcheck linkage
 	mcheck( abrt_func );
 	Sys_Printf( "memory consistency checking enabled\n" );
 #endif
-	
-	Posix_EarlyInit( );
+
+	//Posix_EarlyInit( );
 
 	if ( argc > 1 ) {
 		common->Init( argc-1, &argv[1], NULL );
@@ -557,7 +512,7 @@ int main(int argc, const char **argv) {
 		common->Init( 0, NULL, NULL );
 	}
 
-	Posix_LateInit( );
+	//Posix_LateInit( );
 
 	while (1) {
 		common->Frame();

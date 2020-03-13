@@ -1,7 +1,7 @@
 // weapon_fist.cpp
 //
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #include "../Game_local.h"
 
 CLASS_DECLARATION(rvmWeaponObject, rvmWeaponFist)

@@ -63,7 +63,7 @@ float2 GetPhysicalTexCoords(float2 texCoords, int isNormal) {
 		deviceTexCoords.y = 1.0 - deviceTexCoords.y;
 	}
 
-	int2 feedbackMipLevel = ComputeMipMapLevel(samp5, deviceTexCoords, rpVirtualPageInfo.x, rpVirtualPageInfo.y);
+	int2 feedbackMipLevel = int2(0,0);//ComputeMipMapLevel(samp5, deviceTexCoords, rpVirtualPageInfo.x, rpVirtualPageInfo.y);
 
 	ivec2 pageOffsetTextureSizeMip = textureSize(samp5, feedbackMipLevel.x).xy;
 

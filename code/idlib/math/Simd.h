@@ -86,6 +86,7 @@ const int MIXBUFFER_SAMPLES = 4096;
 class idSIMDProcessor {
 public:
 									idSIMDProcessor( void ) { cpuid = CPUID_NONE; }
+    virtual							~idSIMDProcessor() { }; // lwss -non-virtual destructor will cause undefined behavior
 
 	cpuid_t							cpuid;
 

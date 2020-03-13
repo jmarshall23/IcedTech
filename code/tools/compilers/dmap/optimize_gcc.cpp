@@ -33,7 +33,6 @@ see dmap.gcc.zip test map and .proc outputs
 */
 
 #include "tools_precompiled.h"
-#pragma hdrstop
 
 #include "dmap.h"
 

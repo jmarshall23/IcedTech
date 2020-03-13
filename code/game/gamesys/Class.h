@@ -35,6 +35,8 @@ instancing of objects.
 #ifndef __SYS_CLASS_H__
 #define __SYS_CLASS_H__
 
+#include <cstdint>
+
 class idClass;
 class idTypeInfo;
 
@@ -59,14 +61,14 @@ public:
 	int			type;
 	intptr_t	value;
 
-	idEventArg() { type = D_EVENT_INTEGER; value = 0; };
-	idEventArg(int data) { type = D_EVENT_INTEGER; value = data; };
-	idEventArg(float data) { type = D_EVENT_FLOAT; value = *reinterpret_cast<int*>(&data); };
-	idEventArg(idVec3& data) { type = D_EVENT_VECTOR; value = reinterpret_cast<intptr_t>(&data); };
-	idEventArg(const idStr& data) { type = D_EVENT_STRING; value = reinterpret_cast<intptr_t>(data.c_str()); };
-	idEventArg(const char* data) { type = D_EVENT_STRING; value = reinterpret_cast<intptr_t>(data); };
-	idEventArg(const class idEntity* data) { type = D_EVENT_ENTITY; value = reinterpret_cast<intptr_t>(data); };
-	idEventArg(const struct trace_s* data) { type = D_EVENT_TRACE; value = reinterpret_cast<intptr_t>(data); };
+	idEventArg()								{ type = D_EVENT_INTEGER; value = 0; };
+	idEventArg( int data )						{ type = D_EVENT_INTEGER; value = data; };
+	idEventArg( float data )					{ type = D_EVENT_FLOAT; value = *reinterpret_cast<int *>( &data ); };
+	idEventArg( idVec3 &data )					{ type = D_EVENT_VECTOR; value = reinterpret_cast<intptr_t>( &data ); };
+	idEventArg( const idStr &data )				{ type = D_EVENT_STRING; value = reinterpret_cast<intptr_t>( data.c_str() ); };
+	idEventArg( const char *data )				{ type = D_EVENT_STRING; value = reinterpret_cast<intptr_t>( data ); };
+	idEventArg( const class idEntity *data )	{ type = D_EVENT_ENTITY; value = reinterpret_cast<intptr_t>( data ); };
+	idEventArg( const struct trace_s *data )	{ type = D_EVENT_TRACE; value = reinterpret_cast<intptr_t>( data ); };
 };
 
 class idAllocError : public idException {
@@ -91,8 +93,6 @@ Use this on single inheritance concrete classes only.
 */
 // jmarshall - added rvmClassHelper
 #define CLASS_PROTOTYPE( nameofclass )									\
-private:																\
-	void BaseSpawn() { __super::Spawn(); }								\
 public:																	\
 	static	idTypeInfo						Type;						\
 	static	idClass							*CreateInstance( void );	\
@@ -141,8 +141,6 @@ Use this on single inheritance abstract classes only.
 ================
 */
 #define ABSTRACT_PROTOTYPE( nameofclass )								\
-private:																\
-	void BaseSpawn() { __super::Spawn(); }								\
 public:																	\
 	static	idTypeInfo						Type;						\
 	static	idClass							*CreateInstance( void );	\

@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -499,7 +499,7 @@ void idActor::Spawn( void ) {
 	float			fovDegrees;
 	copyJoints_t	copyJoint;
 
-	BaseSpawn();
+    idAFEntity_Gibbable::Spawn();
 
 	animPrefix	= "";
 	state		= NULL;

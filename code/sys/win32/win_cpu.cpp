@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "win_local.h"
@@ -87,7 +87,7 @@ double Sys_ClockTicksPerSecond( void ) {
 			}
 			RegCloseKey( hKey );
 			if ( ret == ERROR_SUCCESS ) {
-				ticks = (double) ((unsigned long)ProcSpeed) * 1000000;
+				ticks = (double) ((unsigned int)ProcSpeed) * 1000000;
 			}
 		}
 	}
@@ -377,7 +377,7 @@ Sys_FPU_EnableExceptions
 ===============
 */
 void Sys_FPU_EnableExceptions( int exceptions ) {
-	
+
 }
 
 /*
@@ -395,7 +395,7 @@ Sys_FPU_SetRounding
 ================
 */
 void Sys_FPU_SetRounding( int rounding ) {
-	
+
 }
 
 /*
@@ -404,7 +404,7 @@ Sys_FPU_SetDAZ
 ================
 */
 void Sys_FPU_SetDAZ( bool enable ) {
-	
+
 }
 
 /*
@@ -413,7 +413,7 @@ Sys_FPU_SetFTZ
 ================
 */
 void Sys_FPU_SetFTZ( bool enable ) {
-	
+
 }
 
 /*

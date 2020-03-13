@@ -48,7 +48,7 @@ move around it to view it from different angles.
 =============================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "../Game_local.h"
@@ -108,7 +108,7 @@ void idTestModel::Spawn( void ) {
 	const idKeyValue	*kv;
 	copyJoints_t		copyJoint;
 
-	BaseSpawn();
+    idAnimatedEntity::Spawn();
 
 	if ( renderEntity.hModel && renderEntity.hModel->IsDefaultModel() && !animator.ModelDef() ) {
 		gameLocal.Warning( "Unable to create testmodel for '%s' : model defaulted", spawnArgs.GetString( "model" ) );

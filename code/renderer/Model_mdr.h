@@ -1,7 +1,7 @@
 // Model_mdr.h
 //
 
-#define	LL(x) x=LittleLong(x)
+#define	LL(x) x=LittleInt(x)
 
 /*
 ==============================================================================

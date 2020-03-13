@@ -1,7 +1,7 @@
 // NavFile.cpp
 //
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #include "Nav_local.h"
 
 idCVar nav_dumpobj("nav_dumpobj", "0", CVAR_BOOL, "writes a obj represenation of the navmesh");

@@ -2,8 +2,8 @@
 //
 
 #include "tools_precompiled.h"
-#include "../../../external/recast/include/Recast.h"
-#include "../../../navigation/Nav_local.h"
+#include <external/recast/Include/Recast.h>
+#include <navigation/Nav_local.h>
 
 idCVar nav_dumpInputGeometry("nav_dumpInputGeometry", "0", CVAR_BOOL, "dumps input geometry to recast for debugging.");
 

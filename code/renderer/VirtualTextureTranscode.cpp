@@ -1,10 +1,10 @@
 // VirtualTextureTranscode.cpp
 //
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #include "tr_local.h"
 
-#include "dxt/DXTCodec.h"
+#include "DXT/DXTCodec.h"
 
 idCVar vt_transcodeShowPages("vt_transcodeShowPages", "0", CVAR_INTEGER, "shows transcoded page information");
 idCVar vt_transcodeDebug("vt_transcodeDebug", "0", CVAR_BOOL, "shows information about transcoding");
@@ -90,6 +90,8 @@ void rvmVirtualTextureSystem::TranscodePage(idImage *image, rvmVirtualImage *vir
 
 	// Clamp page LOD between 0 and max mips.
 	//pageLOD = 0;// idMath::ClampInt(0, virtualImage->numMips - 1, pageLOD);
+
+	assert( pageLOD <= virtualImage->numMips && pageLOD >= 0 );
 
 	int tilePagePosition = virtualImage->GetStartPageOffset(pageLOD) + (pageMemSize * pageY * virtualImage->GetWidthInPages(pageLOD)) + (pageMemSize * pageX);
 	virtualTextureFile->Seek(tilePagePosition, FS_SEEK_SET);

@@ -33,7 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -123,7 +123,7 @@ idSecurityCamera::Spawn
 void idSecurityCamera::Spawn( void ) {
 	idStr	str;
 
-	BaseSpawn();
+    idEntity::Spawn();
 
 	sweepAngle	= spawnArgs.GetFloat( "sweepAngle", "90" );
 	health		= spawnArgs.GetInt( "health", "100" );
@@ -247,7 +247,7 @@ void idSecurityCamera::DrawFov( void ) {
 	center = GetPhysics()->GetOrigin() + dir * scanDist;
 	for ( i = 1; i < 12; i++ ) {
 		a = idMath::TWO_PI * i / 12.0f;
-		idMath::SinCos( a, s, c );
+		idMath::SinCos( a, &s, &c );
 		point = dir + right * s * radius + up * c * radius;
 		point.Normalize();
 		point = GetPhysics()->GetOrigin() + point * scanDist;

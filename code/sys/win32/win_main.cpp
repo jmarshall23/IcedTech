@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include <errno.h>
@@ -536,7 +536,7 @@ DLL Loading
 Sys_DLL_Load
 =====================
 */
-INT_PTR Sys_DLL_Load( const char *dllName ) {
+void* Sys_DLL_Load( const char *dllName ) {
 	HINSTANCE	libHandle;
 	libHandle = LoadLibrary( dllName );
 // jmarshall - removed
@@ -551,7 +551,7 @@ INT_PTR Sys_DLL_Load( const char *dllName ) {
 //		}
 //	}
 // jmarshall end
-	return (INT_PTR)libHandle;
+	return libHandle;
 }
 
 /*
@@ -559,7 +559,7 @@ INT_PTR Sys_DLL_Load( const char *dllName ) {
 Sys_DLL_GetProcAddress
 =====================
 */
-void *Sys_DLL_GetProcAddress(INT_PTR dllHandle, const char *procName ) {
+void *Sys_DLL_GetProcAddress(void *dllHandle, const char *procName ) {
 	return GetProcAddress( (HINSTANCE)dllHandle, procName ); 
 }
 
@@ -568,7 +568,7 @@ void *Sys_DLL_GetProcAddress(INT_PTR dllHandle, const char *procName ) {
 Sys_DLL_Unload
 =====================
 */
-void Sys_DLL_Unload(INT_PTR dllHandle ) {
+void Sys_DLL_Unload(void *dllHandle ) {
 	if ( !dllHandle ) {
 		return;
 	}

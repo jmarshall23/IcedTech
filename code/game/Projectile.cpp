@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
  
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -91,7 +91,7 @@ idProjectile::Spawn
 ================
 */
 void idProjectile::Spawn( void ) {
-	BaseSpawn();
+    idEntity::Spawn();
 
 	physicsObj.SetSelf( this );
 	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
@@ -1261,7 +1261,7 @@ idGuidedProjectile::Spawn
 ================
 */
 void idGuidedProjectile::Spawn( void ) {
-	BaseSpawn();
+    idProjectile::Spawn();
 }
 
 /*
@@ -1455,7 +1455,7 @@ idSoulCubeMissile::Spawn( void )
 ================
 */
 void idSoulCubeMissile::Spawn( void ) {
-	BaseSpawn();
+    idGuidedProjectile::Spawn();
 
 	startingVelocity.Zero();
 	endingVelocity.Zero();
@@ -1705,7 +1705,7 @@ idBFGProjectile::Spawn
 ================
 */
 void idBFGProjectile::Spawn( void ) {
-	BaseSpawn();
+    idProjectile::Spawn();
 
 	beamTargets.Clear();
 	memset( &secondModel, 0, sizeof( secondModel ) );

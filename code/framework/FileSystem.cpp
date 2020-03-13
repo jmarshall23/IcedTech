@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 #include "Unzip.h"
@@ -450,7 +450,7 @@ private:
 
 private:
 	void					ReplaceSeparators(idStr &path, char sep = PATHSEPERATOR_CHAR);
-	long					HashFileName(const char *fname) const;
+	int 					HashFileName(const char *fname) const;
 	int						ListOSFiles(const char *directory, const char *extension, idStrList &list);
 	FILE *					OpenOSFile(const char *name, const char *mode, idStr *caseSensitiveName = NULL);
 	FILE *					OpenOSFileCorrectName(idStr &path, const char *mode);
@@ -528,9 +528,9 @@ idFileSystemLocal::HashFileName
 return a hash value for the filename
 ================
 */
-long idFileSystemLocal::HashFileName(const char *fname) const {
+int idFileSystemLocal::HashFileName(const char *fname) const {
 	int		i;
-	long	hash;
+    int	hash;
 	char	letter;
 
 	hash = 0;
@@ -543,7 +543,7 @@ long idFileSystemLocal::HashFileName(const char *fname) const {
 		if (letter == '\\') {
 			letter = '/';		// damn path names
 		}
-		hash += (long)(letter) * (i + 119);
+		hash += (int)(letter) * (i + 119);
 		i++;
 	}
 	hash &= (FILE_HASH_SIZE - 1);
@@ -721,6 +721,7 @@ void idFileSystemLocal::CopyFile(const char *fromOSPath, const char *toOSPath) {
 	common->Printf("copy %s to %s\n", fromOSPath, toOSPath);
 	f = OpenOSFile(fromOSPath, "rb");
 	if (!f) {
+	    common->Warning("CopyFile: couldn't open file to copy (%s)!\n", fromOSPath);
 		return;
 	}
 	fseek(f, 0, SEEK_END);
@@ -980,7 +981,7 @@ bool idFileSystemLocal::FileIsInPAK(const char *relativePath) {
 	searchpath_t	*search;
 	pack_t			*pak;
 	fileInPack_t	*pakFile;
-	long			hash;
+    int			hash;
 
 	if (!searchPaths) {
 		common->FatalError("Filesystem call made without initialization\n");
@@ -1303,7 +1304,7 @@ pack_t *idFileSystemLocal::LoadZipFile(const char *zipfile) {
 	char			filename_inzip[MAX_ZIPPED_FILE_NAME];
 	unz_file_info	file_info;
 	int				i;
-	long			hash;
+    int			hash;
 	int				fs_numHeaderLongs;
 	int *			fs_headerLongs;
 	FILE			*f;
@@ -1356,7 +1357,7 @@ pack_t *idFileSystemLocal::LoadZipFile(const char *zipfile) {
 			break;
 		}
 		if (file_info.uncompressed_size > 0) {
-			fs_headerLongs[fs_numHeaderLongs++] = LittleLong(file_info.crc);
+			fs_headerLongs[fs_numHeaderLongs++] = LittleInt(file_info.crc);
 		}
 		hash = HashFileName(filename_inzip);
 		buildBuffer[i].name = filename_inzip;
@@ -1395,7 +1396,7 @@ pack_t *idFileSystemLocal::LoadZipFile(const char *zipfile) {
 	}
 
 	pack->checksum = MD4_BlockChecksum(fs_headerLongs, 4 * fs_numHeaderLongs);
-	pack->checksum = LittleLong(pack->checksum);
+	pack->checksum = LittleInt(pack->checksum);
 
 	Mem_Free(fs_headerLongs);
 
@@ -3168,7 +3169,7 @@ idFile *idFileSystemLocal::OpenFileReadFlags(const char *relativePath, int searc
 	pack_t *		pak;
 	fileInPack_t *	pakFile;
 	directory_t *	dir;
-	long			hash;
+    int			hash;
 	FILE *			fp;
 
 	if (!searchPaths) {

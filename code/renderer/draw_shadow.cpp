@@ -1,7 +1,7 @@
 // draw_shadow.cpp
 //
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #include "tr_local.h"
 
 idCVar r_shadowMapAtlasSize("r_shadowMapAtlasSize", "8192", CVAR_INTEGER | CVAR_ROM, "The size of the shadow map atlas size to use");
@@ -271,9 +271,9 @@ void RB_DrawPointlightShadow(viewLight_t *viewLight) {
 	idRenderMatrix::CreateViewMatrix(viewLight->lightDef->parms.origin, lightAxis, renderMatrix);
 
 	float lightradius = 0.0f;
-	lightradius = max(lightradius, viewLight->lightDef->parms.lightRadius.x);
-	lightradius = max(lightradius, viewLight->lightDef->parms.lightRadius.y);
-	lightradius = max(lightradius, viewLight->lightDef->parms.lightRadius.z);
+	lightradius = Max(lightradius, viewLight->lightDef->parms.lightRadius.x);
+	lightradius = Max(lightradius, viewLight->lightDef->parms.lightRadius.y);
+	lightradius = Max(lightradius, viewLight->lightDef->parms.lightRadius.z);
 	
 	renderProgManager.BindShader_ShadowDualParaboloid();
 	

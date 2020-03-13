@@ -213,7 +213,7 @@ bool idAudioHardwareALSA::Initialize( void ) {
 	if ( ( err = id_snd_pcm_hw_params_get_buffer_size( hwparams, &frames ) ) < 0 ) {
 		common->Printf( "snd_pcm_hw_params_get_buffer_size failed: %s\n", id_snd_strerror( err ) );
 	} else {
-		common->Printf( "device buffer size: %lu frames ( %lu bytes )\n", ( long unsigned int )frames, frames * m_channels * 2 );
+		common->Printf( "device buffer size: %lu frames ( %lu bytes )\n", ( unsigned int )frames, frames * m_channels * 2 );
 	}
 
 	// TODO: can use swparams to setup the device so it doesn't underrun but rather loops over

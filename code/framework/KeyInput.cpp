@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #pragma hdrstop
 
 typedef struct {
@@ -199,7 +199,7 @@ idKey *		keys = NULL;
 
 #ifdef ID_DOOM_LEGACY
 
-char *		cheatCodes[] = {
+const char *		cheatCodes[] = {
 	"iddqd",		// Invincibility
 	"idkfa",		// All weapons, keys, ammo, and 200% armor
 	"idfa",			// Reset ammunition

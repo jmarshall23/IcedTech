@@ -43,12 +43,14 @@ class idRenderTexture;
 // Contains variables specific to the OpenGL configuration being run right now.
 // These are constant once the OpenGL subsystem is initialized.
 typedef struct glconfig_s {
+
+	//lwss
 	const char			*renderer_string;
 	const char			*vendor_string;
-	const char			*version_string;
-	const char			*extensions_string;
+	//const char			*version_string;
+	//const char			*extensions_string;
 	const char			*wgl_extensions_string;
-
+	//lwss end
 	float				glVersion;				// atof( version_string )
 
 
@@ -61,6 +63,7 @@ typedef struct glconfig_s {
 	int					colorBits, depthBits, stencilBits;
 
 	bool				multitextureAvailable;
+	bool				directStateAccess;
 	bool				textureCompressionAvailable;
 	bool				anisotropicAvailable;
 	bool				textureLODBiasAvailable;

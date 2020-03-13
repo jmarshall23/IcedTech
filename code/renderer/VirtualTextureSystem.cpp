@@ -1,7 +1,7 @@
 // VirtualTexture.cpp
 //
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 
 #include "tr_local.h"
 #include "DXT/DXTCodec.h"
@@ -162,6 +162,7 @@ void rvmVirtualTextureSystem::Init(void) {
 	transcodePage = new byte[VIRTUALTEXTURE_TILESIZE * VIRTUALTEXTURE_TILESIZE];
 
 	feedbackCPUbuffer = nullptr;
+	feedbackCPUbufferLen = 0;
 
 	// Load the default no_spec and default no_normal virtual texture images.
 	defaultNormalVirtualImage.Append(LoadVirtualImage("textures/engine/vt_default_normal", TD_BUMP, -1, -1));
@@ -722,6 +723,7 @@ rvmVirtualTextureSystem::SetVirtualMaterial
 =============================
 */
 void rvmVirtualTextureSystem::SetVirtualMaterial(int idx, idMaterial *material) {
+    assert( idx >= 0 && idx < MAXVIRTUALMATERIALS );
 	virtualMaterials[idx] = material;
 }
 

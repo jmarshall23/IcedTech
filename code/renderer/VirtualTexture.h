@@ -172,6 +172,7 @@ private:
 	idImage					*normalVirtualTexture;
 
 	feedbackPixel_t			*feedbackCPUbuffer;
+	int                     feedbackCPUbufferLen;
 
 
 	byte					*transcodePage;

@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -7075,7 +7075,7 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	angles.pitch *= 0.5f;
 	renderView->viewaxis = angles.ToMat3() * physicsObj.GetGravityAxis();
 
-	idMath::SinCos( DEG2RAD( angle ), sideScale, forwardScale );
+	idMath::SinCos( DEG2RAD( angle ), &sideScale, &forwardScale );
 	view -= range * forwardScale * renderView->viewaxis[ 0 ];
 	view += range * sideScale * renderView->viewaxis[ 1 ];
 

@@ -65,18 +65,17 @@ If you have questions concerning this license or the applicable additional terms
 
 #define C_FLOAT_TO_INT( x )		(int)(x)
 
-#define FLOATSIGNBITSET(f)		((*(const unsigned long *)&(f)) >> 31)
-#define FLOATSIGNBITNOTSET(f)	((~(*(const unsigned long *)&(f))) >> 31)
-#define FLOATNOTZERO(f)			((*(const unsigned long *)&(f)) & ~(1<<31) )
-#define INTSIGNBITSET(i)		(((const unsigned long)(i)) >> 31)
-#define INTSIGNBITNOTSET(i)		((~((const unsigned long)(i))) >> 31)
+#define FLOATSIGNBITSET(f)		((*(const unsigned int *)&(f)) >> 31)
+#define FLOATSIGNBITNOTSET(f)	((~(*(const unsigned int *)&(f))) >> 31)
+#define FLOATNOTZERO(f)			((*(const unsigned int *)&(f)) & ~(1<<31) )
+#define INTSIGNBITSET(i)		(((const unsigned int)(i)) >> 31)
+#define INTSIGNBITNOTSET(i)		((~((const unsigned int)(i))) >> 31)
 
-#define	FLOAT_IS_NAN(x)			(((*(const unsigned long *)&x) & 0x7f800000) == 0x7f800000)
-#define FLOAT_IS_INF(x)			(((*(const unsigned long *)&x) & 0x7fffffff) == 0x7f800000)
-#define FLOAT_IS_IND(x)			((*(const unsigned long *)&x) == 0xffc00000)
-#define	FLOAT_IS_DENORMAL(x)	(((*(const unsigned long *)&x) & 0x7f800000) == 0x00000000 && \
-								 ((*(const unsigned long *)&x) & 0x007fffff) != 0x00000000 )
-
+#define	FLOAT_IS_NAN(x)			(((*(const unsigned int *)&x) & 0x7f800000) == 0x7f800000)
+#define FLOAT_IS_INF(x)			(((*(const unsigned int *)&x) & 0x7fffffff) == 0x7f800000)
+#define FLOAT_IS_IND(x)			((*(const unsigned int *)&x) == 0xffc00000)
+#define	FLOAT_IS_DENORMAL(x)	(((*(const unsigned int *)&x) & 0x7f800000) == 0x00000000 && \
+								 ((*(const unsigned int *)&x) & 0x007fffff) != 0x00000000 )
 /*
 ================================================================================================
 
@@ -261,7 +260,7 @@ IsValid
 ========================
 */
 template<>
-ID_INLINE_EXTERN bool IsValid(const float & f) {	// these parameter must be a reference for the function to be considered a specialization
+ID_INLINE bool IsValid(const float & f) {	// these parameter must be a reference for the function to be considered a specialization
 	return !(IEEE_FLT_IS_NAN(f) || IEEE_FLT_IS_INF(f) || IEEE_FLT_IS_IND(f) || IEEE_FLT_IS_DENORMAL(f));
 }
 
@@ -271,7 +270,7 @@ IsNAN
 ========================
 */
 template<>
-ID_INLINE_EXTERN bool IsNAN(const float & f) {	// these parameter must be a reference for the function to be considered a specialization
+ID_INLINE bool IsNAN(const float & f) {	// these parameter must be a reference for the function to be considered a specialization
 	if (IEEE_FLT_IS_NAN(f) || IEEE_FLT_IS_INF(f) || IEEE_FLT_IS_IND(f)) {
 		return true;
 	}
@@ -286,7 +285,7 @@ Returns true if any scalar is greater than the range or less than the negative r
 ========================
 */
 template<class type>
-ID_INLINE_EXTERN bool IsInRange(const type &v, const float range) {
+ID_INLINE bool IsInRange(const type &v, const float range) {
 	for (int i = 0; i < v.GetDimension(); i++) {
 		const float f = v.ToFloatPtr()[i];
 		if (f > range || f < -range) {
@@ -332,9 +331,9 @@ public:
 	static float				Cos16( float a );			// cosine with 16 bits precision, maximum absolute error is 2.3082e-09
 	static double				Cos64( float a );			// cosine with 64 bits precision
 
-	static void					SinCos( float a, float &s, float &c );		// sine and cosine with 32 bits precision
-	static void					SinCos16( float a, float &s, float &c );	// sine and cosine with 16 bits precision
-	static void					SinCos64( float a, double &s, double &c );	// sine and cosine with 64 bits precision
+	static void					SinCos( float a, float *s, float *c );		// sine and cosine with 32 bits precision
+	static void					SinCos16( float a, float *s, float *c );	// sine and cosine with 16 bits precision
+	static void					SinCos64( float a, double *s, double *c );	// sine and cosine with 64 bits precision
 
 	static float				Tan( float a );				// tangent with 32 bits precision
 	static float				Tan16( float a );			// tangent with 16 bits precision, maximum absolute error is 1.8897e-08
@@ -389,8 +388,8 @@ public:
 	static float				Rint( float f );			// returns the nearest integer
 	static int					Ftoi( float f );			// float to int conversion
 	static int					FtoiFast( float f );		// fast float to int conversion but uses current FPU round mode (default round nearest)
-	static unsigned long		Ftol( float f );			// float to long conversion
-	static unsigned long		FtolFast( float );			// fast float to long conversion but uses current FPU round mode (default round nearest)
+	static unsigned int	    	Ftol( float f );			// float to long conversion
+	static unsigned int 		FtolFast( float );			// fast float to long conversion but uses current FPU round mode (default round nearest)
 	static byte					Ftob(float f);			// float to byte conversion, the result is clamped to the range [0-255]
 
 	static signed char			ClampChar( int i );
@@ -457,11 +456,11 @@ ID_INLINE byte CLAMP_BYTE(int x) {
 
 ID_INLINE float idMath::RSqrt( float x ) {
 
-	long i;
+    int i;
 	float y, r;
 
 	y = x * 0.5f;
-	i = *reinterpret_cast<long *>( &x );
+	i = *reinterpret_cast<int *>( &x );
 	i = 0x5f3759df - ( i >> 1 );
 	r = *reinterpret_cast<float *>( &i );
 	r = r * ( 1.5f - r * r * y );
@@ -604,12 +603,18 @@ ID_INLINE double idMath::Cos64( float a ) {
 	return cos( a );
 }
 
-ID_INLINE void idMath::SinCos( float a, float &s, float &c ) {
-	s = sinf( a );
-	c = cosf( a );
+ID_INLINE void idMath::SinCos( float a, float *s, float *c ) {
+#if defined(WIN32)
+    //FIXME: sincos simultaneous
+    //TODO
+    *s = sinf( a );
+	*c = cosf( a );
+#else
+    sincosf( a, s, c );
+#endif
 }
 
-ID_INLINE void idMath::SinCos16( float a, float &s, float &c ) {
+ID_INLINE void idMath::SinCos16( float a, float *s, float *c ) {
 	float t, d;
 
 	if ( ( a < 0.0f ) || ( a >= idMath::TWO_PI ) ) {
@@ -642,13 +647,19 @@ ID_INLINE void idMath::SinCos16( float a, float &s, float &c ) {
 	}
 #endif
 	t = a * a;
-	s = a * ( ( ( ( ( -2.39e-08f * t + 2.7526e-06f ) * t - 1.98409e-04f ) * t + 8.3333315e-03f ) * t - 1.666666664e-01f ) * t + 1.0f );
-	c = d * ( ( ( ( ( -2.605e-07f * t + 2.47609e-05f ) * t - 1.3888397e-03f ) * t + 4.16666418e-02f ) * t - 4.999999963e-01f ) * t + 1.0f );
+	*s = a * ( ( ( ( ( -2.39e-08f * t + 2.7526e-06f ) * t - 1.98409e-04f ) * t + 8.3333315e-03f ) * t - 1.666666664e-01f ) * t + 1.0f );
+	*c = d * ( ( ( ( ( -2.605e-07f * t + 2.47609e-05f ) * t - 1.3888397e-03f ) * t + 4.16666418e-02f ) * t - 4.999999963e-01f ) * t + 1.0f );
 }
 
-ID_INLINE void idMath::SinCos64( float a, double &s, double &c ) {
-	s = sin( a );
-	c = cos( a );
+ID_INLINE void idMath::SinCos64( float a, double *s, double *c ) {
+#if defined(WIN32)
+    //FIXME: sincos simultaneous
+    //TODO
+    *s = sinf( a );
+	*c = cosf( a );
+#else
+    sincos( a, s, c );
+#endif
 }
 
 ID_INLINE float idMath::Tan( float a ) {
@@ -997,12 +1008,12 @@ ID_INLINE int idMath::FtoiFast( float f ) {
 	return (int) f;
 }
 
-ID_INLINE unsigned long idMath::Ftol( float f ) {
-	return (unsigned long) f;
+ID_INLINE unsigned int idMath::Ftol( float f ) {
+	return (unsigned int) f;
 }
 
-ID_INLINE unsigned long idMath::FtolFast( float f ) {
-	return (unsigned long) f;
+ID_INLINE unsigned int idMath::FtolFast( float f ) {
+	return (unsigned int) f;
 }
 
 ID_INLINE signed char idMath::ClampChar( int i ) {

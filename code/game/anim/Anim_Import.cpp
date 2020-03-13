@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "../Game_local.h"
@@ -42,7 +42,7 @@ static idStr				Maya_Error;
 
 static exporterInterface_t	Maya_ConvertModel = NULL;
 static exporterShutdown_t	Maya_Shutdown = NULL;
-static INT_PTR				importDLL = 0;
+static void*				importDLL = 0;
 
 bool idModelExport::initialized = false;
 

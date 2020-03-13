@@ -116,7 +116,21 @@ Mem_Alloc16
 ==================
 */
 void *Mem_Alloc16( const int size ) {
-	return _aligned_malloc(size, 16);
+	// This is from id doom3bfg
+	if( !size ){
+		return nullptr;
+	}
+#ifdef _WIN32
+	const int paddedSize = ( size + 15 ) & ~15;
+	return _aligned_malloc( paddedSize, 16 );
+#else // not _WIN32
+    // DG: the POSIX solution for linux etc
+    void* ret;
+    const size_t paddedSize = ( size + 15 ) & ~15;
+    posix_memalign( &ret, 16, paddedSize );
+    return ret;
+    // DG end
+#endif // _WIN32
 }
 
 /*
@@ -125,7 +139,14 @@ Mem_Free16
 ==================
 */
 void Mem_Free16( void *ptr ) {
-	_aligned_free(ptr);
+#ifdef _WIN32
+    _aligned_free( ptr );
+#else // not _WIN32
+    // DG: Linux/POSIX compatibility
+    // can use normal free() for aligned memory
+    free( ptr );
+    // DG end
+#endif // _WIN32
 }
 
 /*

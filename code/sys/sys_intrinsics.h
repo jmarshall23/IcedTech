@@ -100,10 +100,23 @@ ID_FORCE_INLINE void FlushCacheLine( const void * ptr, int offset ) {
 
 ID_INLINE void Prefetch( const void * ptr, int offset ) {}
 ID_INLINE void ZeroCacheLine( void * ptr, int offset ) {
-	byte * bytePtr = (byte *)( ( ( (UINT_PTR) ( ptr ) ) + ( offset ) ) & ~( CACHE_LINE_SIZE - 1 ) );
-	memset( bytePtr, 0, CACHE_LINE_SIZE );
+    assert_128_byte_aligned( ptr );
+    char* bytePtr = ( ( char* ) ptr ) + offset;
+    __m128i zero = _mm_setzero_si128();
+    _mm_store_si128( ( __m128i* )( bytePtr + 0 * 16 ), zero );
+    _mm_store_si128( ( __m128i* )( bytePtr + 1 * 16 ), zero );
+    _mm_store_si128( ( __m128i* )( bytePtr + 2 * 16 ), zero );
+    _mm_store_si128( ( __m128i* )( bytePtr + 3 * 16 ), zero );
+    _mm_store_si128( ( __m128i* )( bytePtr + 4 * 16 ), zero );
+    _mm_store_si128( ( __m128i* )( bytePtr + 5 * 16 ), zero );
+    _mm_store_si128( ( __m128i* )( bytePtr + 6 * 16 ), zero );
+    _mm_store_si128( ( __m128i* )( bytePtr + 7 * 16 ), zero );
 }
-ID_INLINE void FlushCacheLine( const void * ptr, int offset ) {}
+ID_INLINE void FlushCacheLine( const void * ptr, int offset ) {
+    const char* bytePtr = ( ( const char* ) ptr ) + offset;
+    _mm_clflush( bytePtr +  0 );
+    _mm_clflush( bytePtr + 64 );
+}
 
 #endif
 
@@ -158,8 +171,24 @@ ID_INLINE_EXTERN int CACHE_LINE_CLEAR_OVERFLOW_COUNT( int size ) {
 #define R_SHUFFLE_D( x, y, z, w )	(( (w) & 3 ) << 6 | ( (z) & 3 ) << 4 | ( (y) & 3 ) << 2 | ( (x) & 3 ))
 #endif
 
+// DG: _CRT_ALIGN seems to be MSVC specific, so provide implementation..
+#ifndef _CRT_ALIGN
+#if defined(__GNUC__) // also applies for clang
+#define _CRT_ALIGN(x) __attribute__ ((__aligned__ (x)))
+#elif defined(_MSC_VER) // also for MSVC, just to be sure
+#define _CRT_ALIGN(x) __declspec(align(x))
+#endif
+#endif
+// DG: make sure __declspec(intrin_type) is only used on MSVC (it's not available on GCC etc
+#ifdef _MSC_VER
+#define DECLSPEC_INTRINTYPE __declspec( intrin_type )
+#else
+#define DECLSPEC_INTRINTYPE
+#endif
+// DG end
+
 // make the intrinsics "type unsafe"
-typedef union __declspec(intrin_type) _CRT_ALIGN(16) __m128c {
+typedef union DECLSPEC_INTRINTYPE _CRT_ALIGN(16) __m128c {
 				__m128c() {}
 				__m128c( __m128 f ) { m128 = f; }
 				__m128c( __m128i i ) { m128i = i; }
@@ -178,12 +207,12 @@ typedef union __declspec(intrin_type) _CRT_ALIGN(16) __m128c {
 #define _mm_sld_ps( x, y, imm )				__m128c( _mm_or_si128( _mm_srli_si128( __m128c( x ), imm ), _mm_slli_si128( __m128c( y ), 16 - imm ) ) )
 #define _mm_sld_si128( x, y, imm )			_mm_or_si128( _mm_srli_si128( x, imm ), _mm_slli_si128( y, 16 - imm ) )
 
-ID_FORCE_INLINE_EXTERN __m128 _mm_msum3_ps( __m128 a, __m128 b )	{
+ID_INLINE_EXTERN __m128 _mm_msum3_ps( __m128 a, __m128 b )	{
 	__m128 c = _mm_mul_ps( a, b );
 	return _mm_add_ps( _mm_splat_ps( c, 0 ), _mm_add_ps( _mm_splat_ps( c, 1 ), _mm_splat_ps( c, 2 ) ) );
 }
 
-ID_FORCE_INLINE_EXTERN __m128 _mm_msum4_ps( __m128 a, __m128 b ) {
+ID_INLINE_EXTERN __m128 _mm_msum4_ps( __m128 a, __m128 b ) {
 	__m128 c = _mm_mul_ps( a, b );
 	c = _mm_add_ps( c, _mm_perm_ps( c, _MM_SHUFFLE( 1, 0, 3, 2 ) ) );
 	c = _mm_add_ps( c, _mm_perm_ps( c, _MM_SHUFFLE( 2, 3, 0, 1 ) ) );
@@ -195,24 +224,24 @@ ID_FORCE_INLINE_EXTERN __m128 _mm_msum4_ps( __m128 a, __m128 b ) {
 #define _mm_storeh_epi64( address, x )		_mm_storeh_pi( (__m64 *)address, __m128c( x ) )
 
 // floating-point reciprocal with close to full precision
-ID_FORCE_INLINE_EXTERN __m128 _mm_rcp32_ps( __m128 x ) {
+ID_INLINE_EXTERN __m128 _mm_rcp32_ps( __m128 x ) {
 	__m128 r = _mm_rcp_ps( x );		// _mm_rcp_ps() has 12 bits of precision
 	r = _mm_sub_ps( _mm_add_ps( r, r ), _mm_mul_ps( _mm_mul_ps( x, r ), r ) );
 	r = _mm_sub_ps( _mm_add_ps( r, r ), _mm_mul_ps( _mm_mul_ps( x, r ), r ) );
 	return r;
 }
 // floating-point reciprocal with at least 16 bits precision
-ID_FORCE_INLINE_EXTERN __m128 _mm_rcp16_ps( __m128 x ) {
+ID_INLINE_EXTERN __m128 _mm_rcp16_ps( __m128 x ) {
 	__m128 r = _mm_rcp_ps( x );		// _mm_rcp_ps() has 12 bits of precision
 	r = _mm_sub_ps( _mm_add_ps( r, r ), _mm_mul_ps( _mm_mul_ps( x, r ), r ) );
 	return r;
 }
 // floating-point divide with close to full precision
-ID_FORCE_INLINE_EXTERN __m128 _mm_div32_ps( __m128 x, __m128 y ) {
+ID_INLINE_EXTERN __m128 _mm_div32_ps( __m128 x, __m128 y ) {
 	return _mm_mul_ps( x, _mm_rcp32_ps( y ) );
 }
 // floating-point divide with at least 16 bits precision
-ID_FORCE_INLINE_EXTERN __m128 _mm_div16_ps( __m128 x, __m128 y ) {
+ID_INLINE_EXTERN __m128 _mm_div16_ps( __m128 x, __m128 y ) {
 	return _mm_mul_ps( x, _mm_rcp16_ps( y ) );
 }
 // load idBounds::GetMins()

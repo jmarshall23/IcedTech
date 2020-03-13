@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -105,7 +105,7 @@ idSound::Spawn
 ================
 */
 void idSound::Spawn( void ) {
-	BaseSpawn();
+    idEntity::Spawn();
 
 	spawnArgs.GetVector( "move", "0 0 0", shakeTranslate );
 	spawnArgs.GetAngles( "rotate", "0 0 0", shakeRotate );

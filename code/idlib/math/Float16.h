@@ -2,8 +2,8 @@
 
 /*+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+*/
 
-extern short FloatToFloat16(float value);
-extern float Float16ToFloat(short value);
+extern uint16_t FloatToFloat16(float value);
+extern float Float16ToFloat(uint16_t value);
 
 /*+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+*/
 
@@ -71,6 +71,7 @@ inline Float16::operator float() const
 inline Float16& Float16::operator =(const Float16& val)
 {
 	mValue = val.mValue;
+	return *this;
 }
 
 /*+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+*/
@@ -146,9 +147,9 @@ inline Float16 operator / (const Float16& val1, const Float16& val2)
 
 /*+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+*/
 
-ID_INLINE short FloatToFloat16(float value)
+ID_INLINE uint16_t FloatToFloat16(float value)
 {
-	short   fltInt16;
+	uint16_t   fltInt16;
 	int     fltInt32;
 	memcpy(&fltInt32, &value, sizeof(float));
 	fltInt16 = ((fltInt32 & 0x7fffffff) >> 13) - (0x38000000 >> 13);
@@ -157,7 +158,7 @@ ID_INLINE short FloatToFloat16(float value)
 	return fltInt16;
 }
 
-ID_INLINE float Float16ToFloat(short fltInt16)
+ID_INLINE float Float16ToFloat(uint16_t fltInt16)
 {
 	int fltInt32 = ((fltInt16 & 0x8000) << 16);
 	fltInt32 |= ((fltInt16 & 0x7fff) << 13) + 0x38000000;

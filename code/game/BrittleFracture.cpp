@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -247,7 +247,7 @@ idBrittleFracture::Spawn
 ================
 */
 void idBrittleFracture::Spawn( void ) {
-	BaseSpawn();
+    idEntity::Spawn();
 
 	// get shard properties
 	decalMaterial = declManager->FindMaterial( spawnArgs.GetString( "mtr_decal" ) );

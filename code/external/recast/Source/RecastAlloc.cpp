@@ -18,8 +18,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "../include/RecastAlloc.h"
-#include "../include/RecastAssert.h"
+#include "../Include/RecastAlloc.h"
+#include "../Include/RecastAssert.h"
 
 static void *rcAllocDefault(size_t size, rcAllocHint)
 {

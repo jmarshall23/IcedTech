@@ -48,7 +48,7 @@ idQuat idRotation::ToQuat( void ) const {
 	float a, s, c;
 
 	a = angle * ( idMath::M_DEG2RAD * 0.5f );
-	idMath::SinCos( a, s, c );
+	idMath::SinCos( a, &s, &c );
 	return idQuat( vec.x * s, vec.y * s, vec.z * s, c );
 }
 
@@ -69,7 +69,7 @@ const idMat3 &idRotation::ToMat3( void ) const {
 	}
 
 	a = angle * ( idMath::M_DEG2RAD * 0.5f );
-	idMath::SinCos( a, s, c );
+	idMath::SinCos( a, &s, &c );
 
 	x = vec[0] * s;
 	y = vec[1] * s;

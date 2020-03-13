@@ -31,7 +31,7 @@ Contains the DxtDecoder implementation.
 ================================================================================================
 */
 
-#include "engine_precompiled.h"
+#include "Engine_precompiled.h"
 #include "DXTCodec.h"
 
 #pragma optimize( "", on )

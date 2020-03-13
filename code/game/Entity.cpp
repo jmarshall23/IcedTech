@@ -26,7 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "game_precompiled.h"
+#include "Game_precompiled.h"
 #pragma hdrstop
 
 #include "Game_local.h"
@@ -450,7 +450,7 @@ void idEntity::Spawn( void ) {
 	const char			*classname;
 	const char			*scriptObjectName;
 
-	BaseSpawn();
+    idClass::Spawn();
 
 	gameLocal.RegisterEntity( this );
 
@@ -1345,7 +1345,7 @@ void idEntity::ProjectOverlay( const idVec3 &origin, const idVec3 &dir, float si
 		return;
 	}
 
-	idMath::SinCos16( gameLocal.random.RandomFloat() * idMath::TWO_PI, s, c );
+	idMath::SinCos16( gameLocal.random.RandomFloat() * idMath::TWO_PI, &s, &c );
 
 	axis[2] = -dir;
 	axis[2].NormalVectors( axistemp[0], axistemp[1] );
