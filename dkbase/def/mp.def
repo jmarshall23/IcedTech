@@ -293,7 +293,6 @@ entityDef moveable_item_plasmagun_mp {
 
 entityDef weapon_rocketlauncher_mp {
 	"inherit"			"weapon_rocketlauncher"
-	"model"				"models/weapons/rocketlauncher/mp_rocketlauncher.lwo"
 }
 
 entityDef projectile_rocket_mp {
@@ -375,7 +374,7 @@ entityDef player_doommarine_mp {
 	// ignore flashlight when cycling weapons
 	"weapon11_cycle"					"0"
 
-	"snd_teleport_enter"				"player_sounds_teleport_enter"
+	"snd_teleport_enter"					"world_teleportin"
 	"snd_teleport_exit"					"player_sounds_teleport_exit"
 	"snd_teleport"						"player_sounds_teleport"
 	"snd_berserk_third"					"player_sounds_berserk_third"

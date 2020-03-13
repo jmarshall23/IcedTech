@@ -6,3 +6,31 @@ models/weapons/machinegun/machinegun
 	specularmap		models/weapons/machinegun/machinegun_spec.tga
 } 
 
+models/weapons/plasmagun/plasmagun_world/Heavy_plasmagun
+{
+	qer_editorimage		models/weapons/plasmagun/plasmagun.tga
+	bumpmap			models/weapons/plasmagun/plasmagun_normal.tga
+	diffusemap		models/weapons/plasmagun/plasmagun.tga
+	specularmap		models/weapons/plasmagun/plasmagun_spec.tga
+} 
+
+models/weapons/plasmagun/plasmagun/laser_beam
+{
+	
+}
+
+models/weapons/shotgun/shotgun_world/Shotgun
+{
+	qer_editorimage		models/weapons/shotgun/Shotgun_diffuse.tga
+	bumpmap			models/weapons/shotgun/Shotgun_normal.tga
+	diffusemap		models/weapons/shotgun/Shotgun_diffuse.tga
+	specularmap		models/weapons/shotgun/Shotgun_spec_gloss.tga
+}
+
+models/weapons/rocketlauncher/rocketlauncher_world/RocketLauncher_Material
+{
+	qer_editorimage		models/weapons/rocketlauncher/rocketlauncher_diffuse.tga
+	bumpmap			models/weapons/rocketlauncher/rocketlauncher_normal.tga
+	diffusemap		models/weapons/rocketlauncher/rocketlauncher_diffuse.tga
+	specularmap		models/weapons/rocketlauncher/rocketlauncher_spec.tga	
+}

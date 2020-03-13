@@ -93,6 +93,13 @@ void rvmRenderModelMDR::LoadModel(void) {
 		return;
 	}
 
+	// If we don't have any frames, then render as a static mesh.
+	if (modelData->numFrames == 1)
+	{
+		viewDef_t view;
+		RenderFramesToModel(this, NULL, &view, NULL, 1);
+	}
+
 	// Free the memory from reading in the ifle.
 	fileSystem->FreeFile(mdrMeshBuffer);
 }
@@ -446,9 +453,9 @@ idRenderModelMD3::IsDynamicModel
 =================
 */
 dynamicModel_t rvmRenderModelMDR::IsDynamicModel() const {
-	//if (modelData->numFrames == 1) {
-	//	return DM_STATIC;
-	//}
+	if (modelData->numFrames == 1) {
+		return DM_STATIC;
+	}
 	return DM_CACHED;
 }
 
@@ -670,7 +677,14 @@ idRenderModel *rvmRenderModelMDR::InstantiateDynamicModel(const struct renderEnt
 	if (scale == 0)
 		scale = 1;
 
-	RenderFramesToModel(staticModel, (const renderEntity_s *)ent, view, ent->customShader, scale);
+	if (ent != NULL)
+	{
+		RenderFramesToModel(staticModel, (const renderEntity_s*)ent, view, ent->customShader, scale);
+	}
+	else
+	{
+		RenderFramesToModel(staticModel, NULL, view, NULL, scale);
+	}
 
 	return staticModel;
 }
