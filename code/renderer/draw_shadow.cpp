@@ -331,15 +331,15 @@ Down
 			rotation.pitch = -0;
 			rotation.roll = -90;
 			break;
+		case 2:
+			rotation.yaw = 90;
+			rotation.pitch = -0;
+			rotation.roll = 0;
+			break;
 		case 3:
 			rotation.yaw = -90;
 			rotation.pitch = -0;
 			rotation.roll = 180;
-			break;
-		case 2:
-			rotation.yaw = -90;
-			rotation.pitch = -0;
-			rotation.roll = 0;
 			break;
 		case 4:
 			rotation.yaw = 90;
