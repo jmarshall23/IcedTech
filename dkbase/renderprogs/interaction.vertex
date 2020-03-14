@@ -100,6 +100,7 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	result.texcoord4.z = dot4( vertex.texcoord.xy, rpSpecularMatrixS );
 	result.texcoord4.w = dot4( vertex.texcoord.xy, rpSpecularMatrixT );
 	
+	//result.texcoord5.xyz = vertex.position.xyz;
 	result.texcoord5.x = dot4( vertex.position, rpModelMatrixX );
 	result.texcoord5.y = dot4( vertex.position, rpModelMatrixY );
 	result.texcoord5.z = dot4( vertex.position, rpModelMatrixZ );

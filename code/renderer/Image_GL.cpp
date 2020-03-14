@@ -328,6 +328,11 @@ void idImage::AllocImage() {
 		dataFormat = GL_R32F;
 		dataType = GL_FLOAT;
 		break;
+	case FMT_DEPTH32:
+		internalFormat = GL_DEPTH_COMPONENT32F;
+		dataFormat = GL_DEPTH_COMPONENT;
+		dataType = GL_FLOAT;
+		break;
 	case FMT_ALPHA:
 #if defined( USE_CORE_PROFILE )
 		internalFormat = GL_R8;

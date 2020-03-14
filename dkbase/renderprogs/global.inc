@@ -111,6 +111,7 @@ uniform float4 rpVirtualMapping			: register(c62);
 uniform float4 rpVirtualPageInfo		: register(c63);
  
 uniform float4 rpShadowMapInfo          : register(c64);
+uniform float4 rpLightOrigin			: register(c65);
 
 static float dot2( float2 a, float2 b ) { return dot( a, b ); }
 static float dot3( float3 a, float3 b ) { return dot( a, b ); }

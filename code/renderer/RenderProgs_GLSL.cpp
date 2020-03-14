@@ -301,7 +301,8 @@ static const char * GLSLParmNames[] = {
 	"rpVirtualMapping",
 	"rpVirtualPageInfo",
 
-	"rpShadowMapInfo"
+	"rpShadowMapInfo",
+	"rpLightOrigin"
 };
 
 /*

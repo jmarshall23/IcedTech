@@ -94,7 +94,8 @@ enum textureFormat_t {
 	FMT_RGBAF16,
 	FMT_RG16,
 	FMT_RG32,
-	FMT_R32
+	FMT_R32,
+	FMT_DEPTH32
 };
 
 int BitsForFormat( textureFormat_t format );

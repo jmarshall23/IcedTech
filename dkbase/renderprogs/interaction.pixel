@@ -110,13 +110,13 @@ float CalculateShadows(float3 vertexPos, float3 lightPos) {
 	float2 sliceOffset = texelFetch(samp8, ivec2(rpShadowMapInfo.x + slice, 0), 0).xy;
 	float2 uv = initialuv + sliceOffset;
 	
-	float shadowdepth = tex2D(samp7, uv).r;
-	float scenedepth = length(vertToLight) / 1000;
+	float shadowdepth = tex2D(samp7, uv).r * 1000;
+	float scenedepth = distance(vertexPos, lightPos);
 	
-	//if(scenedepth - 0.05 > shadowdepth)
-		//return 0.0;
+	if(scenedepth <= shadowdepth)
+		return 1.0;
 		
-	return shadowdepth;
+	return 0.0;
 }
 
 float3 ShadowCubeDebugColor(float3 vertexPos, float3 lightPos) {
@@ -234,13 +234,13 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	float3 pbr     = numerator / max(denominator, 0.001);  
 	pbr *= rpSpecularModifier.xyz;
 	
-	float shadow = CalculateShadows(fragment.texcoord5.xyz, rpLocalLightOrigin.xyz);
+	float shadow = CalculateShadows(fragment.texcoord5.xyz, rpLightOrigin.xyz);
 
 #if 1
 	result.color.xyz = ( diffuseColor + pbr ) * lightColor * shadow; // * fragment.color.xyz;
 #else
-	result.color.xyz = normalize(fragment.texcoord5.xyz);
-	//result.color.xyz = ( diffuseColor + pbr ) * lightColor * ShadowCubeDebugUVColor(fragment.texcoord5.xyz, rpLocalLightOrigin.xyz);
+	result.color.xyz = float3(shadow, shadow, shadow);
+	//result.color.xyz = ( diffuseColor + pbr ) * lightColor * ShadowCubeDebugUVColor(fragment.texcoord5.xyz, rpLightOrigin.xyz);
 #endif
 	result.color.w = 1.0;
 	result.color1 = float4(pbr.x, pbr.y, pbr.z, 0);

@@ -75,7 +75,7 @@ void idRenderTexture::InitRenderTexture(void) {
 		if (depthImage != nullptr) {
 			if (depthImage->GetOpts().numMSAASamples == 0)
 			{
-				if (depthImage->GetOpts().format == FMT_DEPTH) {
+				if (depthImage->GetOpts().format == FMT_DEPTH || depthImage->GetOpts().format == FMT_DEPTH32) {
 					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthImage->texnum, 0);
 				}
 				else if (depthImage->GetOpts().format == FMT_DEPTH_STENCIL) {

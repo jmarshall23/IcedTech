@@ -48,6 +48,8 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	viewLight_t* vLight = backEnd.vLight;
 
 	// load all the vertex program parameters
+	idVec4 lightOrigin(vLight->lightDef->parms.origin.x, vLight->lightDef->parms.origin.y, vLight->lightDef->parms.origin.z, 1.0);
+	Draw_SetVertexParm(RENDERPARM_LIGHTORIGIN, lightOrigin.ToFloatPtr());
 	Draw_SetVertexParm(RENDERPARM_LOCALLIGHTORIGIN, din->localLightOrigin.ToFloatPtr() );
 	Draw_SetVertexParm(RENDERPARM_LOCALVIEWORIGIN, din->localViewOrigin.ToFloatPtr() );
 	Draw_SetVertexParm(RENDERPARM_LIGHTPROJECTION_S, din->lightProjection[0].ToFloatPtr() );

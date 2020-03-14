@@ -6,7 +6,7 @@
 
 rvmRenderShadowSystem renderShadowSystem;
 
-idCVar rvmRenderShadowSystem::r_shadowMapAtlasSize("r_shadowMapAtlasSize", "4096", CVAR_RENDERER | CVAR_INTEGER | CVAR_ROM, "size of the shadowmap atlas");
+idCVar rvmRenderShadowSystem::r_shadowMapAtlasSize("r_shadowMapAtlasSize", "8192", CVAR_RENDERER | CVAR_INTEGER | CVAR_ROM, "size of the shadowmap atlas");
 idCVar rvmRenderShadowSystem::r_shadowMapAtlasSliceSize("r_shadowMapAtlasSliceSize", "512", CVAR_RENDERER | CVAR_INTEGER | CVAR_ROM, "size of the shadow map atlas slice size");
 
 /*
