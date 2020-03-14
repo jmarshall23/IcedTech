@@ -94,8 +94,7 @@ public:
 	// FIXME: should we implement cinematics this way, instead of with explicit calls?
 	void		GenerateImage( const byte *pic, int width, int height, 
 					   textureFilter_t filter, textureRepeat_t repeat, textureUsage_t usage );
-	void		GenerateCubeImage( const byte *pic[6], int size, 
-						textureFilter_t filter, textureUsage_t usage );
+	void		GenerateCubeImage( const byte *pic[6], int size, textureFilter_t filter, textureUsage_t usage );
 
 	void		ReadImage(int x, int y, int width, int height, int slice, byte *buffer);
 
@@ -315,6 +314,7 @@ public:
 	idImage *			specularTableImage;
 	idImage *			specular2DTableImage;
 	idImage *			borderClampImage;			// white inside, black outside
+	idImage *			cubeSideLookupImage;
 // jmarshall end
 
 	idImage *			cinematicImage;

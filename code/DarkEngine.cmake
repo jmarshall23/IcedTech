@@ -170,6 +170,7 @@ set(src_engine
 	./renderer/RenderProgs.cpp
 	./renderer/RenderProgs.h
 	./renderer/RenderProgs_GLSL.cpp
+	./renderer/RenderShadows.cpp
 	./renderer/RenderSystem.cpp
 	./renderer/RenderSystem.h
 	./renderer/RenderSystem_init.cpp

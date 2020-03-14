@@ -4,288 +4,511 @@
 #include "engine_precompiled.h"
 #include "tr_local.h"
 
-idCVar r_shadowMapAtlasSize("r_shadowMapAtlasSize", "8192", CVAR_INTEGER | CVAR_ROM, "The size of the shadow map atlas size to use");
-idCVar r_shadowMapAtlasSliceSize("r_shadowMapAtlasSliceSize", "512", CVAR_INTEGER | CVAR_ROM, "The size of the shadow map slice in the atlas");
+static idRenderMatrix	lightProjectionMatrix;
+static float	unflippedLightMatrix[16];
+static float	lightMatrix[16];
+static float	viewLightAxialSize;
+
+static const int CULL_RECEIVER = 1;	// still draw occluder, but it is out of the view
+static const int CULL_OCCLUDER_AND_RECEIVER = 2;	// the surface doesn't effect the view at all
+
+idCVar r_shadow_polyOfsFactor("r_shadow_polyOfsFactor", "2", CVAR_RENDERER | CVAR_FLOAT, "polygonOffset factor for drawing shadow buffer");
+idCVar r_shadow_polyOfsUnits("r_shadow_polyOfsUnits", "3000", CVAR_RENDERER | CVAR_FLOAT, "polygonOffset units for drawing shadow buffer");
+idCVar r_shadowOccluderFacing("r_shadowOccluderFacing", "1", CVAR_INTEGER, "0 = front side, 1 = back side culling for shadows");
+
 /*
-=========================
-R_GetShadowMapAtlasSlice
-=========================
+==================
+R_Shadow_CalcLightAxialSize
+
+all light side projections must currently match, so non-centered
+and non-cubic lights must take the largest length
+==================
 */
-ID_INLINE rvmShadowMapAtlasSlice_t *R_GetShadowMapAtlasSlice(int x, int y) {
-	int numSlices = r_shadowMapAtlasSize.GetInteger() / r_shadowMapAtlasSliceSize.GetInteger();
-	return &tr.shadowMapAtlasLookup[(y * numSlices) + x];
+float	R_Shadow_CalcLightAxialSize(viewLight_t* vLight) {
+	float	max = 0;
+
+	if (!vLight->lightDef->parms.pointLight) {
+		idVec3	dir = vLight->lightDef->parms.target - vLight->lightDef->parms.origin;
+		max = dir.Length();
+		return max;
+	}
+
+	for (int i = 0; i < 3; i++) {
+		float	dist = fabs(vLight->lightDef->parms.lightCenter[i]);
+		dist += vLight->lightDef->parms.lightRadius[i];
+		if (dist > max) {
+			max = dist;
+		}
+	}
+	return max;
 }
 
 /*
-=========================
-R_InitShadowMapSystem
-=========================
+==================
+RB_Shadow_CullInteractions
+
+Sets surfaceInteraction_t->cullBits
+==================
 */
-void R_InitShadowMapSystem(void) {
-	return;
-
-	idImageOpts opts;
-	opts.colorFormat = CFM_DEFAULT;
-	opts.numLevels = 1;
-	opts.textureType = TT_2D;
-	opts.isPersistant = true;
-	opts.width = r_shadowMapAtlasSize.GetInteger();
-	opts.height = r_shadowMapAtlasSize.GetInteger();
-	opts.readback = 1;
-	opts.numMSAASamples = 0;
-	opts.format = FMT_DEPTH;
-
-	tr.shadowMapAtlasImage = globalImages->ScratchImage("_shadowMapAtlas", &opts, TF_LINEAR, TR_CLAMP, TD_DEFAULT);
-	if(!tr.shadowMapAtlasImage->IsLoaded())
-	{
-		tr.shadowMapAtlasImage->AllocImage(opts, TF_DEFAULT, TR_REPEAT);
-	}
-
-	tr.shadowMapAtlas = renderSystem->CreateRenderTexture(nullptr, tr.shadowMapAtlasImage);
-
-	int numSlices = r_shadowMapAtlasSize.GetInteger() / r_shadowMapAtlasSliceSize.GetInteger();
-
-	tr.shadowMapAtlasLookup = new rvmShadowMapAtlasSlice_t[numSlices * numSlices];	
-
-	// Create the shadow atlas slice lookup table.
-	for(int y = 0; y < numSlices; y++)
-	{
-		for(int x = 0; x < numSlices; x++)
-		{
-			rvmShadowMapAtlasSlice_t *slice = R_GetShadowMapAtlasSlice(x, y);
-			slice->x = x * r_shadowMapAtlasSliceSize.GetInteger();
-			slice->y = y * r_shadowMapAtlasSliceSize.GetInteger();
+void RB_Shadow_CullInteractions(viewLight_t* vLight, idPlane frustumPlanes[6]) {
+	for (idInteraction* inter = vLight->lightDef->firstInteraction; inter; inter = inter->lightNext) {
+		const idRenderEntityLocal* entityDef = inter->entityDef;
+		if (!entityDef) {
+			continue;
 		}
+		if (inter->numSurfaces < 1) {
+			continue;
+		}
+
+		int	culled = 0;
+
+		// transform light frustum into object space, positive side points outside the light
+		idPlane	localPlanes[6];
+		int		plane;
+		for (plane = 0; plane < 6; plane++) {
+			R_GlobalPlaneToLocal(entityDef->modelMatrix, frustumPlanes[plane], localPlanes[plane]);
+		}
+
+		// cull the entire entity bounding box
+		// has referenceBounds been tightened to the actual model bounds?
+		idVec3	corners[8];
+		for (int i = 0; i < 8; i++) {
+			corners[i][0] = entityDef->referenceBounds[i & 1][0];
+			corners[i][1] = entityDef->referenceBounds[(i >> 1) & 1][1];
+			corners[i][2] = entityDef->referenceBounds[(i >> 2) & 1][2];
+		}
+
+		for (plane = 0; plane < 6; plane++) {
+			int		j;
+			for (j = 0; j < 8; j++) {
+				// if a corner is on the negative side (inside) of the frustum, the surface is not culled
+				// by this plane
+				if (corners[j] * localPlanes[plane].ToVec4().ToVec3() + localPlanes[plane][3] < 0) {
+					break;
+				}
+			}
+			if (j == 8) {
+				break;			// all points outside the light
+			}
+		}
+		if (plane < 6) {
+			culled = CULL_OCCLUDER_AND_RECEIVER;
+		}
+
+		for (int i = 0; i < inter->numSurfaces; i++) {
+			surfaceInteraction_t* surfInt = &inter->surfaces[i];
+
+			if (!surfInt->ambientTris) {
+				continue;
+			}
+			surfInt->expCulled = culled;
+		}
+
 	}
 }
 
 /*
 ==================
-RB_T_FillShadowMapOccluder
+RB_Shadow_RenderOccluders
 ==================
 */
-void RB_T_FillShadowMapOccluder(const drawSurf_t *surf, float side, float _near, float radius) {
-	int			stage;
-	const idMaterial	*shader;
-	const shaderStage_t *pStage;
-	const float	*regs;
-	float		color[4];
-	const srfTriangles_t	*tri;
-
-	tri = surf->geo;
-	shader = surf->material;
-
-	// update the clip plane if needed
-	if (backEnd.viewDef->numClipPlanes && surf->space != backEnd.currentSpace) {
-		GL_SelectTexture(1);
-
-		idPlane	plane;
-
-		R_GlobalPlaneToLocal(surf->space->modelMatrix, backEnd.viewDef->clipPlanes[0], plane);
-		plane[3] += 0.5;	// the notch is in the middle
-		glTexGenfv(GL_S, GL_OBJECT_PLANE, plane.ToFloatPtr());
-		GL_SelectTexture(0);
-	}
-
-	if (!shader->IsDrawn()) {
-		return;
-	}
-
-	// some deforms may disable themselves by setting numIndexes = 0
-	if (!tri->numIndexes) {
-		return;
-	}
-
-	// translucent surfaces don't put anything in the depth buffer and don't
-	// test against it, which makes them fail the mirror clip plane operation
-	if (shader->Coverage() == MC_TRANSLUCENT) {
-		return;
-	}
-
-	if (!tri->ambientCache) {
-		common->Printf("RB_T_FillDepthBuffer: !tri->ambientCache\n");
-		return;
-	}
-
-	// get the expressions for conditionals / color / texcoords
-	regs = surf->shaderRegisters;
-
-	// if all stages of a material have been conditioned off, don't do anything
-	for (stage = 0; stage < shader->GetNumStages(); stage++) {
-		pStage = shader->GetStage(stage);
-		// check the stage enable condition
-		if (regs[pStage->conditionRegister] != 0) {
-			break;
+void RB_Shadow_RenderOccluders(viewLight_t* vLight) {
+	for (idInteraction* inter = vLight->lightDef->firstInteraction; inter; inter = inter->lightNext) {
+		const idRenderEntityLocal* entityDef = inter->entityDef;
+		if (!entityDef) {
+			continue;
 		}
+		if (inter->numSurfaces < 1) {
+			continue;
+		}
+
+		// no need to check for current on this, because each interaction is always
+		// a different space
+		idRenderMatrix	matrix, transposeMatrix, mvp;
+		myGlMultMatrix(inter->entityDef->modelMatrix, lightMatrix, matrix.GetFloatPtr());
+		
+		idRenderMatrix::Transpose(matrix, transposeMatrix);
+		idRenderMatrix::Multiply(lightProjectionMatrix, transposeMatrix, mvp);
+
+		RB_SetMVP(mvp);
+
+		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_ST);
+		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_TANGENT);
+		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_VERTEX);
+		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_NORMAL);
+
+		// draw each surface
+		for (int i = 0; i < inter->numSurfaces; i++) {
+			surfaceInteraction_t* surfInt = &inter->surfaces[i];
+
+			if (!surfInt->ambientTris) {
+				continue;
+			}
+			if (surfInt->shader && !surfInt->shader->SurfaceCastsShadow()) {
+				continue;
+			}
+
+			// cull it
+			if (surfInt->expCulled == CULL_OCCLUDER_AND_RECEIVER) {
+				continue;
+			}
+
+			// render it
+			const srfTriangles_t* tri = surfInt->ambientTris;
+			if (!tri->ambientCache) {
+				R_CreateAmbientCache(const_cast<srfTriangles_t*>(tri), false);
+			}
+			idDrawVert* ac = (idDrawVert*)vertexCache.Position(tri->ambientCache);
+	
+			glVertexAttribPointerARB(PC_ATTRIB_INDEX_NORMAL, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->normal.ToFloatPtr());
+			glVertexAttribPointerARB(PC_ATTRIB_INDEX_TANGENT, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->tangents[0].ToFloatPtr());
+			glVertexAttribPointerARB(PC_ATTRIB_INDEX_ST, 2, GL_FLOAT, false, sizeof(idDrawVert), ac->st.ToFloatPtr());
+			glVertexAttribPointerARB(PC_ATTRIB_INDEX_VERTEX, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
+			
+			//if (surfInt->shader) {
+			//	surfInt->shader->GetEditorImage()->Bind();
+			//}
+			RB_DrawElementsWithCounters(tri);
+		}
+
+		glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_COLOR);
+		glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_ST);
+		glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_TANGENT);
+		glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_VERTEX);
+		glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_NORMAL);
+		glDisableClientState(GL_COLOR_ARRAY);
 	}
-	if (stage == shader->GetNumStages()) {
-		return;
-	}
-
-	// set polygon offset if necessary
-	if (shader->TestMaterialFlag(MF_POLYGONOFFSET)) {
-		glEnable(GL_POLYGON_OFFSET_FILL);
-		glPolygonOffset(r_offsetFactor.GetFloat(), r_offsetUnits.GetFloat() * shader->GetPolygonOffset());
-	}
-
-	// subviews will just down-modulate the color buffer by overbright
-	if (shader->GetSort() == SS_SUBVIEW) {
-		GL_State(GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO | GLS_DEPTHFUNC_LESS);
-		color[0] =
-			color[1] =
-			color[2] = (1.0 / backEnd.overBright);
-		color[3] = 1;
-	}
-	else {
-		// others just draw black
-		color[0] = 0;
-		color[1] = 0;
-		color[2] = 0;
-		color[3] = 1;
-	}
-
-	idDrawVert *ac = (idDrawVert *)vertexCache.Position(tri->ambientCache);
-	glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_ST);
-	glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_TANGENT);
-	glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_VERTEX);
-	glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_NORMAL);
-
-	glVertexAttribPointerARB(PC_ATTRIB_INDEX_NORMAL, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->normal.ToFloatPtr());
-	glVertexAttribPointerARB(PC_ATTRIB_INDEX_TANGENT, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->tangents[0].ToFloatPtr());
-	glVertexAttribPointerARB(PC_ATTRIB_INDEX_ST, 2, GL_FLOAT, false, sizeof(idDrawVert), ac->st.ToFloatPtr());
-	glVertexAttribPointerARB(PC_ATTRIB_INDEX_VERTEX, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
-
-
-	idVec4 shadowMapInfo = idVec4(side, _near, radius, 0);
-	Draw_SetVertexParm(RENDERPARM_SHADOWMAPINFO, shadowMapInfo.ToFloatPtr());
-
-	// draw it
-	RB_DrawElementsWithCounters(tri);
-
-
-	// reset polygon offset
-	if (shader->TestMaterialFlag(MF_POLYGONOFFSET)) {
-		glDisable(GL_POLYGON_OFFSET_FILL);
-	}
-
-	// reset blending
-	if (shader->GetSort() == SS_SUBVIEW) {
-		GL_State(GLS_DEPTHFUNC_LESS);
-	}
-
-	glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_ST);
-	glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_TANGENT);
-	glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_VERTEX);
-	glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_NORMAL);
 }
 
-
 /*
-======================
-RB_RenderDrawShadowSurfChainWithFunction
-======================
+==================
+RB_RenderShadowBuffer
+==================
 */
-void RB_RenderDrawShadowSurfChainWithFunction(const drawSurf_t *drawSurfs, rvmShadowMapAtlasSlice_t &shadowMapAtlasSlice, float side, float _near, float radius, idRenderMatrix &shadowMapMatrix, void(*triFunc_)(const drawSurf_t *, float side, float near, float _far)) {
-	const drawSurf_t		*drawSurf;
-	idScreenRect clearScreenRect;
+void  RB_RenderShadowBuffer(viewLight_t* vLight, int side) {
+	float	xmin, xmax, ymin, ymax;
+	float	width, height;
+	float	zNear;
 
-	clearScreenRect.Clear();
+	float	fov = 90.0f;
+
+	//
+	// set up 90 degree projection matrix
+	//
+	zNear = 4;
+
+	ymax = zNear * tan(fov * idMath::PI / 360.0f);
+	ymin = -ymax;
+
+	xmax = zNear * tan(fov * idMath::PI / 360.0f);
+	xmin = -xmax;
+
+	width = xmax - xmin;
+	height = ymax - ymin;
+
+	float* lightProjectMatrixPtr = lightProjectionMatrix.GetFloatPtr();
+
+	lightProjectMatrixPtr[0] = 2 * zNear / width;
+	lightProjectMatrixPtr[4] = 0;
+	lightProjectMatrixPtr[8] = 0;
+	lightProjectMatrixPtr[12] = 0;
+
+	lightProjectMatrixPtr[1] = 0;
+	lightProjectMatrixPtr[5] = 2 * zNear / height;
+	lightProjectMatrixPtr[9] = 0;
+	lightProjectMatrixPtr[13] = 0;
+
+	// this is the far-plane-at-infinity formulation, and
+	// crunches the Z range slightly so w=0 vertexes do not
+	// rasterize right at the wraparound point
+	lightProjectMatrixPtr[2] = 0;
+	lightProjectMatrixPtr[6] = 0;
+	lightProjectMatrixPtr[10] = -0.999f;
+	lightProjectMatrixPtr[14] = -2.0f * zNear;
+
+	lightProjectMatrixPtr[3] = 0;
+	lightProjectMatrixPtr[7] = 0;
+	lightProjectMatrixPtr[11] = -1;
+	lightProjectMatrixPtr[15] = 0;
+
+
+	GL_State(GLS_DEPTHFUNC_LESS | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO);	// make sure depth mask is off before clear
+
+	// draw all the occluders
+	GL_SelectTexture(0);
 
 	backEnd.currentSpace = NULL;
-	backEnd.currentScissor = clearScreenRect;
 
-	glViewport(shadowMapAtlasSlice.x, shadowMapAtlasSlice.y, shadowMapAtlasSlice.x + r_shadowMapAtlasSliceSize.GetInteger(), shadowMapAtlasSlice.y + r_shadowMapAtlasSliceSize.GetInteger());
-	glScissor(shadowMapAtlasSlice.x, shadowMapAtlasSlice.y, shadowMapAtlasSlice.x + r_shadowMapAtlasSliceSize.GetInteger(), shadowMapAtlasSlice.y + r_shadowMapAtlasSliceSize.GetInteger());
+	static float	s_flipMatrix[16] = {
+		// convert from our coordinate system (looking down X)
+		// to OpenGL's coordinate system (looking down -Z)
+		0, 0, -1, 0,
+		-1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 0, 1
+	};
 
-	for (drawSurf = drawSurfs; drawSurf; drawSurf = drawSurf->nextOnLight) {
-		idRenderMatrix mvp;
-		idRenderMatrix surfModelMatrixTransposed;
-		idRenderMatrix surfModelMatrix(drawSurf->space->modelMatrix[0], drawSurf->space->modelMatrix[1], drawSurf->space->modelMatrix[2], drawSurf->space->modelMatrix[3],
-			drawSurf->space->modelMatrix[4], drawSurf->space->modelMatrix[5], drawSurf->space->modelMatrix[6], drawSurf->space->modelMatrix[7],
-			drawSurf->space->modelMatrix[8], drawSurf->space->modelMatrix[9], drawSurf->space->modelMatrix[10], drawSurf->space->modelMatrix[11],
-			drawSurf->space->modelMatrix[12], drawSurf->space->modelMatrix[13], drawSurf->space->modelMatrix[14], drawSurf->space->modelMatrix[15]);
+	float	viewMatrix[16];
 
-		idRenderMatrix::Transpose(surfModelMatrix, surfModelMatrixTransposed);
-
-		idRenderMatrix::Multiply(surfModelMatrix, shadowMapMatrix, mvp);
-
-		// change the matrix if needed
-		RB_SetMVP(shadowMapMatrix);
-
-		// render it
-		triFunc_(drawSurf, side, _near, radius);
-	}
-}
+	idVec3	vec;
+	idVec3	origin = vLight->lightDef->globalLightOrigin;
 
 /*
-===========================
-RB_STD_ShadowMapPass
-===========================
+Trying to fix some math here, keeping these here as reference.
+
+id rotation: 0.000000 -0.000000 -89.999992
+id rotation: 179.999985 -0.000000 -89.999992
+id rotation: -89.999992 -0.000000 0.000000
+id rotation: -89.999992 -0.000000 179.999985
+id rotation: -89.999992 -0.000000 -89.999992
+id rotation: 89.999992 -0.000000 -89.999992
+
+fixed rotation: 0.000000 -0.000000 89.999992
+fixed rotation: 179.999985 -0.000000 -89.999992
+fixed rotation: 89.999992 -0.000000 179.999985
+fixed rotation: -89.999992 -0.000000 0.000000
+fixed rotation: 89.999992 -89.999992 0.000000
+fixed rotation: -89.999992 89.999992 0.000000
+
+		x	72.0000000	float
+		y	8.00000000	float
+		z	104.000000	float
+
+ID
+		[12]	-72.0000000	float
+		[13]	-104.000000	float
+		[14]	8.00000000	float
 */
-void RB_STD_ShadowMapPass(const drawSurf_t *drawSurfs, idRenderMatrix &shadowMapMatrix, int passId, float radius, rvmShadowMapAtlasSlice_t &shadowMapAtlasSlice) {
-	// if we are just doing 2D rendering, no need to fill the feedback pass
-	if (!backEnd.viewDef->viewEntitys) {
-		return;
+	if (side == -1) {
+		// projected light
+		vec = vLight->lightDef->parms.target;
+		vec.Normalize();
+		viewMatrix[0] = vec[0];
+		viewMatrix[4] = vec[1];
+		viewMatrix[8] = vec[2];
+
+		vec = vLight->lightDef->parms.right;
+		vec.Normalize();
+		viewMatrix[1] = -vec[0];
+		viewMatrix[5] = -vec[1];
+		viewMatrix[9] = -vec[2];
+
+		vec = vLight->lightDef->parms.up;
+		vec.Normalize();
+		viewMatrix[2] = vec[0];
+		viewMatrix[6] = vec[1];
+		viewMatrix[10] = vec[2];
+	}
+	else {
+#if 0
+		idAngles rotation;
+
+		// side of a point light
+		memset(viewMatrix, 0, sizeof(viewMatrix));
+		switch (side) {
+		case 0:
+			rotation.yaw = 0;
+			rotation.pitch = -0;
+			rotation.roll = 90;
+			break;
+		case 1:
+			rotation.yaw = 180;
+			rotation.pitch = -0;
+			rotation.roll = -90;
+			break;
+		case 2:
+			rotation.yaw = -90;
+			rotation.pitch = -0;
+			rotation.roll = 0;
+			break;
+		case 3:
+			rotation.yaw = -90;
+			rotation.pitch = -0;
+			rotation.roll = 180;
+			break;
+		case 4:
+			rotation.yaw = -90;
+			rotation.pitch = -0;
+			rotation.roll = -90;
+			break;
+		case 5:
+			rotation.yaw = 90;
+			rotation.pitch = -0;
+			rotation.roll = -90;
+			break;
+	}
+#else
+		idAngles rotation;
+
+		// side of a point light
+		memset(viewMatrix, 0, sizeof(viewMatrix));
+		switch (side) {
+		case 0:
+			rotation.yaw = 0;
+			rotation.pitch = -0;
+			rotation.roll = -90;
+			break;
+		case 1:
+			rotation.yaw = 180;
+			rotation.pitch = -0;
+			rotation.roll = -90;
+			break;
+		case 2:
+			rotation.yaw = -90;
+			rotation.pitch = -0;
+			rotation.roll = 0;
+			break;
+		case 3:
+			rotation.yaw = -90;
+			rotation.pitch = -0;
+			rotation.roll = 180;
+			break;
+		case 4:
+			rotation.yaw = -90;
+			rotation.pitch = -0;
+			rotation.roll = -90;
+			break;
+		case 5:
+			rotation.yaw = 90;
+			rotation.pitch = -0;
+			rotation.roll = -90;
+			break;
+		}
+#endif
+
+		memcpy(viewMatrix, rotation.ToMat4().ToFloatPtr(), sizeof(float) * 16);
 	}
 
-	RB_LogComment("---------- RB_STD_ShadowMapPass ----------\n");
+#if 0
+	viewMatrix[12] = -origin[0];
+	viewMatrix[13] = -origin[2];
+	viewMatrix[14] = origin[1];
+#else
+	viewMatrix[12] = -origin[0] * viewMatrix[0] + -origin[1] * viewMatrix[4] + -origin[2] * viewMatrix[8];
+	viewMatrix[13] = -origin[0] * viewMatrix[1] + -origin[1] * viewMatrix[5] + -origin[2] * viewMatrix[9];
+	viewMatrix[14] = -origin[0] * viewMatrix[2] + -origin[1] * viewMatrix[6] + -origin[2] * viewMatrix[10];
+#endif
 
-	// enable the second texture for mirror plane clipping if needed
-	if (backEnd.viewDef->numClipPlanes) {
-		GL_SelectTexture(1);
-		globalImages->alphaNotchImage->Bind();
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glEnable(GL_TEXTURE_GEN_S);
-		glTexCoord2f(1, 0.5);
+	viewMatrix[3] = 0;
+	viewMatrix[7] = 0;
+	viewMatrix[11] = 0;
+	viewMatrix[15] = 1;
+
+	memcpy(unflippedLightMatrix, viewMatrix, sizeof(unflippedLightMatrix));
+	myGlMultMatrix(viewMatrix, s_flipMatrix, lightMatrix);
+
+	// create frustum planes
+	idPlane	globalFrustum[6];
+
+	// near clip
+	globalFrustum[0][0] = -viewMatrix[0];
+	globalFrustum[0][1] = -viewMatrix[4];
+	globalFrustum[0][2] = -viewMatrix[8];
+	globalFrustum[0][3] = -(origin[0] * globalFrustum[0][0] + origin[1] * globalFrustum[0][1] + origin[2] * globalFrustum[0][2]);
+
+	// far clip
+	globalFrustum[1][0] = viewMatrix[0];
+	globalFrustum[1][1] = viewMatrix[4];
+	globalFrustum[1][2] = viewMatrix[8];
+	globalFrustum[1][3] = -globalFrustum[0][3] - viewLightAxialSize;
+
+	// side clips
+	globalFrustum[2][0] = -viewMatrix[0] + viewMatrix[1];
+	globalFrustum[2][1] = -viewMatrix[4] + viewMatrix[5];
+	globalFrustum[2][2] = -viewMatrix[8] + viewMatrix[9];
+
+	globalFrustum[3][0] = -viewMatrix[0] - viewMatrix[1];
+	globalFrustum[3][1] = -viewMatrix[4] - viewMatrix[5];
+	globalFrustum[3][2] = -viewMatrix[8] - viewMatrix[9];
+
+	globalFrustum[4][0] = -viewMatrix[0] + viewMatrix[2];
+	globalFrustum[4][1] = -viewMatrix[4] + viewMatrix[6];
+	globalFrustum[4][2] = -viewMatrix[8] + viewMatrix[10];
+
+	globalFrustum[5][0] = -viewMatrix[0] - viewMatrix[2];
+	globalFrustum[5][1] = -viewMatrix[4] - viewMatrix[6];
+	globalFrustum[5][2] = -viewMatrix[8] - viewMatrix[10];
+
+	// is this nromalization necessary?
+	for (int i = 0; i < 6; i++) {
+		globalFrustum[i].ToVec4().ToVec3().Normalize();
 	}
 
-	// the first texture will be used for alpha tested surfaces
-	GL_SelectTexture(0);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	// decal surfaces may enable polygon offset
-	glPolygonOffset(r_offsetFactor.GetFloat(), r_offsetUnits.GetFloat());
-
-	GL_State(GLS_DEPTHFUNC_LESS);
-
-	RB_RenderDrawShadowSurfChainWithFunction(drawSurfs, shadowMapAtlasSlice, passId, 0.03, radius, shadowMapMatrix, RB_T_FillShadowMapOccluder);
-
-	if (backEnd.viewDef->numClipPlanes) {
-		GL_SelectTexture(1);
-		globalImages->BindNull();
-		glDisable(GL_TEXTURE_GEN_S);
-		GL_SelectTexture(0);
+	for (int i = 2; i < 6; i++) {
+		globalFrustum[i][3] = -(origin * globalFrustum[i].ToVec4().ToVec3());
 	}
+
+	RB_Shadow_CullInteractions(vLight, globalFrustum);
+
+
+	// FIXME: we want to skip the sampling as well as the generation when not casting shadows
+	if (r_shadows.GetBool() && vLight->lightShader->LightCastsShadows()) {
+		//
+		// set polygon offset for the rendering
+		//
+		switch (r_shadowOccluderFacing.GetInteger()) {
+		case 0:	// front sides
+			glPolygonOffset(r_shadow_polyOfsFactor.GetFloat(), r_shadow_polyOfsUnits.GetFloat());
+			glEnable(GL_POLYGON_OFFSET_FILL);
+			RB_Shadow_RenderOccluders(vLight);
+			glDisable(GL_POLYGON_OFFSET_FILL);
+			break;
+		case 1:	// back sides
+			glPolygonOffset(-r_shadow_polyOfsFactor.GetFloat(), -r_shadow_polyOfsUnits.GetFloat());
+			glEnable(GL_POLYGON_OFFSET_FILL);
+			GL_Cull(CT_BACK_SIDED);
+			RB_Shadow_RenderOccluders(vLight);
+			GL_Cull(CT_FRONT_SIDED);
+			glDisable(GL_POLYGON_OFFSET_FILL);
+			break;
+		
+		}
+	}
+
+	// the current modelView matrix is not valid
+	backEnd.currentSpace = NULL;
 }
+
 /*
-======================
+===================
 RB_DrawPointlightShadow
-======================
+===================
 */
-void RB_DrawPointlightShadow(viewLight_t *viewLight) {
-	idMat3 lightAxis;
-	idRenderMatrix renderMatrix;
+void RB_DrawPointlightShadow(viewLight_t *vLight) {
+	for(int i = 0; i < 6; i++) {
+		rvmRenderShadowAtlasEntry* shadowMapEntry = renderShadowSystem.GetShadowAtlasEntry(backEnd.c_numShadowMapSlices);
 
-	lightAxis.Identity();
+		int entrySize = shadowMapEntry->sliceSizeX;
+		int entryX = shadowMapEntry->x;
+		int entryY = shadowMapEntry->y;
 
-	idRenderMatrix::CreateViewMatrix(viewLight->lightDef->parms.origin, lightAxis, renderMatrix);
+		glViewport(entryX, entryY, entrySize, entrySize);
+		glScissor(entryX, entryY, entrySize, entrySize);
 
-	float lightradius = 0.0f;
-	lightradius = max(lightradius, viewLight->lightDef->parms.lightRadius.x);
-	lightradius = max(lightradius, viewLight->lightDef->parms.lightRadius.y);
-	lightradius = max(lightradius, viewLight->lightDef->parms.lightRadius.z);
-	
-	renderProgManager.BindShader_ShadowDualParaboloid();
-	
-	RB_STD_ShadowMapPass(viewLight->localInteractions, renderMatrix, -1, lightradius, tr.shadowMapAtlasLookup[backEnd.c_numShadowMapSlices]);
-	RB_STD_ShadowMapPass(viewLight->globalInteractions, renderMatrix, -1, lightradius, tr.shadowMapAtlasLookup[backEnd.c_numShadowMapSlices]);
+		RB_RenderShadowBuffer(vLight, i);
+
+		backEnd.c_numShadowMapSlices++;
+	}
+}
+
+/*
+===================
+RB_DrawSpotlightShadow
+===================
+*/
+void RB_DrawSpotlightShadow(viewLight_t* vLight) {
+	rvmRenderShadowAtlasEntry* shadowMapEntry = renderShadowSystem.GetShadowAtlasEntry(backEnd.c_numShadowMapSlices);
+
+	int entrySize = shadowMapEntry->sliceSizeX;
+	int entryX = shadowMapEntry->x;
+	int entryY = shadowMapEntry->y;
+
+	glViewport(entryX, entryY, entrySize, entrySize);
+	glScissor(entryX, entryY, entrySize, entrySize);
+
+	RB_RenderShadowBuffer(vLight, -1);
+
 	backEnd.c_numShadowMapSlices++;
-
-	RB_STD_ShadowMapPass(viewLight->localInteractions, renderMatrix, 1, lightradius, tr.shadowMapAtlasLookup[backEnd.c_numShadowMapSlices]);
-	RB_STD_ShadowMapPass(viewLight->globalInteractions, renderMatrix, 1, lightradius, tr.shadowMapAtlasLookup[backEnd.c_numShadowMapSlices]);
-	backEnd.c_numShadowMapSlices++;
-
-	renderProgManager.Unbind();
 }
 
 /*
@@ -296,21 +519,24 @@ RB_Draw_ShadowMaps
 void RB_Draw_ShadowMaps(void) {
 	viewLight_t		*vLight;
 
-	return;
-
 	glDisable(GL_VERTEX_PROGRAM_ARB);
 	glDisable(GL_FRAGMENT_PROGRAM_ARB);
 
 	// Bind our shadow map atlas.
-	tr.shadowMapAtlas->MakeCurrent();
+	renderShadowSystem.GetShadowMapDepthAtlasRT()->MakeCurrent();
 
 	// ensures that depth writes are enabled for the depth clear
 	GL_State(GLS_DEFAULT);
 
-	glViewport(0, 0, r_shadowMapAtlasSize.GetInteger(), r_shadowMapAtlasSize.GetInteger());
-	glScissor(0, 0, r_shadowMapAtlasSize.GetInteger(), r_shadowMapAtlasSize.GetInteger());
+	int shadowMapSize = renderShadowSystem.GetShadowMapSize();
+
+	glViewport(0, 0, shadowMapSize, shadowMapSize);
+	glScissor(0, 0, shadowMapSize, shadowMapSize);
 
 	glClear(GL_DEPTH_BUFFER_BIT);
+	glStencilFunc(GL_ALWAYS, 0, 255);
+
+	renderProgManager.BindShader_Shadow();
 
 	backEnd.c_numShadowMapSlices = 0;
 
@@ -323,9 +549,22 @@ void RB_Draw_ShadowMaps(void) {
 		if (vLight->lightDef->parms.ambientLight)
 			continue;
 
+		// Set the initial shadow map slice which is needed for rendering.
+		vLight->shadowMapSlice = backEnd.c_numShadowMapSlices;
+
+		// all light side projections must currently match, so non-centered
+		// and non-cubic lights must take the largest length
+		viewLightAxialSize = R_Shadow_CalcLightAxialSize(vLight);
+
+		idVec4 lightOrigin(vLight->lightDef->parms.origin.x, vLight->lightDef->parms.origin.z, -vLight->lightDef->parms.origin.y, 1.0);
+		RB_SetVertexParm(RENDERPARM_LOCALLIGHTORIGIN, lightOrigin.ToFloatPtr());
+
 		// Render the pointlight shadows
 		if(vLight->lightDef->parms.pointLight) {
 			RB_DrawPointlightShadow(vLight);
+		}
+		else {
+			RB_DrawSpotlightShadow(vLight);
 		}
 	}
 
@@ -343,4 +582,7 @@ void RB_Draw_ShadowMaps(void) {
 
 	// Reset the rendertarget.	
 	idRenderTexture::BindNull();
+
+	// Reset the bound shader.
+	renderProgManager.Unbind();
 }

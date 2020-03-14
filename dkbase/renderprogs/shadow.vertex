@@ -34,14 +34,15 @@ struct VS_IN {
 
 struct VS_OUT {
 	float4 position : POSITION;
+	float4 texcoord0	: TEXCOORD0;
+	float4 texcoord1	: TEXCOORD1;
 };
 
 void main( VS_IN vertex, out VS_OUT result ) {
-	float4 vPos = vertex.position - rpLocalLightOrigin;
-	vPos = ( vPos.wwww * rpLocalLightOrigin ) + vPos;
-
-	result.position.x = dot4( vPos, rpMVPmatrixX );
-	result.position.y = dot4( vPos, rpMVPmatrixY );
-	result.position.z = dot4( vPos, rpMVPmatrixZ );
-	result.position.w = dot4( vPos, rpMVPmatrixW );
+	result.position.x = dot4( vertex.position, rpMVPmatrixX );
+	result.position.y = dot4( vertex.position, rpMVPmatrixY );
+	result.position.z = dot4( vertex.position, rpMVPmatrixZ );
+	result.position.w = dot4( vertex.position, rpMVPmatrixW );
+	result.texcoord0 = vertex.position;
+	result.texcoord1 = rpLocalLightOrigin;
 }

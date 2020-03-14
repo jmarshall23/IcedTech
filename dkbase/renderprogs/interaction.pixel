@@ -28,13 +28,16 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "global.inc"
 
-uniform sampler2D	samp0 : register(s0); // texture 1 is the per-surface bump map
-uniform sampler2D	samp1 : register(s1); // texture 2 is the light falloff texture
-uniform sampler2D	samp2 : register(s2); // texture 3 is the light projection texture
-uniform sampler2D	samp3 : register(s3); // texture 4 is the per-surface diffuse map
-uniform sampler2D	samp4 : register(s4); // texture 5 is the per-surface specular map
-uniform isampler2D 	samp5 : register(s5); // texture 5 is the virtual texture offset map
-uniform samplerCUBE samp6 : register(s6); // texture 6 is the reflection map.
+uniform sampler2D		samp0 : register(s0); // texture 1 is the per-surface bump map
+uniform sampler2D		samp1 : register(s1); // texture 2 is the light falloff texture
+uniform sampler2D		samp2 : register(s2); // texture 3 is the light projection texture
+uniform sampler2D		samp3 : register(s3); // texture 4 is the per-surface diffuse map
+uniform sampler2D		samp4 : register(s4); // texture 5 is the per-surface specular map
+uniform isampler2D 		samp5 : register(s5); // texture 5 is the virtual texture offset map
+uniform samplerCUBE 	samp6 : register(s6); // texture 6 is the reflection map.
+uniform sampler2D 		samp7 : register(s7); // texture 7 is the shadow map atlas.
+uniform sampler2D 	    samp8 : register(s8); // texture 8 is the atlas lookup.
+uniform isamplerCUBE	samp9 : register(s9); // texture 9 is the cubemap retarget image.
 
 struct PS_IN {
 	half4 position	: VPOS;
@@ -94,6 +97,19 @@ float4 CalculateReflections(half3 normal, half3 Position, half3 cameraPos) {
     float3 R = reflect(I, normalize(normal));
 	
 	return float4(texture(samp6, R).rgb, 1.0);
+}
+
+float CalculateShadows(float3 vertexPos, float3 lightPos) {
+	float3 vertToLight = vertexPos - lightPos;
+	float3 cubeInfo = ComputeSampleCube(vertToLight);
+	float2 initialuv = cubeInfo.xy * rpShadowMapInfo.y;
+	float slice = cubeInfo.z;
+	
+	// Get the slice information(aka were in the atlas are we going to sample from).
+	float2 sliceOffset = texelFetch(samp8, ivec2(rpShadowMapInfo.x, 0), 0).xy;
+	float2 uv = initialuv + sliceOffset;
+	
+	return tex2D(samp7, uv).r;
 }
 
 void main( PS_IN fragment, out PS_OUT result ) {
@@ -177,8 +193,10 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	float denominator = 4.0 * max(dot(localNormal, V), 0.0) * max(dot(localNormal, lightVector), 0.0);
 	float3 pbr     = numerator / max(denominator, 0.001);  
 	pbr *= rpSpecularModifier.xyz;
+	
+	float shadow = CalculateShadows(fragment.texcoord5.xyz, rpLocalViewOrigin.xyz);
 
-	result.color.xyz = ( diffuseColor + pbr ) * lightColor; // * fragment.color.xyz;
+	result.color.xyz = ( diffuseColor + pbr ) * lightColor * shadow; // * fragment.color.xyz;
 	result.color.w = 1.0;
 	result.color1 = float4(pbr.x, pbr.y, pbr.z, 0);
 }

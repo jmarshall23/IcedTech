@@ -36,6 +36,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "RenderProgs.h"
 #include "RenderMatrix.h"
 #include "VirtualTexture.h"
+#include "RenderShadows.h"
 
 class idRenderWorldLocal;
 
@@ -48,7 +49,7 @@ const int FALLOFF_TEXTURE_SIZE =	64;
 
 const float	DEFAULT_FOG_DISTANCE = 500.0f;
 
-static const int	MAX_PROG_TEXTURE_PARMS = 8;
+static const int	MAX_PROG_TEXTURE_PARMS = 16;
 
 const int FOG_ENTER_SIZE = 64;
 const float FOG_ENTER = (FOG_ENTER_SIZE+1.0f)/(FOG_ENTER_SIZE*2);
@@ -317,6 +318,9 @@ typedef struct viewLight_s {
 	// scissorRect.Empty() is true if the viewEntity_t was never actually
 	// seen through any portals
 	idScreenRect			scissorRect;
+
+	// Start shadow map slice.
+	int						shadowMapSlice;
 
 	// if the view isn't inside the light, we can use the non-reversed
 	// shadow drawing, avoiding the draws of the front and rear caps
@@ -732,14 +736,6 @@ typedef struct {
 	int		x, y, width, height;	// these are in physical, OpenGL Y-at-bottom pixels
 } renderCrop_t;
 
-//
-// rvmShadowMapAtlasSlice_t
-//
-struct rvmShadowMapAtlasSlice_t {
-	int x;
-	int y;
-};
-
 static const int	MAX_RENDER_CROPS = 8;
 
 /*
@@ -874,10 +870,6 @@ public:
 	int						guiRecursionLevel;		// to prevent infinite overruns
 	class idGuiModel *		guiModel;
 	class idGuiModel *		demoGuiModel;
-
-	idImage	*					shadowMapAtlasImage;
-	idRenderTexture	*			shadowMapAtlas;
-	rvmShadowMapAtlasSlice_t	*shadowMapAtlasLookup;
 
 	unsigned short			gammaTable[256];	// brightness / gamma modify this
 };
@@ -1380,8 +1372,6 @@ DRAW_*
 
 ============================================================
 */
-
-void	R_InitShadowMapSystem(void);
 
 void	RB_ARB_DrawInteractions( void );
 

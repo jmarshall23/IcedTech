@@ -212,6 +212,7 @@ const char * prefixes[] = {
 
 	"sampler2DMS",			// GLSL
 	"isampler2D",
+	"isamplerCUBE"
 };
 static const int numPrefixes = sizeof( prefixes ) / sizeof( prefixes[0] );
 
@@ -500,6 +501,7 @@ struct typeConversion_t {
 	{ "sampler2D",			"sampler2D" },
 	{ "sampler3D",			"sampler3D" },
 	{ "samplerCUBE",		"samplerCube" },
+	{ "isamplerCUBE",		"isamplerCube" },
 
 	{ "sampler1DShadow",	"sampler1DShadow" },
 	{ "sampler2DShadow",	"sampler2DShadow" },

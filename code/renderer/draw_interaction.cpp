@@ -106,6 +106,10 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	RB_SetFragmentParm(RENDERPARM_DIFFUSEMODIFIER, din->diffuseColor.ToFloatPtr() );
 	RB_SetFragmentParm(RENDERPARM_SPECULARMODIFIER, din->specularColor.ToFloatPtr() );
 
+	// set the shadow map info.
+	idVec4 shadowMapInfo(backEnd.vLight->shadowMapSlice, renderShadowSystem.GetAtlasSampleScale(), 0, 0);
+	RB_SetFragmentParm(RENDERPARM_SHADOWMAPINFO, shadowMapInfo.ToFloatPtr());
+
 	// set the textures
 
 	// texture 1 will be the per-surface bump map
@@ -142,6 +146,18 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	else {
 		globalImages->blackCubeMapImage->Bind();
 	}
+
+	// texture 8 is the shadow map atlas.
+	GL_SelectTextureNoClient(7);
+	renderShadowSystem.GetShadowMapDepthAtlas()->Bind();
+
+	// texture 9 is the atlas lookup.
+	GL_SelectTextureNoClient(8);
+	renderShadowSystem.GetAtlasLookupImage()->Bind();
+	
+	// texture 10 is the cubemap retarget image.
+	GL_SelectTextureNoClient(9);
+	globalImages->cubeSideLookupImage->Bind();
 
 	// draw it
 	RB_DrawElementsWithCounters( din->surf->geo );
@@ -289,25 +305,26 @@ void RB_Interaction_DrawInteractions( void ) {
 		lightShader = vLight->lightShader;
 
 		// clear the stencil buffer if needed
-		if ( vLight->globalShadows || vLight->localShadows ) {
-			backEnd.currentScissor = vLight->scissorRect;
-			if ( r_useScissor.GetBool() ) {
-				glScissor( backEnd.viewDef->viewport.x1 + backEnd.currentScissor.x1, 
-					backEnd.viewDef->viewport.y1 + backEnd.currentScissor.y1,
-					backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-					backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1 );
-			}
-			glClear( GL_STENCIL_BUFFER_BIT );
-		} else {
-			// no shadows, so no need to read or write the stencil buffer
-			// we might in theory want to use GL_ALWAYS instead of disabling
-			// completely, to satisfy the invarience rules
-			glStencilFunc( GL_ALWAYS, 128, 255 );
-		}
+		//if ( vLight->globalShadows || vLight->localShadows ) {
+		//	backEnd.currentScissor = vLight->scissorRect;
+		//	if ( r_useScissor.GetBool() ) {
+		//		glScissor( backEnd.viewDef->viewport.x1 + backEnd.currentScissor.x1, 
+		//			backEnd.viewDef->viewport.y1 + backEnd.currentScissor.y1,
+		//			backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
+		//			backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1 );
+		//	}
+		//	glClear( GL_STENCIL_BUFFER_BIT );
+		//} else {
+		//	// no shadows, so no need to read or write the stencil buffer
+		//	// we might in theory want to use GL_ALWAYS instead of disabling
+		//	// completely, to satisfy the invarience rules
+		//	glStencilFunc( GL_ALWAYS, 128, 255 );
+		//}
+		glStencilFunc(GL_ALWAYS, 128, 255);
 
-		RB_StencilShadowPass(vLight->globalShadows);
+		//RB_StencilShadowPass(vLight->globalShadows);
 		RB_Interaction_CreateDrawInteractions(vLight->localInteractions);
-		RB_StencilShadowPass(vLight->localShadows);
+		//RB_StencilShadowPass(vLight->localShadows);
 		RB_Interaction_CreateDrawInteractions(vLight->globalInteractions);
 
 		renderProgManager.Unbind();

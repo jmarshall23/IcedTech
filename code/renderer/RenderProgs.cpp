@@ -113,7 +113,8 @@ void idRenderProgManager::Init() {
 		{ BUILTIN_MOTION_BLUR, "motionBlur.vfp" },
 		{ BUILTIN_TESTIMAGE, "testimage.vfp" },
 		{ BUILDIN_VIRTUALTEXTURE_FEEDBACK, "feedback.vfp" },
-		{ BUILTIN_SHADOW_DUAL_PARABOLOID, "shadow_dualp.vfp" }
+		{ BUILTIN_SHADOW, "shadow.vfp"},
+		{ BUILTIN_SHADOW_SKINNED, "shadow_skinned.vfp"},
 	};
 	int numBuiltins = sizeof( builtins ) / sizeof( builtins[0] );
 	vertexShaders.SetNum( numBuiltins );
@@ -128,13 +129,6 @@ void idRenderProgManager::Init() {
 		LoadFragmentShader( i );
 		LoadGLSLProgram( i, i, i );
 	}
-
-	// Special case handling for fastZ shaders
-	builtinShaders[BUILTIN_SHADOW] = FindVertexShader( "shadow.vp" );
-	builtinShaders[BUILTIN_SHADOW_SKINNED] = FindVertexShader( "shadow_skinned.vp" );
-
-	FindGLSLProgram( "shadow.vp", builtinShaders[BUILTIN_SHADOW], -1 );
-	FindGLSLProgram( "shadow_skinned.vp", builtinShaders[BUILTIN_SHADOW_SKINNED], -1 );
 
 	glslUniforms.SetNum( RENDERPARM_USER + MAX_GLSL_USER_PARMS );
 

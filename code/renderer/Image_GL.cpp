@@ -103,7 +103,7 @@ void idImage::SubImageUpload( int mipLevel, int x, int y, int z, int width, int 
 		// make sure the pixel store alignment is correct so that lower mips get created
 		// properly for odd shaped textures - this fixes the mip mapping issues with
 		// fonts
-		if (opts.format != FMT_RG16)
+		if (opts.format != FMT_RG16 && opts.format != FMT_RG32)
 		{
 			int unpackAlignment = width * BitsForFormat((textureFormat_t)opts.format) / 8;
 			if ((unpackAlignment & 3) == 0) {
@@ -317,6 +317,16 @@ void idImage::AllocImage() {
 		internalFormat = GL_RG16UI;
 		dataFormat = GL_RG_INTEGER;
 		dataType = GL_UNSIGNED_SHORT;
+		break;
+	case FMT_RG32:
+		internalFormat = GL_RG32F;
+		dataFormat = GL_RG32F;
+		dataType = GL_FLOAT;
+		break;
+	case FMT_R32:
+		internalFormat = GL_R32F;
+		dataFormat = GL_R32F;
+		dataType = GL_FLOAT;
 		break;
 	case FMT_ALPHA:
 #if defined( USE_CORE_PROFILE )

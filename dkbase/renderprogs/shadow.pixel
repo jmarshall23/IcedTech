@@ -33,6 +33,13 @@ struct PS_OUT {
 	float4 color : COLOR;
 };
 
-void main( out PS_OUT result ) {
-	result.color = rpColor;
+struct PS_IN {
+	half4 position	: VPOS;
+	half4 texcoord0	: TEXCOORD0_centroid;	// vertex
+	half4 texcoord1	: TEXCOORD0_centroid;	// light origin
+};
+
+void main( PS_IN fragment, out PS_OUT result ) {
+	gl_FragDepth = length(fragment.texcoord0.xyz - fragment.texcoord1.xyz);
+	result.color = float4( 0.0, 0.0, 0.0, 1.0 );
 }

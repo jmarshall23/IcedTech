@@ -479,6 +479,33 @@ static void makeNormalizeVectorCubeMap(idImage *image) {
 	Mem_Free(pixels[0]);
 }
 
+static void makeCubeSideLookupCubeMap(idImage* image) {
+	float vector[3];
+	int i, x, y;
+	byte* pixels[6];
+	int		size;
+
+	size = NORMAL_MAP_SIZE;
+
+	pixels[0] = (GLubyte*)Mem_Alloc(size * size * 4 * 6);
+
+	for (i = 0; i < 6; i++) {
+		pixels[i] = pixels[0] + i * size * size * 4;
+		for (y = 0; y < size; y++) {
+			for (x = 0; x < size; x++) {
+				pixels[i][4 * (y * size + x) + 0] = i;
+				pixels[i][4 * (y * size + x) + 1] = i;
+				pixels[i][4 * (y * size + x) + 2] = i;
+				pixels[i][4 * (y * size + x) + 3] = 255;
+			}
+		}
+	}
+
+	image->GenerateCubeImage((const byte**)pixels, size, TF_NEAREST, TD_DEFAULT);
+
+	Mem_Free(pixels[0]);
+}
+
 static void makeBlackCubeMapImage(idImage* image) {
 	float vector[3];
 	int i, x, y;
@@ -677,6 +704,7 @@ void idImageManager::CreateIntrinsicImages() {
 
 	ambientNormalMap = ImageFromFunction("_ambient", R_AmbientNormalImage);
 	normalCubeMapImage = ImageFromFunction("_normalCubeMap", makeNormalizeVectorCubeMap);
+	cubeSideLookupImage = ImageFromFunction("_cubeSideLookupMap", makeCubeSideLookupCubeMap);
 
 	blackCubeMapImage = ImageFromFunction("_blackCubeMapImage", makeBlackCubeMapImage);
 

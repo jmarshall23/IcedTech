@@ -81,11 +81,8 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	modelPosition.z = dot4( matZ, vertexPosition );
 	modelPosition.w = vertex.position.w;
 
-	float4 vPos = modelPosition - rpLocalLightOrigin;
-	vPos = ( vPos.wwww * rpLocalLightOrigin ) + vPos;
-
-	result.position.x = dot4( vPos, rpMVPmatrixX );
-	result.position.y = dot4( vPos, rpMVPmatrixY );
-	result.position.z = dot4( vPos, rpMVPmatrixZ );
-	result.position.w = dot4( vPos, rpMVPmatrixW );
+	result.position.x = dot4( modelPosition, rpMVPmatrixX );
+	result.position.y = dot4( modelPosition, rpMVPmatrixY );
+	result.position.z = dot4( modelPosition, rpMVPmatrixZ );
+	result.position.w = dot4( modelPosition, rpMVPmatrixW );
 }

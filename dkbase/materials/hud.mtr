@@ -32,3 +32,17 @@ hud/weapon_current_bg {
 		map guis/hud/weapon_current_bg.tga
 	}
 }
+
+hud/crosshair_ring {
+	{
+		blend GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+		map guis/hud/crosshair_ring.tga
+	}
+}
+
+hud/crosshair2 {
+	{
+		blend GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+		map guis/hud/crosshair2.tga
+	}
+}

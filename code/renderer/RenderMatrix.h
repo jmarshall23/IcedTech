@@ -146,6 +146,8 @@ public:
 	static void				GetFrustumCorners( frustumCorners_t & corners, const idRenderMatrix & frustumTransform, const idBounds & frustumBounds );
 	static frustumCull_t	CullFrustumCornersToPlane( const frustumCorners_t & corners, const idPlane & plane );
 
+	// Todo: this is not a long term solution!
+	float*					GetFloatPtr() { return &m[0]; }
 private:
 	float					m[16];
 };
