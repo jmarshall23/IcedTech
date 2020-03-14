@@ -261,12 +261,6 @@ R_CheckPortableExtensions
 static void R_CheckPortableExtensions( void ) {
 	glConfig.glVersion = atof( glConfig.version_string );
 
-	common->Printf("Initilizing Glew...\n");
-	if (glewInit() != GLEW_OK)
-	{
-		common->FatalError("Failed to initilize glew!\n");
-	}
-
 	// GL_ARB_multitexture
 	glConfig.multitextureAvailable = R_CheckExtension( "GL_ARB_multitexture" );
 	if ( glConfig.multitextureAvailable ) {
@@ -276,7 +270,8 @@ static void R_CheckPortableExtensions( void ) {
 		//if ( glConfig.maxTextureUnits < 2 ) {
 		//	glConfig.multitextureAvailable = false;	// shouldn't ever happen
 		//}
-		glConfig.maxTextureUnits = 8;
+		glConfig.maxTextureUnits = 16;
+
 		glGetIntegerv( GL_MAX_TEXTURE_COORDS_ARB, (GLint *)&glConfig.maxTextureCoords );
 		glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, (GLint *)&glConfig.maxTextureImageUnits );
 	}

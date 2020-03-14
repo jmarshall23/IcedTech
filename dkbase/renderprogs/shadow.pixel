@@ -40,6 +40,6 @@ struct PS_IN {
 };
 
 void main( PS_IN fragment, out PS_OUT result ) {
-	gl_FragDepth = length(fragment.texcoord0.xyz - fragment.texcoord1.xyz);
+	gl_FragDepth = length(fragment.texcoord0.xyz - rpLocalLightOrigin.xyz) / 1000;
 	result.color = float4( 0.0, 0.0, 0.0, 1.0 );
 }

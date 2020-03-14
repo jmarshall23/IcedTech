@@ -320,7 +320,7 @@ void idImage::AllocImage() {
 		break;
 	case FMT_RG32:
 		internalFormat = GL_RG32F;
-		dataFormat = GL_RG32F;
+		dataFormat = GL_RG;
 		dataType = GL_FLOAT;
 		break;
 	case FMT_R32:

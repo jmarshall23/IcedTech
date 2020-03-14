@@ -207,7 +207,6 @@ set(src_engine
 	./renderer/VirtualTextureFeedbackJob.cpp
 	./renderer/VirtualTextureSystem.cpp
 	./renderer/VirtualTextureTranscode.cpp
-	./renderer/wglext.h
 	./renderer/Color/ColorSpace.cpp
 	./renderer/Color/ColorSpace.h
 	./renderer/DXT/DXTCodec.h

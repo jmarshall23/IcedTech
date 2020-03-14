@@ -37,7 +37,6 @@ uniform isampler2D 		samp5 : register(s5); // texture 5 is the virtual texture o
 uniform samplerCUBE 	samp6 : register(s6); // texture 6 is the reflection map.
 uniform sampler2D 		samp7 : register(s7); // texture 7 is the shadow map atlas.
 uniform sampler2D 	    samp8 : register(s8); // texture 8 is the atlas lookup.
-uniform isamplerCUBE	samp9 : register(s9); // texture 9 is the cubemap retarget image.
 
 struct PS_IN {
 	half4 position	: VPOS;
@@ -102,14 +101,55 @@ float4 CalculateReflections(half3 normal, half3 Position, half3 cameraPos) {
 float CalculateShadows(float3 vertexPos, float3 lightPos) {
 	float3 vertToLight = vertexPos - lightPos;
 	float3 cubeInfo = ComputeSampleCube(vertToLight);
-	float2 initialuv = cubeInfo.xy * rpShadowMapInfo.y;
+	float2 initialuv = cubeInfo.xy;
 	float slice = cubeInfo.z;
+
+	initialuv *= rpShadowMapInfo.y;
 	
 	// Get the slice information(aka were in the atlas are we going to sample from).
-	float2 sliceOffset = texelFetch(samp8, ivec2(rpShadowMapInfo.x, 0), 0).xy;
+	float2 sliceOffset = texelFetch(samp8, ivec2(rpShadowMapInfo.x + slice, 0), 0).xy;
 	float2 uv = initialuv + sliceOffset;
 	
-	return tex2D(samp7, uv).r;
+	float shadowdepth = tex2D(samp7, uv).r;
+	float scenedepth = length(vertToLight) / 1000;
+	
+	//if(scenedepth - 0.05 > shadowdepth)
+		//return 0.0;
+		
+	return shadowdepth;
+}
+
+float3 ShadowCubeDebugColor(float3 vertexPos, float3 lightPos) {
+	float3 vertToLight = vertexPos - lightPos;
+	float3 cubeInfo = ComputeSampleCube(vertToLight);
+	float slice = cubeInfo.z;
+
+	if(slice == 0) {
+		return float3(1, 0, 0);
+	}
+	else if(slice == 1) {
+		return float3(0, 1, 0);
+	}
+	else if(slice == 2) {
+		return float3(0, 0, 1);
+	}
+	else if(slice == 3) {
+		return float3(1, 1, 0);
+	}
+	else if(slice == 4) {
+		return float3(0, 1, 1);
+	}
+	else if(slice == 5) {
+		return float3(1, 0, 1);
+	}
+	return float3(0, 0, 0);
+}
+
+float3 ShadowCubeDebugUVColor(float3 vertexPos, float3 lightPos) {
+	float3 vertToLight = vertexPos - lightPos;
+	float3 cubeInfo = ComputeSampleCube(vertToLight);
+	
+	return float3(cubeInfo.x, cubeInfo.y, 0.0);
 }
 
 void main( PS_IN fragment, out PS_OUT result ) {
@@ -194,9 +234,14 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	float3 pbr     = numerator / max(denominator, 0.001);  
 	pbr *= rpSpecularModifier.xyz;
 	
-	float shadow = CalculateShadows(fragment.texcoord5.xyz, rpLocalViewOrigin.xyz);
+	float shadow = CalculateShadows(fragment.texcoord5.xyz, rpLocalLightOrigin.xyz);
 
+#if 1
 	result.color.xyz = ( diffuseColor + pbr ) * lightColor * shadow; // * fragment.color.xyz;
+#else
+	result.color.xyz = normalize(fragment.texcoord5.xyz);
+	//result.color.xyz = ( diffuseColor + pbr ) * lightColor * ShadowCubeDebugUVColor(fragment.texcoord5.xyz, rpLocalLightOrigin.xyz);
+#endif
 	result.color.w = 1.0;
 	result.color1 = float4(pbr.x, pbr.y, pbr.z, 0);
 }

@@ -646,7 +646,7 @@ typedef struct {
 	textureType_t	textureType;
 } tmu_t;
 
-const int MAX_MULTITEXTURE_UNITS =	8;
+const int MAX_MULTITEXTURE_UNITS =	16;
 typedef struct {
 	tmu_t		tmu[MAX_MULTITEXTURE_UNITS];
 	int			currenttmu;
@@ -1362,7 +1362,8 @@ void RB_SetVertexParm(renderParm_t rp, const float * value);
 void RB_SetVertexParms(renderParm_t rp, const float * value, int num);
 void RB_SetFragmentParm(renderParm_t rp, const float * value);
 void RB_SetMVP(const idRenderMatrix & mvp);
-
+void RB_SetModelMatrix(const idRenderMatrix& modelMatrix);
+void RB_SetModelMatrix(const float* modelMatrix);
 void RB_STD_DrawFeedbackPass(drawSurf_t	 **drawSurfs, int numDrawSurfs);
 
 /*

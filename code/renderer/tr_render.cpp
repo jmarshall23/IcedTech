@@ -245,6 +245,7 @@ void RB_RenderDrawSurfListWithFunction( drawSurf_t **drawSurfs, int numDrawSurfs
 
 		// change the matrix if needed
 		RB_SetMVP(drawSurf->space->mvp);
+		RB_SetModelMatrix(drawSurf->space->modelMatrix);
 
 		if ( drawSurf->space != backEnd.currentSpace ) {
 			glLoadMatrixf( drawSurf->space->modelViewMatrix );
@@ -292,6 +293,7 @@ void RB_RenderDrawSurfChainWithFunction( const drawSurf_t *drawSurfs,
 	for ( drawSurf = drawSurfs ; drawSurf ; drawSurf = drawSurf->nextOnLight ) {
 		// change the matrix if needed
 		RB_SetMVP(drawSurf->space->mvp);
+		RB_SetModelMatrix(drawSurf->space->modelMatrix);
 
 		if ( drawSurf->space != backEnd.currentSpace ) {
 			glLoadMatrixf( drawSurf->space->modelViewMatrix );
@@ -724,6 +726,7 @@ void RB_CreateSingleDrawInteractions( const drawSurf_t *surf, void (*DrawInterac
 	}
 
 	RB_SetMVP(surf->space->mvp);
+	RB_SetModelMatrix(surf->space->modelMatrix);
 
 	// change the matrix and light projection vectors if needed
 	if ( surf->space != backEnd.currentSpace ) {

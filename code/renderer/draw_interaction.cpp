@@ -45,6 +45,8 @@ RB_Interaction_DrawInteraction
 ==================
 */
 void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
+	viewLight_t* vLight = backEnd.vLight;
+
 	// load all the vertex program parameters
 	Draw_SetVertexParm(RENDERPARM_LOCALLIGHTORIGIN, din->localLightOrigin.ToFloatPtr() );
 	Draw_SetVertexParm(RENDERPARM_LOCALVIEWORIGIN, din->localViewOrigin.ToFloatPtr() );
@@ -147,17 +149,28 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 		globalImages->blackCubeMapImage->Bind();
 	}
 
-	// texture 8 is the shadow map atlas.
-	GL_SelectTextureNoClient(7);
-	renderShadowSystem.GetShadowMapDepthAtlas()->Bind();
+	if (vLight->lightDef->parms.noShadows || vLight->lightDef->parms.ambientLight)
+	{
+		// texture 8 is the shadow map atlas.
+		GL_SelectTextureNoClient(7);
+		globalImages->whiteImage->Bind();
 
-	// texture 9 is the atlas lookup.
-	GL_SelectTextureNoClient(8);
-	renderShadowSystem.GetAtlasLookupImage()->Bind();
+		// texture 9 is the atlas lookup.
+		GL_SelectTextureNoClient(8);
+		renderShadowSystem.GetAtlasLookupImage()->Bind();
+	}
+	else
+	{
+		// texture 8 is the shadow map atlas.
+		GL_SelectTextureNoClient(7);
+		renderShadowSystem.GetShadowMapDepthAtlas()->Bind();
+
+		// texture 9 is the atlas lookup.
+		GL_SelectTextureNoClient(8);
+		renderShadowSystem.GetAtlasLookupImage()->Bind();
+	}
 	
-	// texture 10 is the cubemap retarget image.
-	GL_SelectTextureNoClient(9);
-	globalImages->cubeSideLookupImage->Bind();
+
 
 	// draw it
 	RB_DrawElementsWithCounters( din->surf->geo );
@@ -244,6 +257,12 @@ void RB_Interaction_CreateDrawInteractions( const drawSurf_t *surf ) {
 	glDisableClientState( GL_COLOR_ARRAY );
 
 	// disable features
+	GL_SelectTextureNoClient( 8 );
+	globalImages->BindNull();
+
+	GL_SelectTextureNoClient( 7 );
+	globalImages->BindNull();
+
 	GL_SelectTextureNoClient( 6 );
 	globalImages->BindNull();
 

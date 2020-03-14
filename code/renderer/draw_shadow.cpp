@@ -195,7 +195,7 @@ void  RB_RenderShadowBuffer(viewLight_t* vLight, int side) {
 	//
 	// set up 90 degree projection matrix
 	//
-	zNear = 4;
+	zNear = 0.5f;
 
 	ymax = zNear * tan(fov * idMath::PI / 360.0f);
 	ymin = -ymax;
@@ -207,6 +207,7 @@ void  RB_RenderShadowBuffer(viewLight_t* vLight, int side) {
 	height = ymax - ymin;
 
 	float* lightProjectMatrixPtr = lightProjectionMatrix.GetFloatPtr();
+	lightProjectionMatrix.Zero();
 
 	lightProjectMatrixPtr[0] = 2 * zNear / width;
 	lightProjectMatrixPtr[4] = 0;
@@ -232,7 +233,7 @@ void  RB_RenderShadowBuffer(viewLight_t* vLight, int side) {
 	lightProjectMatrixPtr[15] = 0;
 
 
-	GL_State(GLS_DEPTHFUNC_LESS | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO);	// make sure depth mask is off before clear
+	GL_State(GLS_DEPTHFUNC_LESS);
 
 	// draw all the occluders
 	GL_SelectTexture(0);
@@ -278,6 +279,16 @@ ID
 		[12]	-72.0000000	float
 		[13]	-104.000000	float
 		[14]	8.00000000	float
+
+Up
+	yaw = 90
+	pitch = 0;
+	roll = -90
+
+Down
+	yaw = 90
+	pitch = 0;
+	roll = 90
 */
 	if (side == -1) {
 		// projected light
@@ -300,8 +311,12 @@ ID
 		viewMatrix[10] = vec[2];
 	}
 	else {
-#if 0
+#if 1
 		idAngles rotation;
+
+		rotation.yaw = 0;
+		rotation.pitch = 0;
+		rotation.roll = 0;
 
 		// side of a point light
 		memset(viewMatrix, 0, sizeof(viewMatrix));
@@ -316,27 +331,37 @@ ID
 			rotation.pitch = -0;
 			rotation.roll = -90;
 			break;
-		case 2:
-			rotation.yaw = -90;
-			rotation.pitch = -0;
-			rotation.roll = 0;
-			break;
 		case 3:
 			rotation.yaw = -90;
 			rotation.pitch = -0;
 			rotation.roll = 180;
 			break;
-		case 4:
+		case 2:
 			rotation.yaw = -90;
 			rotation.pitch = -0;
-			rotation.roll = -90;
+			rotation.roll = 0;
+			break;
+		case 4:
+			rotation.yaw = 90;
+			rotation.pitch = -90;
+			rotation.roll = 0;
 			break;
 		case 5:
-			rotation.yaw = 90;
-			rotation.pitch = -0;
-			rotation.roll = -90;
+			rotation.yaw = -90;
+			rotation.pitch = 90;
+			rotation.roll = 0;
 			break;
-	}
+
+		default:
+			return;
+
+		}
+		//static float yaw = 0;
+		//static float pitch = 0;
+		//static float roll = 0;
+		//rotation.yaw = yaw;
+		//rotation.pitch = pitch;
+		//rotation.roll = roll;
 #else
 		idAngles rotation;
 
@@ -449,8 +474,10 @@ ID
 		switch (r_shadowOccluderFacing.GetInteger()) {
 		case 0:	// front sides
 			glPolygonOffset(r_shadow_polyOfsFactor.GetFloat(), r_shadow_polyOfsUnits.GetFloat());
+			GL_Cull(CT_TWO_SIDED);
 			glEnable(GL_POLYGON_OFFSET_FILL);
 			RB_Shadow_RenderOccluders(vLight);
+			GL_Cull(CT_FRONT_SIDED);
 			glDisable(GL_POLYGON_OFFSET_FILL);
 			break;
 		case 1:	// back sides
@@ -556,7 +583,7 @@ void RB_Draw_ShadowMaps(void) {
 		// and non-cubic lights must take the largest length
 		viewLightAxialSize = R_Shadow_CalcLightAxialSize(vLight);
 
-		idVec4 lightOrigin(vLight->lightDef->parms.origin.x, vLight->lightDef->parms.origin.z, -vLight->lightDef->parms.origin.y, 1.0);
+		idVec4 lightOrigin(vLight->lightDef->parms.origin.x, vLight->lightDef->parms.origin.y, vLight->lightDef->parms.origin.z, 1.0);
 		RB_SetVertexParm(RENDERPARM_LOCALLIGHTORIGIN, lightOrigin.ToFloatPtr());
 
 		// Render the pointlight shadows

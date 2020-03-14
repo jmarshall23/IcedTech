@@ -6,7 +6,7 @@
 
 rvmRenderShadowSystem renderShadowSystem;
 
-idCVar rvmRenderShadowSystem::r_shadowMapAtlasSize("r_shadowMapAtlasSize", "8192", CVAR_RENDERER | CVAR_INTEGER | CVAR_ROM, "size of the shadowmap atlas");
+idCVar rvmRenderShadowSystem::r_shadowMapAtlasSize("r_shadowMapAtlasSize", "4096", CVAR_RENDERER | CVAR_INTEGER | CVAR_ROM, "size of the shadowmap atlas");
 idCVar rvmRenderShadowSystem::r_shadowMapAtlasSliceSize("r_shadowMapAtlasSliceSize", "512", CVAR_RENDERER | CVAR_INTEGER | CVAR_ROM, "size of the shadow map atlas slice size");
 
 /*
@@ -66,8 +66,8 @@ void rvmRenderShadowSystem::Init(void) {
 			entry->sliceSizeX = r_shadowMapAtlasSliceSize.GetInteger();
 			entry->sliceSizeY = r_shadowMapAtlasSliceSize.GetInteger();
 
-			entry->textureX = (float)x / (float)r_shadowMapAtlasSize.GetInteger();
-			entry->textureY = (float)y / (float)r_shadowMapAtlasSize.GetInteger();
+			entry->textureX = (float)entry->x / (float)r_shadowMapAtlasSize.GetInteger();
+			entry->textureY = (float)entry->y / (float)r_shadowMapAtlasSize.GetInteger();
 		}
 	}
 

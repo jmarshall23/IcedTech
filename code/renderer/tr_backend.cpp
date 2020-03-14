@@ -97,12 +97,15 @@ void RB_SetDefaultGLState( void ) {
 		GL_SelectTexture( i );
 
 		// object linear texgen is our default
-		glTexGenf( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-		glTexGenf( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-		glTexGenf( GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-		glTexGenf( GL_Q, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+		if (i < glConfig.maxTextureCoords)
+		{
+			glTexGenf(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+			glTexGenf(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+			glTexGenf(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+			glTexGenf(GL_Q, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
 
-		GL_TexEnv( GL_MODULATE );
+			GL_TexEnv(GL_MODULATE);
+		}
 		glDisable( GL_TEXTURE_2D );
 		if ( glConfig.texture3DAvailable ) {
 			glDisable( GL_TEXTURE_3D );
@@ -153,7 +156,10 @@ void GL_SelectTexture( int unit ) {
 	}
 
 	glActiveTextureARB( GL_TEXTURE0_ARB + unit );
-	glClientActiveTextureARB( GL_TEXTURE0_ARB + unit );
+	if (unit < glConfig.maxTextureCoords)
+	{
+		glClientActiveTextureARB(GL_TEXTURE0_ARB + unit);
+	}
 	RB_LogComment( "glActiveTextureARB( %i );\nglClientActiveTextureARB( %i );\n", unit, unit );
 
 	backEnd.glState.currenttmu = unit;

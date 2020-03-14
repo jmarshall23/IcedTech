@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #define __WIN_LOCAL_H__
 
 #include <windows.h>
-#include "../../renderer/wglext.h"		// windows OpenGL extensions
+#include "../../renderer/qgllib/wglew.h"
 
 // WGL_ARB_extensions_string
 extern	PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB;
