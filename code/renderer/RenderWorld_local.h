@@ -261,6 +261,8 @@ public:
 
 	void					PushVolumeIntoTree( idRenderEntityLocal *def, idRenderLightLocal *light, int numPoints, const idVec3 (*points) );
 
+	void					ConnectGeometryReflectionProbes(void);
+
 	//-------------------------------
 	// tr_light.c
 	void					CreateLightDefInteractions( idRenderLightLocal *ldef );

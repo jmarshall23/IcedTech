@@ -1453,6 +1453,9 @@ void idRenderWorldLocal::GenerateAllInteractions() {
 
 	generateAllInteractionsCalled = false;
 
+	// Connect the reflection probes to geometry.
+	ConnectGeometryReflectionProbes();
+
 	// watch how much memory we allocate
 	tr.staticAllocCount = 0;
 
@@ -2154,22 +2157,33 @@ int idRenderWorldLocal::AddReflectionProbe(rvmWorldReflectionProbe_t& probe) {
 	// Add the new reflection probe to the list.
 	reflectionProbes.Append(probe);
 
+	return reflectionProbeIndex;
+}
+
+/*
+===============
+idRenderWorldLocal::ConnectGeometryReflectionProbes
+===============
+*/
+void idRenderWorldLocal::ConnectGeometryReflectionProbes(void) {
 	for (int i = 0; i < numPortalAreas; i++) {
 		idRenderModel* model = renderModelManager->FindModel(va("_area%i", i));
 
 		for (int d = 0; d < model->NumSurfaces(); d++)
 		{
-			modelSurface_t* surface = (modelSurface_t*)model->Surface(d);
+			for (int reflectionProbeIndex = 0; reflectionProbeIndex < reflectionProbes.Num(); reflectionProbeIndex++)
+			{
+				const rvmWorldReflectionProbe_t& probe = reflectionProbes[reflectionProbeIndex];
+				modelSurface_t* surface = (modelSurface_t*)model->Surface(d);
 
-			idVec3 center = surface->geometry->bounds.GetCenter();
-			float dist = idMath::Distance(probe.origin, center);
+				idVec3 center = surface->geometry->bounds.GetCenter();
+				float dist = idMath::Distance(probe.origin, center);
 
-			if(surface->geometry->reflectionProbeDist == 0 || dist < surface->geometry->reflectionProbeDist) {
-				surface->geometry->reflectionProbeDist = dist;
-				surface->geometry->reflectionCaptureImage = reflectionProbes[reflectionProbeIndex].reflectionCaptureImage;
+				if (surface->geometry->reflectionProbeDist == 0 || dist < surface->geometry->reflectionProbeDist) {
+					surface->geometry->reflectionProbeDist = dist;
+					surface->geometry->reflectionCaptureImage = reflectionProbes[reflectionProbeIndex].reflectionCaptureImage;
+				}
 			}
 		}
 	}
-
-	return reflectionProbeIndex;
 }
