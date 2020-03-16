@@ -547,10 +547,6 @@ void R_DeriveLightData( idRenderLightLocal *light ) {
 
 	light->frustumTris = R_PolytopeSurface( 6, light->frustum, light->frustumWindings );
 
-	// a projected light will have one shadowFrustum, a point light will have
-	// six unless the light center is outside the box
-	R_MakeShadowFrustums( light );
-
 	idRenderMatrix localProject;
 	float zScale = 1.0f;
 	if (light->parms.parallel) {

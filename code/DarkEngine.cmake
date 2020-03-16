@@ -195,12 +195,9 @@ set(src_engine
 	./renderer/tr_polytope.cpp
 	./renderer/tr_render.cpp
 	./renderer/tr_rendertools.cpp
-	./renderer/tr_shadowbounds.cpp
-	./renderer/tr_stencilshadow.cpp
 	./renderer/tr_subview.cpp
 	./renderer/tr_trace.cpp
 	./renderer/tr_trisurf.cpp
-	./renderer/tr_turboshadow.cpp
 	./renderer/VertexCache.cpp
 	./renderer/VertexCache.h
 	./renderer/VirtualTexture.h

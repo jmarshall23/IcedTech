@@ -88,7 +88,6 @@ set(src_tools
 	./tools/compilers/dmap/optimize_gcc.cpp
 	./tools/compilers/dmap/output.cpp
 	./tools/compilers/dmap/portals.cpp
-	./tools/compilers/dmap/shadowopt3.cpp
 	./tools/compilers/dmap/tritjunction.cpp
 	./tools/compilers/dmap/tritools.cpp
 	./tools/compilers/dmap/ubrush.cpp

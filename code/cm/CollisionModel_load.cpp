@@ -287,16 +287,9 @@ void idCollisionModelManagerLocal::LoadProcBSP( const char *name ) {
 	filename.SetFileExtension( PROC_FILE_EXT );
 	src = new idLexer( filename, LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE );
 	if ( !src->IsLoaded() ) {
-// jmarshall - check for Doom 3 legacy maps.
+		common->Warning("idCollisionModelManagerLocal::LoadProcBSP: couldn't load %s", filename.c_str());
 		delete src;
-		filename.SetFileExtension(PROC_FILE_EXT_DOOM3);
-		src = new idLexer(filename, LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
-		if (!src->IsLoaded()) {
-			common->Warning("idCollisionModelManagerLocal::LoadProcBSP: couldn't load %s", filename.c_str());
-			delete src;
-			return;
-		}
-// jmarshall end
+		return;
 	}
 
 // jmarshall - check for legacy doom 3 map iden.
@@ -308,16 +301,9 @@ void idCollisionModelManagerLocal::LoadProcBSP( const char *name ) {
 
 	if (token.Icmp(PROC_FILE_ID))
 	{
-		if (token.Icmp(PROC_FILE_ID_DOOM3))
-		{
-			common->Printf("idRenderWorldLocal::InitFromMap: bad id '%s' instead of '%s'\n", token.c_str(), PROC_FILE_ID);
-			delete src;
-			return;
-		}
-
-		// Provide feedback if we are loading in a legacy map file.
-		common->Printf("idRenderWorldLocal::InitFromMap: World file is in legacy format\n");
-		isLegacyWorldFile = true;
+		common->Printf("idRenderWorldLocal::InitFromMap: bad id '%s' instead of '%s'\n", token.c_str(), PROC_FILE_ID);
+		delete src;
+		return;
 	}
 	// jmarshall end
 

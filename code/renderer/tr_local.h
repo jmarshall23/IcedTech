@@ -1353,7 +1353,6 @@ void RB_STD_FillDepthBuffer( drawSurf_t **drawSurfs, int numDrawSurfs );
 void RB_BindVariableStageImage( const textureStage_t *texture, const float *shaderRegisters );
 void RB_BindStageTexture( const float *shaderRegisters, const textureStage_t *texture, const drawSurf_t *surf );
 void RB_FinishStageTexture( const textureStage_t *texture, const drawSurf_t *surf );
-void RB_StencilShadowPass( const drawSurf_t *drawSurfs );
 void RB_STD_DrawView( void );
 void RB_STD_FogAllLights( void );
 void RB_BakeTextureMatrixIntoTexgen( idPlane lightProject[3], const float textureMatrix[16] );
@@ -1449,79 +1448,6 @@ typedef enum {
 
 	PP_LIGHT_FALLOFF_TQ = 20	// only for NV programs
 } programParameter_t;
-
-
-/*
-============================================================
-
-TR_STENCILSHADOWS
-
-"facing" should have one more element than tri->numIndexes / 3, which should be set to 1
-
-============================================================
-*/
-
-void R_MakeShadowFrustums( idRenderLightLocal *def );
-
-typedef enum {
-	SG_DYNAMIC,		// use infinite projections
-	SG_STATIC,		// clip to bounds
-	SG_OFFLINE		// perform very time consuming optimizations
-} shadowGen_t;
-
-srfTriangles_t *R_CreateShadowVolume( const idRenderEntityLocal *ent,
-									 const srfTriangles_t *tri, const idRenderLightLocal *light,
-									 shadowGen_t optimize, srfCullInfo_t &cullInfo );
-
-/*
-============================================================
-
-TR_TURBOSHADOW
-
-Fast, non-clipped overshoot shadow volumes
-
-"facing" should have one more element than tri->numIndexes / 3, which should be set to 1
-calling this function may modify "facing" based on culling
-
-============================================================
-*/
-
-srfTriangles_t *R_CreateVertexProgramTurboShadowVolume( const idRenderEntityLocal *ent,
-									 const srfTriangles_t *tri, const idRenderLightLocal *light,
-									 srfCullInfo_t &cullInfo );
-
-srfTriangles_t *R_CreateTurboShadowVolume( const idRenderEntityLocal *ent,
-									 const srfTriangles_t *tri, const idRenderLightLocal *light,
-									 srfCullInfo_t &cullInfo );
-
-/*
-============================================================
-
-util/shadowopt3
-
-dmap time optimization of shadow volumes, called from R_CreateShadowVolume
-
-============================================================
-*/
-
-
-typedef struct {
-	idVec3	*verts;			// includes both front and back projections, caller should free
-	int		numVerts;
-	glIndex_t	*indexes;	// caller should free
-
-	// indexes must be sorted frontCap, rearCap, silPlanes so the caps can be removed
-	// when the viewer is in a position that they don't need to see them
-	int		numFrontCapIndexes;
-	int		numRearCapIndexes;
-	int		numSilPlaneIndexes;
-	int		totalIndexes;
-} optimizedShadow_t;
-
-optimizedShadow_t SuperOptimizeOccluders( idVec4 *verts, glIndex_t *indexes, int numIndexes, 
-										 idPlane projectionPlane, idVec3 projectionOrigin );
-
-void CleanupOptimizedShadowTris( srfTriangles_t *tri );
 
 /*
 ============================================================
@@ -1737,17 +1663,6 @@ typedef struct {
 
 localTrace_t R_LocalTrace( const idVec3 &start, const idVec3 &end, const float radius, const srfTriangles_t *tri );
 void RB_ShowTrace( drawSurf_t **drawSurfs, int numDrawSurfs );
-
-/*
-=============================================================
-
-TR_SHADOWBOUNDS
-
-=============================================================
-*/
-idScreenRect R_CalcIntersectionScissor( const idRenderLightLocal * lightDef,
-									    const idRenderEntityLocal * entityDef,
-									    const viewDef_t * viewDef );
 
 /*
 =============================================================

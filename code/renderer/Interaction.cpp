@@ -321,14 +321,6 @@ void idInteraction::FreeSurfaces( void ) {
 		for ( int i = 0 ; i < this->numSurfaces ; i++ ) {
 			surfaceInteraction_t *sint = &this->surfaces[i];
 
-			if ( sint->shadowTris ) {
-				// if it doesn't have an entityDef, it is part of a prelight
-				// model, not a generated interaction
-				if ( this->entityDef ) {
-					R_FreeStaticTriSurf( sint->shadowTris );
-					sint->shadowTris = NULL;
-				}
-			}
 			R_FreeInteractionCullInfo( sint->cullInfo );
 		}
 
@@ -461,11 +453,11 @@ will be used to determine when we need to start purging old interactions.
 int idInteraction::MemoryUsed( void ) {
 	int		total = 0;
 
-	for ( int i = 0 ; i < numSurfaces ; i++ ) {
-		surfaceInteraction_t *inter = &surfaces[i];
-
-		total += R_TriSurfMemory( inter->shadowTris );
-	}
+	//for ( int i = 0 ; i < numSurfaces ; i++ ) {
+	//	surfaceInteraction_t *inter = &surfaces[i];
+	//
+	//	total += R_TriSurfMemory( inter->shadowTris );
+	//}
 
 	return total;
 }
@@ -484,10 +476,10 @@ idScreenRect idInteraction::CalcInteractionScissorRectangle( const idFrustum &vi
 		return lightDef->viewLight->scissorRect;
 	}
 
-	if ( r_useInteractionScissors.GetInteger() < 0 ) {
-		// this is the code from Cass at nvidia, it is more precise, but slower
-		return R_CalcIntersectionScissor( lightDef, entityDef, tr.viewDef );
-	}
+	//if ( r_useInteractionScissors.GetInteger() < 0 ) {
+	//	// this is the code from Cass at nvidia, it is more precise, but slower
+	//	return R_CalcIntersectionScissor( lightDef, entityDef, tr.viewDef );
+	//}
 
 	// the following is Mr.E's code
 
@@ -628,16 +620,6 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 		return;
 	}
 
-	// use the turbo shadow path
-	shadowGen_t shadowGen = SG_DYNAMIC;
-
-	// really large models, like outside terrain meshes, should use
-	// the more exactly culled static shadow path instead of the turbo shadow path.
-	// FIXME: this is a HACK, we should probably have a material flag.
-	if ( bounds[1][0] - bounds[0][0] > 3000 ) {
-		shadowGen = SG_STATIC;
-	}
-
 	//
 	// create slots for each of the model's surfaces
 	//
@@ -688,27 +670,6 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 		// generate a lighted surface and add it
 		if ( shader->ReceivesLighting() ) {
 			interactionGenerated = true;
-		}
-
-		// if the interaction has shadows and this surface casts a shadow
-		if ( HasShadows() && shader->SurfaceCastsShadow() && tri->silEdges != NULL ) {
-
-			// if the light has an optimized shadow volume, don't create shadows for any models that are part of the base areas
-			if ( lightDef->parms.prelightModel == NULL || !model->IsStaticWorldModel() || !r_useOptimizedShadows.GetBool() ) {
-
-				// this is the only place during gameplay (outside the utilities) that R_CreateShadowVolume() is called
-				sint->shadowTris = R_CreateShadowVolume( entityDef, tri, lightDef, shadowGen, sint->cullInfo );
-				if ( sint->shadowTris ) {
-					if ( shader->Coverage() != MC_OPAQUE || ( !r_skipSuppress.GetBool() && entityDef->parms.suppressSurfaceInViewID ) ) {
-						// if any surface is a shadow-casting perforated or translucent surface, or the
-						// base surface is suppressed in the view (world weapon shadows) we can't use
-						// the external shadow optimizations because we can see through some of the faces
-						sint->shadowTris->numShadowIndexesNoCaps = sint->shadowTris->numIndexes;
-						sint->shadowTris->numShadowIndexesNoFrontCaps = sint->shadowTris->numIndexes;
-					}
-				}
-				interactionGenerated = true;
-			}
 		}
 
 		// free the cull information when it's no longer needed
@@ -951,77 +912,6 @@ void idInteraction::AddActiveInteraction( void ) {
 				}
 			}
 		}
-
-		srfTriangles_t *shadowTris = sint->shadowTris;
-
-		// the shadows will always have to be added, unless we can tell they
-		// are from a surface in an unconnected area
-		if ( shadowTris ) {
-			
-			// check for view specific shadow suppression (player shadows, etc)
-			if ( !r_skipSuppress.GetBool() ) {
-				if ( entityDef->parms.suppressShadowInViewID &&
-					entityDef->parms.suppressShadowInViewID == tr.viewDef->renderView.viewID ) {
-					continue;
-				}
-				if ( entityDef->parms.suppressShadowInLightID &&
-					entityDef->parms.suppressShadowInLightID == lightDef->parms.lightId ) {
-					continue;
-				}
-			}
-
-			// cull static shadows that have a non-empty bounds
-			// dynamic shadows that use the turboshadow code will not have valid
-			// bounds, because the perspective projection extends them to infinity
-			if ( r_useShadowCulling.GetBool() && !shadowTris->bounds.IsCleared() ) {
-				if ( R_CullLocalBox( shadowTris->bounds, vEntity->modelMatrix, 5, tr.viewDef->frustum ) ) {
-					continue;
-				}
-			}
-
-			// copy the shadow vertexes to the vertex cache if they have been purged
-
-			// if we are using shared shadowVertexes and letting a vertex program fix them up,
-			// get the shadowCache from the parent ambient surface
-			if ( !shadowTris->shadowVertexes ) {
-				// the data may have been purged, so get the latest from the "home position"
-				shadowTris->shadowCache = sint->ambientTris->shadowCache;
-			}
-
-			// if we have been purged, re-upload the shadowVertexes
-			if ( !shadowTris->shadowCache ) {
-				if ( shadowTris->shadowVertexes ) {
-					// each interaction has unique vertexes
-					R_CreatePrivateShadowCache( shadowTris );
-				} else {
-					R_CreateVertexProgramShadowCache( sint->ambientTris );
-					shadowTris->shadowCache = sint->ambientTris->shadowCache;
-				}
-				// if we are out of vertex cache space, skip the interaction
-				if ( !shadowTris->shadowCache ) {
-					continue;
-				}
-			}
-
-			// touch the shadow surface so it won't get purged
-			vertexCache.Touch( shadowTris->shadowCache );
-
-			if ( !shadowTris->indexCache && r_useIndexBuffers.GetBool() ) {
-				vertexCache.Alloc( shadowTris->indexes, shadowTris->numIndexes * sizeof( shadowTris->indexes[0] ), &shadowTris->indexCache, true );
-				vertexCache.Touch( shadowTris->indexCache );
-			}
-
-			// see if we can avoid using the shadow volume caps
-			bool inside = R_PotentiallyInsideInfiniteShadow( sint->ambientTris, localViewOrigin, localLightOrigin );
-
-			if ( sint->shader->TestMaterialFlag( MF_NOSELFSHADOW ) ) {
-				R_LinkLightSurf( &vLight->localShadows,
-					shadowTris, vEntity, lightDef, NULL, shadowScissor, inside );
-			} else {
-				R_LinkLightSurf( &vLight->globalShadows,
-					shadowTris, vEntity, lightDef, NULL, shadowScissor, inside );
-			}
-		}
 	}
 }
 
@@ -1074,11 +964,11 @@ void R_ShowInteractionMemory_f( const idCmdArgs &args ) {
 					lightTriVerts += srf->ambientTris->numVerts;
 					lightTriIndexes += srf->ambientTris->numIndexes;
 				}
-				if ( srf->shadowTris ) {
-					shadowTris++;
-					shadowTriVerts += srf->shadowTris->numVerts;
-					shadowTriIndexes += srf->shadowTris->numIndexes;
-				}
+				//if ( srf->shadowTris ) {
+				//	shadowTris++;
+				//	shadowTriVerts += srf->shadowTris->numVerts;
+				//	shadowTriIndexes += srf->shadowTris->numIndexes;
+				//}
 			}
 		}
 	}

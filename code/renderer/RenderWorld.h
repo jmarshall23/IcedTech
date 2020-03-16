@@ -40,10 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 // jmarshall
 // New features need to be added to dmap which changes the output format, we obviously need to support both.
 
-// Legacy Doom 3 map format.
-#define PROC_FILE_EXT_DOOM3			"proc"
-#define	PROC_FILE_ID_DOOM3			"mapProcFile003"
-
 // New idTech 4 map format.
 #define PROC_FILE_EXT				"world"
 #define	PROC_FILE_ID				"mapWorldFile001"

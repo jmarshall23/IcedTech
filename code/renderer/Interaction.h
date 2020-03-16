@@ -62,9 +62,6 @@ typedef struct {
 
 
 typedef struct {		
-	// shadow volume triangle surface
-	srfTriangles_t *		shadowTris;
-
 	// so we can check ambientViewCount before adding lightTris, and get
 	// at the shared vertex and possibly shadowVertex caches
 	srfTriangles_t *		ambientTris;
