@@ -131,6 +131,7 @@ void RB_Shadow_RenderOccluders(viewLight_t* vLight) {
 		idRenderMatrix::Multiply(lightProjectionMatrix, transposeMatrix, mvp);
 
 		RB_SetMVP(mvp);
+		RB_SetModelMatrix(inter->entityDef->modelMatrix);
 
 		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_ST);
 		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_TANGENT);
