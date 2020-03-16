@@ -98,6 +98,23 @@ float4 CalculateReflections(half3 normal, half3 Position, half3 cameraPos) {
 	return float4(texture(samp6, R).rgb, 1.0);
 }
 
+float SampleShadowMapPCF(float2 uv, float scenedepth) {
+	float shadowMapSliceSize = 1.0 / rpShadowMapInfo.z;
+	float factor = 0;
+	float numSamples = 0;
+    for (int y = -1 ; y <= 1 ; y++) {
+        for (int x = -1 ; x <= 1 ; x++) {
+			float shadowdepth = tex2D(samp7, uv + float2(x * shadowMapSliceSize, y * shadowMapSliceSize)).r * 1000;
+			if(scenedepth <= shadowdepth)
+				factor += 1.0;
+			
+			numSamples++;
+		}	
+	}
+	
+	return factor / numSamples;
+}
+
 float CalculateShadows(float3 vertexPos, float3 lightPos) {
 	float3 vertToLight = vertexPos - lightPos;
 	float3 cubeInfo = ComputeSampleCube(vertToLight);
@@ -110,13 +127,9 @@ float CalculateShadows(float3 vertexPos, float3 lightPos) {
 	float2 sliceOffset = texelFetch(samp8, ivec2(rpShadowMapInfo.x + slice, 0), 0).xy;
 	float2 uv = initialuv + sliceOffset;
 	
-	float shadowdepth = tex2D(samp7, uv).r * 1000;
 	float scenedepth = distance(vertexPos, lightPos);
 	
-	if(scenedepth <= shadowdepth)
-		return 1.0;
-		
-	return 0.0;
+	return SampleShadowMapPCF(uv, scenedepth);
 }
 
 float3 ShadowCubeDebugColor(float3 vertexPos, float3 lightPos) {

@@ -50,6 +50,9 @@ public:
 	// Returns the sample scale.
 	float				GetAtlasSampleScale(void) { return (float)r_shadowMapAtlasSliceSize.GetInteger() / (float)r_shadowMapAtlasSize.GetInteger(); }
 
+	// Returns the size of the shadow map atlas.
+	float				GetShadowMapAtlasSize(void) { return (float)r_shadowMapAtlasSize.GetInteger(); }
+
 	// Returns the atlas entry for the requested index.
 	rvmRenderShadowAtlasEntry* GetShadowAtlasEntry(int idx) { return &shadowAtlasEntries[idx]; }
 private:

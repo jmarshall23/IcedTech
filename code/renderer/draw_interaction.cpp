@@ -111,7 +111,7 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	RB_SetFragmentParm(RENDERPARM_SPECULARMODIFIER, din->specularColor.ToFloatPtr() );
 
 	// set the shadow map info.
-	idVec4 shadowMapInfo(backEnd.vLight->shadowMapSlice, renderShadowSystem.GetAtlasSampleScale(), 0, 0);
+	idVec4 shadowMapInfo(backEnd.vLight->shadowMapSlice, renderShadowSystem.GetAtlasSampleScale(), renderShadowSystem.GetShadowMapAtlasSize(), 0);
 	RB_SetFragmentParm(RENDERPARM_SHADOWMAPINFO, shadowMapInfo.ToFloatPtr());
 
 	// set the textures
