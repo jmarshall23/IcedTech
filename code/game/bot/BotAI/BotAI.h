@@ -35,7 +35,7 @@ protected:
 	void		BotCheckAttack(bot_state_t* bs);
 	bool		BotWantsToChase(bot_state_t* bs);
 	int			BotNearbyGoal(bot_state_t* bs, int tfl, bot_goal_t* ltg, float range);
-	void		BotGetRandomPointNearPosition(idVec3 point, idVec3 randomPoint, float radius);
+	void		BotGetRandomPointNearPosition(idVec3 point, idVec3 &randomPoint, float radius);
 	int			BotMoveInRandomDirection(bot_state_t* bs);
 	void		BotAttackMove(bot_state_t* bs, int tfl);
 	void		BotMoveToGoal(bot_state_t* bs, bot_goal_t* goal);

@@ -1188,7 +1188,7 @@ int rvmBotAIBotActionBase::BotNearbyGoal(bot_state_t* bs, int tfl, bot_goal_t* l
 rvmBotAIBotActionBase::BotGetRandomPointNearPosition
 =======================
 */
-void rvmBotAIBotActionBase::BotGetRandomPointNearPosition(idVec3 point, idVec3 randomPoint, float radius) {
+void rvmBotAIBotActionBase::BotGetRandomPointNearPosition(idVec3 point, idVec3 &randomPoint, float radius) {
 	int index = 0;
 #define MAX_RANDOM_NAVCHECKS		20
 
@@ -1216,18 +1216,15 @@ int rvmBotAIBotActionBase::BotMoveInRandomDirection(bot_state_t* bs) {
 
 	ent->ResetPathFinding();
 
-	float dist = idMath::DistanceSquared(ent->GetOrigin(), bs->random_move_position);
-	dist = sqrt(dist);
-	if (dist > 25) {
-		BotGetRandomPointNearPosition(ent->GetOrigin(), bs->random_move_position, 50.0f);
+	float dist = idMath::Distance(ent->GetPhysics()->GetOrigin(), bs->random_move_position);
+	if (dist < 25 || bs->random_move_position.Length() == 0) {
+		BotGetRandomPointNearPosition(ent->GetPhysics()->GetOrigin(), bs->random_move_position, 50.0f);
 	}
 
-	VectorSubtract(bs->random_move_position, ent->GetOrigin(), bs->botinput.dir);
+	VectorSubtract(bs->random_move_position, ent->GetPhysics()->GetOrigin(), bs->botinput.dir);
 
 	idAngles ang(0, bs->botinput.dir.ToYaw(), 0);
-	bs->botinput.viewangles = ang;
 	bs->botinput.speed = pm_runspeed.GetInteger();
-
 	bs->botinput.dir.Normalize();
 
 	bs->botinput.speed = 400; // 200 = walk, 400 = run.

@@ -736,6 +736,7 @@ struct bot_state_t {
 	void Reset()
 	{		
 		action = 0;
+		lastaction = NULL;
 		client = 0;
 		entitynum = 0;
 		setupcount = 0;
@@ -774,6 +775,7 @@ struct bot_state_t {
 
 	bot_character_t* character;
 	rvmBotAIBotActionBase* action;
+	rvmBotAIBotActionBase* lastaction;
 	int gs;
 	int ws;
 	int enemy;

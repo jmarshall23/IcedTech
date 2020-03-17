@@ -159,6 +159,7 @@ void rvmBot::SpawnToPoint(const idVec3& spawn_origin, const idAngles& spawn_angl
 	if (gameLocal.isServer) {
 		bs.ltg_time = 0;
 		bs.action = NULL;
+		bs.lastaction = NULL;
 	}
 }
 
@@ -170,8 +171,9 @@ rvmBot::ServerThink
 void rvmBot::ServerThink(void) {
 	bs.origin = GetPhysics()->GetOrigin();
 	bs.eye = GetEyePosition();
-	bs.viewangles = viewAngles;
+//	bs.viewangles = viewAngles;
 	bs.thinktime = Bot_Time();
+	bs.botinput.actionflags = 0;
 
 	BotUpdateInventory();
 
@@ -192,6 +194,12 @@ void rvmBot::ServerThink(void) {
 	}
 
 	bs.action->Think(&bs);
+	
+	// Ensure if we are switching states, pop the last goal.
+	if(bs.lastaction != NULL && bs.lastaction != &botAIActionSeekLTG && bs.action == &botAIActionSeekLTG) {
+		bs.ltg_time = 0;
+	}
+	bs.lastaction = bs.action;
 
 	// If we have a new goal position, let's figure out how to get there.
 	if (bs.currentGoal.framenum == gameLocal.framenum) {
@@ -246,6 +254,10 @@ void rvmBot::ServerThink(void) {
 			gameRenderWorld->DebugBox(color_red, start_box);
 			gameRenderWorld->DebugBox(color_red, end_box);
 		}
+	}
+	else
+	{
+		bs.botinput.viewangles = bs.viewangles;
 	}
 }
 

@@ -330,7 +330,7 @@ void idBotWeaponInfoManager::BotGetWeaponInfo(int weaponstate, int weapon, weapo
 	if (!ws)
 		return;
 
-	memcpy(weaponinfo, &weaponinfo[weapon], sizeof(weaponinfo_t));
+	*weaponinfo = this->weaponinfo[weapon];
 }
 
 /*

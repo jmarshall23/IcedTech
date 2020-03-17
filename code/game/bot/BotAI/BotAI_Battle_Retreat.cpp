@@ -14,6 +14,7 @@ rvmBotAIBotBattleRetreat::Think
 void rvmBotAIBotBattleRetreat::Think(bot_state_t* bs) {
 	bot_goal_t goal;
 	idPlayer* entinfo;
+	rvmBot* owner;
 	idVec3 target, dir;
 	float attack_skill, range;
 
@@ -35,6 +36,8 @@ void rvmBotAIBotBattleRetreat::Think(bot_state_t* bs) {
 		bs->action = &botAIActionSeekLTG;
 		return;
 	}
+
+	owner = gameLocal.entities[bs->entitynum]->Cast<rvmBot>();
 
 	// If our enemy is dead, search for another LTG.
 	if(EntityIsDead(entinfo)) {
@@ -110,15 +113,7 @@ void rvmBotAIBotBattleRetreat::Think(bot_state_t* bs) {
 		}
 	}
 
-	if (idMath::FRandRange(0.0f, 4.0f) <= 2.0f)
-	{
-		//BotMoveToGoal(bs, &goal);
-		bs->currentGoal = goal;
-	}
-	else
-	{
-		BotMoveInRandomDirection(bs);
-	}
+	BotMoveInRandomDirection(bs);
 
 	BotChooseWeapon(bs);
 
