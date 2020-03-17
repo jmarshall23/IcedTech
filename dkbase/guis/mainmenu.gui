@@ -1,0 +1,64 @@
+windowDef Desktop
+{
+	rect	0,0,1280,720
+	windowDef TempBack
+	{
+		rect	-42,-25,1360,783
+		visible	1
+		backcolor	0.15686275,0.15686275,0.15686275,1
+	}
+	windowDef unnamed
+	{
+		rect	1,302,1282,60
+		visible	1
+		forecolor	1,1,1,1
+		text	"Single Player"
+		textscale	1
+		textalign	1
+	}
+	windowDef unnamed1
+	{
+		rect	1,349,1278,60
+		visible	1
+		forecolor	0.50196081,0.50196081,0.50196081,1
+		text	"Multiplayer"
+		textscale	1
+		textalign	1
+	}
+	windowDef unnamed11
+	{
+		rect	1,397,1284,60
+		visible	1
+		forecolor	0.50196081,0.50196081,0.50196081,1
+		text	"Options"
+		textscale	1
+		textalign	1
+	}
+	windowDef unnamed111
+	{
+		rect	0,447,1284,60
+		visible	1
+		forecolor	0.50196081,0.50196081,0.50196081,1
+		text	"Credits"
+		textscale	1
+		textalign	1
+	}
+	windowDef unnamed2
+	{
+		rect	1,492,1282,60
+		visible	1
+		forecolor	1,1,1,1
+		text	"Exit"
+		textscale	1
+		textalign	1
+	}
+	windowDef unnamed3
+	{
+		rect	1,110,1282,123
+		visible	1
+		forecolor	1,1,1,1
+		text	"Darklight Arena"
+		textscale	2
+		textalign	1
+	}
+}

@@ -69,8 +69,8 @@ rvGEWindowWrapper::rvGEWindowWrapper( idWindow *window,EWindowType type ) {
 
 	// Attach the wrapper to the window by adding a defined variable
 	// with the wrappers pointer stuffed into an integer
-	idWinInt *var = new idWinInt();
-	int x = (int)this;
+	rvmWinIntPtr*var = new rvmWinIntPtr();
+	INT_PTR x = (INT_PTR)this;
 	*var = x;
 	var->SetEval(false);
 	var->SetName("guied_wrapper");
@@ -87,9 +87,9 @@ Static method that returns the window wrapper for the given window class
 ================
 */
 rvGEWindowWrapper * rvGEWindowWrapper::GetWrapper( idWindow *window ) {
-	idWinInt *var;
-	var = dynamic_cast< idWinInt*>(window->GetWinVarByName("guied_wrapper"));	
-	return var ? ((rvGEWindowWrapper *) (int) (*var)) : NULL;
+	rvmWinIntPtr*var;
+	var = dynamic_cast<rvmWinIntPtr*>(window->GetWinVarByName("guied_wrapper"));
+	return var ? ((rvGEWindowWrapper *) (INT_PTR) (*var)) : NULL;
 }
 
 /*

@@ -192,6 +192,9 @@ public:
 	// stop all playing sounds
 	virtual void			StopAllSounds();
 
+	// stops the music.
+	virtual void			StopMusic();
+
 	// get a new emitter that can play sounds in this world
 	virtual idSoundEmitter *AllocSoundEmitter();
 
@@ -217,6 +220,9 @@ public:
 
 	// menu sounds
 	virtual int				PlayShaderDirectly( const char *name, int channel = -1 );
+
+	// world music
+	virtual void			PlayMusic(const char* name);
 
 	virtual void			Skip( int time );
 
@@ -265,6 +271,7 @@ public:
 	idList<idSoundEmitterLocal *>	emitters;
 
 	idSoundEmitter *	localSound;			// for PlayShaderDirectly()
+	idSoundEmitterLocal *	musicSound;
 
 	idBlockAlloc<idSoundEmitterLocal, 16>	emitterAllocator;
 	idBlockAlloc<idSoundChannel, 16>		channelAllocator;

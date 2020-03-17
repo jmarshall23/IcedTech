@@ -96,7 +96,7 @@ void idUserInterfaceManagerLocal::BeginLevelLoad() {
 void idUserInterfaceManagerLocal::EndLevelLoad() {
 	int c = guis.Num();
 	for ( int i = 0; i < c; i++ ) {
-		if ( guis[i]->GetRefs() == 0 ) {
+		if ( guis[i]->GetRefs() == 0 && guis[i]->CanPurge()) {
 			//common->Printf( "purging %s.\n", guis[i]->GetSourceFile() );
 
 			// use this to make sure no materials still reference this gui
@@ -181,7 +181,7 @@ void idUserInterfaceManagerLocal::DeAlloc( idUserInterface *gui ) {
 	}
 }
 
-idUserInterface *idUserInterfaceManagerLocal::FindGui( const char *qpath, bool autoLoad, bool needUnique, bool forceNOTUnique ) {
+idUserInterface *idUserInterfaceManagerLocal::FindGui( const char *qpath, bool autoLoad, bool needUnique, bool forceNOTUnique, bool canPurge ) {
 	int c = guis.Num();
 
 	for ( int i = 0; i < c; i++ ) {
@@ -196,9 +196,10 @@ idUserInterface *idUserInterfaceManagerLocal::FindGui( const char *qpath, bool a
 	}
 
 	if ( autoLoad ) {
-		idUserInterface *gui = Alloc();
+		idUserInterfaceLocal *gui = (idUserInterfaceLocal*)Alloc();
 		if ( gui->InitFromFile( qpath ) ) {
 			gui->SetUniqued( forceNOTUnique ? false : needUnique );
+			gui->SetCanPurge(canPurge);
 			return gui;
 		} else {
 			delete gui;

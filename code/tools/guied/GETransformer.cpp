@@ -117,7 +117,7 @@ LRESULT CALLBACK rvGETransformer::WndProc ( HWND hWnd, UINT msg, WPARAM wParam, 
 			// Attach the class to the window first
 			cs = (LPCREATESTRUCT) lParam;
 			trans = (rvGETransformer*) cs->lpCreateParams;
-			SetWindowLong ( hWnd, GWL_USERDATA, (LONG)trans );
+			SetWindowLong ( hWnd, GWL_USERDATA, (INT_PTR)trans );
 			
 			trans->mWnd = hWnd;
 			trans->mDlg = CreateDialogParam ( gApp.GetInstance(), MAKEINTRESOURCE(IDD_GUIED_TRANSFORMER), 

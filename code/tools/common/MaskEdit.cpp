@@ -60,7 +60,7 @@ LRESULT CALLBACK MaskEdit_WndProc ( HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 			
 		case WM_DESTROY:
 			delete edit;
-			SetWindowLong ( hWnd, GWL_WNDPROC, (LONG)wndproc );
+			SetWindowLong ( hWnd, GWL_WNDPROC, (INT_PTR)wndproc );
 			break;
 	}
 
@@ -79,8 +79,8 @@ void MaskEdit_Attach ( HWND hWnd, const char* invalid )
 	rvGEMaskEdit* edit = new rvGEMaskEdit;
 	edit->mProc = (WNDPROC)GetWindowLong ( hWnd, GWL_WNDPROC );
 	strcpy ( edit->mInvalid, invalid );
-	SetWindowLong ( hWnd, GWL_USERDATA, (LONG)edit );
-	SetWindowLong ( hWnd, GWL_WNDPROC, (LONG)MaskEdit_WndProc );
+	SetWindowLong ( hWnd, GWL_USERDATA, (INT_PTR)edit );
+	SetWindowLong ( hWnd, GWL_WNDPROC, (INT_PTR)MaskEdit_WndProc );
 }
 
 /*

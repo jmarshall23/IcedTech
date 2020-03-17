@@ -7,6 +7,7 @@ Version 2
 "wad" "gfx/medieval.wad"
 "worldtype" "0"
 "sounds" "5"
+"music" "music/nanite"
 // primitive 0
 {
  brushDef3
@@ -7214,7 +7215,7 @@ Version 2
 "classname" "light"
 "name" "light_40"
 "origin" "400 856 128"
-"noshadows" "1"
+"noshadows" "0"
 "nospecular" "1"
 "nodiffuse" "0"
 "falloff" "0"

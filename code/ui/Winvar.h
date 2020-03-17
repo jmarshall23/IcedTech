@@ -311,6 +311,65 @@ protected:
 	int data;
 };
 
+class rvmWinIntPtr : public idWinVar {
+public:
+	rvmWinIntPtr() : idWinVar() {};
+	~rvmWinIntPtr() {};
+	virtual void Init(const char* _name, idWindow* win) {
+		rvmWinIntPtr::Init(_name, win);
+		if (guiDict) {
+			data = guiDict->GetInt(GetName());
+		}
+	}
+	INT_PTR& operator=(const INT_PTR& other) {
+		data = other;
+		if (guiDict) {
+			guiDict->SetInt(GetName(), data);
+		}
+		return data;
+	}
+	rvmWinIntPtr& operator=(const rvmWinIntPtr& other) {
+		rvmWinIntPtr::operator=(other);
+		data = other.data;
+		return *this;
+	}
+	operator INT_PTR() const {
+		return data;
+	}
+	virtual void Set(const char* val) {
+		data = atoi(val);;
+		if (guiDict) {
+			guiDict->SetInt(GetName(), data);
+		}
+	}
+
+	virtual void Update() {
+		const char* s = GetName();
+		if (guiDict && s[0] != '\0') {
+			data = guiDict->GetInt(s);
+		}
+	}
+	virtual const char* c_str() const {
+		return va("%i", data);
+	}
+
+	// SaveGames
+	virtual void WriteToSaveGame(idFile* savefile) {
+		savefile->Write(&eval, sizeof(eval));
+		savefile->Write(&data, sizeof(data));
+	}
+	virtual void ReadFromSaveGame(idFile* savefile) {
+		savefile->Read(&eval, sizeof(eval));
+		savefile->Read(&data, sizeof(data));
+	}
+
+	// no suitable conversion
+	virtual float x(void) const { assert(false); return 0.0f; };
+
+protected:
+	INT_PTR data;
+};
+
 class idWinFloat : public idWinVar {
 public:
 	idWinFloat() : idWinVar() {};

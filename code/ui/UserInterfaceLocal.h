@@ -70,6 +70,8 @@ public:
 	virtual float				CursorX() { return cursorX; }
 	virtual float				CursorY() { return cursorY; }
 
+	virtual bool				CanPurge() { return canPurge; }
+
 	size_t						Size();
 
 	idDict *					GetStateDict() { return &state; }
@@ -91,6 +93,7 @@ public:
 	idStr						&GetPendingCmd() { return pendingCmd; };
 	idStr						&GetReturnCmd() { return returnCmd; };
 
+	void						SetCanPurge(bool canPurge) { this->canPurge = canPurge; }
 private:
 	bool						active;
 	bool						loading;
@@ -113,6 +116,8 @@ private:
 	int							time;
 
 	int							refs;
+
+	bool						canPurge;
 };
 
 class idUserInterfaceManagerLocal : public idUserInterfaceManager {
@@ -131,7 +136,7 @@ public:
 	virtual bool				CheckGui( const char *qpath ) const;
 	virtual idUserInterface *	Alloc( void ) const;
 	virtual void				DeAlloc( idUserInterface *gui );
-	virtual idUserInterface *	FindGui( const char *qpath, bool autoLoad = false, bool needInteractive = false, bool forceUnique = false );
+	virtual idUserInterface *	FindGui( const char *qpath, bool autoLoad = false, bool needInteractive = false, bool forceUnique = false, bool canPurge = true );
 	virtual idUserInterface *	FindDemoGui( const char *qpath );
 	virtual	idListGUI *			AllocListGUI( void ) const;
 	virtual void				FreeListGUI( idListGUI *listgui );

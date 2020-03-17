@@ -111,6 +111,8 @@ public:
 	virtual void				SetCursor( float x, float y ) = 0;
 	virtual float				CursorX() = 0;
 	virtual float				CursorY() = 0;
+
+	virtual bool				CanPurge() = 0;
 };
 
 
@@ -145,7 +147,7 @@ public:
 	virtual void				DeAlloc( idUserInterface *gui ) = 0;
 
 								// Returns NULL if gui by that name does not exist.
-	virtual idUserInterface *	FindGui( const char *qpath, bool autoLoad = false, bool needUnique = false, bool forceUnique = false ) = 0;
+	virtual idUserInterface *	FindGui( const char *qpath, bool autoLoad = false, bool needUnique = false, bool forceUnique = false, bool canPurge = true) = 0;
 
 								// Returns NULL if gui by that name does not exist.
 	virtual idUserInterface *	FindDemoGui( const char *qpath ) = 0;

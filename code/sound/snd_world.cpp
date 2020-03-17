@@ -68,6 +68,7 @@ idSoundWorldLocal::idSoundWorldLocal() {
 	currentCushionDB = DB_SILENCE;
 
 	localSound = AllocSoundEmitter();
+	musicSound = (idSoundEmitterLocal *)AllocSoundEmitter();
 
 	pauseFade.Clear();
 	pausedTime = 0;
@@ -103,6 +104,7 @@ idSoundWorldLocal::~idSoundWorldLocal() {
 
 	renderWorld = NULL;
 	localSound = NULL;
+	musicSound = NULL;
 }
 
 /*
@@ -528,6 +530,7 @@ void idSoundWorldLocal::ClearAllSoundEmitters() {
 	}
 	emitters.Clear();
 	localSound = AllocSoundEmitter();
+	musicSound = (idSoundEmitterLocal*)AllocSoundEmitter();
 }
 
 /*
@@ -539,8 +542,18 @@ This is called from the main thread.
 */
 void idSoundWorldLocal::StopAllSounds() {
 	for ( int i = 0; i < emitters.Num(); i++ ) {
-		emitters[i]->Reset();
+		if(emitters[i] != musicSound)
+			emitters[i]->Reset();
 	}
+}
+
+/*
+========================
+idSoundWorldLocal::StopMusic
+========================
+*/
+void idSoundWorldLocal::StopMusic() {
+	musicSound->Reset();
 }
 
 /*
@@ -559,6 +572,28 @@ int idSoundWorldLocal::PlayShaderDirectly( const char * name, int channel ) {
 		return 0;
 	} else {
 		return localSound->StartSound( shader, channel, soundSystemLocal.random.RandomFloat(), SSF_GLOBAL, true );
+	}
+}
+
+/*
+========================
+idSoundWorldLocal::PlayMusic
+========================
+*/
+void idSoundWorldLocal::PlayMusic(const char* name) {
+	int channel = 2;
+
+	if (name == NULL || name[0] == 0) {
+		musicSound->StopSound(channel);
+		return;
+	}
+	const idSoundShader* shader = declManager->FindSound(name);
+	if (shader == NULL) {
+		musicSound->StopSound(channel);
+		return;
+	}
+	else {
+		musicSound->StartSound(shader, channel, soundSystemLocal.random.RandomFloat(), SSF_GLOBAL, true);
 	}
 }
 

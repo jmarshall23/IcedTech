@@ -971,7 +971,7 @@ void idGameLocal::LocalMapRestart( ) {
 
 	// clear the sound system
 	if ( gameSoundWorld ) {
-		gameSoundWorld->ClearAllSoundEmitters();
+		gameSoundWorld->StopAllSounds();
 	}
 
 	// the spawnCount is reset to zero temporarily to spawn the map entities with the same spawnId
@@ -1196,6 +1196,11 @@ void idGameLocal::InitFromNewMap( const char *mapName, idRenderWorld *renderWorl
 
 // jmarshall
 	botGoalManager.InitLevelItems();
+
+	// Play music if we have music assigned in the map.
+	if (mapMusicPath.Length() > 0) {
+		gameSoundWorld->PlayMusic(mapMusicPath.c_str());
+	}
 // jmarshall end
 
 	gamestate = GAMESTATE_ACTIVE;

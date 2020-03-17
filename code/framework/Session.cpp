@@ -391,6 +391,7 @@ void idSessionLocal::Stop() {
 
 	if ( sw ) {
 		sw->StopAllSounds();
+		sw->StopMusic();
 	}
 
 	insideUpdateScreen = false;
@@ -2936,18 +2937,18 @@ void idSessionLocal::Init() {
 
 	// we have a single instance of the main menu
 #ifndef ID_DEMO_BUILD
-	guiMainMenu = uiManager->FindGui( "guis/mainmenu.gui", true, false, true );
+	guiMainMenu = uiManager->FindGui( "guis/mainmenu.gui", true, false, true, false );
 #else
 	guiMainMenu = uiManager->FindGui( "guis/demo_mainmenu.gui", true, false, true );
 #endif
 	guiMainMenu_MapList = uiManager->AllocListGUI();
 	guiMainMenu_MapList->Config( guiMainMenu, "mapList" );
 	idAsyncNetwork::client.serverList.GUIConfig( guiMainMenu, "serverList" );
-	guiRestartMenu = uiManager->FindGui( "guis/restart.gui", true, false, true );
-	guiGameOver = uiManager->FindGui( "guis/gameover.gui", true, false, true );
-	guiMsg = uiManager->FindGui( "guis/msg.gui", true, false, true );
-	guiTakeNotes = uiManager->FindGui( "guis/takeNotes.gui", true, false, true );
-	guiIntro = uiManager->FindGui( "guis/intro.gui", true, false, true );
+	guiRestartMenu = uiManager->FindGui( "guis/restart.gui", true, false, true, false);
+	guiGameOver = uiManager->FindGui( "guis/gameover.gui", true, false, true, false);
+	guiMsg = uiManager->FindGui( "guis/msg.gui", true, false, true, false);
+	guiTakeNotes = uiManager->FindGui( "guis/takeNotes.gui", true, false, true, false);
+	guiIntro = uiManager->FindGui( "guis/intro.gui", true, false, true, false);
 
 	whiteMaterial = declManager->FindMaterial( "_white" );
 

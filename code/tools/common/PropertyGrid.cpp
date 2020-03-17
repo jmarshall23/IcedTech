@@ -77,8 +77,8 @@ bool rvPropertyGrid::Create ( HWND parent, int id, int style )
 	// Create the List view
 	mWindow = CreateWindowEx ( 0, "LISTBOX", "", WS_VSCROLL|WS_CHILD|WS_VISIBLE|LBS_OWNERDRAWFIXED|LBS_NOINTEGRALHEIGHT|LBS_NOTIFY, 0, 0, 0, 0, parent, (HMENU)id, win32.hInstance, 0 );	
 	mListWndProc = (WNDPROC)GetWindowLong ( mWindow, GWL_WNDPROC );
-	SetWindowLong ( mWindow, GWL_USERDATA, (LONG)this );
-	SetWindowLong ( mWindow, GWL_WNDPROC, (LONG)WndProc );
+	SetWindowLong ( mWindow, GWL_USERDATA, (INT_PTR)this );
+	SetWindowLong ( mWindow, GWL_WNDPROC, (INT_PTR)WndProc );
 
 	LoadLibrary ( "Riched20.dll" );
 	mEdit = CreateWindowEx ( 0, "RichEdit20A", "", WS_CHILD, 0, 0, 0, 0, mWindow, (HMENU) 999, win32.hInstance, NULL );
@@ -198,7 +198,7 @@ void rvPropertyGrid::FinishEdit ( void )
 		nmpg.mName  = item->mName;
 		nmpg.mValue = value;										
 
-		if ( !SendMessage ( GetParent ( mWindow ), WM_NOTIFY, 0, (LONG)&nmpg ) )
+		if ( !SendMessage ( GetParent ( mWindow ), WM_NOTIFY, 0, (INT_PTR)&nmpg ) )
 		{
 			mState = STATE_EDIT;
 			SetFocus ( mEdit );
@@ -281,7 +281,7 @@ int rvPropertyGrid::AddItem ( const char* name, const char* value, EItemType typ
 	
 	insert = SendMessage(mWindow,LB_GETCOUNT,0,0) - ((mStyle&PGS_ALLOWINSERT)?1:0);
 	
-	return SendMessage ( mWindow, LB_INSERTSTRING, insert, (LONG)item );
+	return SendMessage ( mWindow, LB_INSERTSTRING, insert, (INT_PTR)item );
 }
 
 /*
@@ -330,7 +330,7 @@ void rvPropertyGrid::RemoveAllItems ( void )
 		item = new rvPropertyGridItem;
 		item->mName = "";
 		item->mValue = "";
-		SendMessage ( mWindow, LB_ADDSTRING, 0, (LONG)item );
+		SendMessage ( mWindow, LB_ADDSTRING, 0, (INT_PTR)item );
 	}
 }
 
@@ -462,7 +462,7 @@ LRESULT CALLBACK rvPropertyGrid::WndProc ( HWND hWnd, UINT msg, WPARAM wParam, L
 		}
 		
 		case WM_COMMAND:
-			if ( lParam == (long)grid->mEdit )
+			if ( lParam == (INT_PTR)grid->mEdit )
 			{
 				if ( HIWORD(wParam) == EN_KILLFOCUS )
 				{

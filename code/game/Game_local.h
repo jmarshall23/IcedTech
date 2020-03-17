@@ -313,6 +313,8 @@ public:
 
 	int						vacuumAreaNum;			// -1 if level doesn't have any outside areas
 
+	idStr					mapMusicPath;
+
 	gameType_t				gameType;
 	bool					isMultiplayer;			// set if the game is run in multiplayer mode
 	bool					isServer;				// set if the game is run for a dedicated or listen server

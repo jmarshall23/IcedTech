@@ -72,6 +72,9 @@ void idWorldspawn::Spawn( void ) {
 		pm_stamina.SetFloat( 0.0f );
 	}
 
+	// Map Music
+	gameLocal.mapMusicPath = spawnArgs.GetString("music", "");
+
 	// load script
 	scriptname = gameLocal.GetMapName();
 	scriptname.SetFileExtension( ".script" );

@@ -41,20 +41,20 @@ idCVar g_spectatorChat( "g_spectatorChat", "0", CVAR_GAME | CVAR_ARCHIVE | CVAR_
 const char *idMultiplayerGame::GlobalSoundStrings[] = {
 	"sound/feedback/voc_youwin.wav",
 	"sound/feedback/voc_youlose.wav",
-	"sound/feedback/fight.wav",
-	"sound/feedback/vote_now.wav",
-	"sound/feedback/vote_passed.wav",
-	"sound/feedback/vote_failed.wav",
-	"sound/feedback/three.wav",
-	"sound/feedback/two.wav",
-	"sound/feedback/one.wav",
+	"sound/feedback/begin.wav",
+	"sound/feedback/votecall.wav",
+	"sound/feedback/voteaccept.wav",
+	"sound/feedback/votefail.wav",
+	"sound/feedback/3.wav",
+	"sound/feedback/2.wav",
+	"sound/feedback/1.wav",
 	"sound/feedback/sudden_death.wav",
 // jmarshall
-	"sound/feedback/firstfrag.ogg",
+	"sound/feedback/awesome.wav",
 	"sound/feedback/welcomedom.ogg",
-	"sound/feedback/onefrag.ogg",
-	"sound/feedback/twofrag.ogg",
-	"sound/feedback/threefrag.ogg",
+	"sound/feedback/1fragleft.wav",
+	"sound/feedback/2fragsleft.wav",
+	"sound/feedback/3fragsleft.wav",
 // jmarshall end
 };
 
@@ -217,7 +217,7 @@ void idMultiplayerGame::SpawnPlayer( int clientNum ) {
 		}
 
 // jmarshall
-		PlayGlobalSound(clientNum, SND_WELCOMEDOM, NULL);
+		//PlayGlobalSound(clientNum, SND_WELCOMEDOM, NULL);
 // jmarshall end
 
 		p->tourneyRank = 0;
@@ -937,7 +937,7 @@ void idMultiplayerGame::PlayerDeath( idPlayer *dead, idPlayer *killer, bool tele
 		{
 			if (!firstBlood)
 			{
-				PlayGlobalSound(-1, SND_FIRSTFRAG, NULL);
+				PlayGlobalSound(killer->entityNumber, SND_FIRSTFRAG, NULL);
 				firstBlood = true;
 			}
 

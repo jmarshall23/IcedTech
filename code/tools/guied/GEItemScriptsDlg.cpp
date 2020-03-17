@@ -74,7 +74,7 @@ bool GEItescriptsDlg_Init ( HWND hwnd )
 	UINT tabsize = 16;
 	SendMessage ( script, EM_SETTABSTOPS, 1, (LPARAM)&tabsize );
 	SetWindowLong ( script, GWL_USERDATA, GetWindowLong ( script, GWL_WNDPROC ) );
-	SetWindowLong ( script, GWL_WNDPROC, (LONG) GEScriptEdit_WndProc );					
+	SetWindowLong ( script, GWL_WNDPROC, (INT_PTR) GEScriptEdit_WndProc );					
 
 	TEXTMETRIC tm;
 	HDC dc;

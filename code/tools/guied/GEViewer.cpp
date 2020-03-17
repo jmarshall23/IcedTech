@@ -364,7 +364,7 @@ LRESULT CALLBACK rvGEViewer::WndProc ( HWND hwnd, UINT msg, WPARAM wParam, LPARA
 		case WM_CREATE:
 		{
 			CREATESTRUCT* cs = (CREATESTRUCT*) lParam;
-			SetWindowLong ( hwnd, GWL_USERDATA, (LONG)cs->lpCreateParams );
+			SetWindowLong ( hwnd, GWL_USERDATA, (INT_PTR)cs->lpCreateParams );
 					
 			viewer = (rvGEViewer*)cs->lpCreateParams;
 			viewer->mWnd = hwnd;

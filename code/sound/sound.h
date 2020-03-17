@@ -194,6 +194,9 @@ public:
 	virtual void			ClearAllSoundEmitters() = 0;
 	virtual void			StopAllSounds() = 0;
 
+	// stops the music.
+	virtual void			StopMusic() = 0;
+
 	// get a new emitter that can play sounds in this world
 	virtual idSoundEmitter *AllocSoundEmitter() = 0;
 
@@ -213,6 +216,9 @@ public:
 
 	// menu sounds
 	virtual	int				PlayShaderDirectly( const char * name, int channel = -1 ) = 0;
+
+	// world music
+	virtual void			PlayMusic(const char* name) = 0;
 
 	// dumps the current state and begins archiving commands
 	virtual void			StartWritingDemo( idDemoFile *demo ) = 0;

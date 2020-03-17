@@ -271,7 +271,7 @@ LRESULT CALLBACK rvGEProperties::WndProc ( HWND hWnd, UINT msg, WPARAM wParam, L
 			// Attach the class to the window first
 			cs = (LPCREATESTRUCT) lParam;
 			kv = (rvGEProperties*) cs->lpCreateParams;
-			SetWindowLong ( hWnd, GWL_USERDATA, (LONG)kv );
+			SetWindowLong ( hWnd, GWL_USERDATA, (INT_PTR)kv );
 
 			kv->mGrid.Create ( hWnd, 999, PGS_ALLOWINSERT );					
 			

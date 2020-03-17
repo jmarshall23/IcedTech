@@ -5,21 +5,21 @@ windowDef Desktop
 	rect	0,0,1280,720
 	windowDef unnamed
 	{
-		rect	1091,649,178,70
+		rect	1159,673,110,46
 		visible	1
 		background	"hud/ammo_current_bg"
 		matcolor	1,1,1,1
 	}
 	windowDef healthtxtbk
 	{
-		rect	89,650,178,70
+		rect	90,659,110,46
 		visible	1
 		background	"hud/ammo_current_bg"
 		matcolor	1,1,1,1
 	}
 	windowDef healthicon
 	{
-		rect	24,649,67,70
+		rect	44,662,42,46
 		visible	1
 		background	"hud/health"
 		matcolor	1,1,1,1
@@ -36,43 +36,57 @@ windowDef Desktop
 	}
 	windowDef armortxtbk
 	{
-		rect	93,584,178,70
+		rect	93,598,110,46
 		visible	1
 		background	"hud/ammo_current_bg"
 		matcolor	1,1,1,1
 	}
 	windowDef armoricon
 	{
-		rect	28,584,67,70
+		rect	43,597,45,49
 		visible	1
 		background	"hud/armor"
 		matcolor	1,1,1,1
 	}
 	windowDef healthxt
 	{
-		rect	106,661,150,50
+		rect	90,666,110,30
 		visible	1
 		forecolor	1,1,1,1
 		text	"gui::player_health"
-		textscale	1
+		textscale	0.60000002
 		textalign	1
 		textaligny	-5
 	}
 	windowDef ammotxt
 	{
-		rect	1106,658,150,50
+		rect	1160,680,110,32
 		visible	1
 		forecolor	1,1,1,1
 		text	"gui::player_ammo"
-		textscale	1
+		textscale	0.60000002
 		textalign	1
 		textaligny	-5
 	}
 	windowDef armoricon1
 	{
-		rect	1027,667,65,44
+		rect	1117,675,39,38
 		visible	1
 		background	"hud/ammo"
+		matcolor	1,1,1,1
+	}
+	windowDef crosshair_ring
+	{
+		rect	631,348,32,31
+		visible	1
+		background	"hud/crosshair_ring"
+		matcolor	1,1,1,1
+	}
+	windowDef crosshair_center
+	{
+		rect	631,348,32,31
+		visible	1
+		background	"hud/crosshair2"
 		matcolor	1,1,1,1
 	}
 }
