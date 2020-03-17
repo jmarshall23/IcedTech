@@ -44,6 +44,8 @@ If you have questions concerning this license or the applicable additional terms
 #define LAGO_MATERIAL	"textures/sfx/lagometer"
 #define LAGO_IMAGE		"textures/sfx/lagometer.tga"
 
+#define	MASK_SHOT		(CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE)
+
 // if set to 1 the server sends the client PVS with snapshots and the client compares against what it sees
 #ifndef ASYNC_WRITE_PVS
 	#define ASYNC_WRITE_PVS 0
@@ -502,6 +504,8 @@ public:
 	rvmGameRender_t*		GetGameRender() { return &gameRender; }
 
 	const char*				GetMapFileName() { return mapFileName.c_str(); }
+
+	void					Trace(trace_t& results, const idVec3& start, const idVec3& end, int contentMask, int passEntity);
 private:
 	const static int		INITIAL_SPAWN_COUNT = 1;
 

@@ -511,9 +511,15 @@ public:
 	bool					SelfSmooth( void );
 	void					SetSelfSmooth( bool b );
 
+	bool					IsShooting(void);
+
+	float					GetViewHeight(void);
+
+	bool					IsInvisible(void);
 
 	int						GetPrevWeapon(void) { return previousWeapon; }
 private:
+
 	jointHandle_t			hipJoint;
 	jointHandle_t			chestJoint;
 	jointHandle_t			headJoint;

@@ -150,6 +150,11 @@ set(src_game
 	./game/bot/bot_weapons.h
 	./game/bot/bot.h
 	./game/bot/botai/BotAI.cpp
+	./game/bot/botai/BotAI_Seek_NBG.cpp
+	./game/bot/botai/BotAI_Battle_NBG.cpp
+	./game/bot/botai/BotAI_Battle_Fight.cpp
+	./game/bot/botai/BotAI_Battle_Chase.cpp
+	./game/bot/botai/BotAI_Battle_Retreat.cpp
 	./game/bot/botai/BotAI_respawn.cpp
 	./game/bot/botai/BotAI_SeekLTG.cpp
 	./game/bot/botai/BotAI.h

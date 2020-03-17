@@ -149,7 +149,11 @@ public:
 	// Writes a collision model file for the given map entity.
 	virtual bool			WriteCollisionModelForMapEntity( const idMapEntity *mapEnt, const char *filename, const bool testTraceModel = true ) = 0;
 
+// jmarshall
 	virtual int				GetNumInlinedProcClipModels(void) = 0;
+
+	virtual int				PointContents(const idVec3 p, cmHandle_t model) = 0;
+// jmarshall end
 };
 
 extern idCollisionModelManager *		collisionModelManager;

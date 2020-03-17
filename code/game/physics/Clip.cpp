@@ -1433,6 +1433,27 @@ int idClip::Contacts( contactInfo_t *contacts, const int maxContacts, const idVe
 
 /*
 ============
+idClip::PointContents
+============
+*/
+int idClip::PointContents(const idVec3 p) {
+	int contents = -1;
+	
+	contents = collisionModelManager->PointContents(p, 0);
+	if(contents > 0) {
+		return contents;
+	}
+
+	for (int i = 0; i < collisionModelManager->GetNumInlinedProcClipModels(); i++)
+	{
+		contents = collisionModelManager->PointContents(p, i + 1);
+	}
+
+	return contents;
+}
+
+/*
+============
 idClip::Contents
 ============
 */

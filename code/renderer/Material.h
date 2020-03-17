@@ -295,9 +295,10 @@ typedef enum {
 	CONTENTS_CORPSE				= BIT(10),	// used for dead bodies
 	CONTENTS_RENDERMODEL		= BIT(11),	// used for render models for collision detection
 	CONTENTS_TRIGGER			= BIT(12),	// used for triggers
-	CONTENTS_AAS_SOLID			= BIT(13),	// solid for AAS
-	CONTENTS_AAS_OBSTACLE		= BIT(14),	// used to compile an obstacle into AAS that can be enabled/disabled
-	CONTENTS_FLASHLIGHT_TRIGGER	= BIT(15),	// used for triggers that are activated by the flashlight
+	CONTENTS_LAVA				= BIT(13),	// used for lava
+	CONTENTS_SLIME				= BIT(14),	// used for slime
+	CONTENTS_FOG				= BIT(15),	// used for fog
+	CONTENTS_FLASHLIGHT_TRIGGER	= BIT(16),	// used for triggers that are activated by the flashlight	
 
 	// contents used by utils
 	CONTENTS_AREAPORTAL			= BIT(20),	// portal separating renderer areas

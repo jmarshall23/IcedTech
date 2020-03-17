@@ -273,6 +273,9 @@ public:
 	bool					TraceBounds( trace_t &results, const idVec3 &start, const idVec3 &end, const idBounds &bounds,
 								int contentMask, const idEntity *passEntity );
 
+	// Returns the contents of a given area.
+	int						PointContents(const idVec3 p);
+
 	// clip versus a specific model
 	void					TranslationModel( trace_t &results, const idVec3 &start, const idVec3 &end,
 								const idClipModel *mdl, const idMat3 &trmAxis, int contentMask,

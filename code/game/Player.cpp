@@ -8424,3 +8424,49 @@ bool idPlayer::NeedsIcon( void ) {
 	// local clients don't render their own icons... they're only info for other clients
 	return entityNumber != gameLocal.localClientNum && ( isLagged || isChatting );
 }
+
+/*
+===============
+idPlayer::IsShooting
+==============
+*/
+bool idPlayer::IsShooting(void) {
+	return AI_ATTACK_HELD;
+}
+
+/*
+===============
+idPlayer::GetViewHeight
+==============
+*/
+float idPlayer::GetViewHeight(void) {
+	float newEyeOffset = 0;
+
+	if (spectating) {
+		newEyeOffset = 0.0f;
+	}
+	else if (health <= 0) {
+		newEyeOffset = pm_deadviewheight.GetFloat();
+	}
+	else if (physicsObj.IsCrouching()) {
+		newEyeOffset = pm_crouchviewheight.GetFloat();
+	}
+	else if (GetBindMaster() && GetBindMaster()->IsType(idAFEntity_Vehicle::Type)) {
+		newEyeOffset = 0.0f;
+	}
+	else {
+		newEyeOffset = pm_normalviewheight.GetFloat();
+	}
+
+	return newEyeOffset;
+}
+
+/*
+===============
+idPlayer::IsInvisible
+==============
+*/
+bool idPlayer::IsInvisible(void) {
+	// jmarshall: fix me!
+	return false;
+}

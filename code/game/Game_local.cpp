@@ -4291,4 +4291,22 @@ int idGameLocal::GetBotItemEntry(const char* name) {
 
 	return botItemTable->dict.GetInt(name);
 }
+
+/*
+===============
+idGameLocal::Trace
+===============
+*/
+void idGameLocal::Trace(trace_t& results, const idVec3& start, const idVec3& end, int contentMask, int passEntity) {
+	trace_t trace;
+	idMat3 axis;
+	axis.Identity();
+
+	if (passEntity == -1) {
+		clip.Translation(trace, start, end, NULL, axis, CONTENTS_SOLID, NULL);
+	}
+	else {
+		clip.Translation(trace, start, end, NULL, axis, CONTENTS_SOLID, entities[passEntity]);
+	}
+}
 // jmarshall end

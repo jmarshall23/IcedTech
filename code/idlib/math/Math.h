@@ -413,6 +413,12 @@ public:
 	static float				FRandRange(float min, float max) { return min + (max - min) * FRand(); }
 
 	static float				Distance(idVec3 p1, idVec3 p2);
+	static float				DistanceSquared(idVec3 p1, idVec3 p2);
+	static float				AngleMod(float a);
+
+	static idVec3				CrossProduct(const idVec3& a, const idVec3& b);
+	static idVec3				CreateVector(float x, float y, float z);
+	static idVec4				CreateVector(float x, float y, float z, float w);
 // jmarshall end
 	static const float			PI;							// pi
 	static const float			TWO_PI;						// pi * 2
@@ -1099,6 +1105,16 @@ ID_INLINE byte idMath::Ftob(float f) {
 	}
 	return static_cast<byte>(i);
 #endif
+}
+
+/*
+========================
+idMath::Ftob
+========================
+*/
+ID_INLINE float idMath::AngleMod(float a) {
+	a = (360.0 / 65536) * ((int)(a * (65536 / 360.0)) & 65535);
+	return a;
 }
 
 #endif /* !__MATH_MATH_H__ */

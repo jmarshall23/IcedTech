@@ -346,6 +346,8 @@ public:
 	bool			WriteCollisionModelForMapEntity( const idMapEntity *mapEnt, const char *filename, const bool testTraceModel = true );
 
 	virtual int     GetNumInlinedProcClipModels(void) { return numInlinedProcClipModels; }
+
+	virtual int		PointContents(const idVec3 p, cmHandle_t model);
 private:			// CollisionMap_translate.cpp
 	int				TranslateEdgeThroughEdge( idVec3 &cross, idPluecker &l1, idPluecker &l2, float *fraction );
 	void			TranslateTrmEdgeThroughPolygon( cm_traceWork_t *tw, cm_polygon_t *poly, cm_trmEdge_t *trmEdge );
@@ -388,7 +390,6 @@ private:			// CollisionMap_contents.cpp
 	bool			TestTrmVertsInBrush( cm_traceWork_t *tw, cm_brush_t *b );
 	bool			TestTrmInPolygon( cm_traceWork_t *tw, cm_polygon_t *p );
 	cm_node_t *		PointNode( const idVec3 &p, cm_model_t *model );
-	int				PointContents( const idVec3 p, cmHandle_t model );
 	int				TransformedPointContents( const idVec3 &p, cmHandle_t model, const idVec3 &origin, const idMat3 &modelAxis );
 	int				ContentsTrm( trace_t *results, const idVec3 &start,
 									const idTraceModel *trm, const idMat3 &trmAxis, int contentMask,

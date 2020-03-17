@@ -273,8 +273,9 @@ static infoParm_t	infoParms[] = {
 	{"ikclip",		0,	0,	CONTENTS_IKCLIP },		// solid to IK
 	{"blood",		0,	0,	CONTENTS_BLOOD },		// used to detect blood decals
 	{"trigger",		0,	0,	CONTENTS_TRIGGER },		// used for triggers
-	{"aassolid",	0,	0,	CONTENTS_AAS_SOLID },	// solid for AAS
-	{"aasobstacle",	0,	0,	CONTENTS_AAS_OBSTACLE },// used to compile an obstacle into AAS that can be enabled/disabled
+	{"lava",		0,	0,	CONTENTS_LAVA },		// used for lava
+	{"slime",		0,  0,  CONTENTS_SLIME },		// used for slime
+	{"fog",			0,  0,	CONTENTS_FOG  },		// used for fog
 	{"flashlight_trigger",	0,	0,	CONTENTS_FLASHLIGHT_TRIGGER }, // used for triggers that are activated by the flashlight
 	{"nonsolid",	1,	0,	0 },					// clears the solid flag
 	{"nullNormal",	0,	SURF_NULLNORMAL,0 },		// renderbump will draw as 0x80 0x80 0x80
