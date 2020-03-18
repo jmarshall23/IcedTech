@@ -519,6 +519,7 @@ public:
 
 	int						GetPrevWeapon(void) { return previousWeapon; }
 private:
+	idPlayer*				focusTarget;
 
 	jointHandle_t			hipJoint;
 	jointHandle_t			chestJoint;

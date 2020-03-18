@@ -54,14 +54,23 @@ typedef enum {
 		PLAYER_VOTE_WAIT	// mark a player allowed to vote
 } playerVote_t;
 
+enum mpLeaderStatus_t {
+	LEAD_STATUS_NOTSET,
+	LEAD_STATUS_NOLEAD,
+	LEAD_STATUS_INLEAD
+};
+
 typedef struct mpPlayerState_s {
-	int				ping;			// player ping
-	int				fragCount;		// kills
-	int				teamFragCount;	// team kills
-	int				wins;			// wins
-	playerVote_t	vote;			// player's vote
-	bool			scoreBoardUp;	// toggle based on player scoreboard button, used to activate de-activate the scoreboard gui
-	bool			ingame;
+	int				 clientnum;		// client number.
+	int				 ping;			// player ping
+	int				 fragCount;		// kills
+	int				 teamFragCount;	// team kills
+	int				 wins;			// wins
+	bool			 tiednotified;  // true if we have already notified the player of tied status.
+	mpLeaderStatus_t currentLeader; // true if is current leader.
+	playerVote_t	 vote;			// player's vote
+	bool			 scoreBoardUp;	// toggle based on player scoreboard button, used to activate de-activate the scoreboard gui
+	bool			 ingame;
 } mpPlayerState_t;
 
 const int NUM_CHAT_NOTIFY	= 5;
@@ -90,11 +99,14 @@ typedef enum {
 	SND_ONE,
 	SND_SUDDENDEATH,
 // jmarshall
-	SND_FIRSTFRAG,
+	SND_LEADGAINED,
+	SND_LEADLOST,
+	SND_LEADTIED,
 	SND_WELCOMEDOM,
 	SND_ONEFRAG,
 	SND_TWOFRAG,
 	SND_THREEFRAG,
+	SND_PREPAREFORBATTLE,
 // jmarshall end
 	SND_COUNT
 } snd_evt_t;
@@ -253,6 +265,11 @@ private:
 	static const char	*ThrottleVars[];
 	static const char	*ThrottleVarsInEnglish[];
 	static const int	ThrottleDelay[];
+
+// jmarshall
+	void			ShowWarmupScreen(idUserInterface *hud, bool visible, int countdownTime);
+	int				warmupTimeLeft;
+// jmarshall end
 
 	// state vars
 	gameState_t		gameState;				// what state the current game is in

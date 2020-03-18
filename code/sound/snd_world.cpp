@@ -571,6 +571,10 @@ int idSoundWorldLocal::PlayShaderDirectly( const char * name, int channel ) {
 		localSound->StopSound( channel );
 		return 0;
 	} else {
+		if(channel == -1) {
+			return localSound->StartSound(shader, channel, soundSystemLocal.random.RandomFloat(), SSF_GLOBAL | SSF_PLAY_ONCE, true);
+		}
+
 		return localSound->StartSound( shader, channel, soundSystemLocal.random.RandomFloat(), SSF_GLOBAL, true );
 	}
 }

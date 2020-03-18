@@ -50,11 +50,14 @@ const char *idMultiplayerGame::GlobalSoundStrings[] = {
 	"sound/feedback/1.wav",
 	"sound/feedback/sudden_death.wav",
 // jmarshall
-	"sound/feedback/awesome.wav",
+	"sound/feedback/leadgained.wav",
+	"sound/feedback/leadlost.wav",
+	"sound/feedback/leadtied.wav",
 	"sound/feedback/welcomedom.ogg",
 	"sound/feedback/1fragleft.wav",
 	"sound/feedback/2fragsleft.wav",
 	"sound/feedback/3fragsleft.wav",
+	"sound/feedback/prepareforbattle.wav"
 // jmarshall end
 };
 
@@ -226,6 +229,10 @@ void idMultiplayerGame::SpawnPlayer( int clientNum ) {
 		}
 		playerState[ clientNum ].ingame = ingame;
 	}
+
+// jmarshall - this goes here so the bot gets the correct clientnum.
+	playerState[clientNum].clientnum = clientNum;
+// jmarshall end
 }
 
 /*
@@ -237,7 +244,6 @@ void idMultiplayerGame::Clear() {
 	int i;
 
 // jmarshall
-	firstBlood = false;
 	for (int i = 0; i < 4; i++)
 		fragWarningFeedback[i] = false;
 // jmarshall end
@@ -317,12 +323,29 @@ idMultiplayerGame::UpdatePlayerRanks
 void idMultiplayerGame::UpdatePlayerRanks() {
 	int i, j, k;
 	idPlayer *players[MAX_CLIENTS];
+// jmarshall
+	mpPlayerState_t* playerStateSorted[MAX_CLIENTS];
+// jmarshall end
 	idEntity *ent;
 	idPlayer *player;
+// jmarshall
+	int leadFragCount = 0;
+	bool tiedScore = false;
+// jmarshall end
 
 	memset( players, 0, sizeof( players ) );
+// jmarshall
+	memset(playerStateSorted, 0, sizeof(playerStateSorted));
 	numRankedPlayers = 0;
 
+	// Find the highest current frag count.
+	for (j = 0; j < gameLocal.numClients; j++) {
+		if (leadFragCount < playerState[j].fragCount)
+			leadFragCount = playerState[j].fragCount;
+		else if (leadFragCount == playerState[j].fragCount && leadFragCount > 0)
+			tiedScore = true;
+	}
+// jmarshall end
 	for ( i = 0; i < gameLocal.numClients; i++ ) {
 		ent = gameLocal.entities[ i ];
 		if ( !ent || !ent->IsType( idPlayer::Type ) ) {
@@ -361,16 +384,57 @@ void idMultiplayerGame::UpdatePlayerRanks() {
 			if ( insert ) {
 				for ( k = numRankedPlayers; k > j; k-- ) {
 					players[ k ] = players[ k-1 ];
+// jmarshall
+					playerStateSorted[k] = &playerState[k - 1];
+// jmarshall end
 				}
 				players[ j ] = player;
+// jmarshall
+				playerStateSorted[ j ] = &playerState[i];
+// jmarshall end
 				break;
 			}
 		}
 		if ( j == numRankedPlayers ) {
 			players[ numRankedPlayers ] = player;
+// jmarshall
+			playerStateSorted[ numRankedPlayers ] = &playerState[i];
+// jmarshall end
 		}
 		numRankedPlayers++;
 	}
+// jmarshall
+	// Check for rank changes.
+	if (gameLocal.gameType == GAME_DM && gameState != WARMUP && leadFragCount > 0) {
+		for (j = 0; j < gameLocal.numClients; j++) {
+			if (playerStateSorted[j] == NULL)
+				continue;
+
+			if(!tiedScore && (playerStateSorted[j]->currentLeader == LEAD_STATUS_NOLEAD || playerStateSorted[j]->currentLeader == LEAD_STATUS_NOTSET) && j == 0) {
+				PlayGlobalSound(playerStateSorted[j]->clientnum, SND_LEADGAINED, NULL);
+				playerStateSorted[j]->currentLeader = LEAD_STATUS_INLEAD;
+				playerStateSorted[j]->tiednotified = false;
+			}
+			else if((playerStateSorted[j]->currentLeader == LEAD_STATUS_INLEAD || playerStateSorted[j]->currentLeader == LEAD_STATUS_NOTSET) && j > 0) {
+				PlayGlobalSound(playerStateSorted[j]->clientnum, SND_LEADLOST, NULL);
+				playerStateSorted[j]->currentLeader = LEAD_STATUS_NOLEAD;
+				playerStateSorted[j]->tiednotified = false;
+			}
+			else if (tiedScore && playerStateSorted[j]->fragCount == leadFragCount) {
+				if (!playerStateSorted[j]->tiednotified)
+				{
+					playerStateSorted[j]->currentLeader = LEAD_STATUS_NOLEAD;
+					PlayGlobalSound(playerStateSorted[j]->clientnum, SND_LEADTIED, NULL);
+					playerStateSorted[j]->tiednotified = true;
+				}
+			}
+			else if(playerStateSorted[j]->currentLeader == LEAD_STATUS_NOLEAD)
+			{
+				playerStateSorted[j]->tiednotified = false;
+			}
+		}
+	}
+// jmarshall end
 
 	memcpy( rankedPlayers, players, sizeof( players ) );
 }
@@ -935,12 +999,6 @@ void idMultiplayerGame::PlayerDeath( idPlayer *dead, idPlayer *killer, bool tele
 			//if(playerState[killer->entityNumber].fragCount)
 		if (gameState == GAMEON)
 		{
-			if (!firstBlood)
-			{
-				PlayGlobalSound(killer->entityNumber, SND_FIRSTFRAG, NULL);
-				firstBlood = true;
-			}
-
 			int fragLimit = gameLocal.serverInfo.GetInt("si_fragLimit");
 
 			if (playerState[killer->entityNumber].fragCount >= fragLimit - 3) {
@@ -1034,10 +1092,6 @@ void idMultiplayerGame::NewState( gameState_t news, idPlayer *player ) {
 			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_RESTART );
 			outMsg.WriteBits( 0, 1 );
 			networkSystem->ServerSendReliableMessage( -1, outMsg );
-
-// jmarshall
-			firstBlood = false;
-// jmarshall end
 
 			PlayGlobalSound( -1, SND_FIGHT );
 			matchStartedTime = gameLocal.time;
@@ -1395,6 +1449,7 @@ void idMultiplayerGame::Run() {
 	}
 
 	warmupText = "";
+	warmupTimeLeft = 0;
 
 	switch( gameState ) {
 		case GAMEREVIEW: {
@@ -1433,6 +1488,8 @@ void idMultiplayerGame::Run() {
 				NewState( COUNTDOWN );
 				nextState = GAMEON;
 				nextStateSwitch = gameLocal.time + 1000 * cvarSystem->GetCVarInteger( "g_countDown" );
+
+				PlayGlobalSound(-1, SND_PREPAREFORBATTLE);
 			}
 			warmupText = "Warming up.. waiting for players to get ready";
 			one = two = three = false;
@@ -1450,6 +1507,8 @@ void idMultiplayerGame::Run() {
 				PlayGlobalSound( -1, SND_ONE );
 				one = true;
 			}
+			warmupTimeLeft = timeLeft;
+
 			warmupText = va( "Match starts in %i", timeLeft );
 			break;
 		}
@@ -1998,6 +2057,26 @@ bool idMultiplayerGame::Draw( int clientNum ) {
 
 /*
 ================
+idMultiplayerGame::ShowWarmupScreen
+================
+*/
+void idMultiplayerGame::ShowWarmupScreen(idUserInterface* hud, bool visible, int countdownTime) {
+	if (!visible)
+	{
+		hud->SetStateString("multiplayer_game_type", "");
+		hud->SetStateString("multiplayer_warmup_time", "");
+		hud->SetStateString("multiplayer_match_begin_txt", "");
+	}
+	else
+	{
+		hud->SetStateString("multiplayer_game_type", "Free for All");
+		hud->SetStateString("multiplayer_warmup_time", va("%d", countdownTime));
+		hud->SetStateString("multiplayer_match_begin_txt", "Match Begins In");
+	}
+}
+
+/*
+================
 idMultiplayerGame::UpdateHud
 ================
 */
@@ -2006,6 +2085,13 @@ void idMultiplayerGame::UpdateHud( idPlayer *player, idUserInterface *hud ) {
 
 	if ( !hud ) {
 		return;
+	}
+
+	if(gameState == COUNTDOWN) {
+		ShowWarmupScreen(hud, true, warmupTimeLeft);
+	}
+	else {
+		ShowWarmupScreen(hud, false, -1);
 	}
 
 	hud->SetStateBool( "warmup", Warmup() );

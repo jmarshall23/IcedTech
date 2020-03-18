@@ -89,4 +89,40 @@ windowDef Desktop
 		background	"hud/crosshair2"
 		matcolor	1,1,1,1
 	}
+	windowDef targetPlayerName
+	{
+		rect	529,386,240,36
+		visible	1
+		forecolor	0.50588238,0.50588238,0.50588238,1
+		text	"gui::player_target"
+		textscale	0.40000001
+		textalign	1
+	}
+	windowDef MPGameTypeTxt
+	{
+		rect	0,46,1300,80
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::multiplayer_game_type"
+		textscale	1
+		textalign	1
+	}
+	windowDef MPGameTypeTxt1
+	{
+		rect	2,100,1300,37
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::multiplayer_match_begin_txt"
+		textscale	0.5
+		textalign	1
+	}
+	windowDef MPMatchBeginTimeTxt
+	{
+		rect	-14,142,1318,37
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::multiplayer_warmup_time"
+		textscale	0.5
+		textalign	1
+	}
 }

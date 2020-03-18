@@ -962,6 +962,8 @@ idPlayer::idPlayer() {
 	lastSndHitTime			= 0;
 	lastSavingThrowTime		= 0;
 
+	focusTarget = NULL;
+
 	weapon					= NULL;
 
 	hud						= NULL;
@@ -2611,6 +2613,13 @@ void idPlayer::DrawHUD( idUserInterface *_hud ) {
 	_hud->SetStateInt( "s_debug", cvarSystem->GetCVarInteger( "s_showLevelMeter" ) );
 
 	weapon.GetEntity()->UpdateGUI();
+
+	if (focusTarget != NULL) {
+		_hud->SetStateString("player_target", focusTarget->GetUserInfo()->GetString("ui_name"));
+	}
+	else {
+		_hud->SetStateString("player_target", "");
+	}
 
 	_hud->Redraw( gameLocal.realClientTime );
 
@@ -4306,6 +4315,7 @@ void idPlayer::ClearFocus( void ) {
 	focusCharacter	= NULL;
 	focusGUIent		= NULL;
 	focusUI			= NULL;
+	focusTarget		= NULL;
 	focusVehicle	= NULL;
 	talkCursor		= 0;
 }
@@ -4366,7 +4376,7 @@ void idPlayer::UpdateFocus( void ) {
 	}
 
 	start = GetEyePosition();
-	end = start + viewAngles.ToForward() * 80.0f;
+	end = start + viewAngles.ToForward() * 500.0f;
 
 	// player identification -> names to the hud
 	if ( gameLocal.isMultiplayer && entityNumber == gameLocal.localClientNum ) {
@@ -4397,6 +4407,18 @@ void idPlayer::UpdateFocus( void ) {
 		if ( ent->IsHidden() ) {
 			continue;
 		}
+
+		if(ent->IsType( idPlayer::Type )) {
+			gameLocal.clip.TracePoint(trace, start, end, MASK_SHOT_RENDERMODEL, this);
+			if ( ( trace.fraction < 1.0f ) && ( trace.c.entityNum == ent->entityNumber ) ) {
+				ClearFocus();
+				focusTarget = ent->Cast<idPlayer>();
+				focusTime = gameLocal.time + FOCUS_TIME;
+				break;
+			}
+			continue;
+		}
+
 
 		if ( allowFocus ) {
 			if ( ent->IsType( idAFAttachment::Type ) ) {
@@ -8425,6 +8447,7 @@ bool idPlayer::NeedsIcon( void ) {
 	return entityNumber != gameLocal.localClientNum && ( isLagged || isChatting );
 }
 
+// jmarshall
 /*
 ===============
 idPlayer::IsShooting
@@ -8470,3 +8493,4 @@ bool idPlayer::IsInvisible(void) {
 	// jmarshall: fix me!
 	return false;
 }
+// jmarshall end
