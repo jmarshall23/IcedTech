@@ -87,6 +87,7 @@ struct renderEntity_t {
 	{
 		hModel = nullptr;
 		joints = nullptr;
+		skipEntityViewCulling = false;
 	}
 
 	bool HasValidJoints() const { return joints != nullptr; }
@@ -95,6 +96,8 @@ struct renderEntity_t {
 
 	int						entityNum;
 	int						bodyId;
+
+	bool					skipEntityViewCulling;
 
 	// Entities that are expensive to generate, like skeletal models, can be
 	// deferred until their bounds are found to be in view, in the frustum

@@ -563,7 +563,7 @@ Return true if the entity reference bounds do not intersect the current portal c
 */
 bool idRenderWorldLocal::CullEntityByPortals( const idRenderEntityLocal *entity, const portalStack_t *ps ) {
 
-	if ( !r_useEntityCulling.GetBool() ) {
+	if ( !r_useEntityCulling.GetBool() || entity->parms.skipEntityViewCulling) {
 		return false;
 	}
 

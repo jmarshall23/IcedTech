@@ -1821,6 +1821,7 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 
 	// crunch the depth range so it never pokes into walls this breaks the machine gun gui
 	renderEntity.weaponDepthHack = true;
+	renderEntity.skipEntityViewCulling = true;
 
 	// present the model
 	if ( showViewModel ) {

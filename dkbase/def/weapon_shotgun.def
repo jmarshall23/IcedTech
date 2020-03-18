@@ -5,36 +5,7 @@
 ***********************************************************************/
 
 export fred {
-	// view model shotgun	
-	options -prefix SG_ -keep barrel eject shell flash -parent flash body -rename barrel2 barrel -parent barrel body -parent eject body -parent body Rhand -parent shell Lhand -rename origin blah -sourcedir models/weapons/shotgun/cycles -destdir models/md5/weapons/shotgun_view 
-	mesh	idle.mb -dest viewshotgun
-	anim	idle.mb
-	anim	raise.mb
-	anim	fire1.mb
-	anim	fire2.mb
-	anim	fire3.mb
-	anim	reload_start.mb
-	anim	reload_loop.mb
-	anim	reload_loop2.mb
-	anim	reload_loop3.mb
-	anim	reload_end.mb
-	anim	reload2.mb
-	anim	lower.mb
-	anim	empty.mb
-
-	// world model shotgun
-	options -prefix PLAYER_SHOTGUN_ -keep ATTACHER barrel flash eject -parent flash sgbody -parent eject sgbody -rename ATTACHER origin -rename sgbarrel barrel -clearorigin
-	addoptions -skipmesh PLAYER_shotgun_body_mesh
-	addoptions -skipmesh PLAYER_shotgun_handle_mesh
-	addoptions -skipmesh PLAYER_shotgun_trigger_mesh
-	addoptions -skipmesh PLAYER_shotgun_loflap_mesh
-	addoptions -skipmesh PLAYER_shotgun_extender_mesh
-	addoptions -skipmesh PLAYER_shotgun_upflap1_mesh
-	addoptions -skipmesh PLAYER_shotgun_upflap2_mesh
-	
-	mesh	models/characters/player/mocap/shotgun_idle.mb -dest models/md5/weapons/shotgun_world/worldshotgun
-	anim	models/characters/player/mocap/shotgun_idle.mb -dest models/md5/weapons/shotgun_world/shotgun_idle
-	anim	models/characters/player/mocap/shotgun_fire.mb -range 49 75 -dest models/md5/weapons/shotgun_world/shotgun_fire1
+	mesh models/weapons/shotgun/shotgun.mb -dest models/weapons/shotgun/viewshotgun
 }
 
 entityDef weapon_shotgun {
@@ -119,44 +90,7 @@ model worldmodel_shotgun {
 }
 
 model viewmodel_shotgun {
-	mesh						models/md5/weapons/shotgun_view/viewshotgun.md5mesh
-	
-	anim raise					models/md5/weapons/shotgun_view/raise.md5anim {
-		frame 1					sound_body player_shotgun_raise
-	}
-	anim idle 					models/md5/weapons/shotgun_view/idle.md5anim
-	anim fire1 					models/md5/weapons/shotgun_view/fire1.md5anim {
-		frame 1					sound_weapon player_shotgun_fire
-		frame 17				sound_voice player_shotgun_pump
-	}
-	anim fire2 					models/md5/weapons/shotgun_view/fire2.md5anim {
-		frame 1					sound_weapon player_shotgun_fire
-		frame 17				sound_voice player_shotgun_pump
-	}
-	anim fire3 					models/md5/weapons/shotgun_view/fire3.md5anim {
-		frame 1					sound_weapon player_shotgun_fire
-		frame 17				sound_voice player_shotgun_pump
-	}
-	anim reload_start 			models/md5/weapons/shotgun_view/reload_start.md5anim {
-		frame 1					sound player_shotgun_reload_start	
-	}
-	anim reload_loop1 			models/md5/weapons/shotgun_view/reload_loop.md5anim {
-		frame 4					sound player_shotgun_reload	
-	}
-	anim reload_loop2 			models/md5/weapons/shotgun_view/reload_loop2.md5anim {
-		frame 4					sound player_shotgun_reload	
-	}
-	anim reload_loop3 			models/md5/weapons/shotgun_view/reload_loop3.md5anim {
-		frame 4					sound player_shotgun_reload	
-	}
-	anim reload_end 			models/md5/weapons/shotgun_view/reload_end.md5anim {
-		//frame 1					sound player_shotgun_reload_end
-		frame 14				sound_voice player_shotgun_pump
-	}
-	anim noammo					models/md5/weapons/shotgun_view/empty.md5anim {
-		frame 1					sound_voice player_shotgun_empty
-	}
-	anim putaway				models/md5/weapons/shotgun_view/lower.md5anim 
+	mesh						models/weapons/shotgun/viewshotgun.md5mesh
 }
 
 entityDef	damage_shotgun {

@@ -1114,7 +1114,7 @@ idRenderModel *idRenderModelMD5::InstantiateDynamicModel( const struct renderEnt
 		assert(staticModel->numInvertedJoints == numInvertedJoints);
 	}
 
-	if (ent == nullptr)
+	if (ent == nullptr || ent->joints == nullptr)
 	{
 		TransformJoints(staticModel->jointsInverted, joints.Num(), &poseMat3[0], invertedDefaultPose.Ptr());
 	}

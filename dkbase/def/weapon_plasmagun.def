@@ -5,36 +5,7 @@
 ***********************************************************************/
 
 export fred {
-	// view model plasmagun
-	options -prefix PLASMA_ -keep barrel eject flash guilight newguithing ventlight -parent ventlight pgbody2 -parent barrel pgbody2 -parent eject pgbody2 -parent gui pgscreen -parent newguithing pgupmon -parent guilight pgupmon -parent fx pgbody2 -parent nut pgbody2 -rename origin blah -sourcedir models/weapons/plasmagun/cycles -destdir models/md5/weapons/plasmagun_view
-	mesh	idle.mb -dest viewplasmagun
-	anim	raise.mb
-	anim	raise2.mb -range 1 90 -dest raise2up
-	anim	raise2.mb -range 90 90 -dest raise2idle
-	anim	idle.mb
-	anim	fire1.mb
-	anim	fire2.mb
-	anim	reload.mb
-	anim	lower.mb
-	
-	// world model plasmagun
-	options -ignorescale -prefix PLAYER_pg -keep ATTACHER barrel eject flash guilight -parent barrel body2 -parent eject body2 -parent flash body2 -parent eject body2 -parent guilight body2 -rename ATTACHER origin -clearorigin 
-	addoptions -skipmesh PLAYER_plasma_innerscopebot_mesh1
-	addoptions -skipmesh PLAYER_plasma_outerscopebot_mesh1
-	addoptions -skipmesh PLAYER_plasma_innerscopetop_mesh1
-	addoptions -skipmesh PLAYER_plasma_outerscopetop_mesh1
-	addoptions -skipmesh PLAYER_plasma_innerflap1_mesh1
-	addoptions -skipmesh PLAYER_plasma_outerflap1_mesh1
-	addoptions -skipmesh PLAYER_plasma_bolt_mesh1
-	addoptions -skipmesh PLAYER_plasma_screen_mesh1
-	addoptions -skipmesh PLAYER_plasma_body_mesh1
-	addoptions -skipmesh PLAYER_plasma_handle_mesh1
-	addoptions -skipmesh PLAYER_plasma_outerflap2_mesh1
-	addoptions -skipmesh PLAYER_plasma_innerflap2_mesh4
-	addoptions -skipmesh PLAYER_plasma_uppermon_mesh4
-
-	mesh	models/characters/player/mocap/plasmagun_idle.mb -dest models/md5/weapons/plasmagun_world/worldplasmagun
-	anim	models/characters/player/mocap/plasmagun_idle.mb -dest models/md5/weapons/plasmagun_world/plasmagun_idle
+	mesh models/weapons/plasmagun/plasmagun.mb -dest models/weapons/plasmagun/plasmagun.md5mesh
 }
 
 entityDef weapon_plasmagun {
@@ -130,26 +101,7 @@ model worldmodel_plasmagun {
 }
 
 model viewmodel_plasmagun {
-	mesh 						models/md5/weapons/plasmagun_view/viewplasmagun.md5mesh
-	anim raise					models/md5/weapons/plasmagun_view/raise.md5anim {
-		frame	1				sound_weapon player_plasma_raise
-	}
-	anim guiup					models/md5/weapons/plasmagun_view/raise2up.md5anim
-	anim guiidle				models/md5/weapons/plasmagun_view/raise2idle.md5anim
-	anim idle 					models/md5/weapons/plasmagun_view/idle.md5anim
-	anim fire1 					models/md5/weapons/plasmagun_view/fire1.md5anim {
-		frame 1					sound_weapon plasma_fire
-	}
-	anim fire2 					models/md5/weapons/plasmagun_view/fire2.md5anim {
-		frame 1					sound_weapon plasma_fire	
-	}
-	anim putaway				models/md5/weapons/plasmagun_view/lower.md5anim
-	anim reload					models/md5/weapons/plasmagun_view/reload.md5anim {
-		frame 1					sound_weapon plasma_reload
-	}
-	anim noammo					models/md5/weapons/plasmagun_view/fire1.md5anim {
-		frame 1					sound_weapon plasma_dryfire
-	}
+	mesh 						models/weapons/plasmagun/plasmagun.md5mesh
 }
 
 entityDef	damage_plasmablast {

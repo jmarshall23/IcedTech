@@ -5,32 +5,7 @@
 ***********************************************************************/
 
 export fred {
-	// View Model Rocket Launcher
-	options -prefix RL_ -keep barrel -keep flash -rename origin blah -rename barrel2 barrel -parent barrel RLBODY -parent flash RLBODY
-
-	mesh	models/weapons/rocketlauncher/cycles/idle.mb -rotate 90 -dest models/md5/weapons/rocketlauncher_view/viewrocketlauncher
-	anim	models/weapons/rocketlauncher/cycles/raise.mb -rotate 90 -dest models/md5/weapons/rocketlauncher_view/raise
-	anim	models/weapons/rocketlauncher/cycles/idle.mb -rotate 90 -dest models/md5/weapons/rocketlauncher_view/idle
-	anim	models/weapons/rocketlauncher/cycles/fire.mb -rotate 90 -dest models/md5/weapons/rocketlauncher_view/fire
-	anim	models/weapons/rocketlauncher/cycles/reload.mb -rotate 90 -dest models/md5/weapons/rocketlauncher_view/reload
-	anim	models/weapons/rocketlauncher/cycles/lower.mb -rotate 90 -dest models/md5/weapons/rocketlauncher_view/lower
-
-	// world model Rocket Launcher
-	options -prefix PLAYER_RL -keep barrel _ATTACHER flash eject -parent eject BODY -parent flash BODY -rename barrel2 barrel -rename _ATTACHER origin -parent barrel BODY -clearorigin
-	addoptions -skipmesh PLAYER_rshell1
-	addoptions -skipmesh PLAYER_rshell2
-	addoptions -skipmesh PLAYER_rshell3
-	addoptions -skipmesh PLAYER_rshell4
-	addoptions -skipmesh PLAYER_reloader1
-	addoptions -skipmesh PLAYER_handle
-	addoptions -skipmesh PLAYER_aimer
-	addoptions -skipmesh PLAYER_body
-
-	mesh	models/characters/player/mocap/rocketlauncher_aim.mb -dest models/md5/weapons/rocketlauncher_world/worldrocketlauncher
-	//anim	models/characters/player/mocap/rocketlauncher_aim.mb -dest models/md5/weapons/rocketlauncher_world/rocketlauncher_aim
-	anim	models/characters/male_npc/cycles/tweakedplayermoves/rocketlauncher_aim.mb -dest models/md5/weapons/rocketlauncher_world/rocketlauncher_aim
-
-	//anim	models/characters/player/mocap/rocketlauncher_fire.mb -dest models/md5/weapons/rocketlauncher_world/rocketlauncher_fire
+	mesh models/weapons/rocketlauncher/rocketlauncher.mb -dest models/weapons/rocketlauncher/rocketlauncher.md5mesh
 }
 
 entityDef weapon_rocketlauncher {
@@ -116,20 +91,7 @@ model worldmodel_rocketlauncher {
 }
 
 model viewmodel_rocketlauncher {
-	mesh 						models/md5/weapons/rocketlauncher_view/viewrocketlauncher.md5mesh
-	offset						( -6 -3 -60 )
-
-	anim raise 					models/md5/weapons/rocketlauncher_view/raise.md5anim {
-		frame 1					sound_weapon player_rocketlauncher_raise
-	}
-	anim idle 					models/md5/weapons/rocketlauncher_view/idle.md5anim
-	anim fire 					models/md5/weapons/rocketlauncher_view/fire.md5anim {
-		frame 1					sound_weapon player_rocketlauncher_fire
-	}
-	anim reload 				models/md5/weapons/rocketlauncher_view/reload.md5anim {
-		frame 1					sound_weapon player_rocketlauncher_reload
-	}
-	anim putaway 				models/md5/weapons/rocketlauncher_view/lower.md5anim
+	mesh 						models/weapons/rocketlauncher/rocketlauncher.md5mesh
 }
 
 entityDef projectile_rocket {

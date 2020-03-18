@@ -7011,9 +7011,9 @@ void idPlayer::CalculateViewWeaponPos( idVec3 &origin, idMat3 &axis ) {
 	idVec3	gunpos( g_gun_x.GetFloat(), g_gun_y.GetFloat(), g_gun_z.GetFloat() );
 
 // jmarshall
-	if (weapon.GetEntity()->GetState() == WP_FIRE) {
-		gunpos.y = -1;
-	}
+//	if (weapon.GetEntity()->GetState() == WP_FIRE) {
+//		gunpos.y = -1;
+//	}
 // jmarshall end
 
 	// as the player changes direction, the gun will take a small lag

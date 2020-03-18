@@ -162,7 +162,7 @@ void rvmWeaponPlasmaGun::Fire() {
 	switch (firingState)
 	{
 	case FIRE_NOTSET:
-		next_attack = gameLocal.time + MS2SEC(PLASMAGUN_FIRERATE);
+		next_attack = gameLocal.time + SEC2MS(PLASMAGUN_FIRERATE);
 		owner->Event_LaunchProjectiles(PLASMAGUN_NUMPROJECTILES, spread, 0, 1, 1);
 
 		owner->Event_PlayAnim(ANIMCHANNEL_ALL, "fire", false);
