@@ -82,7 +82,7 @@ void rvmRenderModelMDR::LoadModel(void) {
 	}
 
 	// If we don't have any frames, then render as a static mesh.
-	if (modelData->numFrames == 1)
+	//if (modelData->numFrames == 1)
 	{
 		viewDef_t view;
 		RenderFramesToModel(this, NULL, &view, NULL, 1);
@@ -441,10 +441,11 @@ idRenderModelMD3::IsDynamicModel
 =================
 */
 dynamicModel_t rvmRenderModelMDR::IsDynamicModel() const {
-	if (modelData->numFrames == 1) {
-		return DM_STATIC;
-	}
-	return DM_CACHED;
+	//if (modelData->numFrames == 1) {
+	//	return DM_STATIC;
+	//}
+	//return DM_CACHED;
+	return DM_STATIC;
 }
 
 /*

@@ -15,6 +15,7 @@ void RenderProbes_f(const idCmdArgs& args) {
 	idStr map, string;
 	findFile_t	ff;
 	idCmdArgs	rl_args;
+	rvmPerformanceMetrics_t metrics;
 	int screenWidth, screenHeight;
 
 	map = args.Argv(1);
@@ -77,6 +78,6 @@ void RenderProbes_f(const idCmdArgs& args) {
 
 	// Ensure the render targets are back to the correct resolution.
 	renderSystem->BeginFrame(screenWidth, screenHeight);
-	renderSystem->EndFrame(NULL, NULL);
+	renderSystem->EndFrame(metrics);
 	game->ResetGameRenderTargets();
 }

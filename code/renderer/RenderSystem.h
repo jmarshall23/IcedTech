@@ -161,6 +161,30 @@ const float SCREEN_HEIGHT			= 720;
 
 class idRenderWorld;
 
+struct rvmPerformanceMetrics_t {
+	rvmPerformanceMetrics_t() {
+		Reset();
+	}
+
+	void Reset(void) {
+		gpuFrameTime = 0;
+		frustumCulledLights = 0;
+		gpuCulledLights = 0;
+		shadowedLightCount = 0;
+		backendMsec = 0;
+		frontendMsec = 0;
+		gpuTime = 0;
+	}
+
+	int backendMsec;
+	int frontendMsec;
+	int gpuFrameTime;
+	int shadowedLightCount;
+	int frustumCulledLights;
+	int gpuCulledLights;
+	int gpuTime;
+};
+
 
 class idRenderSystem {
 public:
@@ -231,7 +255,7 @@ public:
 	virtual void			BeginFrame( int windowWidth, int windowHeight ) = 0;
 
 	// if the pointers are not NULL, timing info will be returned
-	virtual void			EndFrame( int *frontEndMsec, int *backEndMsec ) = 0;
+	virtual void			EndFrame(rvmPerformanceMetrics_t& metrics) = 0;
 
 	// Returns a image based on the options in idImageOpts.
 	virtual idImage			*CreateImage(const char *name, idImageOpts *opts, textureFilter_t textureFilter) = 0;

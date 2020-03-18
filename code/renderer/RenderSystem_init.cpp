@@ -223,6 +223,8 @@ idCVar r_debugRenderToTexture( "r_debugRenderToTexture", "0", CVAR_RENDERER | CV
 
 idCVar r_debugContext("r_debugContext", "0", CVAR_INTEGER, "");
 
+idCVar r_occlusionQueryDelay("r_occlusionQueryDelay", "60", CVAR_INTEGER, "");
+
 /*
 =================
 R_CheckExtension
@@ -865,12 +867,13 @@ static float R_RenderingFPS( const renderView_t *renderView ) {
 	static const int SAMPLE_MSEC = 1000;
 	int		end;
 	int		count = 0;
+	rvmPerformanceMetrics_t metrics;
 
 	while( 1 ) {
 		// render
 		renderSystem->BeginFrame( glConfig.vidWidth, glConfig.vidHeight );
 		game->RenderScene(renderView, tr.primaryWorld);
-		renderSystem->EndFrame( NULL, NULL );
+		renderSystem->EndFrame( metrics );
 		glFinish();
 		count++;
 		end = Sys_Milliseconds();
@@ -961,9 +964,10 @@ void R_ReadTiledPixels( int width, int height, byte *buffer, renderView_t *ref =
 			tr.viewportOffset[1] = -yo;
 
 			if ( ref ) {
+				rvmPerformanceMetrics_t metrics;
 				tr.BeginFrame( oldWidth, oldHeight );
 				game->RenderScene(ref, tr.primaryWorld);
-				tr.EndFrame( NULL, NULL );
+				tr.EndFrame( metrics );
 			} else {
 				session->UpdateScreen();
 			}

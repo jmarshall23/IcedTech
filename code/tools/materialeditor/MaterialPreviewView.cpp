@@ -501,6 +501,7 @@ void idGLDrawableView::draw(int x, int y, int w, int h) {
 	int i;
 	renderView_t	refdef;
 	const idMaterial		*mat = material;
+	rvmPerformanceMetrics_t metrics;
 
 	if (mat) {
 		glViewport(x, y, w, h);
@@ -536,7 +537,7 @@ void idGLDrawableView::draw(int x, int y, int w, int h) {
 			drawLights( &refdef );
 		}
 
-		renderSystem->EndFrame( NULL, NULL );
+		renderSystem->EndFrame( metrics );
 
 		world->DebugClearLines( refdef.time );
 

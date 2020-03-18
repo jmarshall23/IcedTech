@@ -332,7 +332,7 @@ extern idGameEdit *				gameEdit;
 ===============================================================================
 */
 // jmarshall
-const int GAME_API_VERSION		= 4008;
+const int GAME_API_VERSION		= 4009;
 // jmarshall end
 
 typedef struct {

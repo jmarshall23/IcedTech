@@ -1783,6 +1783,9 @@ void	RB_STD_DrawView( void ) {
 	// subviews
 	RB_STD_FillDepthBuffer( drawSurfs, numDrawSurfs );
 
+	// Run Occlusion Queries for the lights.
+	RB_Draw_LightOcclusion();
+
 	// main light renderer
 	RB_Interaction_DrawInteractions();
 
@@ -1804,5 +1807,4 @@ void	RB_STD_DrawView( void ) {
 	}
 
 	RB_RenderDebugTools( drawSurfs, numDrawSurfs );
-
 }

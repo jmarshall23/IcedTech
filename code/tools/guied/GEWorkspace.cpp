@@ -264,8 +264,7 @@ Renders the workspace to the given DC
 */
 void rvGEWorkspace::Render ( HDC hdc )
 {
-	int		front;
-	int		back;
+	rvmPerformanceMetrics_t metrics;
 	float	scale;
 	
 	scale = g_ZoomScales[mZoom];
@@ -322,7 +321,7 @@ void rvGEWorkspace::Render ( HDC hdc )
 	mInterface->Redraw ( 0 ); // eventLoop->Milliseconds() );
 
 	// We are done using the renderSystem now
-	renderSystem->EndFrame( &front, &back );
+	renderSystem->EndFrame( metrics );
 
 	if ( mApplication->GetActiveWorkspace ( ) == this )
 	{

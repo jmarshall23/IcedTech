@@ -151,6 +151,8 @@ public:
 
 // jmarshall
 	virtual void	RunSessionTic(void) = 0;
+
+	virtual rvmPerformanceMetrics_t* GetGameRenderMetrics(void) = 0;
 // jmarshall end
 
 	// The render world and sound world used for this session.

@@ -130,6 +130,7 @@ public:
 
 // jmarshall
 	virtual void	RunSessionTic(void);
+	virtual rvmPerformanceMetrics_t* GetGameRenderMetrics(void) { return &gameRenderMetrics; }
 // jmarshall end
 
 	//=====================================
@@ -179,6 +180,8 @@ public:
 	static idCVar		gui_configServerRate;
 
 	int					timeHitch;
+
+	rvmPerformanceMetrics_t	gameRenderMetrics;
 
 	bool				menuActive;
 	idSoundWorld *		menuSoundWorld;			// so the game soundWorld can be muted

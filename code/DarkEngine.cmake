@@ -113,6 +113,8 @@ set(src_engine
 	./renderer/DXT
 	./renderer/GLMatrix.cpp
 	./renderer/GLMatrix.h
+	./renderer/GpuTimer.cpp
+	./renderer/GpuTimer.h
 	./renderer/GraphicsContext.h
 	./renderer/GuiModel.cpp
 	./renderer/GuiModel.h

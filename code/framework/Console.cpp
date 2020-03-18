@@ -164,7 +164,20 @@ void SCR_DrawTextRightAlign(float &y, const char *text, ...) {
 }
 
 
+/*
+==================
+SCR_PerfColor
+==================
+*/
+idVec4 SCR_PerfColor(int num, int greenMin, int yellowMin) {
+	if (num < greenMin)
+		return colorWhite;
 
+	if (num < yellowMin)
+		return colorYellow;
+
+	return colorRed;
+}
 
 /*
 ==================
@@ -181,6 +194,7 @@ float SCR_DrawFPS(float y) {
 	int		fps;
 	static	int	previous;
 	int		t, frameTime;
+	rvmPerformanceMetrics_t* metrics;
 
 	// don't use serverTime, because that will be drifting to
 	// correct for internet lag changes, timescales, timedemos, etc
@@ -203,12 +217,55 @@ float SCR_DrawFPS(float y) {
 		fps = (fps + 5) / 10;
 
 		s = va("%ifps", fps);
-		w = strlen(s) * BIGCHAR_WIDTH;
+		w = strlen(s) * SMALLCHAR_WIDTH;
 
-		renderSystem->DrawBigStringExt(SCREEN_WIDTH - w, idMath::FtoiFast(y) + 2, s, colorWhite, true, localConsole.charSetShader);
+		renderSystem->DrawSmallStringExt(SCREEN_WIDTH - w, idMath::FtoiFast(y) + 2, s, colorWhite, true, localConsole.charSetShader);
 	}
 
-	return y + BIGCHAR_HEIGHT + 4;
+	metrics = session->GetGameRenderMetrics();
+
+	s = va("GAME: %dms", time_gameFrame);
+	w = strlen(s) * SMALLCHAR_WIDTH;
+	renderSystem->DrawSmallStringExt(SCREEN_WIDTH - w, idMath::FtoiFast(y) + SMALLCHAR_HEIGHT, s, SCR_PerfColor(time_gameFrame, 8, 12), true, localConsole.charSetShader);
+	y += SMALLCHAR_HEIGHT;
+
+	s = va("GPU: %dms", metrics->gpuTime);
+	w = strlen(s) * SMALLCHAR_WIDTH;
+	renderSystem->DrawSmallStringExt(SCREEN_WIDTH - w, idMath::FtoiFast(y) + SMALLCHAR_HEIGHT, s, SCR_PerfColor(metrics->gpuTime, 11, 16), true, localConsole.charSetShader);
+	y += SMALLCHAR_HEIGHT;
+
+	s = va("RENDER_FRONTEND: %dms", metrics->frontendMsec);
+	w = strlen(s) * SMALLCHAR_WIDTH;
+	renderSystem->DrawSmallStringExt(SCREEN_WIDTH - w, idMath::FtoiFast(y) + SMALLCHAR_HEIGHT, s, SCR_PerfColor(metrics->frontendMsec, 4, 8), true, localConsole.charSetShader);
+	y += SMALLCHAR_HEIGHT;
+
+	s = va("RENDER_BACKEND: %dms", metrics->backendMsec);
+	w = strlen(s) * SMALLCHAR_WIDTH;
+	renderSystem->DrawSmallStringExt(SCREEN_WIDTH - w, idMath::FtoiFast(y) + SMALLCHAR_HEIGHT, s, SCR_PerfColor(metrics->backendMsec, 4, 8), true, localConsole.charSetShader);
+	y += SMALLCHAR_HEIGHT;
+
+	s = va("RENDER_TOTAL: %dms", metrics->frontendMsec + metrics->backendMsec);
+	w = strlen(s) * SMALLCHAR_WIDTH;
+	renderSystem->DrawSmallStringExt(SCREEN_WIDTH - w, idMath::FtoiFast(y) + SMALLCHAR_HEIGHT, s, SCR_PerfColor(metrics->frontendMsec + metrics->backendMsec, 8, 12), true, localConsole.charSetShader);
+	y += SMALLCHAR_HEIGHT;
+
+	s = va("LIGHT_CPU: %d", metrics->frustumCulledLights);
+	w = strlen(s) * SMALLCHAR_WIDTH;
+	renderSystem->DrawSmallStringExt(SCREEN_WIDTH - w, idMath::FtoiFast(y) + SMALLCHAR_HEIGHT, s, colorWhite, true, localConsole.charSetShader);
+	y += SMALLCHAR_HEIGHT;
+
+	s = va("LIGHT_GPU: %d", metrics->gpuCulledLights);
+	w = strlen(s) * SMALLCHAR_WIDTH;
+	renderSystem->DrawSmallStringExt(SCREEN_WIDTH - w, idMath::FtoiFast(y) + SMALLCHAR_HEIGHT, s, colorWhite, true, localConsole.charSetShader);
+	y += SMALLCHAR_HEIGHT;
+
+	s = va("SHADOWS: %d", metrics->shadowedLightCount);
+	w = strlen(s) * SMALLCHAR_WIDTH;
+	renderSystem->DrawSmallStringExt(SCREEN_WIDTH - w, idMath::FtoiFast(y) + SMALLCHAR_HEIGHT, s, SCR_PerfColor(metrics->shadowedLightCount, 8, 12), true, localConsole.charSetShader);
+	y += SMALLCHAR_HEIGHT;
+
+
+	return y + BIGCHAR_HEIGHT + 6;
 }
 
 /*

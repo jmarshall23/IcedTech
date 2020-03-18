@@ -2089,9 +2089,9 @@ void CCamWnd::Cam_Render() {
 
 	game->RenderScene(&refdef, g_qeglobals.rw);
 
-	int	frontEnd, backEnd;
+	rvmPerformanceMetrics_t metrics;
 
-	renderSystem->EndFrame( &frontEnd, &backEnd );
+	renderSystem->EndFrame( metrics );
 //common->Printf( "front:%i back:%i\n", frontEnd, backEnd );
 
 	//glPopAttrib();

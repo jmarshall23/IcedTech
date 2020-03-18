@@ -2472,6 +2472,8 @@ void idAsyncServer::RunFrame( void ) {
 		cvarSystem->ClearModifiedFlags( CVAR_USERINFO );
 	}
 
+	time_gameFrame = 0;
+
 	// advance the server game
 	while( gameTimeResidual >= USERCMD_MSEC ) {
 
@@ -2482,7 +2484,10 @@ void idAsyncServer::RunFrame( void ) {
 		DuplicateUsercmds( gameFrame, gameTime );
 
 		// advance game
+		int start = Sys_Milliseconds();
 		gameReturn_t ret = game->RunFrame( userCmds[gameFrame & ( MAX_USERCMD_BACKUP - 1 ) ] );
+		int end = Sys_Milliseconds();
+		time_gameFrame += end - start;
 
 		idAsyncNetwork::ExecuteSessionCommand( ret.sessionCommand );
 

@@ -577,6 +577,10 @@ void RB_Draw_ShadowMaps(void) {
 		if (vLight->lightDef->parms.ambientLight)
 			continue;
 
+		if (vLight->visibleFrame - tr.frameCount > r_occlusionQueryDelay.GetInteger()) {
+			continue;
+		}
+
 		// Set the initial shadow map slice which is needed for rendering.
 		vLight->shadowMapSlice = backEnd.c_numShadowMapSlices;
 

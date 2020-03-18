@@ -45,6 +45,7 @@ rvmReflectionProbe::Capture
 ======================
 */
 void rvmReflectionProbe::Capture(void) {
+	rvmPerformanceMetrics_t metrics;
 	idTempArray<byte>	captureFrameBuffer(captureSize * captureSize * 4);
 	char* extensions[6] = { "_px", "_nx", "_py", "_ny", "_pz", "_nz" };
 
@@ -106,7 +107,7 @@ void rvmReflectionProbe::Capture(void) {
 		// Render this slice of the cubemap.
 		renderSystem->BeginFrame(renderView.window_width, renderView.window_height);
 			gameLocal.RenderScene(&renderView, gameRenderWorld);
-		renderSystem->EndFrame(NULL, NULL);
+		renderSystem->EndFrame(metrics);
 
 		// Read back the cubemap image.
 		renderSystem->ReadRenderTexture(gameLocal.GetGameRender()->forwardRenderPassResolvedRT, captureFrameBuffer.Ptr());

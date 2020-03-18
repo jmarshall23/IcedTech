@@ -37,6 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "RenderMatrix.h"
 #include "VirtualTexture.h"
 #include "RenderShadows.h"
+#include "GpuTimer.h"
 
 class idRenderWorldLocal;
 
@@ -321,6 +322,9 @@ typedef struct viewLight_s {
 
 	// Start shadow map slice.
 	int						shadowMapSlice;
+
+	// Frame that the light was visible.
+	int						visibleFrame;
 
 	// if the view isn't inside the light, we can use the non-reversed
 	// shadow drawing, avoiding the draws of the front and rear caps
@@ -688,6 +692,8 @@ typedef struct {
 	const viewDef_t	*	viewDef;
 	backEndCounters_t	pc;
 
+	rvmPerformanceMetrics_t perfMetrics;
+
 	const viewEntity_t *currentSpace;		// for detecting when a matrix must change
 	idScreenRect		currentScissor;
 	// for scissor clipping, local inside renderView viewport
@@ -779,7 +785,7 @@ public:
 	virtual void			WriteDemoPics();
 	virtual void			DrawDemoPics();
 	virtual void			BeginFrame( int windowWidth, int windowHeight );
-	virtual void			EndFrame( int *frontEndMsec, int *backEndMsec );
+	virtual void			EndFrame(rvmPerformanceMetrics_t& metrics);
 	virtual void			TakeScreenshot( int width, int height, const char *fileName, int downSample, renderView_t *ref );
 	virtual void			CropRenderSize( int width, int height, bool makePowerOfTwo = false, bool forceDimensions = false );
 	virtual void			CaptureRenderToImage( const char *imageName );
@@ -872,6 +878,8 @@ public:
 	class idGuiModel *		demoGuiModel;
 
 	unsigned short			gammaTable[256];	// brightness / gamma modify this
+
+	rvmPerformanceMetrics_t previousFrameMetrics;
 };
 
 extern backEndState_t		backEnd;
@@ -1055,6 +1063,7 @@ extern idCVar r_debugPolygonFilled;
 extern idCVar r_materialOverride;		// override all materials
 
 extern idCVar r_debugRenderToTexture;
+extern idCVar r_occlusionQueryDelay;
 
 /*
 ====================================================================
@@ -1388,6 +1397,8 @@ void	R_ARB2_Init( void );
 void	RB_Interaction_DrawInteractions( void );
 void	R_ReloadARBPrograms_f( const idCmdArgs &args );
 int		R_FindARBProgram( GLenum target, const char *program );
+
+void	RB_Draw_LightOcclusion(void);
 
 typedef enum {
 	PROG_INVALID,

@@ -90,8 +90,6 @@ idCVar com_product_lang_ext( "com_product_lang_ext", "1", CVAR_INTEGER | CVAR_SY
 // com_speeds times
 int				time_gameFrame;
 int				time_gameDraw;
-int				time_frontend;			// renderSystem frontend time
-int				time_backend;			// renderSystem backend time
 
 int				com_frameTime;			// time for the current frame in milliseconds
 int				com_frameNumber;		// variable frame number
@@ -2400,6 +2398,8 @@ idCommonLocal::InitRenderSystem
 =================
 */
 void idCommonLocal::InitRenderSystem( void ) {
+	rvmPerformanceMetrics_t metrics;
+
 	if ( com_skipRenderer.GetBool() ) {
 		return;
 	}
@@ -2408,7 +2408,7 @@ void idCommonLocal::InitRenderSystem( void ) {
 
 	renderSystem->BeginFrame(renderSystem->GetScreenWidth(), renderSystem->GetScreenHeight());
 		renderSystem->DrawStretchPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1, 1, declManager->FindMaterial("splashScreen"));
-	renderSystem->EndFrame(NULL, NULL);
+	renderSystem->EndFrame(metrics);
 }
 
 /*
@@ -2459,17 +2459,6 @@ void idCommonLocal::Frame( void ) {
 			// normal, in-sequence screen update
 			session->UpdateScreen( false );
 		}
-
-		// report timing information
-		if ( com_speeds.GetBool() ) {
-			static int	lastTime;
-			int		nowTime = Sys_Milliseconds();
-			int		com_frameMsec = nowTime - lastTime;
-			lastTime = nowTime;
-			Printf( "frame:%i all:%3i gfr:%3i rf:%3i bk:%3i\n", com_frameNumber, com_frameMsec, time_gameFrame, time_frontend, time_backend );
-			time_gameFrame = 0;
-			time_gameDraw = 0;
-		}	
 
 		soundSystem->Render();
 

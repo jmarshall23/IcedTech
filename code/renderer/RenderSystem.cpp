@@ -680,8 +680,9 @@ EndFrame
 Returns the number of msec spent in the back end
 =============
 */
-void idRenderSystemLocal::EndFrame( int *frontEndMsec, int *backEndMsec ) {
+void idRenderSystemLocal::EndFrame(rvmPerformanceMetrics_t& metrics) {
 	emptyCommand_t *cmd;
+	int frontEndMsec;
 
 	if ( !glConfig.isInitialized ) {
 		return;
@@ -691,13 +692,7 @@ void idRenderSystemLocal::EndFrame( int *frontEndMsec, int *backEndMsec ) {
 	guiModel->EmitFullScreen();
 	guiModel->Clear();
 
-	// save out timing information
-	if ( frontEndMsec ) {
-		*frontEndMsec = pc.frontEndMsec;
-	}
-	if ( backEndMsec ) {
-		*backEndMsec = backEnd.pc.msec;
-	}
+	frontEndMsec = pc.frontEndMsec;
 
 	// print any other statistics and clear all of them
 	R_PerformanceCounters();
@@ -730,6 +725,9 @@ void idRenderSystemLocal::EndFrame( int *frontEndMsec, int *backEndMsec ) {
 		}
 	}
 
+	metrics = tr.previousFrameMetrics;
+	metrics.frontendMsec = frontEndMsec;
+	metrics.backendMsec = backEnd.pc.msec;
 }
 
 /*

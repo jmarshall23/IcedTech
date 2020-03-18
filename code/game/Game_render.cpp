@@ -170,7 +170,7 @@ void idGameLocal::RenderScene(const renderView_t *view, idRenderWorld *renderWor
 		renderSystem->DrawStretchPic(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f, 1.0f, 0.0f, gameRender.noPostProcessMaterial);
 
 		// Copy everything to _currentRender
-		renderSystem->CaptureRenderToImage("_currentRender");
+		//renderSystem->CaptureRenderToImage("_currentRender");
 	}
 
 	gameRender.feedbackBufferId = !gameRender.feedbackBufferId;

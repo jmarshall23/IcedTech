@@ -464,8 +464,8 @@ void idGLDrawableMaterial::draw(int x, int y, int w, int h) {
 		refdef.time = eventLoop->Milliseconds();
 
 		world->RenderScene( &refdef );
-		int frontEnd, backEnd;
-		renderSystem->EndFrame( &frontEnd, &backEnd );
+		rvmPerformanceMetrics_t metrics;
+		renderSystem->EndFrame( metrics );
 
 		glMatrixMode( GL_MODELVIEW );
 		glLoadIdentity();
@@ -692,8 +692,8 @@ void idGLDrawableModel::draw(int x, int y, int w, int h) {
 	refdef.time = eventLoop->Milliseconds();
 
 	world->RenderScene( &refdef );
-	int frontEnd, backEnd;
-	renderSystem->EndFrame( &frontEnd, &backEnd );
+	rvmPerformanceMetrics_t metrics;
+	renderSystem->EndFrame( metrics );
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -833,7 +833,8 @@ void idGLDrawableConsole::draw(int x, int y, int w, int h) {
 
 	console->Draw( true );
 
-	renderSystem->EndFrame( NULL, NULL );
+	rvmPerformanceMetrics_t metrics;
+	renderSystem->EndFrame( metrics );
 	glPopAttrib();
 }
 
