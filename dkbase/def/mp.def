@@ -361,7 +361,7 @@ entityDef player_doommarine_mp {
 
 	"health"							"100"
 	"pm_walkspeed"						"200"
-	"pm_runspeed"						"350"
+	"pm_runspeed"						"400"
 	"maxarmor"							"200"
 	"deplete_armor"						"100"	// deplete the armor when above this
 	"deplete_rate"						"1.5"	// every x seconds
