@@ -138,7 +138,7 @@ static int2 ComputeMipMapLevel(isampler2D pageOffsetTexture, float2 texCoords, f
 	texCoords = texCoords * float2(width, height);
 
 	float2 mipMapLevel = texQueryLOD(pageOffsetTexture, texCoords);
-	return int2(mipMapLevel.x, mipMapLevel.y);
+	return int2(0, 0);
 }
 
 // https://www.gamedev.net/forums/topic/687535-implementing-a-cube-map-lookup-function/

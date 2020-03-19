@@ -9,7 +9,7 @@
 
 rvmVirtualTextureSystem virtualTextureSystem;
 
-idCVar vt_ImageSize("vt_ImageSize", "8192", CVAR_INTEGER | CVAR_ROM, "size of the albedo/spec/normal virtual texture");
+idCVar vt_ImageSize("vt_ImageSize", "16384", CVAR_INTEGER | CVAR_ROM, "size of the albedo/spec/normal virtual texture");
 
 //
 // ReadByte

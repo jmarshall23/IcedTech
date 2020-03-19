@@ -52,8 +52,8 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	float heightInPages = pageOffsetTextureSizeMip.y;
 	
 	float2 pageId;
-	pageId.x = fragment.texcoord0.x * widthInPages;
-	pageId.y = fragment.texcoord0.y * heightInPages;
+	pageId.x = texCoords.x * widthInPages;
+	pageId.y = texCoords.y * heightInPages;
 
 	int2 lookup, texeluv;
 	lookup.x = int(mod(pageId.x, widthInPages));
