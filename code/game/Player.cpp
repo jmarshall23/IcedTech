@@ -4741,12 +4741,12 @@ void idPlayer::BobCycle( const idVec3 &pushVelocity ) {
 		return;
 	}
 
-	if ( !physicsObj.HasGroundContacts() || influenceActive == INFLUENCE_LEVEL2 || ( gameLocal.isMultiplayer && spectating ) ) {
+	if ( !physicsObj.HasGroundContacts() || ( gameLocal.isMultiplayer && spectating ) ) {
 		// airborne
 		bobCycle = 0;
 		bobFoot = 0;
 		bobfracsin = 0;
-	} else if ( ( !usercmd.forwardmove && !usercmd.rightmove ) || ( xyspeed <= MIN_BOB_SPEED ) ) {
+	} else if ( ( !usercmd.forwardmove && !usercmd.rightmove ) ) {
 		// start at beginning of cycle again
 		bobCycle = 0;
 		bobFoot = 0;
@@ -5949,7 +5949,7 @@ void idPlayer::Move( void ) {
  		loggedAccel_t	*acc = &loggedAccel[currentLoggedAccel&(NUM_LOGGED_ACCELS-1)];
 		currentLoggedAccel++;
 		acc->time = gameLocal.time;
-		acc->dir[2] = 200;
+		acc->dir[2] = 270;
 		acc->dir[0] = acc->dir[1] = 0;
 	}
 

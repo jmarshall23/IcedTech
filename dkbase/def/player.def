@@ -774,7 +774,7 @@ entityDef player_base {
 	"weapon_nightmare"					"weapon_fists,weapon_machinegun"
 	"current_weapon"					"0"
 	
-	"pm_jumpheight"						"48"
+	"pm_jumpheight"						"65"
 	"pm_stepsize"						"16"
 	"pm_crouchspeed"					"80"
 	"pm_walkspeed"						"140"
