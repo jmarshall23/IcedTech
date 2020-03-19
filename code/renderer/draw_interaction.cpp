@@ -76,7 +76,14 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 
 		virtualPageInfo.x = din->surf->material->GetVirtualAlbedoImage()->GetWidth(0);
 		virtualPageInfo.y = din->surf->material->GetVirtualAlbedoImage()->GetHeight(0);
-		virtualPageInfo.z = 0;
+		if(!din->surf->forceVirtualTextureHighQuality)
+		{
+			virtualPageInfo.z = 0;
+		}
+		else
+		{
+			virtualPageInfo.z = 1;
+		}
 		virtualPageInfo.w = 0;
 	}
 	else

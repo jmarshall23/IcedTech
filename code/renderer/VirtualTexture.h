@@ -15,6 +15,8 @@
 
 #define MAXVIRTUALMATERIALS			1024
 
+#define MAX_TRANSCODE_PAGE_QUEUE	4096
+
 //
 // rvmVirtualImage
 //
@@ -102,6 +104,30 @@ ID_INLINE void UnpackFeedbackPixel(feedbackPixel_t &pixel, int &pageX, int &page
 	pageLOD = Float16ToFloat(pixel.data[3]);
 }
 
+struct transcodePageResult_t {
+	transcodePageResult_t() {
+		transcodePage = new byte[VIRTUALTEXTURE_TILESIZE * VIRTUALTEXTURE_TILESIZE];
+		hasNewData = false;
+		uploadX = 0;
+		uploadY = 0;
+		size = 0;
+		pageMemSize = 0;
+		image = NULL;
+	}
+	~transcodePageResult_t() {
+		delete transcodePage;
+		hasNewData = false;
+	}
+
+	bool hasNewData;
+	int uploadX;
+	int uploadY;
+	idImage* image;
+	int size;
+	int pageMemSize;
+	byte* transcodePage;
+};
+
 //
 // rvmVirtualTextureSystem
 //
@@ -128,11 +154,16 @@ public:
 	// Clears the virtual texture cache.
 	void					ClearCache(void);
 
+	void					PreFeedbackJobWork(idImage* feedbackImage);
+
 	// Processes the feedback job.
-	void					RunFeedbackJob(idImage *feedbackImage);
+	void					RunFeedbackJob(void* ThreadData);
 
 	// Assign a material to the virtual material table.
 	void					SetVirtualMaterial(int idx, idMaterial *material);
+
+	// Returns true if the virtual feedback system is running.
+	bool					IsFeedbackJobRunning(void) { return feedbackJobRunning; }
 private:
 	// Returns the name of the virtual texture file.
 	const char				*GetVirtualTextureFileName();
@@ -156,6 +187,9 @@ private:
 	// Resize Image
 	void					ResizeImage(const char *sourceImageName, const char *writeFileName, int width, int height);
 
+	// Finds the next free transcode page result.
+	transcodePageResult_t*  FindFreeTranscodePageResult(void);
+
 	idFile					*virtualTextureFile;
 	idFile					*virtualTextureWriter;
 
@@ -174,7 +208,12 @@ private:
 	feedbackPixel_t			*feedbackCPUbuffer;
 
 
-	byte					*transcodePage;
+	transcodePageResult_t   transcodedPageResults[MAX_TRANSCODE_PAGE_QUEUE];
+
+	int						feedbackImageWidth;
+	int						feedbackImageHeight;
+
+	bool					feedbackJobRunning; // Todo: Should this be mutex protected?
 private:
 	void					ClearVTPages(void);
 
@@ -183,6 +222,7 @@ private:
 	rvmVirtualImage			*defaultSpecVirtualImage;
 	idList<rvmVirtualImage *> defaultNormalVirtualImage;
 private:
+	idList<idMaterial*>     updatedMaterials;
 	byte					*transcodeFont;
 	int						transcodeFontWidth;
 	int						transcodeFontHeight;

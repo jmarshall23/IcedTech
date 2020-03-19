@@ -81,12 +81,33 @@ void rvmVirtualTextureSystem::DrawTranscodeText(const char *msg, int x, int y, b
 
 /*
 ============================
+rvmVirtualTextureSystem::FindFreeTranscodePageResult
+============================
+*/
+transcodePageResult_t* rvmVirtualTextureSystem::FindFreeTranscodePageResult(void) {
+	for(int i = 0; i < MAX_TRANSCODE_PAGE_QUEUE; i++) {
+		if(!transcodedPageResults[i].hasNewData) {
+			transcodedPageResults[i].hasNewData = true;
+			return &transcodedPageResults[i];
+		}
+	}
+
+	common->FatalError("FindFreeTranscodePageResult: No free transcode page queues!\n");
+
+	return NULL;
+}
+
+/*
+============================
 rvmVirtualTextureSystem::TranscodePage
 ============================
 */
 void rvmVirtualTextureSystem::TranscodePage(idImage *image, rvmVirtualImage *virtualImage, int pageX, int pageY, int uploadX, int uploadY, int pageLOD) {
 	int size = VIRTUALTEXTURE_TILESIZE;
 	int pageMemSize = VIRTUALTEXTURE_TILESIZE * VIRTUALTEXTURE_TILESIZE;
+	transcodePageResult_t *pageResult = FindFreeTranscodePageResult();
+
+	pageResult->image = image;
 
 	// Clamp page LOD between 0 and max mips.
 	//pageLOD = 0;// idMath::ClampInt(0, virtualImage->numMips - 1, pageLOD);
@@ -94,14 +115,14 @@ void rvmVirtualTextureSystem::TranscodePage(idImage *image, rvmVirtualImage *vir
 	int tilePagePosition = virtualImage->GetStartPageOffset(pageLOD) + (pageMemSize * pageY * virtualImage->GetWidthInPages(pageLOD)) + (pageMemSize * pageX);
 	virtualTextureFile->Seek(tilePagePosition, FS_SEEK_SET);
 
-	virtualTextureFile->Read(transcodePage, pageMemSize);
+	virtualTextureFile->Read(pageResult->transcodePage, pageMemSize);
 
 	if (vt_transcodeShowPages.GetInteger() > 0 && virtualImage->GetUsage() == TD_DIFFUSE)
 	{
 		idDxtDecoder decoder;
 		byte *temp = new byte[VIRTUALTEXTURE_TILESIZE * VIRTUALTEXTURE_TILESIZE * 4];
 
-		decoder.DecompressImageDXT5(transcodePage, temp, VIRTUALTEXTURE_TILESIZE, VIRTUALTEXTURE_TILESIZE);
+		decoder.DecompressImageDXT5(pageResult->transcodePage, temp, VIRTUALTEXTURE_TILESIZE, VIRTUALTEXTURE_TILESIZE);
 
 		for (int d = 0; d < VIRTUALTEXTURE_TILESIZE; d++)
 		{
@@ -170,12 +191,17 @@ void rvmVirtualTextureSystem::TranscodePage(idImage *image, rvmVirtualImage *vir
 		}
 
 		idDxtEncoder encoder;
-		encoder.CompressImageDXT5Fast(temp, transcodePage, VIRTUALTEXTURE_TILESIZE, VIRTUALTEXTURE_TILESIZE);
+		encoder.CompressImageDXT5Fast(temp, pageResult->transcodePage, VIRTUALTEXTURE_TILESIZE, VIRTUALTEXTURE_TILESIZE);
 		delete temp;
 	}
 
-	image->Bind();
-	glCompressedTexSubImage2D(GL_TEXTURE_2D, 0, uploadX * size, uploadY * size, size, size, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, pageMemSize, transcodePage);
+	pageResult->uploadX = uploadX;
+	pageResult->uploadY = uploadY;
+	pageResult->size = size;
+	pageResult->pageMemSize = pageMemSize;
+
+	//image->Bind();
+	//glCompressedTexSubImage2D(GL_TEXTURE_2D, 0, uploadX * size, uploadY * size, size, size, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, pageMemSize, transcodePage);
 
 	if (vt_transcodeDebug.GetBool())
 	{

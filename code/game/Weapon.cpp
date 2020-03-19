@@ -1819,6 +1819,9 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 	// only show the surface in player view
 	renderEntity.allowSurfaceInViewID = owner->entityNumber+1;
 
+	// first person weapons shouldn't have mipmapping.
+	renderEntity.forceVirtualTextureHighQuality = true;
+
 	// crunch the depth range so it never pokes into walls this breaks the machine gun gui
 	renderEntity.weaponDepthHack = true;
 	renderEntity.skipEntityViewCulling = true;

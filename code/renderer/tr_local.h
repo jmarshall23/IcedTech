@@ -127,6 +127,7 @@ typedef struct drawSurf_s {
 	idScreenRect			scissorRect;	// for scissor clipping, local inside renderView viewport
 	int						dsFlags;			// DSF_VIEW_INSIDE_SHADOW, etc
 	struct vertCache_s		*dynamicTexCoords;	// float * in vertex cache memory
+	bool					forceVirtualTextureHighQuality;
 	// specular directions for non vertex program cards, skybox texcoords, etc
 } drawSurf_t;
 
@@ -882,6 +883,8 @@ public:
 	unsigned short			gammaTable[256];	// brightness / gamma modify this
 
 	rvmPerformanceMetrics_t previousFrameMetrics;
+
+	idParallelJobList*		vtFeedbackJobList;
 };
 
 extern backEndState_t		backEnd;
@@ -1265,7 +1268,7 @@ void R_AddDrawSurf( const srfTriangles_t *tri, const viewEntity_t *space, const 
 					const idMaterial *shader, const idScreenRect &scissor );
 
 void R_LinkLightSurf( const drawSurf_t **link, const srfTriangles_t *tri, const viewEntity_t *space, 
-				   const idRenderLightLocal *light, const idMaterial *shader, const idScreenRect &scissor, bool viewInsideShadow );
+				   const idRenderLightLocal *light, const idMaterial *shader, const idScreenRect &scissor, bool viewInsideShadow, bool forceVirtualTextureHighQuality);
 
 bool R_CreateAmbientCache( srfTriangles_t *tri, bool needsLighting );
 bool R_CreateLightingCache( const idRenderEntityLocal *ent, const idRenderLightLocal *light, srfTriangles_t *tri );
@@ -1736,5 +1739,9 @@ ID_INLINE void Draw_SetMVP(const idRenderMatrix & mvp) {
 }
 
 void R_ExtractInteractionTextureMatrix(const textureStage_t *texture, const float *surfaceRegs, idVec4 matrix[2]);
+
+
+// Render Jobs
+void R_FeedbackJobThread(void *ThreadData);
 
 #endif /* !__TR_LOCAL_H__ */

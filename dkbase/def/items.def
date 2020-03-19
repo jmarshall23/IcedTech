@@ -321,7 +321,7 @@ entityDef item_data_linker {
 	"snd_acquire"			"guisounds_item"
 }
 
-entityDef item_medkit {
+entityDef item_health {
 	"inherit"				"item_default"
 	"editor_color"			".3 .3 1"
 	"editor_mins"			"-16 -16 0"
@@ -330,7 +330,7 @@ entityDef item_medkit {
 	"editor_usage"			"Large Med Kit"
 
 	"spawnclass"			"idItem"
-	"model" 				"models/items/medkit/medkit_large.lwo"
+	"model" 				"models/items/health/large_cross.mdr"
 	"size"					"32 32 32"
 	"inv_name"				"Med Kit"
 	"inv_health"			"25"
@@ -340,7 +340,7 @@ entityDef item_medkit {
 	"modelindex"			"MODELINDEX_HEALTHLARGE"
 }
 
-entityDef item_medkit_small {
+entityDef item_health_small {
 	"inherit"				"item_default"
 	"editor_color"			".3 .3 1"
 	"editor_mins"			"-16 -16 0"
@@ -349,7 +349,7 @@ entityDef item_medkit_small {
 	"editor_usage"			"Small Med Kit"
 
 	"spawnclass"			"idItem"
-	"model" 				"models/items/medkit/medkit_small.lwo"
+	"model" 				"models/items/health/small_cross.mdr"
 	"size"					"32 32 32"
 	"inv_name"				"Med Kit"
 	"inv_health"			"15"

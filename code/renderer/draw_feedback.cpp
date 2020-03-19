@@ -107,7 +107,14 @@ void RB_T_FillFeedbackPass(const drawSurf_t *surf) {
 		virtualTextureFeedbackParms.x = shader->GetVirtualTexturePageSource() + 1;
 		virtualTextureFeedbackParms.y = shader->GetVirtualAlbedoImage()->GetWidth(0);
 		virtualTextureFeedbackParms.z = shader->GetVirtualAlbedoImage()->GetHeight(0);
-		virtualTextureFeedbackParms.w = shader->GetPageOffsetNumMips();
+		if (!surf->forceVirtualTextureHighQuality)
+		{
+			virtualTextureFeedbackParms.w = 0;
+		}
+		else
+		{
+			virtualTextureFeedbackParms.w = 1;
+		}
 		R_ExtractInteractionTextureMatrix(surf->material->GetAlbedoTextureStage(), surf->shaderRegisters, diffuseMatrix);
 	}
 	else

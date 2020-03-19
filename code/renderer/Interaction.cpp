@@ -901,13 +901,13 @@ void idInteraction::AddActiveInteraction( void ) {
 					// there are surfaces with NOSELFSHADOW
 					if ( sint->shader->Coverage() == MC_TRANSLUCENT ) {
 						R_LinkLightSurf( &vLight->translucentInteractions, lightTris, 
-							vEntity, lightDef, shader, lightScissor, false );
+							vEntity, lightDef, shader, lightScissor, false, vEntity->entityDef->parms.forceVirtualTextureHighQuality);
 					} else if ( !lightDef->parms.noShadows && sint->shader->TestMaterialFlag(MF_NOSELFSHADOW) ) {
 						R_LinkLightSurf( &vLight->localInteractions, lightTris, 
-							vEntity, lightDef, shader, lightScissor, false );
+							vEntity, lightDef, shader, lightScissor, false, vEntity->entityDef->parms.forceVirtualTextureHighQuality);
 					} else {
 						R_LinkLightSurf( &vLight->globalInteractions, lightTris, 
-							vEntity, lightDef, shader, lightScissor, false );
+							vEntity, lightDef, shader, lightScissor, false, vEntity->entityDef->parms.forceVirtualTextureHighQuality);
 					}
 				}
 			}

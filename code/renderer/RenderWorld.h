@@ -88,6 +88,7 @@ struct renderEntity_t {
 		hModel = nullptr;
 		joints = nullptr;
 		skipEntityViewCulling = false;
+		forceVirtualTextureHighQuality = false;
 	}
 
 	bool HasValidJoints() const { return joints != nullptr; }
@@ -98,6 +99,9 @@ struct renderEntity_t {
 	int						bodyId;
 
 	bool					skipEntityViewCulling;
+
+	// This disables mipmapping on this render entity.
+	bool					forceVirtualTextureHighQuality;
 
 	// Entities that are expensive to generate, like skeletal models, can be
 	// deferred until their bounds are found to be in view, in the frustum

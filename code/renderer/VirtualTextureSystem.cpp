@@ -159,8 +159,6 @@ void rvmVirtualTextureSystem::Init(void) {
 
 	memset(virtualMaterials, 0, sizeof(virtualMaterials));
 
-	transcodePage = new byte[VIRTUALTEXTURE_TILESIZE * VIRTUALTEXTURE_TILESIZE];
-
 	feedbackCPUbuffer = nullptr;
 
 	// Load the default no_spec and default no_normal virtual texture images.

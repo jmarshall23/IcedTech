@@ -6733,6 +6733,14 @@ Version 2
 }
 // entity 1
 {
+"inv_name" "Med Kit"
+"inv_item" "2"
+"classname" "item_health_small"
+"name" "item_health_small_1"
+"origin" "432 784 -112"
+}
+// entity 2
+{
 "classname" "light"
 "name" "light_64"
 "origin" "744 1056 136"
@@ -6743,44 +6751,44 @@ Version 2
 "_color" "0.51 0.82 1"
 "light_radius" "600 600 600"
 }
-// entity 2
+// entity 3
 {
 "classname" "info_player_deathmatch"
 "name" "info_player_deathmatch_1"
 "origin" "-520 752 0"
 }
-// entity 3
+// entity 4
 {
 "classname" "weapon_plasmagun_mp"
 "name" "weapon_plasmagun_mp_1"
 "origin" "712 1136 40"
 }
-// entity 4
+// entity 5
 {
 "classname" "weapon_rocketlauncher_mp"
 "name" "weapon_rocketlauncher_mp_1"
 "origin" "-408 1600 32"
 }
-// entity 5
+// entity 6
 {
 "classname" "weapon_shotgun_mp"
 "name" "weapon_shotgun_mp_1"
 "origin" "192 784 -104"
 }
-// entity 6
+// entity 7
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_1"
 "origin" "304 824 -112"
 }
-// entity 7
+// entity 8
 {
 "classname" "info_player_start"
 "name" "info_player_start_1"
 "origin" "304 704 -144"
 "angle" "90"
 }
-// entity 8
+// entity 9
 {
 "classname" "light"
 "name" "light_56"
@@ -6794,7 +6802,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "150 150 175"
 }
-// entity 9
+// entity 10
 {
 "classname" "light"
 "name" "light_15"
@@ -6806,7 +6814,7 @@ Version 2
 "_color" "1 0.23 0.16"
 "light_radius" "200 200 250"
 }
-// entity 10
+// entity 11
 {
 "classname" "light"
 "name" "light_1"
@@ -6818,7 +6826,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 11
+// entity 12
 {
 "map" "dm2"
 "name" "trigger_changelevel_3"
@@ -6838,7 +6846,7 @@ Version 2
  }
 }
 }
-// entity 12
+// entity 13
 {
 "classname" "light"
 "name" "light_6"
@@ -6850,7 +6858,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 13
+// entity 14
 {
 "classname" "light"
 "name" "light_7"
@@ -6862,7 +6870,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 14
+// entity 15
 {
 "classname" "light"
 "name" "light_8"
@@ -6874,7 +6882,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 15
+// entity 16
 {
 "classname" "light"
 "name" "light_9"
@@ -6886,7 +6894,7 @@ Version 2
 "_color" "0.32 0.32 0.32"
 "light_radius" "400 400 400"
 }
-// entity 16
+// entity 17
 {
 "classname" "light"
 "name" "light_10"
@@ -6898,7 +6906,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 17
+// entity 18
 {
 "classname" "light"
 "name" "light_11"
@@ -6910,7 +6918,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 18
+// entity 19
 {
 "classname" "light"
 "name" "light_12"
@@ -6922,7 +6930,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 19
+// entity 20
 {
 "classname" "light"
 "name" "light_14"
@@ -6934,7 +6942,7 @@ Version 2
 "_color" "0.51 0.82 1"
 "light_radius" "300 300 150"
 }
-// entity 20
+// entity 21
 {
 "classname" "light"
 "name" "light_16"
@@ -6946,7 +6954,7 @@ Version 2
 "_color" "0.51 0.82 1"
 "light_radius" "150 150 150"
 }
-// entity 21
+// entity 22
 {
 "classname" "light"
 "name" "light_17"
@@ -6958,7 +6966,7 @@ Version 2
 "_color" "0.51 0.82 1"
 "light_radius" "150 150 150"
 }
-// entity 22
+// entity 23
 {
 "classname" "light"
 "name" "light_18"
@@ -6970,7 +6978,7 @@ Version 2
 "_color" "0.51 0.82 1"
 "light_radius" "150 150 150"
 }
-// entity 23
+// entity 24
 {
 "classname" "light"
 "name" "light_19"
@@ -6982,7 +6990,7 @@ Version 2
 "_color" "0.51 0.82 1"
 "light_radius" "150 150 150"
 }
-// entity 24
+// entity 25
 {
 "classname" "light"
 "name" "light_20"
@@ -6994,7 +7002,7 @@ Version 2
 "_color" "0.51 0.82 1"
 "light_radius" "150 150 150"
 }
-// entity 25
+// entity 26
 {
 "classname" "light"
 "name" "light_21"
@@ -7006,7 +7014,7 @@ Version 2
 "_color" "0.51 0.82 1"
 "light_radius" "150 150 150"
 }
-// entity 26
+// entity 27
 {
 "classname" "light"
 "name" "light_22"
@@ -7018,7 +7026,7 @@ Version 2
 "_color" "0.51 0.82 1"
 "light_radius" "150 150 150"
 }
-// entity 27
+// entity 28
 {
 "classname" "light"
 "name" "light_23"
@@ -7030,7 +7038,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "300 300 150"
 }
-// entity 28
+// entity 29
 {
 "classname" "light"
 "name" "light_24"
@@ -7042,7 +7050,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "300 300 150"
 }
-// entity 29
+// entity 30
 {
 "classname" "light"
 "name" "light_25"
@@ -7054,7 +7062,7 @@ Version 2
 "_color" "0.39 0.36 0.26"
 "light_radius" "120 120 300"
 }
-// entity 30
+// entity 31
 {
 "classname" "light"
 "name" "light_26"
@@ -7066,7 +7074,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 31
+// entity 32
 {
 "classname" "light"
 "name" "light_27"
@@ -7078,7 +7086,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 32
+// entity 33
 {
 "classname" "light"
 "name" "light_28"
@@ -7090,7 +7098,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 33
+// entity 34
 {
 "classname" "light"
 "name" "light_29"
@@ -7102,7 +7110,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 34
+// entity 35
 {
 "classname" "light"
 "name" "light_30"
@@ -7114,7 +7122,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 150"
 }
-// entity 35
+// entity 36
 {
 "classname" "light"
 "name" "light_31"
@@ -7126,7 +7134,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "150 150 175"
 }
-// entity 36
+// entity 37
 {
 "classname" "light"
 "name" "light_32"
@@ -7138,7 +7146,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "150 150 175"
 }
-// entity 37
+// entity 38
 {
 "classname" "light"
 "name" "light_33"
@@ -7150,7 +7158,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "150 150 175"
 }
-// entity 38
+// entity 39
 {
 "classname" "light"
 "name" "light_34"
@@ -7162,7 +7170,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "150 150 90"
 }
-// entity 39
+// entity 40
 {
 "classname" "light"
 "name" "light_35"
@@ -7174,7 +7182,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "150 150 90"
 }
-// entity 40
+// entity 41
 {
 "classname" "light"
 "name" "light_36"
@@ -7186,7 +7194,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "150 150 90"
 }
-// entity 41
+// entity 42
 {
 "classname" "light"
 "name" "light_37"
@@ -7198,7 +7206,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "150 150 90"
 }
-// entity 42
+// entity 43
 {
 "classname" "light"
 "name" "light_38"
@@ -7210,7 +7218,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "150 150 90"
 }
-// entity 43
+// entity 44
 {
 "classname" "light"
 "name" "light_39"
@@ -7222,7 +7230,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "150 150 90"
 }
-// entity 44
+// entity 45
 {
 "classname" "light"
 "name" "light_40"
@@ -7234,7 +7242,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "250 150 250"
 }
-// entity 45
+// entity 46
 {
 "classname" "light"
 "name" "light_41"
@@ -7246,7 +7254,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "250 150 250"
 }
-// entity 46
+// entity 47
 {
 "classname" "light"
 "name" "light_42"
@@ -7258,7 +7266,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "250 150 250"
 }
-// entity 47
+// entity 48
 {
 "classname" "light"
 "name" "light_43"
@@ -7270,7 +7278,7 @@ Version 2
 "_color" "0.61 0.89 1"
 "light_radius" "150 200 200"
 }
-// entity 48
+// entity 49
 {
 "classname" "light"
 "name" "light_44"
@@ -7282,7 +7290,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "150 150 90"
 }
-// entity 49
+// entity 50
 {
 "classname" "light"
 "name" "light_45"
@@ -7294,7 +7302,7 @@ Version 2
 "_color" "1 0.93 0.68"
 "light_radius" "150 150 250"
 }
-// entity 50
+// entity 51
 {
 "classname" "light"
 "name" "light_46"
@@ -7306,7 +7314,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "150 150 175"
 }
-// entity 51
+// entity 52
 {
 "classname" "light"
 "name" "light_47"
@@ -7318,7 +7326,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "150 150 90"
 }
-// entity 52
+// entity 53
 {
 "classname" "light"
 "name" "light_48"
@@ -7330,7 +7338,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "150 150 90"
 }
-// entity 53
+// entity 54
 {
 "classname" "light"
 "name" "light_49"
@@ -7342,7 +7350,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "150 150 90"
 }
-// entity 54
+// entity 55
 {
 "classname" "light"
 "name" "light_51"
@@ -7354,7 +7362,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "150 150 175"
 }
-// entity 55
+// entity 56
 {
 "classname" "light"
 "name" "light_52"
@@ -7366,7 +7374,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "150 150 175"
 }
-// entity 56
+// entity 57
 {
 "classname" "light"
 "name" "light_53"
@@ -7378,7 +7386,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "150 150 175"
 }
-// entity 57
+// entity 58
 {
 "classname" "light"
 "name" "light_57"
@@ -7392,7 +7400,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "150 150 175"
 }
-// entity 58
+// entity 59
 {
 "classname" "light"
 "name" "light_58"
@@ -7406,7 +7414,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "150 150 175"
 }
-// entity 59
+// entity 60
 {
 "classname" "light"
 "name" "light_59"
@@ -7420,7 +7428,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "150 150 175"
 }
-// entity 60
+// entity 61
 {
 "classname" "light"
 "name" "light_60"
@@ -7432,7 +7440,7 @@ Version 2
 "_color" "0.78 1 0.91"
 "light_radius" "150 250 250"
 }
-// entity 61
+// entity 62
 {
 "classname" "light"
 "name" "light_61"
@@ -7444,7 +7452,7 @@ Version 2
 "_color" "1 0.94 1"
 "light_radius" "150 400 500"
 }
-// entity 62
+// entity 63
 {
 "classname" "light"
 "name" "light_63"
@@ -7456,106 +7464,106 @@ Version 2
 "_color" "1 0.94 1"
 "light_radius" "400 400 400"
 }
-// entity 63
+// entity 64
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_2"
 "origin" "168 1152 -112"
 }
-// entity 64
+// entity 65
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_3"
 "origin" "-304 880 -112"
 }
-// entity 65
+// entity 66
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_4"
 "origin" "440 1504 -112"
 }
-// entity 66
+// entity 67
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_5"
 "origin" "-96 1560 -112"
 }
-// entity 67
+// entity 68
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_6"
 "origin" "176 1568 72"
 }
-// entity 68
+// entity 69
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_7"
 "origin" "768 1144 72"
 }
-// entity 69
+// entity 70
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_8"
 "origin" "1056 1232 72"
 }
-// entity 70
+// entity 71
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_9"
 "origin" "1032 736 72"
 }
-// entity 71
+// entity 72
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_10"
 "origin" "304 592 72"
 }
-// entity 72
+// entity 73
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_11"
 "origin" "-272 776 72"
 }
-// entity 73
+// entity 74
 {
 "classname" "info_reflectionprobe"
 "name" "info_reflectionprobe_12"
 "origin" "-608 1416 72"
 }
-// entity 74
+// entity 75
 {
 "classname" "weapon_shotgun_mp"
 "name" "weapon_shotgun_mp_2"
 "origin" "312 1584 -104"
 }
-// entity 75
+// entity 76
 {
 "classname" "info_player_deathmatch"
 "name" "info_player_deathmatch_2"
 "origin" "232 800 -144"
 "angle" "90"
 }
-// entity 76
+// entity 77
 {
 "classname" "info_player_deathmatch"
 "name" "info_player_deathmatch_3"
 "origin" "-176 1584 -144"
 "angle" "0"
 }
-// entity 77
+// entity 78
 {
 "classname" "info_player_deathmatch"
 "name" "info_player_deathmatch_4"
 "origin" "32 1168 0"
 "angle" "0"
 }
-// entity 78
+// entity 79
 {
 "classname" "weapon_rocketlauncher_mp"
 "name" "weapon_rocketlauncher_mp_2"
 "origin" "424 809 32"
 }
-// entity 79
+// entity 80
 {
 "classname" "light"
 "name" "light_65"
@@ -7567,7 +7575,7 @@ Version 2
 "_color" "0.11 0.19 0.24"
 "light_radius" "150 300 600"
 }
-// entity 80
+// entity 81
 {
 "classname" "light"
 "name" "light_66"
@@ -7579,7 +7587,7 @@ Version 2
 "_color" "0.12 0.2 0.25"
 "light_radius" "150 300 600"
 }
-// entity 81
+// entity 82
 {
 "classname" "light"
 "name" "light_67"
@@ -7587,7 +7595,7 @@ Version 2
 "noshadows" "1"
 "nospecular" "1"
 "nodiffuse" "0"
-"falloff" "0.000000"
+"falloff" "0"
 "_color" "0.1 0.17 0.21"
 "light_radius" "300 150 600"
 }

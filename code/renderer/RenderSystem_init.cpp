@@ -1868,6 +1868,10 @@ void idRenderSystemLocal::Init( void ) {
 
 	renderModelManager->Init();
 
+	// Register the render job lists and the various jobs in those lists.
+	vtFeedbackJobList = parallelJobManager->AllocJobList(JOBLIST_VT_FEEDBACK, JOBLIST_PRIORITY_MEDIUM, 2, 0, NULL);
+	parallelJobManager->RegisterJob((jobRun_t)R_FeedbackJobThread, "R_FeedbackJobThread");
+
 	// set the identity space
 	identitySpace.modelMatrix[0*4+0] = 1.0f;
 	identitySpace.modelMatrix[1*4+1] = 1.0f;
@@ -1894,6 +1898,8 @@ void idRenderSystemLocal::Shutdown( void ) {
 	if ( glConfig.isInitialized ) {
 		globalImages->PurgeAllImages();
 	}
+
+	parallelJobManager->FreeJobList(vtFeedbackJobList);
 
 	renderShadowSystem.Shutdown();
 

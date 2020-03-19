@@ -61,25 +61,64 @@ bool rvmVirtualTextureSystem::CheckFeedbackPixel(feedbackPixel_t pixel, int &upl
 
 /*
 ============================
-rvmVirtualTextureSystem::RunFeedbackJob
+rvmVirtualTextureSystem::PreFeedbackJobWork
 ============================
 */
-void rvmVirtualTextureSystem::RunFeedbackJob(idImage *feedbackImage) {
-	idList<int64_t> feedbackUniqueInfoList;
-	idList<idMaterial *> updatedMaterials;
+void rvmVirtualTextureSystem::PreFeedbackJobWork(idImage* feedbackImage) {
+	feedbackJobRunning = true;
+
+	// Upload any textures we have queued up.
+	for (int i = 0; i < MAX_TRANSCODE_PAGE_QUEUE; i++)
+	{
+		if (!transcodedPageResults[i].hasNewData)
+			continue;
+
+		idImage* image = transcodedPageResults[i].image;
+		int uploadX = transcodedPageResults[i].uploadX;
+		int uploadY = transcodedPageResults[i].uploadY;
+		int size = transcodedPageResults[i].size;
+		int pageMemSize = transcodedPageResults[i].pageMemSize;
+		byte* transcodePage = transcodedPageResults[i].transcodePage;
+
+		transcodedPageResults[i].hasNewData = false;
+
+		image->Bind();
+		glCompressedTexSubImage2D(GL_TEXTURE_2D, 0, uploadX * size, uploadY * size, size, size, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, pageMemSize, transcodePage);
+	}
+
+	// Upload the virtual machine offset changes.
+	for (int i = 0; i < updatedMaterials.Num(); i++)
+	{
+		updatedMaterials[i]->UpdateVirtualMaterialOffsetImage();
+	}
+
+	updatedMaterials.Clear();
 
 	if (feedbackCPUbuffer == nullptr) {
 		feedbackCPUbuffer = new feedbackPixel_t[feedbackImage->GetUploadWidth() * feedbackImage->GetUploadHeight()];
 	}
 
+	glGetTextureImage(feedbackImage->texnum, 0, GL_RGBA, GL_HALF_FLOAT, feedbackImage->GetUploadWidth() * feedbackImage->GetUploadHeight() * sizeof(feedbackPixel_t), feedbackCPUbuffer);
+
+	feedbackImageWidth = feedbackImage->GetUploadWidth();
+	feedbackImageHeight = feedbackImage->GetUploadHeight();
+}
+
+/*
+============================
+rvmVirtualTextureSystem::RunFeedbackJob
+============================
+*/
+void rvmVirtualTextureSystem::RunFeedbackJob(void *ThreadData) {
+	idList<int64_t> feedbackUniqueInfoList;
+	
 	// If the transcode show pages cvar has been changed, reset the current available pages so we can resubmit the transcoded buffers.
 	if (vt_transcodeShowPages.IsModified())
 	{
 		ClearVTPages();
 	}
-
-	glGetTextureImage(feedbackImage->texnum, 0, GL_RGBA, GL_HALF_FLOAT, feedbackImage->GetUploadWidth() * feedbackImage->GetUploadHeight() * sizeof(feedbackPixel_t), feedbackCPUbuffer);
-	for (int i = 0; i < feedbackImage->GetUploadWidth() * feedbackImage->GetUploadHeight(); i++)
+	
+	for (int i = 0; i < feedbackImageWidth * feedbackImageHeight; i++)
 	{
 		if(feedbackCPUbuffer[i].packed == 0)
 			continue;
@@ -144,14 +183,11 @@ void rvmVirtualTextureSystem::RunFeedbackJob(idImage *feedbackImage) {
 		}
 	}
 
-	for (int i = 0; i < updatedMaterials.Num(); i++)
-	{
-		updatedMaterials[i]->UpdateVirtualMaterialOffsetImage();		
-	}
-
 	// If vt_transcodeShowPages has been modified, clear the modified flag.
 	if (vt_transcodeShowPages.IsModified())
 	{
 		vt_transcodeShowPages.ClearModified();
 	}
+
+	feedbackJobRunning = false;
 }

@@ -41,8 +41,9 @@ enum jobSyncType_t {
 
 // NOTE: keep in sync with jobNames[]
 enum jobListId_t {
-	JOBLIST_RENDERER	= 0,
-	JOBLIST_GAME		= 1,
+	JOBLIST_RENDERER	   = 0,
+	JOBLIST_GAME		   = 1,
+	JOBLIST_VT_FEEDBACK	   = 2, 
 	JOBLIST_UTILITY				= 9,			// won't print over-time warnings
 
 	MAX_JOBLISTS				= 32			// the editor may cause quite a few to be allocated

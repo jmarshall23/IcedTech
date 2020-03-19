@@ -1,0 +1,14 @@
+models/items/health/small_cross/smallcross
+{
+	{
+		map models/items/health/redcross.tga
+	}
+}
+
+models/items/health/small_cross/smallcrossenv
+{
+	{
+		blend GL_ONE, GL_ONE
+		map models/items/health/largehelth.tga
+	}
+}

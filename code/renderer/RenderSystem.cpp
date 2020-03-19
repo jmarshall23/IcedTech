@@ -1130,11 +1130,28 @@ bool idRenderSystemLocal::UploadImage( const char *imageName, const byte *data, 
 
 /*
 ===============
+R_FeedbackJobThread
+===============
+*/
+void R_FeedbackJobThread(void* ThreadData) {
+	virtualTextureSystem.RunFeedbackJob(ThreadData);
+}
+
+/*
+===============
 idRenderSystemLocal::RunFeedbackJob
 ===============
 */
 void idRenderSystemLocal::RunFeedbackJob(idRenderTexture *feedbackRT) {
-	virtualTextureSystem.RunFeedbackJob(feedbackRT->GetColorImage(0));
+	if (virtualTextureSystem.IsFeedbackJobRunning())
+		return;
+
+	vtFeedbackJobList->Wait(); // wait until everything is truely done.
+
+	virtualTextureSystem.PreFeedbackJobWork(feedbackRT->GetColorImage(0));
+
+	vtFeedbackJobList->AddJob((jobRun_t)R_FeedbackJobThread, NULL);
+	vtFeedbackJobList->Submit();
 }
 
 /*
