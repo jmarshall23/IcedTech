@@ -190,6 +190,7 @@ public:
 class idRenderLightLocal : public idRenderLight {
 public:
 							idRenderLightLocal();
+							~idRenderLightLocal();
 
 	virtual void			FreeRenderLight();
 	virtual void			UpdateRenderLight( const renderLight_t *re, bool forceUpdate = false );
@@ -215,6 +216,7 @@ public:
 													// in the cached memory
 	bool					archived;				// for demo writing
 
+	class rvmOcclusionQuery* currentOcclusionQuery;
 
 	// derived information
 	idPlane					lightProject[4];
@@ -1064,6 +1066,7 @@ extern idCVar r_materialOverride;		// override all materials
 
 extern idCVar r_debugRenderToTexture;
 extern idCVar r_occlusionQueryDelay;
+extern idCVar r_occlusionQueryTimeOut;
 
 /*
 ====================================================================

@@ -224,6 +224,7 @@ idCVar r_debugRenderToTexture( "r_debugRenderToTexture", "0", CVAR_RENDERER | CV
 idCVar r_debugContext("r_debugContext", "0", CVAR_INTEGER, "");
 
 idCVar r_occlusionQueryDelay("r_occlusionQueryDelay", "60", CVAR_INTEGER, "");
+idCVar r_occlusionQueryTimeOut("r_occlusionQueryTimeOut", "2", CVAR_INTEGER, "Occlusion Query Timeout in Seconds");
 
 /*
 =================

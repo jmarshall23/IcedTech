@@ -17,9 +17,11 @@ public:
 	{
 		glGenQueries(1, &id);
 		queryState = OCCLUSION_QUERY_STATE_HIDDEN;
+		queryStartTime = -1;
 	}
 
 	~rvmOcclusionQuery() {
+		queryStartTime = -1;
 		glDeleteQueries(1, &id);
 	}
 
@@ -30,6 +32,9 @@ public:
 		if (queryState != OCCLUSION_QUERY_STATE_WAITING)
 		{
 			queryState = OCCLUSION_QUERY_STATE_WAITING;
+
+			queryStartTime = Sys_Milliseconds();
+			queryTimeOutTime = queryStartTime + SEC2MS(r_occlusionQueryTimeOut.GetInteger());
 
 			glBeginQuery(GL_ANY_SAMPLES_PASSED, id);
 			RB_DrawElementsImmediate(light->frustumTris);
@@ -50,7 +55,19 @@ public:
 
 		return false;
 	}
+
+	int GetQueryStartTime(void) {
+		return queryStartTime;
+	}
+	
+	bool IsQueryStale(void) {
+		int currentTime = Sys_Milliseconds();
+		return queryTimeOutTime < currentTime;
+	}
+
 private:
+	int queryStartTime;
+	int queryTimeOutTime;
 	GLuint id;
 	viewLight_s* light;
 	rvnmOcclusionQueryState queryState;
@@ -79,28 +96,56 @@ void RB_Draw_LightOcclusion(void) {
 			continue;
 		}
 
+		if (!backEnd.viewDef->isEditor) {
+			if(vLight->lightDef->currentOcclusionQuery) {
+				// Only reap the occlusion query if it isn't stale.
+				if(!vLight->lightDef->currentOcclusionQuery->IsQueryStale())
+				{
+					if (vLight->lightDef->currentOcclusionQuery->IsVisible()) {
+						vLight->visibleFrame = tr.frameCount;
+
+						backEnd.perfMetrics.gpuCulledLights++;
+
+						if (!vLight->lightDef->parms.noShadows)
+							backEnd.perfMetrics.shadowedLightCount++;
+					}
+				}
+
+				delete vLight->lightDef->currentOcclusionQuery;
+				vLight->lightDef->currentOcclusionQuery = NULL;
+			}
+		}
+
 		backEnd.perfMetrics.frustumCulledLights++;
 
 		rvmOcclusionQuery*query = new rvmOcclusionQuery();
 		query->RunQuery(vLight);
-		occlusionQueries.Append(query);
+		if (!backEnd.viewDef->isEditor) {
+			vLight->lightDef->currentOcclusionQuery = query;
+		}
+		else {
+			occlusionQueries.Append(query);
+		}
 	}
 
 	glDepthMask(GL_TRUE);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-	// Test the occlusion queries.
-	for (int i = 0; i < occlusionQueries.Num(); i++) {
-		if (occlusionQueries[i]->IsVisible()) {
-			occlusionQueries[i]->GetViewLight()->visibleFrame = tr.frameCount;
+	// Test the occlusion queries(if in editor, reap immediately). 
+	if (backEnd.viewDef->isEditor)
+	{
+		for (int i = 0; i < occlusionQueries.Num(); i++) {
+			if (occlusionQueries[i]->IsVisible()) {
+				occlusionQueries[i]->GetViewLight()->visibleFrame = tr.frameCount;
 
-			backEnd.perfMetrics.gpuCulledLights++;
+				backEnd.perfMetrics.gpuCulledLights++;
 
-			if (!occlusionQueries[i]->GetViewLight()->lightDef->parms.noShadows)
-				backEnd.perfMetrics.shadowedLightCount++;
+				if (!occlusionQueries[i]->GetViewLight()->lightDef->parms.noShadows)
+					backEnd.perfMetrics.shadowedLightCount++;
+			}
+
+			delete occlusionQueries[i];
 		}
-
-		delete occlusionQueries[i];
 	}
 	occlusionQueries.Clear();
 

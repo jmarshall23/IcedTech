@@ -90,6 +90,7 @@ idRenderLightLocal::idRenderLightLocal() {
 	index					= 0;
 	areaNum					= 0;
 	lastModifiedFrameNum	= 0;
+	currentOcclusionQuery   = NULL;
 	archived				= false;
 	lightShader				= NULL;
 	falloffImage			= NULL;
@@ -102,6 +103,13 @@ idRenderLightLocal::idRenderLightLocal() {
 	foggedPortals			= NULL;
 	firstInteraction		= NULL;
 	lastInteraction			= NULL;
+}
+
+idRenderLightLocal::~idRenderLightLocal() {
+	if (currentOcclusionQuery != NULL) {
+		delete currentOcclusionQuery;
+		currentOcclusionQuery = NULL;
+	}
 }
 
 void idRenderLightLocal::FreeRenderLight() {

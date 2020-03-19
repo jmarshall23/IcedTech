@@ -702,7 +702,7 @@ smp extensions, or asyncronously by another thread.
 */
 int		backEndStartTime, backEndFinishTime;
 void RB_ExecuteBackEndCommands( const emptyCommand_t *cmds ) {
-	rvmGpuTimer timer;
+	//rvmGpuTimer timer;
 	
 	// r_debugRenderToTexture
 	int	c_draw3d = 0, c_draw2d = 0, c_setBuffers = 0, c_swapBuffers = 0, c_copyRenders = 0;
@@ -715,7 +715,7 @@ void RB_ExecuteBackEndCommands( const emptyCommand_t *cmds ) {
 
 	backEndStartTime = Sys_Milliseconds();
 
-	timer.Start();
+	//timer.Start();
 
 	// needed for editor rendering
 	RB_SetDefaultGLState();
@@ -760,10 +760,10 @@ void RB_ExecuteBackEndCommands( const emptyCommand_t *cmds ) {
 		}
 	}
 
-	timer.End();
+	//timer.End();
 
 	// Store the perf metrics.
-	backEnd.perfMetrics.gpuTime = timer.Length();
+	backEnd.perfMetrics.gpuTime = 0;// timer.Length();
 	tr.previousFrameMetrics = backEnd.perfMetrics;
 
 	// go back to the default texture so the editor doesn't mess up a bound image
