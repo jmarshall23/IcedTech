@@ -1208,6 +1208,11 @@ bool idPhysics_Player::CheckJump( void ) {
 		return false;
 	}
 
+	// If we are in the second jumps state, don't jump again.
+	if(jumpState == PLAYER_JUMP_2) {
+		return false;
+	}
+
 	groundPlane = false;		// jumping away
 	walking = false;
 	current.movementFlags |= PMF_JUMP_HELD | PMF_JUMPED;
