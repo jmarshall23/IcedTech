@@ -1212,7 +1212,16 @@ bool idPhysics_Player::CheckJump( void ) {
 	walking = false;
 	current.movementFlags |= PMF_JUMP_HELD | PMF_JUMPED;
 
-	addVelocity = 2.0f * maxJumpHeight * -gravityVector;
+	if (jumpState == PLAYER_NOT_JUMPING) {
+		addVelocity = 2.0f * maxJumpHeight * -gravityVector;
+	}
+	else if (jumpState == PLAYER_JUMP_1) {
+		addVelocity = 2.0f * (maxJumpHeight * 2) * -gravityVector;
+	}
+	else {
+		gameLocal.Error("Unknown jumpstate!\n");
+	}
+
 	addVelocity *= idMath::Sqrt( addVelocity.Normalize() );
 	current.velocity += addVelocity;
 
