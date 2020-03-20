@@ -1631,6 +1631,54 @@ void idMaterial::ParseStage( idLexer &src, const textureRepeat_t trpDefault ) {
 
 /*
 ===============
+idMaterial::LoadVTResidentMipImage
+===============
+*/
+idImage* idMaterial::LoadVTResidentMipImage(const char* imageName) {
+	idStr fileName = va("generated/vt_resident/%s", imageName);
+	fileName = fileName.SetFileExtension(".tga");
+	if(fileSystem->FileExists(fileName)) {
+		return globalImages->ImageFromFile(fileName, TF_DEFAULT, TR_REPEAT, TD_DEFAULT);
+	}
+
+	byte* program_data;
+	int program_width;
+	int program_height;
+	R_LoadImage(imageName, &program_data, &program_width, &program_height, NULL, true);
+
+	if (program_data == nullptr) {
+		idStr tempImageImage = imageName;
+		tempImageImage = tempImageImage.SetFileExtension("tga");
+		R_LoadImage(tempImageImage, &program_data, &program_width, &program_height, NULL, true);
+
+		if (program_data == nullptr) {
+			return globalImages->whiteImage;
+		}
+	}
+
+	// Resize this image to VIRTUALTEXTURE_TILESIZE x VIRTUALTEXTURE_TILESIZE
+	byte* residentVTbuffer = R_ResampleTexture(program_data, program_width, program_height, VIRTUALTEXTURE_TILESIZE, VIRTUALTEXTURE_TILESIZE);
+	R_WriteTGA(fileName, residentVTbuffer, VIRTUALTEXTURE_TILESIZE, VIRTUALTEXTURE_TILESIZE);
+	
+	R_StaticFree(program_data);
+
+	return globalImages->ImageFromFile(fileName, TF_DEFAULT, TR_REPEAT, TD_DEFAULT);
+}
+
+/*
+===============
+idMaterial::GetVTResidentImage
+===============
+*/
+idImage* idMaterial::GetVTResidentImage(void) const {
+	if (albedoLitTextureStage == nullptr)
+		return globalImages->whiteImage;
+
+	return albedoLitTextureStage->residentVirtualImage;
+}
+
+/*
+===============
 idMaterial::SetupVirtualTextureStages
 ===============
 */
@@ -1642,6 +1690,7 @@ void idMaterial::SetupVirtualTextureStages(void) {
 		idStr imageName = albedoLitTextureStage->imagePath;
 
 		albedoLitTextureStage->virtualImage = virtualTextureSystem.LoadVirtualImage(imageName, TD_DIFFUSE, -1, -1);
+		albedoLitTextureStage->residentVirtualImage = LoadVTResidentMipImage(imageName);
 		if (albedoLitTextureStage->virtualImage)
 		{
 			static int stupidVirtualPageSourceId = 0;

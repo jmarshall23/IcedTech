@@ -37,6 +37,7 @@ uniform isampler2D 		samp5 : register(s5); // texture 5 is the virtual texture o
 uniform samplerCUBE 	samp6 : register(s6); // texture 6 is the reflection map.
 uniform sampler2D 		samp7 : register(s7); // texture 7 is the shadow map atlas.
 uniform sampler2D 	    samp8 : register(s8); // texture 8 is the atlas lookup.
+uniform sampler2D 	    samp9 : register(s8); // texture 9 is the always resident virtual texture mip.
 
 struct PS_IN {
 	half4 position	: VPOS;
@@ -59,7 +60,7 @@ struct PS_OUT {
 float2 GetPhysicalTexCoords(float2 texCoords, int isNormal) {
 	float2 deviceTexCoords = frac(texCoords);
 
-// Stupid OpenGL requires use to invert the texture coordinates.
+	// Stupid OpenGL requires use to invert the texture coordinates.
 	if (isNormal == 0)
 	{
 		deviceTexCoords.y = 1.0 - deviceTexCoords.y;
@@ -88,12 +89,13 @@ float2 GetPhysicalTexCoords(float2 texCoords, int isNormal) {
 	lookup.y = int(mod(pageId.y, heightInPages));
 
 	float2 texPages = texelFetch(samp5, lookup, feedbackMipLevel.x).xy;
-	
+
 	// Scale the physicalTexCoord factorial by the size of the physical virtual texture page.
 	float vt_scale = rpVirtualMapping.z / rpVirtualMapping.y;
 	float2 physicalTexCoords = fract(deviceTexCoords  * float2(pageOffsetTextureSizeMip.x, pageOffsetTextureSizeMip.y));
 	physicalTexCoords.xy /= vt_scale;
-	return   (physicalTexCoords)+(texPages / vt_scale);
+
+	return (physicalTexCoords)+(texPages / vt_scale);
 }
 
 float4 CalculateReflections(half3 normal, half3 Position, half3 cameraPos) {
@@ -216,6 +218,17 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	localNormal.z = sqrt( abs( dot( localNormal.xy, localNormal.xy ) - 0.25 ) );
 	localNormal = normalize( localNormal );
 	
+	// Virtual texture isn't streamed in yet, so just use the always resident mipchain.
+	if(YCoCG.x == 0 && YCoCG.y == 0 && YCoCG.z == 0)
+	{
+		YCoCG =	tex2D( samp9, fragment.texcoord4.xy);
+		specTex	= 		float4(1, 1, 1, 1);
+		bumpMap = 		float4(0.5, 0.5, 1.0, 1.0);
+		localNormal	= 	float3(0.5, 0.5, 1.0);
+		diffuseMap = YCoCG.xyz;
+	}
+	
+
 	float4 reflection = CalculateReflections(localNormal, fragment.texcoord5.xyz, rpLocalViewOrigin.xyz);
 
 	//const half specularPower = 10.0f;
@@ -251,7 +264,7 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	float denominator = 4.0 * max(dot(localNormal, V), 0.0) * max(dot(localNormal, lightVector), 0.0);
 	float3 pbr     = numerator / max(denominator, 0.001);  
 	pbr *= rpSpecularModifier.xyz;
-	
+
 	float shadow = CalculateShadows(fragment.texcoord5.xyz, rpLightOrigin.xyz);
 
 #if 1

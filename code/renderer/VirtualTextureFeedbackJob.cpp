@@ -17,7 +17,6 @@ bool rvmVirtualTextureSystem::CheckFeedbackPixel(feedbackPixel_t pixel, int &upl
 	double currentTime = Sys_GetClockTicks();
 	double evictionTime = currentTime + (Sys_ClockTicksPerSecond() * vt_evictionSeconds.GetInteger());
 
-
 	int pageX, pageY, pageSource, pageLOD;
 	UnpackFeedbackPixel(pixel, pageX, pageY, pageSource, pageLOD);
 
@@ -28,7 +27,7 @@ bool rvmVirtualTextureSystem::CheckFeedbackPixel(feedbackPixel_t pixel, int &upl
 	pageSource = pageSource - 1;
 
 	// Check to see if the page is already loaded.
-	for (int i = 0; i < numVTPages * numVTPages; i++)
+	for (int i = 1; i < numVTPages * numVTPages; i++)
 	{
 		if (vt_pages[i].feedbackInfo.packed == pixel.packed)
 		{
@@ -38,10 +37,17 @@ bool rvmVirtualTextureSystem::CheckFeedbackPixel(feedbackPixel_t pixel, int &upl
 	}
 
 	// Check to see if we need to assign this material to a new page, and in the process if we can evict a old page.
-	for (int i = 0; i < numVTPages * numVTPages; i++)
+	for (int i = 1; i < numVTPages * numVTPages; i++)
 	{
 		if (vt_pages[i].material == nullptr || currentTime >= vt_pages[i].evictionTime )
 		{
+			// Evict the previous material.
+			if(vt_pages[i].material != NULL)
+			{
+				vt_pages[i].material->SetVirtualPageOffset(pageLOD, pageX, pageY, 0, 0);
+				updatedMaterials.AddUnique(vt_pages[i].material);
+			}
+
 			freePage = i;
 			uploadX = vt_pages[i].uploadX;
 			uploadY = vt_pages[i].uploadY;

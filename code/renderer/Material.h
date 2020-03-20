@@ -168,6 +168,7 @@ typedef struct {
 	idImage *			image;
 // jmarshall
 	rvmVirtualImage *	virtualImage;
+	idImage*			residentVirtualImage; // lowest quality mipmap VT_PAGE_SIZE x VT_PAGE_SIZE
 // jmarshall end
 	texgen_t			texgen;
 	bool				hasMatrix;
@@ -627,6 +628,9 @@ public:
 	// Returns the virtual page offsets image.
 	idImage				*GetVirtualPageOffsetsImage(void) const;
 
+	// Returns the always resident image.
+	idImage*			GetVTResidentImage(void) const;
+
 	void				UpdateVirtualMaterialOffsetImage(void) const;
 
 	int					GetPageOffsetNumMips(void) const { return virtualTexturePageOffsetNumMips; }
@@ -667,6 +671,7 @@ private:
 private:
 	void				CreateVirtualPageOffsetsTexture(void);
 	void				SetupVirtualTextureStages(void);
+	idImage*			LoadVTResidentMipImage(const char* name);
 
 	idStr				desc;				// description
 	idStr				renderBump;			// renderbump command options, without the "renderbump" at the start

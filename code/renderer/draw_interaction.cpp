@@ -76,6 +76,7 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 
 		virtualPageInfo.x = din->surf->material->GetVirtualAlbedoImage()->GetWidth(0);
 		virtualPageInfo.y = din->surf->material->GetVirtualAlbedoImage()->GetHeight(0);
+
 		if(!din->surf->forceVirtualTextureHighQuality)
 		{
 			virtualPageInfo.z = 0;
@@ -179,6 +180,13 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 		renderShadowSystem.GetAtlasLookupImage()->Bind();
 	}
 	
+	if (din->surf->material->IsVirtualTextured())
+	{
+		// texture 10 is the always resident mip chain texture.
+		GL_SelectTextureNoClient(9);
+		din->surf->material->GetVTResidentImage()->Bind();
+	}
+
 
 
 	// draw it
