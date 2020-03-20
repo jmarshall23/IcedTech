@@ -4665,7 +4665,8 @@ void idPlayer::CrashLand( const idVec3 &oldOrigin, const idVec3 &oldVelocity ) {
 	if ( delta < 1.0f ) {
 		return;
 	}
-
+// jmarshall: Disable fall damage.
+#if 0
 	// allow falling a bit further for multiplayer
 	if ( gameLocal.isMultiplayer ) {
 		fatalDelta	= 75.0f;
@@ -4706,6 +4707,8 @@ void idPlayer::CrashLand( const idVec3 &oldOrigin, const idVec3 &oldVelocity ) {
 	} else if ( delta > 3 ) {
 		// just walk on
 	}
+#endif
+// jmarshall end
 }
 
 /*

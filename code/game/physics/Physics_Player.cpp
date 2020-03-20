@@ -611,6 +611,14 @@ void idPhysics_Player::AirMove( void ) {
 
 	idPhysics_Player::Friction();
 
+	if (jumpState == PLAYER_JUMP_1) {
+		if (idPhysics_Player::CheckJump())
+		{
+			jumpState = PLAYER_JUMP_2;
+			return;
+		}
+	}
+
 	scale = idPhysics_Player::CmdScale( command );
 
 	// project moves down to flat plane
@@ -659,6 +667,8 @@ void idPhysics_Player::WalkMove( void ) {
 	}
 
 	if ( idPhysics_Player::CheckJump() ) {
+		jumpState = PLAYER_JUMP_1;
+
 		// jumped away
 		if ( waterLevel > WATERLEVEL_FEET ) {
 			idPhysics_Player::WaterMove();
@@ -668,6 +678,8 @@ void idPhysics_Player::WalkMove( void ) {
 		}
 		return;
 	}
+
+	jumpState = PLAYER_NOT_JUMPING;
 
 	idPhysics_Player::Friction();
 
@@ -1498,6 +1510,7 @@ idPhysics_Player::idPhysics_Player
 idPhysics_Player::idPhysics_Player( void ) {
 	debugLevel = false;
 	clipModel = NULL;
+	jumpState = PLAYER_NOT_JUMPING;
 	clipMask = 0;
 	memset( &current, 0, sizeof( current ) );
 	saved = current;

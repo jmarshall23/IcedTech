@@ -69,6 +69,15 @@ typedef struct playerPState_s {
 	int						movementTime;
 } playerPState_t;
 
+//
+// rvmPlayerJumpState_t
+//
+enum rvmPlayerJumpState_t {
+	PLAYER_NOT_JUMPING = 0,
+	PLAYER_JUMP_1,
+	PLAYER_JUMP_2
+};
+
 class idPhysics_Player : public idPhysics_Actor {
 
 public:
@@ -146,6 +155,8 @@ private:
 	float					maxStepHeight;
 	float					maxJumpHeight;
 	int						debugLevel;				// if set, diagnostic output will be printed
+
+	rvmPlayerJumpState_t	jumpState;
 
 	// player input
 	usercmd_t				command;
