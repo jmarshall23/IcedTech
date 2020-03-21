@@ -493,8 +493,25 @@ rvmVirtualImage	*rvmVirtualTextureSystem::LoadVirtualImage(const char *name, tex
 	// Doom 3 base assets and even the HRP aren't power of two and are weird sizes.
 	// With virtual texturing, we need all material textures to be the same size and power of two, fix it here it need be.
 	{
-		fileName = name;
-		fileName.SetFileExtension("tga");
+		// This is hacky, but if we are processing a PNG file, convert it to a TGA, save it out, process that image.
+		if(strstr(name, ".png") && fileSystem->FileExists(name)) {
+			byte* image_buffer;
+			int image_width;
+			int image_height;
+
+			R_LoadImage(name, &image_buffer, &image_width, &image_height, NULL, true);
+			fileName = va("generated/vt_png_temp/%s", name);
+			fileName.SetFileExtension("tga");
+			
+			R_WriteTGA(fileName, image_buffer, image_width, image_height, false, "fs_basepath");
+
+			R_StaticFree(image_buffer);
+		}
+		else
+		{
+			fileName = name;
+			fileName.SetFileExtension("tga");
+		}
 
 		rvmMegaTextureSourceFile_t imageTestSource;
 		imageTestSource.file = rvmVirtualTextureSystem::LoadTGA(fileName.c_str(), imageTestSource.targa_header, imageTestSource.columns, imageTestSource.rows, imageTestSource.fileSize, imageTestSource.numBytes);

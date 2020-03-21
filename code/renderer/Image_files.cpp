@@ -880,7 +880,6 @@ void R_LoadImage( const char *cname, byte **pic, int *width, int *height, ID_TIM
 	//
 	// convert to exact power of 2 sizes
 	//
-	/*
 	if ( pic && *pic && makePowerOf2 ) {
 		int		w, h;
 		int		scaled_width, scaled_height;
@@ -902,7 +901,6 @@ void R_LoadImage( const char *cname, byte **pic, int *width, int *height, ID_TIM
 			*height = scaled_height;
 		}
 	}
-	*/
 }
 
 
