@@ -81,6 +81,19 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	result.texcoord1.x = dot4( vertex.texcoord.xy, rpBumpMatrixS );
 	result.texcoord1.y = dot4( vertex.texcoord.xy, rpBumpMatrixT );
 
+	//result.texcoord5.xyz = vertex.position.xyz;
+	float4 modelVertex;
+	modelVertex.x = dot4( vertex.position, rpModelMatrixX );
+	modelVertex.y = dot4( vertex.position, rpModelMatrixY );
+	modelVertex.z = dot4( vertex.position, rpModelMatrixZ );
+	modelVertex.w = dot4( vertex.position, rpModelMatrixW );
+	
+	
+	result.texcoord5.x = modelVertex.x;
+	result.texcoord5.y = modelVertex.y;
+	result.texcoord5.z = modelVertex.z;
+    result.texcoord5.w = modelVertex.w;
+	
 	//# texture 2 has one texgen
 	result.texcoord2 = defaultTexCoord;
 	result.texcoord2.x = dot4( vertex.position, rpLightFalloffS );
@@ -100,11 +113,6 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	result.texcoord4.z = dot4( vertex.texcoord.xy, rpSpecularMatrixS );
 	result.texcoord4.w = dot4( vertex.texcoord.xy, rpSpecularMatrixT );
 	
-	//result.texcoord5.xyz = vertex.position.xyz;
-	result.texcoord5.x = dot4( vertex.position, rpModelMatrixX );
-	result.texcoord5.y = dot4( vertex.position, rpModelMatrixY );
-	result.texcoord5.z = dot4( vertex.position, rpModelMatrixZ );
-	result.texcoord5.w = dot4( vertex.position, rpModelMatrixW );
 
 	//# texture 6's texcoords will be the halfangle in texture space
 
@@ -112,7 +120,7 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	toLight = normalize( toLight );
 
 	//# calculate normalized vector to viewer in R1
-	float4 toView = normalize( rpLocalViewOrigin - vertex.position );
+	float4 toView = normalize( rpLocalViewOrigin - modelVertex );
 	
 	//# add together to become the half angle vector in object space (non-normalized)
 	float4 halfAngleVector = toLight + toView;
