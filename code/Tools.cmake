@@ -78,6 +78,7 @@ set(src_tools
 	./tools/common/PropTree/PropTreeItemStatic.cpp
 	./tools/common/PropTree/PropTreeList.cpp
 	./tools/common/PropTree/PropTreeView.cpp
+	./tools/compilers/matbuild/matbuild.cpp
 	./tools/compilers/dmap/dmap.cpp
 	./tools/compilers/dmap/facebsp.cpp
 	./tools/compilers/dmap/gldraw.cpp

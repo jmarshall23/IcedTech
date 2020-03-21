@@ -2344,6 +2344,8 @@ void idCommonLocal::InitCommands( void ) {
 	cmdSystem->AddCommand( "megagen", RunMegaGen_f, CMD_FL_TOOL, "builds a source megatexture(giant tga) for a mega project.");
 	cmdSystem->AddCommand("navbuild", NavMesh_f, CMD_FL_TOOL, "builds a navmesh file", idCmdSystem::ArgCompletion_MapName);
 	cmdSystem->AddCommand("renderprobes", RenderProbes_f, CMD_FL_TOOL, "builds reflection probes", idCmdSystem::ArgCompletion_MapName);
+	cmdSystem->AddCommand("MatBuild_f", MatBuild_f, CMD_FL_TOOL, "builds interaction materials for a given texture directory.", idCmdSystem::ArgCompletion_MapName);
+	
 #endif
 
 #ifdef ID_ALLOW_TOOLS

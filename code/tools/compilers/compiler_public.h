@@ -59,4 +59,7 @@ void NavMesh_f(const idCmdArgs& args);
 // reflection probe generation.
 void RenderProbes_f(const idCmdArgs& args);
 
+// builds materials for a given directory.
+void MatBuild_f(const idCmdArgs& args);
+
 #endif	/* !__COMPILER_PUBLIC_H__ */
