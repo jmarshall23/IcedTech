@@ -162,6 +162,8 @@ public:
 
 	void	BindShader( int vIndex, int fIndex );
 
+
+	void	BindShader_SkyShader() { BindShader_Builtin(BUILTIN_SKYCOLOR); }
 	void	BindShader_TestImage() { BindShader_Builtin(BUILTIN_TESTIMAGE); }
 	void	BindShader_GUI( ) { BindShader_Builtin( BUILTIN_GUI ); }
 	void	BindShader_Color( ) { BindShader_Builtin( BUILTIN_COLOR ); }
@@ -264,6 +266,7 @@ protected:
 		BUILTIN_STEREO_INTERLACE,
 		BUILTIN_MOTION_BLUR,
 		BUILTIN_TESTIMAGE,
+		BUILTIN_SKYCOLOR,
 
 		BUILDIN_VIRTUALTEXTURE_FEEDBACK,
 

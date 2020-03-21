@@ -244,6 +244,8 @@ struct renderView_t {
 		skipFrustumInteractionCheck = false;
 		forceScreenSize = false;
 		skipPostProcess = false;
+		skyModel = NULL;
+		skyMaterial = NULL;
 		time = 0;
 		for (int i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++)
 			shaderParms[i] = 0;
@@ -265,6 +267,10 @@ struct renderView_t {
 	bool					cramZNear;			// for cinematics, we want to set ZNear much lower
 	bool					forceUpdate;		// for an update 
 
+// jmarshall
+	idRenderModel*			skyModel;
+	const idMaterial*		skyMaterial;
+// jmarshall end
 
 // jmarshall
 	int						window_width;

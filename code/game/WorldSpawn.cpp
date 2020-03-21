@@ -75,6 +75,12 @@ void idWorldspawn::Spawn( void ) {
 	// Map Music
 	gameLocal.mapMusicPath = spawnArgs.GetString("music", "");
 
+	// Map skydome material.
+	skyMaterial = declManager->FindMaterial(spawnArgs.GetString("skymat", "textures/skies/mars"), false);
+	if(skyMaterial == nullptr) {
+		common->FatalError("Failed to load skydome material!\n");
+	}
+
 	// load script
 	scriptname = gameLocal.GetMapName();
 	scriptname.SetFileExtension( ".script" );

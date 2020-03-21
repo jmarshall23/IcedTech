@@ -1138,6 +1138,10 @@ void idGameLocal::MapPopulate( void ) {
 	if ( isMultiplayer ) {
 		cvarSystem->SetCVarBool( "r_skipSpecular", false );
 	}
+
+	// load the sky
+	LoadSky();
+
 	// parse the key/value pairs and spawn entities
 	SpawnMapEntities();
 
@@ -4313,4 +4317,14 @@ void idGameLocal::Trace(trace_t& results, const idVec3& start, const idVec3& end
 		clip.Translation(results, start, end, NULL, axis, CONTENTS_SOLID, entities[passEntity]);
 	}
 }
+
+/*
+===================
+idGameLocal::LoadSky
+===================
+*/
+void idGameLocal::LoadSky(void) {
+	skyDomeMesh = renderModelManager->FindModel("models/sky/sky.mdr");
+}
+
 // jmarshall end

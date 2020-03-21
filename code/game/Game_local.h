@@ -314,6 +314,7 @@ public:
 	int						vacuumAreaNum;			// -1 if level doesn't have any outside areas
 
 	idStr					mapMusicPath;
+	idRenderModel*			skyDomeMesh;
 
 	gameType_t				gameType;
 	bool					isMultiplayer;			// set if the game is run in multiplayer mode
@@ -571,6 +572,7 @@ private:
 	void					SpawnMapEntities( void );
 							// commons used by init, shutdown, and restart
 	void					MapPopulate( void );
+	void					LoadSky(void);
 	void					MapClear( bool clearClients );
 
 	pvsHandle_t				GetClientPVS( idPlayer *player, pvsType_t type );

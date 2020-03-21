@@ -48,12 +48,15 @@ public:
 	void			Save( idRestoreGame *savefile );
 	void			Restore( idRestoreGame *savefile );
 
+	// Returns the sky material. 
+	const idMaterial* GetSkyMaterial(void) { return skyMaterial; }
 private:
 	void			Event_Remove( void );
 
 	void			CreateAmbientLight(void);
 private:
-	idLight			*ambientLight;
+	idLight			 *ambientLight;
+	const idMaterial *skyMaterial;
 };
 
 #endif /* !__GAME_WORLDSPAWN_H__ */

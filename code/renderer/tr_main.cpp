@@ -709,7 +709,22 @@ static void R_SortDrawSurfs( void ) {
 		R_QsortSurfaces );
 }
 
+/*
+================
+R_AddSkySurfaces
+================
+*/
+void R_AddSkySurfaces(void) {
+	idRenderModel* skyModel = tr.viewDef->renderView.skyModel;
+	if (skyModel == NULL)
+		return;
 
+	for (int i = 0; i < skyModel->NumSurfaces(); i++)
+	{
+		srfTriangles_t* tri = skyModel->Surface(i)->geometry;
+		R_CreateAmbientCache(tri, false);
+	}
+}
 
 
 /*
@@ -747,9 +762,8 @@ void R_RenderView( viewDef_t *parms ) {
 
 	// setup render matrices for faster culling
 	idRenderMatrix::Transpose(*(idRenderMatrix *)tr.viewDef->projectionMatrix, tr.viewDef->projectionRenderMatrix);
-	idRenderMatrix viewRenderMatrix;
-	idRenderMatrix::Transpose(*(idRenderMatrix *)tr.viewDef->worldSpace.modelViewMatrix, viewRenderMatrix);
-	idRenderMatrix::Multiply(tr.viewDef->projectionRenderMatrix, viewRenderMatrix, tr.viewDef->worldSpace.mvp);
+	idRenderMatrix::Transpose(*(idRenderMatrix *)tr.viewDef->worldSpace.modelViewMatrix, *(idRenderMatrix*)tr.viewDef->worldSpace.transposedModelViewMatrix);
+	idRenderMatrix::Multiply(tr.viewDef->projectionRenderMatrix, *(idRenderMatrix*)tr.viewDef->worldSpace.transposedModelViewMatrix, tr.viewDef->worldSpace.mvp);
 
 	// the planes of the view frustum are needed for portal visibility culling
 	idRenderMatrix::GetFrustumPlanes(tr.viewDef->frustum, tr.viewDef->worldSpace.mvp, false, true);
@@ -777,6 +791,9 @@ void R_RenderView( viewDef_t *parms ) {
 	// adds ambient surfaces and create any necessary interaction surfaces to add to the light
 	// lists
 	R_AddModelSurfaces();
+
+	// adds the sky surfaces.
+	R_AddSkySurfaces();
 
 	// any viewLight that didn't have visible surfaces can have it's shadows removed
 	R_RemoveUnecessaryViewLights();

@@ -382,6 +382,7 @@ typedef struct viewEntity_s {
 
 	float				modelMatrix[16];		// local coords to global coords
 	float				modelViewMatrix[16];	// local coords to eye coords
+	float				transposedModelViewMatrix[16];
 
 	idRenderMatrix		mvp;
 } viewEntity_t;
@@ -1354,6 +1355,8 @@ void RB_DetermineLightScale( void );
 void RB_STD_LightScale( void );
 void RB_BeginDrawingView (void);
 
+void RB_STD_DrawSky(void);
+
 /*
 ============================================================
 
@@ -1361,6 +1364,9 @@ DRAW_STANDARD
 
 ============================================================
 */
+
+void RB_PrepareStageTexturing(const shaderStage_t* pStage, const drawSurf_t* surf, idDrawVert* ac);
+void RB_FinishStageTexturing(const shaderStage_t* pStage, const drawSurf_t* surf, idDrawVert* ac);
 
 void RB_DrawElementsWithCounters( const srfTriangles_t *tri );
 void RB_DrawShadowElementsWithCounters( const srfTriangles_t *tri, int numIndexes );
@@ -1371,6 +1377,7 @@ void RB_FinishStageTexture( const textureStage_t *texture, const drawSurf_t *sur
 void RB_STD_DrawView( void );
 void RB_STD_FogAllLights( void );
 void RB_BakeTextureMatrixIntoTexgen( idPlane lightProject[3], const float textureMatrix[16] );
+void RB_STD_FillDepthBuffer(drawSurf_t** drawSurfs, int numDrawSurfs);
 
 void RB_SetVertexParm(renderParm_t rp, const float * value);
 void RB_SetVertexParms(renderParm_t rp, const float * value, int num);

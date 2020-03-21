@@ -106,10 +106,12 @@ set(src_engine
 	./renderer/Cinematic.h
 	./renderer/Color
 	./renderer/draw_common.cpp
+	./renderer/draw_depthfill.cpp
 	./renderer/draw_feedback.cpp
 	./renderer/draw_interaction.cpp
 	./renderer/draw_occlusion.cpp
 	./renderer/draw_shadow.cpp
+	./renderer/draw_sky.cpp
 	./renderer/DXT
 	./renderer/GLMatrix.cpp
 	./renderer/GLMatrix.h

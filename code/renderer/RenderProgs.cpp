@@ -115,6 +115,7 @@ void idRenderProgManager::Init() {
 		{ BUILDIN_VIRTUALTEXTURE_FEEDBACK, "feedback.vfp" },
 		{ BUILTIN_SHADOW, "shadow.vfp"},
 		{ BUILTIN_SHADOW_SKINNED, "shadow_skinned.vfp"},
+		{ BUILTIN_SKYCOLOR, "sky_color.vfp"},
 	};
 	int numBuiltins = sizeof( builtins ) / sizeof( builtins[0] );
 	vertexShaders.SetNum( numBuiltins );

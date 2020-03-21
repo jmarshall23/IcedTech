@@ -447,6 +447,9 @@ void idPlayerView::SingleView( idUserInterface *hud, const renderView_t *view ) 
 	renderView_t	hackedView = *view;
 	hackedView.viewaxis = hackedView.viewaxis * ShakeAxis();
 
+	hackedView.skyMaterial = gameLocal.world->GetSkyMaterial();
+	hackedView.skyModel = gameLocal.skyDomeMesh;
+
 	hackedView.forceScreenSize = true;
 	game->RenderScene(&hackedView, gameRenderWorld);
 
