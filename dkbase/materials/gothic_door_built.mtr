@@ -1,0 +1,378 @@
+textures/gothic_door/archpart1
+{
+	qer_editorimage textures/gothic_door/archpart1.png
+	diffusemap textures/gothic_door/archpart1.png
+	bumpmap textures/gothic_door/archpart1_normal.png
+	specularmap textures/gothic_door/archpart1_spec.png
+}
+textures/gothic_door/archpart10
+{
+	qer_editorimage textures/gothic_door/archpart10.png
+	diffusemap textures/gothic_door/archpart10.png
+	bumpmap textures/gothic_door/archpart10_normal.png
+	specularmap textures/gothic_door/archpart10_spec.png
+}
+textures/gothic_door/archpart2
+{
+	qer_editorimage textures/gothic_door/archpart2.png
+	diffusemap textures/gothic_door/archpart2.png
+	bumpmap textures/gothic_door/archpart2_normal.png
+	specularmap textures/gothic_door/archpart2_spec.png
+}
+textures/gothic_door/archpart6
+{
+	qer_editorimage textures/gothic_door/archpart6.png
+	diffusemap textures/gothic_door/archpart6.png
+	bumpmap textures/gothic_door/archpart6_normal.png
+	specularmap textures/gothic_door/archpart6_spec.png
+}
+textures/gothic_door/archpart7
+{
+	qer_editorimage textures/gothic_door/archpart7.png
+	diffusemap textures/gothic_door/archpart7.png
+	bumpmap textures/gothic_door/archpart7_normal.png
+	specularmap textures/gothic_door/archpart7_spec.png
+}
+textures/gothic_door/archpart8
+{
+	qer_editorimage textures/gothic_door/archpart8.png
+	diffusemap textures/gothic_door/archpart8.png
+	bumpmap textures/gothic_door/archpart8_normal.png
+	specularmap textures/gothic_door/archpart8_spec.png
+}
+textures/gothic_door/archpart9
+{
+	qer_editorimage textures/gothic_door/archpart9.png
+	diffusemap textures/gothic_door/archpart9.png
+	bumpmap textures/gothic_door/archpart9_normal.png
+	specularmap textures/gothic_door/archpart9_spec.png
+}
+textures/gothic_door/archxiandm1b
+{
+	qer_editorimage textures/gothic_door/archxiandm1b.png
+	diffusemap textures/gothic_door/archxiandm1b.png
+	bumpmap textures/gothic_door/archxiandm1b_normal.png
+	specularmap textures/gothic_door/archxiandm1b_spec.png
+}
+textures/gothic_door/archxiandm1dblack
+{
+	qer_editorimage textures/gothic_door/archxiandm1dblack.png
+	diffusemap textures/gothic_door/archxiandm1dblack.png
+	bumpmap textures/gothic_door/archxiandm1dblack_normal.png
+	specularmap textures/gothic_door/archxiandm1dblack_spec.png
+}
+textures/gothic_door/arch_tall2a
+{
+	qer_editorimage textures/gothic_door/arch_tall2a.png
+	diffusemap textures/gothic_door/arch_tall2a.png
+	bumpmap textures/gothic_door/arch_tall2a_normal.png
+	specularmap textures/gothic_door/arch_tall2a_spec.png
+}
+textures/gothic_door/arch_tall2b
+{
+	qer_editorimage textures/gothic_door/arch_tall2b.png
+	diffusemap textures/gothic_door/arch_tall2b.png
+	bumpmap textures/gothic_door/arch_tall2b_normal.png
+	specularmap textures/gothic_door/arch_tall2b_spec.png
+}
+textures/gothic_door/door02_bred2
+{
+	qer_editorimage textures/gothic_door/door02_bred2.png
+	diffusemap textures/gothic_door/door02_bred2.png
+	bumpmap textures/gothic_door/door02_bred2_normal.png
+	specularmap textures/gothic_door/door02_bred2_spec.png
+}
+textures/gothic_door/door02_eblue2
+{
+	qer_editorimage textures/gothic_door/door02_eblue2.png
+	diffusemap textures/gothic_door/door02_eblue2.png
+	bumpmap textures/gothic_door/door02_eblue2_normal.png
+	specularmap textures/gothic_door/door02_eblue2_spec.png
+}
+textures/gothic_door/door02_i_ornate5_fin
+{
+	qer_editorimage textures/gothic_door/door02_i_ornate5_fin.png
+	diffusemap textures/gothic_door/door02_i_ornate5_fin.png
+	bumpmap textures/gothic_door/door02_i_ornate5_fin_normal.png
+	specularmap textures/gothic_door/door02_i_ornate5_fin_spec.png
+}
+textures/gothic_door/door02_j
+{
+	qer_editorimage textures/gothic_door/door02_j.png
+	diffusemap textures/gothic_door/door02_j.png
+	bumpmap textures/gothic_door/door02_j_normal.png
+	specularmap textures/gothic_door/door02_j_spec.png
+}
+textures/gothic_door/door02_j4
+{
+	qer_editorimage textures/gothic_door/door02_j4.png
+	diffusemap textures/gothic_door/door02_j4.png
+	bumpmap textures/gothic_door/door02_j4_normal.png
+	specularmap textures/gothic_door/door02_j4_spec.png
+}
+textures/gothic_door/door02_k2b
+{
+	qer_editorimage textures/gothic_door/door02_k2b.png
+	diffusemap textures/gothic_door/door02_k2b.png
+	bumpmap textures/gothic_door/door02_k2b_normal.png
+	specularmap textures/gothic_door/door02_k2b_spec.png
+}
+textures/gothic_door/km_arena1archfinalc
+{
+	qer_editorimage textures/gothic_door/km_arena1archfinalc.png
+	diffusemap textures/gothic_door/km_arena1archfinalc.png
+	bumpmap textures/gothic_door/km_arena1archfinalc_normal.png
+	specularmap textures/gothic_door/km_arena1archfinalc_spec.png
+}
+textures/gothic_door/km_arena1archfinalc_bot
+{
+	qer_editorimage textures/gothic_door/km_arena1archfinalc_bot.png
+	diffusemap textures/gothic_door/km_arena1archfinalc_bot.png
+	bumpmap textures/gothic_door/km_arena1archfinalc_bot_normal.png
+	specularmap textures/gothic_door/km_arena1archfinalc_bot_spec.png
+}
+textures/gothic_door/km_arena1archfinalc_mid
+{
+	qer_editorimage textures/gothic_door/km_arena1archfinalc_mid.png
+	diffusemap textures/gothic_door/km_arena1archfinalc_mid.png
+	bumpmap textures/gothic_door/km_arena1archfinalc_mid_normal.png
+	specularmap textures/gothic_door/km_arena1archfinalc_mid_spec.png
+}
+textures/gothic_door/km_arena1archfinalc_top
+{
+	qer_editorimage textures/gothic_door/km_arena1archfinalc_top.png
+	diffusemap textures/gothic_door/km_arena1archfinalc_top.png
+	bumpmap textures/gothic_door/km_arena1archfinalc_top_normal.png
+	specularmap textures/gothic_door/km_arena1archfinalc_top_spec.png
+}
+textures/gothic_door/km_arena1archfinald_bot
+{
+	qer_editorimage textures/gothic_door/km_arena1archfinald_bot.png
+	diffusemap textures/gothic_door/km_arena1archfinald_bot.png
+	bumpmap textures/gothic_door/km_arena1archfinald_bot_normal.png
+	specularmap textures/gothic_door/km_arena1archfinald_bot_spec.png
+}
+textures/gothic_door/km_arena1archfinald_mid
+{
+	qer_editorimage textures/gothic_door/km_arena1archfinald_mid.png
+	diffusemap textures/gothic_door/km_arena1archfinald_mid.png
+	bumpmap textures/gothic_door/km_arena1archfinald_mid_normal.png
+	specularmap textures/gothic_door/km_arena1archfinald_mid_spec.png
+}
+textures/gothic_door/km_arena1archfinald_top
+{
+	qer_editorimage textures/gothic_door/km_arena1archfinald_top.png
+	diffusemap textures/gothic_door/km_arena1archfinald_top.png
+	bumpmap textures/gothic_door/km_arena1archfinald_top_normal.png
+	specularmap textures/gothic_door/km_arena1archfinald_top_spec.png
+}
+textures/gothic_door/km_arena1archsmallfinala
+{
+	qer_editorimage textures/gothic_door/km_arena1archsmallfinala.png
+	diffusemap textures/gothic_door/km_arena1archsmallfinala.png
+	bumpmap textures/gothic_door/km_arena1archsmallfinala_normal.png
+	specularmap textures/gothic_door/km_arena1archsmallfinala_spec.png
+}
+textures/gothic_door/km_arena1columna2L
+{
+	qer_editorimage textures/gothic_door/km_arena1columna2L.png
+	diffusemap textures/gothic_door/km_arena1columna2L.png
+	bumpmap textures/gothic_door/km_arena1columna2L_normal.png
+	specularmap textures/gothic_door/km_arena1columna2L_spec.png
+}
+textures/gothic_door/km_arena1columna2R
+{
+	qer_editorimage textures/gothic_door/km_arena1columna2R.png
+	diffusemap textures/gothic_door/km_arena1columna2R.png
+	bumpmap textures/gothic_door/km_arena1columna2R_normal.png
+	specularmap textures/gothic_door/km_arena1columna2R_spec.png
+}
+textures/gothic_door/metal_door_a
+{
+	qer_editorimage textures/gothic_door/metal_door_a.png
+	diffusemap textures/gothic_door/metal_door_a.png
+	bumpmap textures/gothic_door/metal_door_a_normal.png
+	specularmap textures/gothic_door/metal_door_a_spec.png
+}
+textures/gothic_door/metal_door_b
+{
+	qer_editorimage textures/gothic_door/metal_door_b.png
+	diffusemap textures/gothic_door/metal_door_b.png
+	bumpmap textures/gothic_door/metal_door_b_normal.png
+	specularmap textures/gothic_door/metal_door_b_spec.png
+}
+textures/gothic_door/metal_door_c
+{
+	qer_editorimage textures/gothic_door/metal_door_c.png
+	diffusemap textures/gothic_door/metal_door_c.png
+	bumpmap textures/gothic_door/metal_door_c_normal.png
+	specularmap textures/gothic_door/metal_door_c_spec.png
+}
+textures/gothic_door/metal_door_d
+{
+	qer_editorimage textures/gothic_door/metal_door_d.png
+	diffusemap textures/gothic_door/metal_door_d.png
+	bumpmap textures/gothic_door/metal_door_d_normal.png
+	specularmap textures/gothic_door/metal_door_d_spec.png
+}
+textures/gothic_door/skullarch_a
+{
+	qer_editorimage textures/gothic_door/skullarch_a.png
+	diffusemap textures/gothic_door/skullarch_a.png
+	bumpmap textures/gothic_door/skullarch_a_normal.png
+	specularmap textures/gothic_door/skullarch_a_spec.png
+}
+textures/gothic_door/skullarch_b
+{
+	qer_editorimage textures/gothic_door/skullarch_b.png
+	diffusemap textures/gothic_door/skullarch_b.png
+	bumpmap textures/gothic_door/skullarch_b_normal.png
+	specularmap textures/gothic_door/skullarch_b_spec.png
+}
+textures/gothic_door/skullarch_c
+{
+	qer_editorimage textures/gothic_door/skullarch_c.png
+	diffusemap textures/gothic_door/skullarch_c.png
+	bumpmap textures/gothic_door/skullarch_c_normal.png
+	specularmap textures/gothic_door/skullarch_c_spec.png
+}
+textures/gothic_door/skull_door_a
+{
+	qer_editorimage textures/gothic_door/skull_door_a.png
+	diffusemap textures/gothic_door/skull_door_a.png
+	bumpmap textures/gothic_door/skull_door_a_normal.png
+	specularmap textures/gothic_door/skull_door_a_spec.png
+}
+textures/gothic_door/skull_door_b
+{
+	qer_editorimage textures/gothic_door/skull_door_b.png
+	diffusemap textures/gothic_door/skull_door_b.png
+	bumpmap textures/gothic_door/skull_door_b_normal.png
+	specularmap textures/gothic_door/skull_door_b_spec.png
+}
+textures/gothic_door/skull_door_c
+{
+	qer_editorimage textures/gothic_door/skull_door_c.png
+	diffusemap textures/gothic_door/skull_door_c.png
+	bumpmap textures/gothic_door/skull_door_c_normal.png
+	specularmap textures/gothic_door/skull_door_c_spec.png
+}
+textures/gothic_door/skull_door_d
+{
+	qer_editorimage textures/gothic_door/skull_door_d.png
+	diffusemap textures/gothic_door/skull_door_d.png
+	bumpmap textures/gothic_door/skull_door_d_normal.png
+	specularmap textures/gothic_door/skull_door_d_spec.png
+}
+textures/gothic_door/skull_door_e
+{
+	qer_editorimage textures/gothic_door/skull_door_e.png
+	diffusemap textures/gothic_door/skull_door_e.png
+	bumpmap textures/gothic_door/skull_door_e_normal.png
+	specularmap textures/gothic_door/skull_door_e_spec.png
+}
+textures/gothic_door/skull_door_f
+{
+	qer_editorimage textures/gothic_door/skull_door_f.png
+	diffusemap textures/gothic_door/skull_door_f.png
+	bumpmap textures/gothic_door/skull_door_f_normal.png
+	specularmap textures/gothic_door/skull_door_f_spec.png
+}
+textures/gothic_door/smalldoor_xiandm3a
+{
+	qer_editorimage textures/gothic_door/smalldoor_xiandm3a.png
+	diffusemap textures/gothic_door/smalldoor_xiandm3a.png
+	bumpmap textures/gothic_door/smalldoor_xiandm3a_normal.png
+	specularmap textures/gothic_door/smalldoor_xiandm3a_spec.png
+}
+textures/gothic_door/tim_dmarch01
+{
+	qer_editorimage textures/gothic_door/tim_dmarch01.png
+	diffusemap textures/gothic_door/tim_dmarch01.png
+	bumpmap textures/gothic_door/tim_dmarch01_normal.png
+	specularmap textures/gothic_door/tim_dmarch01_spec.png
+}
+textures/gothic_door/tim_dmarch02
+{
+	qer_editorimage textures/gothic_door/tim_dmarch02.png
+	diffusemap textures/gothic_door/tim_dmarch02.png
+	bumpmap textures/gothic_door/tim_dmarch02_normal.png
+	specularmap textures/gothic_door/tim_dmarch02_spec.png
+}
+textures/gothic_door/tim_dmarch03
+{
+	qer_editorimage textures/gothic_door/tim_dmarch03.png
+	diffusemap textures/gothic_door/tim_dmarch03.png
+	bumpmap textures/gothic_door/tim_dmarch03_normal.png
+	specularmap textures/gothic_door/tim_dmarch03_spec.png
+}
+textures/gothic_door/xiandm3talldoor
+{
+	qer_editorimage textures/gothic_door/xiandm3talldoor.png
+	diffusemap textures/gothic_door/xiandm3talldoor.png
+	bumpmap textures/gothic_door/xiandm3talldoor_normal.png
+	specularmap textures/gothic_door/xiandm3talldoor_spec.png
+}
+textures/gothic_door/xiandm3talldoorinside
+{
+	qer_editorimage textures/gothic_door/xiandm3talldoorinside.png
+	diffusemap textures/gothic_door/xiandm3talldoorinside.png
+	bumpmap textures/gothic_door/xiandm3talldoorinside_normal.png
+	specularmap textures/gothic_door/xiandm3talldoorinside_spec.png
+}
+textures/gothic_door/xiandm3talldoorleft
+{
+	qer_editorimage textures/gothic_door/xiandm3talldoorleft.png
+	diffusemap textures/gothic_door/xiandm3talldoorleft.png
+	bumpmap textures/gothic_door/xiandm3talldoorleft_normal.png
+	specularmap textures/gothic_door/xiandm3talldoorleft_spec.png
+}
+textures/gothic_door/xiandm3talldoorright
+{
+	qer_editorimage textures/gothic_door/xiandm3talldoorright.png
+	diffusemap textures/gothic_door/xiandm3talldoorright.png
+	bumpmap textures/gothic_door/xiandm3talldoorright_normal.png
+	specularmap textures/gothic_door/xiandm3talldoorright_spec.png
+}
+textures/gothic_door/xian_dm3arch
+{
+	qer_editorimage textures/gothic_door/xian_dm3arch.png
+	diffusemap textures/gothic_door/xian_dm3arch.png
+	bumpmap textures/gothic_door/xian_dm3arch_normal.png
+	specularmap textures/gothic_door/xian_dm3arch_spec.png
+}
+textures/gothic_door/xian_tourneyarch_bottom2
+{
+	qer_editorimage textures/gothic_door/xian_tourneyarch_bottom2.png
+	diffusemap textures/gothic_door/xian_tourneyarch_bottom2.png
+	bumpmap textures/gothic_door/xian_tourneyarch_bottom2_normal.png
+	specularmap textures/gothic_door/xian_tourneyarch_bottom2_spec.png
+}
+textures/gothic_door/xian_tourneyarch_inside2
+{
+	qer_editorimage textures/gothic_door/xian_tourneyarch_inside2.png
+	diffusemap textures/gothic_door/xian_tourneyarch_inside2.png
+	bumpmap textures/gothic_door/xian_tourneyarch_inside2_normal.png
+	specularmap textures/gothic_door/xian_tourneyarch_inside2_spec.png
+}
+textures/gothic_door/xian_tourneyarch_med1b
+{
+	qer_editorimage textures/gothic_door/xian_tourneyarch_med1b.png
+	diffusemap textures/gothic_door/xian_tourneyarch_med1b.png
+	bumpmap textures/gothic_door/xian_tourneyarch_med1b_normal.png
+	specularmap textures/gothic_door/xian_tourneyarch_med1b_spec.png
+}
+textures/gothic_door/xian_tourneyarch_tall1c
+{
+	qer_editorimage textures/gothic_door/xian_tourneyarch_tall1c.png
+	diffusemap textures/gothic_door/xian_tourneyarch_tall1c.png
+	bumpmap textures/gothic_door/xian_tourneyarch_tall1c_normal.png
+	specularmap textures/gothic_door/xian_tourneyarch_tall1c_spec.png
+}
+textures/gothic_door/xian_tourneyarch_tall2b
+{
+	qer_editorimage textures/gothic_door/xian_tourneyarch_tall2b.png
+	diffusemap textures/gothic_door/xian_tourneyarch_tall2b.png
+	bumpmap textures/gothic_door/xian_tourneyarch_tall2b_normal.png
+	specularmap textures/gothic_door/xian_tourneyarch_tall2b_spec.png
+}

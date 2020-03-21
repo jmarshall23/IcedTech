@@ -1,0 +1,112 @@
+textures/gothic_cath/graycathflesh1L
+{
+	qer_editorimage textures/gothic_cath/graycathflesh1L.png
+	diffusemap textures/gothic_cath/graycathflesh1L.png
+	bumpmap textures/gothic_cath/graycathflesh1L_normal.png
+	specularmap textures/gothic_cath/graycathflesh1L_spec.png
+}
+textures/gothic_cath/graycathflesh1R
+{
+	qer_editorimage textures/gothic_cath/graycathflesh1R.png
+	diffusemap textures/gothic_cath/graycathflesh1R.png
+	bumpmap textures/gothic_cath/graycathflesh1R_normal.png
+	specularmap textures/gothic_cath/graycathflesh1R_spec.png
+}
+textures/gothic_cath/graycathflesh2L
+{
+	qer_editorimage textures/gothic_cath/graycathflesh2L.png
+	diffusemap textures/gothic_cath/graycathflesh2L.png
+	bumpmap textures/gothic_cath/graycathflesh2L_normal.png
+	specularmap textures/gothic_cath/graycathflesh2L_spec.png
+}
+textures/gothic_cath/graycathflesh2R
+{
+	qer_editorimage textures/gothic_cath/graycathflesh2R.png
+	diffusemap textures/gothic_cath/graycathflesh2R.png
+	bumpmap textures/gothic_cath/graycathflesh2R_normal.png
+	specularmap textures/gothic_cath/graycathflesh2R_spec.png
+}
+textures/gothic_cath/graycathflesh3L
+{
+	qer_editorimage textures/gothic_cath/graycathflesh3L.png
+	diffusemap textures/gothic_cath/graycathflesh3L.png
+	bumpmap textures/gothic_cath/graycathflesh3L_normal.png
+	specularmap textures/gothic_cath/graycathflesh3L_spec.png
+}
+textures/gothic_cath/graycathflesh3R
+{
+	qer_editorimage textures/gothic_cath/graycathflesh3R.png
+	diffusemap textures/gothic_cath/graycathflesh3R.png
+	bumpmap textures/gothic_cath/graycathflesh3R_normal.png
+	specularmap textures/gothic_cath/graycathflesh3R_spec.png
+}
+textures/gothic_cath/graycathflesh4L
+{
+	qer_editorimage textures/gothic_cath/graycathflesh4L.png
+	diffusemap textures/gothic_cath/graycathflesh4L.png
+	bumpmap textures/gothic_cath/graycathflesh4L_normal.png
+	specularmap textures/gothic_cath/graycathflesh4L_spec.png
+}
+textures/gothic_cath/graycathflesh4R
+{
+	qer_editorimage textures/gothic_cath/graycathflesh4R.png
+	diffusemap textures/gothic_cath/graycathflesh4R.png
+	bumpmap textures/gothic_cath/graycathflesh4R_normal.png
+	specularmap textures/gothic_cath/graycathflesh4R_spec.png
+}
+textures/gothic_cath/graycathflesh5L
+{
+	qer_editorimage textures/gothic_cath/graycathflesh5L.png
+	diffusemap textures/gothic_cath/graycathflesh5L.png
+	bumpmap textures/gothic_cath/graycathflesh5L_normal.png
+	specularmap textures/gothic_cath/graycathflesh5L_spec.png
+}
+textures/gothic_cath/graycathflesh5R
+{
+	qer_editorimage textures/gothic_cath/graycathflesh5R.png
+	diffusemap textures/gothic_cath/graycathflesh5R.png
+	bumpmap textures/gothic_cath/graycathflesh5R_normal.png
+	specularmap textures/gothic_cath/graycathflesh5R_spec.png
+}
+textures/gothic_cath/smalldoor_xiandm9a
+{
+	qer_editorimage textures/gothic_cath/smalldoor_xiandm9a.png
+	diffusemap textures/gothic_cath/smalldoor_xiandm9a.png
+	bumpmap textures/gothic_cath/smalldoor_xiandm9a_normal.png
+	specularmap textures/gothic_cath/smalldoor_xiandm9a_spec.png
+}
+textures/gothic_cath/smalldoor_xiandm9f
+{
+	qer_editorimage textures/gothic_cath/smalldoor_xiandm9f.png
+	diffusemap textures/gothic_cath/smalldoor_xiandm9f.png
+	bumpmap textures/gothic_cath/smalldoor_xiandm9f_normal.png
+	specularmap textures/gothic_cath/smalldoor_xiandm9f_spec.png
+}
+textures/gothic_cath/smalldoor_xiandm9i
+{
+	qer_editorimage textures/gothic_cath/smalldoor_xiandm9i.png
+	diffusemap textures/gothic_cath/smalldoor_xiandm9i.png
+	bumpmap textures/gothic_cath/smalldoor_xiandm9i_normal.png
+	specularmap textures/gothic_cath/smalldoor_xiandm9i_spec.png
+}
+textures/gothic_cath/xiandm9doorc
+{
+	qer_editorimage textures/gothic_cath/xiandm9doorc.png
+	diffusemap textures/gothic_cath/xiandm9doorc.png
+	bumpmap textures/gothic_cath/xiandm9doorc_normal.png
+	specularmap textures/gothic_cath/xiandm9doorc_spec.png
+}
+textures/gothic_cath/xiandm9doore2
+{
+	qer_editorimage textures/gothic_cath/xiandm9doore2.png
+	diffusemap textures/gothic_cath/xiandm9doore2.png
+	bumpmap textures/gothic_cath/xiandm9doore2_normal.png
+	specularmap textures/gothic_cath/xiandm9doore2_spec.png
+}
+textures/gothic_cath/xiandm9doore2_invert
+{
+	qer_editorimage textures/gothic_cath/xiandm9doore2_invert.png
+	diffusemap textures/gothic_cath/xiandm9doore2_invert.png
+	bumpmap textures/gothic_cath/xiandm9doore2_invert_normal.png
+	specularmap textures/gothic_cath/xiandm9doore2_invert_spec.png
+}

@@ -1,0 +1,21 @@
+textures/gothic_button/timbutton
+{
+	qer_editorimage textures/gothic_button/timbutton.png
+	diffusemap textures/gothic_button/timbutton.png
+	bumpmap textures/gothic_button/timbutton_normal.png
+	specularmap textures/gothic_button/timbutton_spec.png
+}
+textures/gothic_button/timbutton2
+{
+	qer_editorimage textures/gothic_button/timbutton2.png
+	diffusemap textures/gothic_button/timbutton2.png
+	bumpmap textures/gothic_button/timbutton2_normal.png
+	specularmap textures/gothic_button/timbutton2_spec.png
+}
+textures/gothic_button/timbuttonside
+{
+	qer_editorimage textures/gothic_button/timbuttonside.png
+	diffusemap textures/gothic_button/timbuttonside.png
+	bumpmap textures/gothic_button/timbuttonside_normal.png
+	specularmap textures/gothic_button/timbuttonside_spec.png
+}

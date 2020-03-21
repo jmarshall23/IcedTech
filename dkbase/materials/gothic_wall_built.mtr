@@ -1,0 +1,490 @@
+textures/gothic_wall/backtower1
+{
+	qer_editorimage textures/gothic_wall/backtower1.png
+	diffusemap textures/gothic_wall/backtower1.png
+	bumpmap textures/gothic_wall/backtower1_normal.png
+	specularmap textures/gothic_wall/backtower1_spec.png
+}
+textures/gothic_wall/backtower1b
+{
+	qer_editorimage textures/gothic_wall/backtower1b.png
+	diffusemap textures/gothic_wall/backtower1b.png
+	bumpmap textures/gothic_wall/backtower1b_normal.png
+	specularmap textures/gothic_wall/backtower1b_spec.png
+}
+textures/gothic_wall/backtower2
+{
+	qer_editorimage textures/gothic_wall/backtower2.png
+	diffusemap textures/gothic_wall/backtower2.png
+	bumpmap textures/gothic_wall/backtower2_normal.png
+	specularmap textures/gothic_wall/backtower2_spec.png
+}
+textures/gothic_wall/backtower2b
+{
+	qer_editorimage textures/gothic_wall/backtower2b.png
+	diffusemap textures/gothic_wall/backtower2b.png
+	bumpmap textures/gothic_wall/backtower2b_normal.png
+	specularmap textures/gothic_wall/backtower2b_spec.png
+}
+textures/gothic_wall/backtower3
+{
+	qer_editorimage textures/gothic_wall/backtower3.png
+	diffusemap textures/gothic_wall/backtower3.png
+	bumpmap textures/gothic_wall/backtower3_normal.png
+	specularmap textures/gothic_wall/backtower3_spec.png
+}
+textures/gothic_wall/backtower3b
+{
+	qer_editorimage textures/gothic_wall/backtower3b.png
+	diffusemap textures/gothic_wall/backtower3b.png
+	bumpmap textures/gothic_wall/backtower3b_normal.png
+	specularmap textures/gothic_wall/backtower3b_spec.png
+}
+textures/gothic_wall/backtower4
+{
+	qer_editorimage textures/gothic_wall/backtower4.png
+	diffusemap textures/gothic_wall/backtower4.png
+	bumpmap textures/gothic_wall/backtower4_normal.png
+	specularmap textures/gothic_wall/backtower4_spec.png
+}
+textures/gothic_wall/backtower4b
+{
+	qer_editorimage textures/gothic_wall/backtower4b.png
+	diffusemap textures/gothic_wall/backtower4b.png
+	bumpmap textures/gothic_wall/backtower4b_normal.png
+	specularmap textures/gothic_wall/backtower4b_spec.png
+}
+textures/gothic_wall/brickwindow_bot
+{
+	qer_editorimage textures/gothic_wall/brickwindow_bot.png
+	diffusemap textures/gothic_wall/brickwindow_bot.png
+	bumpmap textures/gothic_wall/brickwindow_bot_normal.png
+	specularmap textures/gothic_wall/brickwindow_bot_spec.png
+}
+textures/gothic_wall/brickwindow_mid
+{
+	qer_editorimage textures/gothic_wall/brickwindow_mid.png
+	diffusemap textures/gothic_wall/brickwindow_mid.png
+	bumpmap textures/gothic_wall/brickwindow_mid_normal.png
+	specularmap textures/gothic_wall/brickwindow_mid_spec.png
+}
+textures/gothic_wall/brickwindow_top
+{
+	qer_editorimage textures/gothic_wall/brickwindow_top.png
+	diffusemap textures/gothic_wall/brickwindow_top.png
+	bumpmap textures/gothic_wall/brickwindow_top_normal.png
+	specularmap textures/gothic_wall/brickwindow_top_spec.png
+}
+textures/gothic_wall/church_brick3
+{
+	qer_editorimage textures/gothic_wall/church_brick3.png
+	diffusemap textures/gothic_wall/church_brick3.png
+	bumpmap textures/gothic_wall/church_brick3_normal.png
+	specularmap textures/gothic_wall/church_brick3_spec.png
+}
+textures/gothic_wall/church_brick3b
+{
+	qer_editorimage textures/gothic_wall/church_brick3b.png
+	diffusemap textures/gothic_wall/church_brick3b.png
+	bumpmap textures/gothic_wall/church_brick3b_normal.png
+	specularmap textures/gothic_wall/church_brick3b_spec.png
+}
+textures/gothic_wall/crack5c
+{
+	qer_editorimage textures/gothic_wall/crack5c.png
+	diffusemap textures/gothic_wall/crack5c.png
+	bumpmap textures/gothic_wall/crack5c_normal.png
+	specularmap textures/gothic_wall/crack5c_spec.png
+}
+textures/gothic_wall/dm5_archifin
+{
+	qer_editorimage textures/gothic_wall/dm5_archifin.png
+	diffusemap textures/gothic_wall/dm5_archifin.png
+	bumpmap textures/gothic_wall/dm5_archifin_normal.png
+	specularmap textures/gothic_wall/dm5_archifin_spec.png
+}
+textures/gothic_wall/dm5_archkfin
+{
+	qer_editorimage textures/gothic_wall/dm5_archkfin.png
+	diffusemap textures/gothic_wall/dm5_archkfin.png
+	bumpmap textures/gothic_wall/dm5_archkfin_normal.png
+	specularmap textures/gothic_wall/dm5_archkfin_spec.png
+}
+textures/gothic_wall/goldbrick
+{
+	qer_editorimage textures/gothic_wall/goldbrick.png
+	diffusemap textures/gothic_wall/goldbrick.png
+	bumpmap textures/gothic_wall/goldbrick_normal.png
+	specularmap textures/gothic_wall/goldbrick_spec.png
+}
+textures/gothic_wall/iron01_b
+{
+	qer_editorimage textures/gothic_wall/iron01_b.png
+	diffusemap textures/gothic_wall/iron01_b.png
+	bumpmap textures/gothic_wall/iron01_b_normal.png
+	specularmap textures/gothic_wall/iron01_b_spec.png
+}
+textures/gothic_wall/iron01_c
+{
+	qer_editorimage textures/gothic_wall/iron01_c.png
+	diffusemap textures/gothic_wall/iron01_c.png
+	bumpmap textures/gothic_wall/iron01_c_normal.png
+	specularmap textures/gothic_wall/iron01_c_spec.png
+}
+textures/gothic_wall/iron01_c2
+{
+	qer_editorimage textures/gothic_wall/iron01_c2.png
+	diffusemap textures/gothic_wall/iron01_c2.png
+	bumpmap textures/gothic_wall/iron01_c2_normal.png
+	specularmap textures/gothic_wall/iron01_c2_spec.png
+}
+textures/gothic_wall/iron01_c3
+{
+	qer_editorimage textures/gothic_wall/iron01_c3.png
+	diffusemap textures/gothic_wall/iron01_c3.png
+	bumpmap textures/gothic_wall/iron01_c3_normal.png
+	specularmap textures/gothic_wall/iron01_c3_spec.png
+}
+textures/gothic_wall/iron01_c3_rust
+{
+	qer_editorimage textures/gothic_wall/iron01_c3_rust.png
+	diffusemap textures/gothic_wall/iron01_c3_rust.png
+	bumpmap textures/gothic_wall/iron01_c3_rust_normal.png
+	specularmap textures/gothic_wall/iron01_c3_rust_spec.png
+}
+textures/gothic_wall/iron01_c5
+{
+	qer_editorimage textures/gothic_wall/iron01_c5.png
+	diffusemap textures/gothic_wall/iron01_c5.png
+	bumpmap textures/gothic_wall/iron01_c5_normal.png
+	specularmap textures/gothic_wall/iron01_c5_spec.png
+}
+textures/gothic_wall/iron01_e
+{
+	qer_editorimage textures/gothic_wall/iron01_e.png
+	diffusemap textures/gothic_wall/iron01_e.png
+	bumpmap textures/gothic_wall/iron01_e_normal.png
+	specularmap textures/gothic_wall/iron01_e_spec.png
+}
+textures/gothic_wall/iron01_g
+{
+	qer_editorimage textures/gothic_wall/iron01_g.png
+	diffusemap textures/gothic_wall/iron01_g.png
+	bumpmap textures/gothic_wall/iron01_g_normal.png
+	specularmap textures/gothic_wall/iron01_g_spec.png
+}
+textures/gothic_wall/iron01_m
+{
+	qer_editorimage textures/gothic_wall/iron01_m.png
+	diffusemap textures/gothic_wall/iron01_m.png
+	bumpmap textures/gothic_wall/iron01_m_normal.png
+	specularmap textures/gothic_wall/iron01_m_spec.png
+}
+textures/gothic_wall/iron01_ndark
+{
+	qer_editorimage textures/gothic_wall/iron01_ndark.png
+	diffusemap textures/gothic_wall/iron01_ndark.png
+	bumpmap textures/gothic_wall/iron01_ndark_normal.png
+	specularmap textures/gothic_wall/iron01_ndark_spec.png
+}
+textures/gothic_wall/iron01_ntech3
+{
+	qer_editorimage textures/gothic_wall/iron01_ntech3.png
+	diffusemap textures/gothic_wall/iron01_ntech3.png
+	bumpmap textures/gothic_wall/iron01_ntech3_normal.png
+	specularmap textures/gothic_wall/iron01_ntech3_spec.png
+}
+textures/gothic_wall/iron01_ntech4
+{
+	qer_editorimage textures/gothic_wall/iron01_ntech4.png
+	diffusemap textures/gothic_wall/iron01_ntech4.png
+	bumpmap textures/gothic_wall/iron01_ntech4_normal.png
+	specularmap textures/gothic_wall/iron01_ntech4_spec.png
+}
+textures/gothic_wall/iron01_p
+{
+	qer_editorimage textures/gothic_wall/iron01_p.png
+	diffusemap textures/gothic_wall/iron01_p.png
+	bumpmap textures/gothic_wall/iron01_p_normal.png
+	specularmap textures/gothic_wall/iron01_p_spec.png
+}
+textures/gothic_wall/iron01_p2
+{
+	qer_editorimage textures/gothic_wall/iron01_p2.png
+	diffusemap textures/gothic_wall/iron01_p2.png
+	bumpmap textures/gothic_wall/iron01_p2_normal.png
+	specularmap textures/gothic_wall/iron01_p2_spec.png
+}
+textures/gothic_wall/iron01_p5
+{
+	qer_editorimage textures/gothic_wall/iron01_p5.png
+	diffusemap textures/gothic_wall/iron01_p5.png
+	bumpmap textures/gothic_wall/iron01_p5_normal.png
+	specularmap textures/gothic_wall/iron01_p5_spec.png
+}
+textures/gothic_wall/iron1_brickrust
+{
+	qer_editorimage textures/gothic_wall/iron1_brickrust.png
+	diffusemap textures/gothic_wall/iron1_brickrust.png
+	bumpmap textures/gothic_wall/iron1_brickrust_normal.png
+	specularmap textures/gothic_wall/iron1_brickrust_spec.png
+}
+textures/gothic_wall/jumptowerwork3g
+{
+	qer_editorimage textures/gothic_wall/jumptowerwork3g.png
+	diffusemap textures/gothic_wall/jumptowerwork3g.png
+	bumpmap textures/gothic_wall/jumptowerwork3g_normal.png
+	specularmap textures/gothic_wall/jumptowerwork3g_spec.png
+}
+textures/gothic_wall/jumptower_bottom
+{
+	qer_editorimage textures/gothic_wall/jumptower_bottom.png
+	diffusemap textures/gothic_wall/jumptower_bottom.png
+	bumpmap textures/gothic_wall/jumptower_bottom_normal.png
+	specularmap textures/gothic_wall/jumptower_bottom_spec.png
+}
+textures/gothic_wall/jumptower_top
+{
+	qer_editorimage textures/gothic_wall/jumptower_top.png
+	diffusemap textures/gothic_wall/jumptower_top.png
+	bumpmap textures/gothic_wall/jumptower_top_normal.png
+	specularmap textures/gothic_wall/jumptower_top_spec.png
+}
+textures/gothic_wall/metalciclesdark
+{
+	qer_editorimage textures/gothic_wall/metalciclesdark.png
+	diffusemap textures/gothic_wall/metalciclesdark.png
+	bumpmap textures/gothic_wall/metalciclesdark_normal.png
+	specularmap textures/gothic_wall/metalciclesdark_spec.png
+}
+textures/gothic_wall/metalciclesdark_pipe
+{
+	qer_editorimage textures/gothic_wall/metalciclesdark_pipe.png
+	diffusemap textures/gothic_wall/metalciclesdark_pipe.png
+	bumpmap textures/gothic_wall/metalciclesdark_pipe_normal.png
+	specularmap textures/gothic_wall/metalciclesdark_pipe_spec.png
+}
+textures/gothic_wall/metalciclesdark_support
+{
+	qer_editorimage textures/gothic_wall/metalciclesdark_support.png
+	diffusemap textures/gothic_wall/metalciclesdark_support.png
+	bumpmap textures/gothic_wall/metalciclesdark_support_normal.png
+	specularmap textures/gothic_wall/metalciclesdark_support_spec.png
+}
+textures/gothic_wall/metalciclesdark_supportb
+{
+	qer_editorimage textures/gothic_wall/metalciclesdark_supportb.png
+	diffusemap textures/gothic_wall/metalciclesdark_supportb.png
+	bumpmap textures/gothic_wall/metalciclesdark_supportb_normal.png
+	specularmap textures/gothic_wall/metalciclesdark_supportb_spec.png
+}
+textures/gothic_wall/metalciclesrust
+{
+	qer_editorimage textures/gothic_wall/metalciclesrust.png
+	diffusemap textures/gothic_wall/metalciclesrust.png
+	bumpmap textures/gothic_wall/metalciclesrust_normal.png
+	specularmap textures/gothic_wall/metalciclesrust_spec.png
+}
+textures/gothic_wall/metalciclesrust_pipe
+{
+	qer_editorimage textures/gothic_wall/metalciclesrust_pipe.png
+	diffusemap textures/gothic_wall/metalciclesrust_pipe.png
+	bumpmap textures/gothic_wall/metalciclesrust_pipe_normal.png
+	specularmap textures/gothic_wall/metalciclesrust_pipe_spec.png
+}
+textures/gothic_wall/metaltech16gold
+{
+	qer_editorimage textures/gothic_wall/metaltech16gold.png
+	diffusemap textures/gothic_wall/metaltech16gold.png
+	bumpmap textures/gothic_wall/metaltech16gold_normal.png
+	specularmap textures/gothic_wall/metaltech16gold_spec.png
+}
+textures/gothic_wall/oct20c
+{
+	qer_editorimage textures/gothic_wall/oct20c.png
+	diffusemap textures/gothic_wall/oct20c.png
+	bumpmap textures/gothic_wall/oct20c_normal.png
+	specularmap textures/gothic_wall/oct20c_spec.png
+}
+textures/gothic_wall/oct20clava
+{
+	qer_editorimage textures/gothic_wall/oct20clava.png
+	diffusemap textures/gothic_wall/oct20clava.png
+	bumpmap textures/gothic_wall/oct20clava_normal.png
+	specularmap textures/gothic_wall/oct20clava_spec.png
+}
+textures/gothic_wall/pitted_rust3blood2
+{
+	qer_editorimage textures/gothic_wall/pitted_rust3blood2.png
+	diffusemap textures/gothic_wall/pitted_rust3blood2.png
+	bumpmap textures/gothic_wall/pitted_rust3blood2_normal.png
+	specularmap textures/gothic_wall/pitted_rust3blood2_spec.png
+}
+textures/gothic_wall/proto_brik
+{
+	qer_editorimage textures/gothic_wall/proto_brik.png
+	diffusemap textures/gothic_wall/proto_brik.png
+	bumpmap textures/gothic_wall/proto_brik_normal.png
+	specularmap textures/gothic_wall/proto_brik_spec.png
+}
+textures/gothic_wall/purptileb
+{
+	qer_editorimage textures/gothic_wall/purptileb.png
+	diffusemap textures/gothic_wall/purptileb.png
+	bumpmap textures/gothic_wall/purptileb_normal.png
+	specularmap textures/gothic_wall/purptileb_spec.png
+}
+textures/gothic_wall/sidetower3a_dm15fin
+{
+	qer_editorimage textures/gothic_wall/sidetower3a_dm15fin.png
+	diffusemap textures/gothic_wall/sidetower3a_dm15fin.png
+	bumpmap textures/gothic_wall/sidetower3a_dm15fin_normal.png
+	specularmap textures/gothic_wall/sidetower3a_dm15fin_spec.png
+}
+textures/gothic_wall/sidetower3d_front
+{
+	qer_editorimage textures/gothic_wall/sidetower3d_front.png
+	diffusemap textures/gothic_wall/sidetower3d_front.png
+	bumpmap textures/gothic_wall/sidetower3d_front_normal.png
+	specularmap textures/gothic_wall/sidetower3d_front_spec.png
+}
+textures/gothic_wall/skull2
+{
+	qer_editorimage textures/gothic_wall/skull2.png
+	diffusemap textures/gothic_wall/skull2.png
+	bumpmap textures/gothic_wall/skull2_normal.png
+	specularmap textures/gothic_wall/skull2_spec.png
+}
+textures/gothic_wall/skull4
+{
+	qer_editorimage textures/gothic_wall/skull4.png
+	diffusemap textures/gothic_wall/skull4.png
+	bumpmap textures/gothic_wall/skull4_normal.png
+	specularmap textures/gothic_wall/skull4_spec.png
+}
+textures/gothic_wall/slateroofc
+{
+	qer_editorimage textures/gothic_wall/slateroofc.png
+	diffusemap textures/gothic_wall/slateroofc.png
+	bumpmap textures/gothic_wall/slateroofc_normal.png
+	specularmap textures/gothic_wall/slateroofc_spec.png
+}
+textures/gothic_wall/streetbricks
+{
+	qer_editorimage textures/gothic_wall/streetbricks.png
+	diffusemap textures/gothic_wall/streetbricks.png
+	bumpmap textures/gothic_wall/streetbricks_normal.png
+	specularmap textures/gothic_wall/streetbricks_spec.png
+}
+textures/gothic_wall/streetbricks10
+{
+	qer_editorimage textures/gothic_wall/streetbricks10.png
+	diffusemap textures/gothic_wall/streetbricks10.png
+	bumpmap textures/gothic_wall/streetbricks10_normal.png
+	specularmap textures/gothic_wall/streetbricks10_spec.png
+}
+textures/gothic_wall/streetbricks11
+{
+	qer_editorimage textures/gothic_wall/streetbricks11.png
+	diffusemap textures/gothic_wall/streetbricks11.png
+	bumpmap textures/gothic_wall/streetbricks11_normal.png
+	specularmap textures/gothic_wall/streetbricks11_spec.png
+}
+textures/gothic_wall/streetbricks14
+{
+	qer_editorimage textures/gothic_wall/streetbricks14.png
+	diffusemap textures/gothic_wall/streetbricks14.png
+	bumpmap textures/gothic_wall/streetbricks14_normal.png
+	specularmap textures/gothic_wall/streetbricks14_spec.png
+}
+textures/gothic_wall/support2b
+{
+	qer_editorimage textures/gothic_wall/support2b.png
+	diffusemap textures/gothic_wall/support2b.png
+	bumpmap textures/gothic_wall/support2b_normal.png
+	specularmap textures/gothic_wall/support2b_spec.png
+}
+textures/gothic_wall/supportborder_blue_b
+{
+	qer_editorimage textures/gothic_wall/supportborder_blue_b.png
+	diffusemap textures/gothic_wall/supportborder_blue_b.png
+	bumpmap textures/gothic_wall/supportborder_blue_b_normal.png
+	specularmap textures/gothic_wall/supportborder_blue_b_spec.png
+}
+textures/gothic_wall/supportborder_blue_c
+{
+	qer_editorimage textures/gothic_wall/supportborder_blue_c.png
+	diffusemap textures/gothic_wall/supportborder_blue_c.png
+	bumpmap textures/gothic_wall/supportborder_blue_c_normal.png
+	specularmap textures/gothic_wall/supportborder_blue_c_spec.png
+}
+textures/gothic_wall/window_evil6a
+{
+	qer_editorimage textures/gothic_wall/window_evil6a.png
+	diffusemap textures/gothic_wall/window_evil6a.png
+	bumpmap textures/gothic_wall/window_evil6a_normal.png
+	specularmap textures/gothic_wall/window_evil6a_spec.png
+}
+textures/gothic_wall/window_evil6a_glow
+{
+	qer_editorimage textures/gothic_wall/window_evil6a_glow.png
+	diffusemap textures/gothic_wall/window_evil6a_glow.png
+	bumpmap textures/gothic_wall/window_evil6a_glow_normal.png
+	specularmap textures/gothic_wall/window_evil6a_glow_spec.png
+}
+textures/gothic_wall/xiantourneycolumn_b4
+{
+	qer_editorimage textures/gothic_wall/xiantourneycolumn_b4.png
+	diffusemap textures/gothic_wall/xiantourneycolumn_b4.png
+	bumpmap textures/gothic_wall/xiantourneycolumn_b4_normal.png
+	specularmap textures/gothic_wall/xiantourneycolumn_b4_spec.png
+}
+textures/gothic_wall/xiantourneycolumn_b6
+{
+	qer_editorimage textures/gothic_wall/xiantourneycolumn_b6.png
+	diffusemap textures/gothic_wall/xiantourneycolumn_b6.png
+	bumpmap textures/gothic_wall/xiantourneycolumn_b6_normal.png
+	specularmap textures/gothic_wall/xiantourneycolumn_b6_spec.png
+}
+textures/gothic_wall/xiantourneycolumn_b8_128
+{
+	qer_editorimage textures/gothic_wall/xiantourneycolumn_b8_128.png
+	diffusemap textures/gothic_wall/xiantourneycolumn_b8_128.png
+	bumpmap textures/gothic_wall/xiantourneycolumn_b8_128_normal.png
+	specularmap textures/gothic_wall/xiantourneycolumn_b8_128_spec.png
+}
+textures/gothic_wall/xiantourneywall_C1
+{
+	qer_editorimage textures/gothic_wall/xiantourneywall_C1.png
+	diffusemap textures/gothic_wall/xiantourneywall_C1.png
+	bumpmap textures/gothic_wall/xiantourneywall_C1_normal.png
+	specularmap textures/gothic_wall/xiantourneywall_C1_spec.png
+}
+textures/gothic_wall/xiantourneywall_R1
+{
+	qer_editorimage textures/gothic_wall/xiantourneywall_R1.png
+	diffusemap textures/gothic_wall/xiantourneywall_R1.png
+	bumpmap textures/gothic_wall/xiantourneywall_R1_normal.png
+	specularmap textures/gothic_wall/xiantourneywall_R1_spec.png
+}
+textures/gothic_wall/xoct20c_shiney
+{
+	qer_editorimage textures/gothic_wall/xoct20c_shiney.png
+	diffusemap textures/gothic_wall/xoct20c_shiney.png
+	bumpmap textures/gothic_wall/xoct20c_shiney_normal.png
+	specularmap textures/gothic_wall/xoct20c_shiney_spec.png
+}
+textures/gothic_wall/xpipecolumn_gray128
+{
+	qer_editorimage textures/gothic_wall/xpipecolumn_gray128.png
+	diffusemap textures/gothic_wall/xpipecolumn_gray128.png
+	bumpmap textures/gothic_wall/xpipecolumn_gray128_normal.png
+	specularmap textures/gothic_wall/xpipecolumn_gray128_spec.png
+}
+textures/gothic_wall/xpipecolumn_gray_shiny
+{
+	qer_editorimage textures/gothic_wall/xpipecolumn_gray_shiny.png
+	diffusemap textures/gothic_wall/xpipecolumn_gray_shiny.png
+	bumpmap textures/gothic_wall/xpipecolumn_gray_shiny_normal.png
+	specularmap textures/gothic_wall/xpipecolumn_gray_shiny_spec.png
+}
