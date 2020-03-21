@@ -147,9 +147,9 @@ void rvmVirtualTextureSystem::Init(void) {
 		opts.height = vt_ImageSize.GetInteger();
 		opts.numMSAASamples = 0;
 
-		albedoVirtualTexture = renderSystem->CreateImage("_vt_albedo", &opts, TF_NEAREST);
-		normalVirtualTexture = renderSystem->CreateImage("_vt_normal", &opts, TF_NEAREST);
-		specularVirtualTexture = renderSystem->CreateImage("_vt_specular", &opts, TF_NEAREST);
+		albedoVirtualTexture = renderSystem->CreateImage("_vt_albedo", &opts, TF_LINEAR);
+		normalVirtualTexture = renderSystem->CreateImage("_vt_normal", &opts, TF_LINEAR);
+		specularVirtualTexture = renderSystem->CreateImage("_vt_specular", &opts, TF_LINEAR);
 	}
 
 	numVTPages = vt_ImageSize.GetInteger() / VIRTUALTEXTURE_TILESIZE;
