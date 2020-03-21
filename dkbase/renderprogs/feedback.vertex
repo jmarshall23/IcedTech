@@ -14,7 +14,7 @@ the Free Software Foundation, either version 3 of the License, or
 Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU General Public License for more details. 
 
 You should have received a copy of the GNU General Public License
 along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
@@ -39,6 +39,7 @@ struct VS_IN {
 struct VS_OUT {
 	float4 position : POSITION;
 	float2 texcoord0 : TEXCOORD0;
+	float4 worldVertex : TEXCOORD1;
 };
 
 void main( VS_IN vertex, out VS_OUT result ) {
@@ -48,4 +49,8 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	result.position.w = dot4( vertex.position, rpMVPmatrixW );
 	result.texcoord0.x = dot4( vertex.texcoord.xy, rpDiffuseMatrixS );
 	result.texcoord0.y = dot4( vertex.texcoord.xy, rpDiffuseMatrixT );
+	result.worldVertex.x = dot4( vertex.position, rpModelMatrixX );
+	result.worldVertex.y = dot4( vertex.position, rpModelMatrixY );
+	result.worldVertex.z = dot4( vertex.position, rpModelMatrixZ );
+	result.worldVertex.w = dot4( vertex.position, rpModelMatrixW );
 }

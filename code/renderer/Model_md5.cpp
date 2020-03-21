@@ -261,6 +261,7 @@ void idMD5Mesh::ParseMesh( idLexer &parser, int numJoints, const idJointMat *joi
 		basePose[i].Clear();
 		basePose[i].xyz = v;
 		basePose[i].st = texCoords[i];
+		basePose[i].st.y = 1.0 - basePose[i].st.y;
 	}
 
 	// build the weights and bone indexes into the verts, so they will be duplicated

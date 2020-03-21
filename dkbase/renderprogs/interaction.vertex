@@ -70,7 +70,7 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	//calculate vector to light in R0
 	float4 toLight = float4(rpLocalLightOrigin.xyz, 0) - vertex.position;
 
-	//result.texcoord0
+	//result.texcoord0   
 	result.texcoord0.x = dot3( vTangent.xyz, toLight );
 	result.texcoord0.y = dot3( vBinormal, toLight );
 	result.texcoord0.z = dot3( vNormal, toLight );

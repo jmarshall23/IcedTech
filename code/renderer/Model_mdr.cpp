@@ -333,7 +333,7 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 				v->normal[2] = LittleFloat(curv->normal[2]);
 
 				v->texCoords[0] = LittleFloat(curv->texCoords[0]);
-				v->texCoords[1] = LittleFloat(curv->texCoords[1]);
+				v->texCoords[1] = 1.0 - LittleFloat(curv->texCoords[1]);
 
 				v->numWeights = curv->numWeights;
 				weight = &v->weights[0];

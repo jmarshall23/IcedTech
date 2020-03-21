@@ -10,12 +10,12 @@ Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or 
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
-
+ 
 Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
+ 
 You should have received a copy of the GNU General Public License
 along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -54,23 +54,18 @@ struct PS_IN {
 
 struct PS_OUT {
 	half4 color : COLOR;
-	half4 color1 : COLOR1;
+	half4 color1 : COLOR1; 
 };
 
 float2 GetPhysicalTexCoords(float2 texCoords, int isNormal) {
 	float2 deviceTexCoords = frac(texCoords);
 
+	int2 feedbackMipLevel = ComputeMipMapLevel(samp5, fragment.texcoord5.xyz, rpLocalViewOrigin.xyz, rpVirtualPageInfo.z);
+	
 	// Stupid OpenGL requires use to invert the texture coordinates.
-	if (isNormal == 0)
+	if (isNormal == 1)
 	{
 		deviceTexCoords.y = 1.0 - deviceTexCoords.y;
-	}
-
-	int2 feedbackMipLevel = int2(0, 0);
-	
-	if(rpVirtualPageInfo.z == 0)
-	{
-		feedbackMipLevel = ComputeMipMapLevel(samp5, deviceTexCoords, rpVirtualPageInfo.x, rpVirtualPageInfo.y);
 	}
 
 	ivec2 pageOffsetTextureSizeMip = textureSize(samp5, feedbackMipLevel.x).xy;
@@ -99,7 +94,7 @@ float2 GetPhysicalTexCoords(float2 texCoords, int isNormal) {
 }
 
 float4 CalculateReflections(half3 normal, half3 Position, half3 cameraPos) {
-	float3 I = normalize(Position - cameraPos);
+	float3 I = normalize(cameraPos - Position);
     float3 R = reflect(I, normalize(normal));
 	
 	return float4(texture(samp6, R).rgb, 1.0);
@@ -227,16 +222,16 @@ void main( PS_IN fragment, out PS_OUT result ) {
 		localNormal	= 	float3(0.5, 0.5, 1.0);
 		diffuseMap = YCoCG.xyz;
 	}
-	
 
-	float4 reflection = CalculateReflections(localNormal, fragment.texcoord5.xyz, rpLocalViewOrigin.xyz);
+
+	float4 reflection = CalculateReflections(localNormal, fragment.texcoord5.xyz, rpLocalViewOrigin.xyz) * 2;
 
 	//const half specularPower = 10.0f;
 	//half hDotN = dot3( normalize( fragment.texcoord6.xyz ), localNormal );
 	//half3 specularContribution = _half3( pow( hDotN, specularPower ) );
 	//half3 specularColor = float3(specMap.x, specMap.x, specMap.x) * specularContribution * rpSpecularModifier.xyz;
 
-	half3 diffuseColor = diffuseMap * (rpDiffuseModifier.xyz + reflection.xyz);
+	half3 diffuseColor = (diffuseMap) * rpDiffuseModifier.xyz;
 	half3 lightColor = dot3( lightVector, localNormal ) * lightProj.xyz * lightFalloff.xyz;
 	
 	 float3 H = normalize(fragment.texcoord6.xyz);
@@ -268,7 +263,7 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	float shadow = CalculateShadows(fragment.texcoord5.xyz, rpLightOrigin.xyz);
 
 #if 1
-	result.color.xyz = ( diffuseColor + pbr ) * lightColor * shadow; // * fragment.color.xyz;
+	result.color.xyz = ( diffuseColor + pbr  + reflection.xyz ) * lightColor * shadow; // * fragment.color.xyz;
 #else
 	result.color.xyz = float3(shadow, shadow, shadow);
 	//result.color.xyz = ( diffuseColor + pbr ) * lightColor * ShadowCubeDebugUVColor(fragment.texcoord5.xyz, rpLightOrigin.xyz);

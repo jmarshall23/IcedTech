@@ -12,6 +12,32 @@ idCVar vt_transcodeDebug("vt_transcodeDebug", "0", CVAR_BOOL, "shows information
 #define TRANSCODE_DEBUG_TEXTSIZE 16
 
 /*
+============
+vt_va
+
+copied this here because va is NOT thread safe!
+
+does a varargs printf into a temp buffer
+NOTE: not thread safe
+============
+*/
+char* vt_va(const char* fmt, ...) {
+	va_list argptr;
+	static int index = 0;
+	static char string[4][16384];	// in case called by nested functions
+	char* buf;
+
+	buf = string[index];
+	index = (index + 1) & 3;
+
+	va_start(argptr, fmt);
+	vsprintf(buf, fmt, argptr);
+	va_end(argptr);
+
+	return buf;
+}
+
+/*
 ==============
 R_CopyImage
 ==============
@@ -164,29 +190,29 @@ void rvmVirtualTextureSystem::TranscodePage(idImage *image, rvmVirtualImage *vir
 
 			if (vt_transcodeShowPages.GetInteger() == 1)
 			{
-				const char *text = va("%d %d", pageX, pageY);
+				const char *text = vt_va("%d %d", pageX, pageY);
 				DrawTranscodeText(text, 0, 0, temp);
 			}
 
 			if (vt_transcodeShowPages.GetInteger() == 2)
 			{
-				const char *text = va("  %d %d", pageX, pageY);
+				const char *text = vt_va("  %d %d", pageX, pageY);
 				DrawTranscodeText(text, 0, 0, temp);
 			}
 
 			if (vt_transcodeShowPages.GetInteger() == 3)
 			{
-				const char *text2 = va("%d %d", uploadX, uploadY);
+				const char *text2 = vt_va("%d %d", uploadX, uploadY);
 				DrawTranscodeText(text2, 0, 0, temp);
 			}
 
 			if (vt_transcodeShowPages.GetInteger() == 4)
 			{
-				const char *text2 = va(" %d %d", uploadX, uploadY);
+				const char *text2 = vt_va(" %d %d", uploadX, uploadY);
 				DrawTranscodeText(text2, 0, 0, temp);
 			}
 			
-			const char *text2 = va("%d %d", pageLOD, virtualImage->GetNumMips());
+			const char *text2 = vt_va("%d %d", pageLOD, virtualImage->GetNumMips());
 			DrawTranscodeText(text2, 0, TRANSCODE_DEBUG_TEXTSIZE + 1, temp);
 		}
 

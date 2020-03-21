@@ -12,9 +12,9 @@ the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+but WITHOUT ANY WARRANTY; without even the implied warranty of   
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  
+GNU General Public License for more details. 
 
 You should have received a copy of the GNU General Public License
 along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
@@ -33,23 +33,18 @@ uniform sampler2D	samp0 : register(s0); // Page offsets texture.
 struct PS_IN {
 	float4 position : VPOS;
 	float2 texcoord0 : TEXCOORD0_centroid;
+	float4 worldVertex : TEXCOORD1_centroid;
 };
 
 struct PS_OUT {
 	float4 color : COLOR;
-	float4 color1 : COLOR1;
 };
-
+ 
 void main( PS_IN fragment, out PS_OUT result ) {
 	float2 texCoords = frac(fragment.texcoord0.xy);
-	texCoords.y = 1.0 - texCoords.y;
+	//texCoords.y = 1.0 - texCoords.y;
 	
-	int feedbackMipLevel = 0;
-	
-	if(rpVirtualTextureFeedback.w == 0)
-	{
-		feedbackMipLevel = ComputeMipMapLevel(samp0, texCoords, rpVirtualTextureFeedback.y, rpVirtualTextureFeedback.z).x;
-	}
+	int feedbackMipLevel = ComputeMipMapLevel(samp0, fragment.worldVertex.xyz, rpLocalViewOrigin.xyz, rpVirtualTextureFeedback.w).x;
 
 	ivec2 pageOffsetTextureSizeMip = textureSize(samp0, feedbackMipLevel).xy;
 

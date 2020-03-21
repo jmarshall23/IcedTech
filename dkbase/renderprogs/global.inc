@@ -133,12 +133,35 @@ static const half4 matrixCoCg1YtoRGB1X = half4(  1.0, -1.0,  0.0,        1.0 );
 static const half4 matrixCoCg1YtoRGB1Y = half4(  0.0,  1.0, -0.50196078, 1.0 ); // -0.5 * 256.0 / 255.0
 static const half4 matrixCoCg1YtoRGB1Z = half4( -1.0, -1.0,  1.00392156, 1.0 ); // +1.0 * 256.0 / 255.0
 
-static int2 ComputeMipMapLevel(isampler2D pageOffsetTexture, float2 texCoords, float width, float height)
+static int2 ComputeMipMapLevel(isampler2D pageOffsetTexture, float3 modelVertexPos, float3 cameraPos, float maxMip)
 {
-	texCoords = texCoords * float2(width, height);
-
-	float2 mip = texQueryLOD(pageOffsetTexture, texCoords);
-	return int2(mip.x, mip.y);
+	float dist = distance(modelVertexPos, cameraPos);
+	float mip;
+	
+	if(dist < 400)
+	{
+		mip = 0;
+	}
+	else if(dist < 800)
+	{
+		mip = 1;
+	}
+	else if(dist < 1200)
+	{
+		mip = 2;
+	}
+	else if(dist < 1600)
+	{
+		mip = 3;
+	}
+	else
+	{
+		mip = 4;
+	}
+	
+	mip = clamp(mip, 0, clamp(maxMip - 1, 0, 14));
+	
+	return int2(mip, 0);
 }
 
 // https://www.gamedev.net/forums/topic/687535-implementing-a-cube-map-lookup-function/
