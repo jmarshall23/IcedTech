@@ -42,20 +42,17 @@ public:
 
 	void SetGuiInfo(idDict *gd, const char *_name);
 	const char *GetName() const { 
-		if (name) {
-			if (guiDict && *name == '*') {
-				return guiDict->GetString(&name[1]);
+		if (name.Length() > 0) {
+			if (guiDict && name[0] == '*') {
+				return guiDict->GetString(&name.c_str()[1]);
 			}
 			return name;
 		}
 		return ""; 
 	}
 	void SetName(const char *_name) { 
-		delete []name; 
-		name = NULL;
 		if (_name) {
-			name = new char[strlen(_name)+1]; 
-			strcpy(name, _name); 
+			name = _name;
 		}
 	}
 
@@ -88,7 +85,7 @@ public:
 	
 protected:
 	idDict *guiDict;
-	char *name;
+	idStr name;
 	bool eval;
 };
 

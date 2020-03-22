@@ -35,13 +35,11 @@ If you have questions concerning this license or the applicable additional terms
 
 idWinVar::idWinVar() { 
 	guiDict = NULL; 
-	name = NULL; 
 	eval = true;
 }
 
 idWinVar::~idWinVar() { 
-	delete name;
-	name = NULL;
+
 }
 
 void idWinVar::SetGuiInfo(idDict *gd, const char *_name) { 

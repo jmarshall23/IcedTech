@@ -93,6 +93,8 @@ typedef struct areaNumRef_s {
 class idRenderEntityLocal;
 class idRenderLightLocal;
 
+#define MAX_INTERACTION_SURFS 128
+
 class idInteraction {
 public:
 	// this may be 0 if the light and entity do not actually intersect
@@ -102,7 +104,7 @@ public:
 	// if there is a whole-entity optimized shadow hull, it will
 	// be present as a surfaceInteraction_t with a NULL ambientTris, but
 	// possibly having a shader to specify the shadow sorting order
-	surfaceInteraction_t *	surfaces;
+	surfaceInteraction_t 	surfaces[MAX_INTERACTION_SURFS];
 	
 	// get space from here, if NULL, it is a pre-generated shadow volume from dmap
 	idRenderEntityLocal *	entityDef;

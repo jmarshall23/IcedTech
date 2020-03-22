@@ -238,7 +238,6 @@ idInteraction::idInteraction
 */
 idInteraction::idInteraction( void ) {
 	numSurfaces				= 0;
-	surfaces				= NULL;
 	entityDef				= NULL;
 	lightDef				= NULL;
 	lightNext				= NULL;
@@ -271,7 +270,7 @@ idInteraction *idInteraction::AllocAndLink( idRenderEntityLocal *edef, idRenderL
 	interaction->entityDef = edef;
 
 	interaction->numSurfaces = -1;		// not checked yet
-	interaction->surfaces = NULL;
+	//interaction->surfaces = NULL;
 
 	interaction->frustumState = idInteraction::FRUSTUM_UNINITIALIZED;
 	interaction->frustumAreas = NULL;
@@ -317,15 +316,10 @@ will be regenerated automatically
 ===============
 */
 void idInteraction::FreeSurfaces( void ) {
-	if ( this->surfaces ) {
-		for ( int i = 0 ; i < this->numSurfaces ; i++ ) {
-			surfaceInteraction_t *sint = &this->surfaces[i];
+	for (int i = 0; i < this->numSurfaces; i++) {
+		surfaceInteraction_t* sint = &this->surfaces[i];
 
-			R_FreeInteractionCullInfo( sint->cullInfo );
-		}
-
-		R_StaticFree( this->surfaces );
-		this->surfaces = NULL;
+		R_FreeInteractionCullInfo(sint->cullInfo);
 	}
 	this->numSurfaces = -1;
 }
@@ -624,7 +618,10 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 	// create slots for each of the model's surfaces
 	//
 	numSurfaces = model->NumSurfaces();
-	surfaces = (surfaceInteraction_t *)R_ClearedStaticAlloc( sizeof( *surfaces ) * numSurfaces );
+	if(numSurfaces >= MAX_INTERACTION_SURFS) {
+		common->FatalError("CreateInteraction: NumSurfaces exceeds MAX_INTERACTION_SURFS!\n");
+	}
+	memset(&surfaces[0], 0, sizeof(*surfaces) * numSurfaces);
 
 	interactionGenerated = false;
 
