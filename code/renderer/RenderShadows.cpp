@@ -8,6 +8,54 @@ rvmRenderShadowSystem renderShadowSystem;
 
 idCVar rvmRenderShadowSystem::r_shadowMapAtlasSize("r_shadowMapAtlasSize", "8192", CVAR_RENDERER | CVAR_INTEGER | CVAR_ROM, "size of the shadowmap atlas");
 idCVar rvmRenderShadowSystem::r_shadowMapAtlasSliceSize("r_shadowMapAtlasSliceSize", "512", CVAR_RENDERER | CVAR_INTEGER | CVAR_ROM, "size of the shadow map atlas slice size");
+idCVar rvmRenderShadowSystem::r_shadowMapEvictionTime("r_shadowMapEvictionTime", "5", CVAR_RENDERER | CVAR_INTEGER | CVAR_ROM, "shadow map eviction time in seconds");
+
+#ifdef ID_ALLOW_TOOLS
+/*
+======================
+R_NukeShadowCache_f
+======================
+*/
+void R_NukeShadowCache_f(const idCmdArgs& args) {
+	renderShadowSystem.NukeShadowMapCache();
+}
+#endif
+
+/*
+======================
+rvmRenderShadowSystem::rvmRenderShadowAtlasEntry_t
+======================
+*/
+rvmRenderShadowAtlasEntry_t::rvmRenderShadowAtlasEntry_t() {
+	Reset();
+}
+
+/*
+======================
+rvmRenderShadowSystem::Reset
+======================
+*/
+void rvmRenderShadowAtlasEntry_t::Reset(void) {
+	x = -1;
+	y = -1;
+	sliceSizeX = -1;
+	sliceSizeY = -1;
+	textureX = -1;
+	textureY = -1;
+	uniqueLightId = -1;
+	lastTouchedTime = -1;
+}
+
+/*
+======================
+rvmRenderShadowSystem::Mark
+======================
+*/
+void rvmRenderShadowAtlasEntry_t::Mark(int uniqueLightId) {
+	this->uniqueLightId = uniqueLightId;
+	lastTouchedTime = Sys_GetClockTicks() + (Sys_ClockTicksPerSecond() * rvmRenderShadowSystem::r_shadowMapEvictionTime.GetInteger());
+}
+
 
 /*
 ======================
@@ -45,10 +93,14 @@ void rvmRenderShadowSystem::Init(void) {
 		shadowMapAtlasRT->InitRenderTexture();
 	}
 
+#ifdef ID_ALLOW_TOOLS
+	cmdSystem->AddCommand("nukeShadowCache", R_NukeShadowCache_f, CMD_FL_TOOL, "nukes shadow map cache");
+#endif
+
 	// Allocate our shadow map atlas slice entry table.
 	int numEntriesPerAxis = r_shadowMapAtlasSize.GetInteger() / r_shadowMapAtlasSliceSize.GetInteger();
-	shadowAtlasEntries = new rvmRenderShadowAtlasEntry[numEntriesPerAxis * numEntriesPerAxis];
-
+	shadowAtlasEntries = new rvmRenderShadowAtlasEntry_t[numEntriesPerAxis * numEntriesPerAxis];
+ 
 	// Check to make sure the cvars are setup correctly.
 	if(numEntriesPerAxis <= 0) {
 		common->FatalError("Your shadow map cvars are set incorrectly r_shadowMapAtlasSize: %d r_shadowMapAtlasSliceSize: %d\n", r_shadowMapAtlasSize.GetInteger(), r_shadowMapAtlasSliceSize.GetInteger());
@@ -58,7 +110,7 @@ void rvmRenderShadowSystem::Init(void) {
 
 	for(int y = 0; y < numEntriesPerAxis; y++) {
 		for(int x = 0; x < numEntriesPerAxis; x++) {
-			rvmRenderShadowAtlasEntry* entry = &shadowAtlasEntries[(y * numEntriesPerAxis) + x];
+			rvmRenderShadowAtlasEntry_t* entry = &shadowAtlasEntries[(y * numEntriesPerAxis) + x];
 
 			entry->x = x * r_shadowMapAtlasSliceSize.GetInteger();
 			entry->y = y * r_shadowMapAtlasSliceSize.GetInteger();
@@ -98,6 +150,53 @@ void rvmRenderShadowSystem::Init(void) {
 
 /*
 ======================
+rvmRenderShadowSystem::FindNextAvailableShadowMap
+======================
+*/
+int rvmRenderShadowSystem::FindNextAvailableShadowMap(viewLight_t* vLight, int numSlices) {
+	int numEntriesPerAxis = r_shadowMapAtlasSize.GetInteger() / r_shadowMapAtlasSliceSize.GetInteger();
+
+	for (int i = 0; i < numEntriesPerAxis * numEntriesPerAxis; i++) {
+		// If we don't have enough shadow maps available return false. 
+		if (i + numSlices >= numEntriesPerAxis * numEntriesPerAxis)
+			return -1;
+
+		if(shadowAtlasEntries[i].lastTouchedTime < Sys_GetClockTicks()) {
+			for (int d = 0; d < numSlices; d++) { // TODO handle variable length slices!!
+				shadowAtlasEntries[i + d].Mark(vLight->lightDef->parms.uniqueLightId);
+			}
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+/*
+======================
+rvmRenderShadowSystem::CheckShadowCache
+======================
+*/
+int rvmRenderShadowSystem::CheckShadowCache(viewLight_t* vLight) {
+	if (vLight->lightDef->parms.uniqueLightId == -1)
+		return -1;
+
+	if (vLight->lightDef->parms.dynamicShadows)
+		return -1;
+
+	int numEntriesPerAxis = r_shadowMapAtlasSize.GetInteger() / r_shadowMapAtlasSliceSize.GetInteger();
+	for (int i = 0; i < numEntriesPerAxis * numEntriesPerAxis; i++) {
+		if(shadowAtlasEntries[i].uniqueLightId == vLight->lightDef->parms.uniqueLightId) {
+			shadowAtlasEntries[i].Mark(vLight->lightDef->parms.uniqueLightId);
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+/*
+======================
 rvmRenderShadowSystem::Shutdown
 ======================
 */
@@ -110,5 +209,18 @@ void rvmRenderShadowSystem::Shutdown(void) {
 	if(shadowAtlasEntries != NULL) {
 		delete shadowAtlasEntries;
 		shadowAtlasEntries = NULL;
+	}
+}
+
+/*
+==========================
+rvmRenderShadowSystem::NukeShadowMapCache
+==========================
+*/
+void rvmRenderShadowSystem::NukeShadowMapCache(void) {
+	int numEntriesPerAxis = r_shadowMapAtlasSize.GetInteger() / r_shadowMapAtlasSliceSize.GetInteger();
+	for (int i = 0; i < numEntriesPerAxis * numEntriesPerAxis; i++) {
+		shadowAtlasEntries[i].uniqueLightId = -1;
+		shadowAtlasEntries[i].lastTouchedTime = -1;
 	}
 }

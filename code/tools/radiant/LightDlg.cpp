@@ -59,7 +59,7 @@ void CLightInfo::Defaults() {
 	isParallel = false;
 	castShadows = true;
 	castSpecular = true;
-	castDiffuse = true;
+	castDynamicShadows = false;
 	rotate = false;
 	strobe = false;
 	rotateSpeed = 0;
@@ -100,7 +100,7 @@ void CLightInfo::FromDict( const idDict *e ) {
 
 	castShadows = !e->GetBool("noshadows");
 	castSpecular = !e->GetBool("nospecular");
-	castDiffuse = !e->GetBool("nodiffuse");
+	castDynamicShadows = e->GetBool("dynamicshadow");
 	fallOff = e->GetFloat("falloff");
 	strTexture = e->GetString("texture");
 
@@ -174,7 +174,7 @@ void CLightInfo::ToDictFromDifferences ( idDict *e, const idDict *differences ) 
 void CLightInfo::ToDictWriteAllInfo( idDict *e ) {
     e->Set("noshadows", (!castShadows) ? "1" : "0");
 	e->Set("nospecular", (!castSpecular) ? "1" : "0");
-	e->Set("nodiffuse", (!castDiffuse) ? "1" : "0");
+	e->Set("dynamicshadow", (castDynamicShadows) ? "1" : "0");
 
 	e->SetFloat("falloff",fallOff);
 	
@@ -223,7 +223,7 @@ void CLightInfo::ToDict( idDict *e ) {
 
 	e->Set("noshadows", (!castShadows) ? "1" : "0");
 	e->Set("nospecular", (!castSpecular) ? "1" : "0");
-	e->Set("nodiffuse", (!castDiffuse) ? "1" : "0");
+	e->Set("dynamicshadow", (castDynamicShadows) ? "1" : "0");
 
 	e->SetFloat("falloff",fallOff);
 	
@@ -289,7 +289,7 @@ CLightDlg::CLightDlg(CWnd* pParent /*=NULL*/)
 	m_bRotate = FALSE;
 	m_bShadows = FALSE;
 	m_bSpecular = FALSE;
-	m_bDiffuse = FALSE;
+	m_bDynamicShadows = FALSE;
 	m_fEndX = 0.0f;
 	m_fEndY = 0.0f;
 	m_fEndZ = 0.0f;
@@ -337,7 +337,7 @@ void CLightDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Radio(pDX, IDC_RADIO_FALLOFF, m_nFalloff);
 	DDX_Check(pDX, IDC_CHECK_SHADOWS, m_bShadows);
 	DDX_Check(pDX, IDC_CHECK_SPECULAR, m_bSpecular);
-	DDX_Check(pDX, IDC_CHECK_DIFFUSE, m_bDiffuse);
+	DDX_Check(pDX, IDC_CHECK_DYNAMIC_SHADOWS, m_bDynamicShadows);
     DDX_Check(pDX , IDC_CHECK_PARALLEL , m_bIsParallel );
 	DDX_Text(pDX, IDC_EDIT_ENDX, m_fEndX);
 	DDX_Text(pDX, IDC_EDIT_ENDY, m_fEndY);
@@ -468,7 +468,7 @@ void CLightDlg::UpdateDialogFromLightInfo( void ) {
 		m_drawMaterial->setMedia(lightInfo.strTexture);
 	}
 
-	m_bDiffuse = lightInfo.castDiffuse;
+	m_bDynamicShadows = lightInfo.castDynamicShadows;
 	m_fEndX = lightInfo.lightEnd[0];
 	m_fEndY = lightInfo.lightEnd[1];
 	m_fEndZ = lightInfo.lightEnd[2];
@@ -542,7 +542,7 @@ void CLightDlg::UpdateLightInfoFromDialog( void ) {
 	}
 	lightInfo.strTexture = str;
 
-	lightInfo.castDiffuse = ( m_bDiffuse != FALSE );
+	lightInfo.castDynamicShadows = (m_bDynamicShadows != FALSE );
 	lightInfo.lightEnd[0] = m_fEndX;
 	lightInfo.lightEnd[1] = m_fEndY;
 	lightInfo.lightEnd[2] = m_fEndZ;

@@ -87,6 +87,7 @@ struct renderEntity_t {
 	{
 		hModel = nullptr;
 		joints = nullptr;
+		hasDynamicShadows = false;
 		skipEntityViewCulling = false;
 		forceVirtualTextureHighQuality = false;
 	}
@@ -97,6 +98,8 @@ struct renderEntity_t {
 
 	int						entityNum;
 	int						bodyId;
+
+	bool					hasDynamicShadows;
 
 	bool					skipEntityViewCulling;
 
@@ -174,9 +177,45 @@ struct renderEntity_t {
 };
 // jmarshall end
 
-typedef struct renderLight_s {
+struct renderLight_t {
+	renderLight_t()
+	{
+		axis.Zero();
+		origin.Zero();
+		uniqueLightId = -1;
+		suppressLightInViewID = -1;
+		allowLightInViewID = -1;
+		noShadows = false;
+		noSpecular = false;
+		pointLight = false;
+		parallel = false;
+		lightRadius.Zero();
+		lightCenter.Zero();
+		ambientLight = false;
+		target.Zero();
+		right.Zero();
+		up.Zero();
+		start.Zero();
+		end.Zero();
+		prelightModel = NULL;
+		lightId = 0;
+		shader = NULL;
+		referenceSound = NULL;
+		dynamicShadows = false;
+		name = "";
+
+		for (int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++)
+			shaderParms[i] = 0;
+	}
+
+	idStr					name;				// for debugging.
+
 	idMat3					axis;				// rotation vectors, must be unit length
 	idVec3					origin;
+
+	int						uniqueLightId;		// light id that is unique to this light
+
+	bool					dynamicShadows;		// if this light has dynamic shadows or not.
 
 	// if non-zero, the light will not show up in the specific view,
 	// which may be used if we want to have slightly different muzzle
@@ -221,7 +260,7 @@ typedef struct renderLight_s {
 	const idMaterial *		shader;				// NULL = either lights/defaultPointLight or lights/defaultProjectedLight
 	float					shaderParms[MAX_ENTITY_SHADER_PARMS];		// can be used in any way by shader
 	idSoundEmitter *		referenceSound;		// for shader sound tables, allowing effects to vary with sounds
-} renderLight_t;
+};
 
 
 struct renderView_t {
@@ -244,6 +283,8 @@ struct renderView_t {
 		skipFrustumInteractionCheck = false;
 		forceScreenSize = false;
 		skipPostProcess = false;
+		isEditor = false;
+		isGuiEditor = false;
 		skyModel = NULL;
 		skyMaterial = NULL;
 		time = 0;
@@ -268,6 +309,9 @@ struct renderView_t {
 	bool					forceUpdate;		// for an update 
 
 // jmarshall
+	bool					isEditor;
+	bool					isGuiEditor;
+
 	idRenderModel*			skyModel;
 	const idMaterial*		skyMaterial;
 // jmarshall end

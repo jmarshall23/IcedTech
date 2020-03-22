@@ -61,7 +61,7 @@ public:
 	idVec3		lightRadius;
 	bool		castShadows;
 	bool		castSpecular;
-	bool		castDiffuse;
+	bool		castDynamicShadows;
 	bool		hasCenter;
 	bool		isParallel;
 
@@ -107,7 +107,7 @@ public:
 	BOOL	m_bRotate;
 	BOOL	m_bShadows;
 	BOOL	m_bSpecular;
-	BOOL	m_bDiffuse;
+	BOOL	m_bDynamicShadows;
 	float	m_fEndX;
 	float	m_fEndY;
 	float	m_fEndZ;

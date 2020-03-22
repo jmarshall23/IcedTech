@@ -1498,6 +1498,9 @@ void idPlayer::Spawn( void ) {
 	// don't project shadow on self or weapon
 	renderEntity.noSelfShadow = true;
 
+	// Require dynamic shadows.
+	renderEntity.hasDynamicShadows = true;
+
 	idAFAttachment *headEnt = head.GetEntity();
 	if ( headEnt ) {
 		headEnt->GetRenderEntity()->suppressSurfaceInViewID = entityNumber+1;

@@ -523,7 +523,7 @@ void rvGEViewer::Render	( HDC dc )
 		viewDef.scissor.y1 = 0; // (rToolbar.bottom-rToolbar.top);
 		viewDef.scissor.x2 = mWindowWidth;
 		viewDef.scissor.y2 = mWindowHeight;
-		viewDef.isEditor = true;
+		viewDef.renderView.isGuiEditor = true;
 
 		// Prepare the renderSystem view to draw the GUI in
 		renderSystem->BeginFrame(mWindowWidth, mWindowHeight );

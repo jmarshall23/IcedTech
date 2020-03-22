@@ -51,6 +51,7 @@ idPlayerView::idPlayerView() {
 	lagoMaterial = declManager->FindMaterial( LAGO_MATERIAL, false );
 	bfgVision = false;
 	dvFinishTime = 0;
+	viewFrameId = 0;
 	kickFinishTime = 0;
 	kickAngles.Zero();
 	lastDamageTime = 0.0f;
@@ -443,6 +444,12 @@ void idPlayerView::SingleView( idUserInterface *hud, const renderView_t *view ) 
 		return;
 	}
 
+	// Don't cache the shadows for the first frames, let everything settle. 
+	// Not sure if this is a hack or the proper implementation.
+	if (viewFrameId < 3) {
+		cmdSystem->BufferCommandText(CMD_EXEC_NOW, "nukeShadowCache\n");
+	}
+
 	// hack the shake in at the very last moment, so it can't cause any consistency problems
 	renderView_t	hackedView = *view;
 	hackedView.viewaxis = hackedView.viewaxis * ShakeAxis();
@@ -535,6 +542,8 @@ void idPlayerView::SingleView( idUserInterface *hud, const renderView_t *view ) 
 			renderSystem->DrawStretchPic( 0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f, 1.0f, mtr );
 		}
 	}
+
+	viewFrameId++;
 }
 
 /*

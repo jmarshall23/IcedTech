@@ -88,6 +88,10 @@ void idGameEdit::ParseSpawnArgsToRenderLight( const idDict *args, renderLight_t 
 		args->GetVector( "origin", "", renderLight->origin );
 	}
 
+	// Set the unique light id for this light.
+	renderLight->name = args->GetString("name");
+	renderLight->uniqueLightId = idStr::Hash(renderLight->name);
+
 	gotTarget = args->GetVector( "light_target", "", renderLight->target );
 	gotUp = args->GetVector( "light_up", "", renderLight->up );
 	gotRight = args->GetVector( "light_right", "", renderLight->right );
@@ -323,6 +327,13 @@ void idLight::Spawn( void ) {
 
 	// set the base color from the shader parms
 	baseColor.Set( renderLight.shaderParms[ SHADERPARM_RED ], renderLight.shaderParms[ SHADERPARM_GREEN ], renderLight.shaderParms[ SHADERPARM_BLUE ] );
+
+	// Set the unique light id for this light.
+	renderLight.name = spawnArgs.GetString("name");
+	renderLight.uniqueLightId = idStr::Hash(renderLight.name);
+
+	// Wether or not this light is going to cast dynamic shadows.
+	renderLight.dynamicShadows = spawnArgs.GetBool("dynamicshadow");
 
 	// set the number of light levels
 	spawnArgs.GetInt( "levels", "1", levels );

@@ -1,9 +1,9 @@
-textures/lava/lava
+textures/liquids/lavahell
 {
-	qer_editorimage textures/lava/lava
+	qer_editorimage textures/liquids/lavahell.png
 
 	{
 		program emissive.vfp
-		fragmentMap 0 textures/lava/lava
+		fragmentMap 0 textures/liquids/lavahell.png
 	}
 }

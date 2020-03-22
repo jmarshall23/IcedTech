@@ -322,7 +322,7 @@
 #define IDC_SLIDER_BRIGHTNESS           10434
 #define IDC_CHECK_PARALLEL              10435
 #define IDC_CHECK_SHADOWS               10436
-#define IDC_CHECK_DIFFUSE               10437
+#define IDC_CHECK_DYNAMIC_SHADOWS       10437
 #define IDC_CHECK_SPECULAR              10438
 #define IDC_EDIT_RADIUSY                10439
 #define IDC_EDIT_RADIUSZ                10440

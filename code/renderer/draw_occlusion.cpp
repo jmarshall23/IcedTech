@@ -25,7 +25,7 @@ public:
 		glDeleteQueries(1, &id);
 	}
 
-	void RunQuery(viewLight_s *light)
+	void RunQuery(viewLight_t*light)
 	{
 		this->light = light;
 
@@ -42,7 +42,7 @@ public:
 		}
 	}
 
-	viewLight_s* GetViewLight() { return light; }
+	viewLight_t* GetViewLight() { return light; }
 
 	bool IsVisible() {
 		GLuint passed = INT_MAX;
@@ -69,14 +69,45 @@ private:
 	int queryStartTime;
 	int queryTimeOutTime;
 	GLuint id;
-	viewLight_s* light;
+	viewLight_t* light;
 	rvnmOcclusionQueryState queryState;
 };
 
+void RB_Reap_Occlusion(viewLight_t* vLight) {
+	if (vLight->lightDef->currentOcclusionQuery) {
+		// Only reap the occlusion query if it isn't stale.
+		if (!vLight->lightDef->currentOcclusionQuery->IsQueryStale())
+		{
+			if (vLight->lightDef->currentOcclusionQuery->IsVisible()) {
+				vLight->lightDef->visibleFrame = tr.frameCount;
+
+				backEnd.perfMetrics.gpuCulledLights++;
+
+				if (!vLight->lightDef->parms.noShadows)
+					backEnd.perfMetrics.shadowedLightCount++;
+			}
+			else
+			{
+				// If we are inside of the light volume then assume we are visible.
+				idBounds bounds = vLight->lightDef->globalLightBounds;
+				if (bounds.ContainsPoint(backEnd.viewDef->renderView.vieworg)) {
+					vLight->lightDef->visibleFrame = tr.frameCount;
+
+					backEnd.perfMetrics.gpuCulledLights++;
+
+					if (!vLight->lightDef->parms.noShadows)
+						backEnd.perfMetrics.shadowedLightCount++;
+				}
+			}
+		}
+
+		delete vLight->lightDef->currentOcclusionQuery;
+		vLight->lightDef->currentOcclusionQuery = NULL;
+	}
+}
 
 void RB_Draw_LightOcclusion(void) {
 	viewLight_t		*vLight;
-	idList<rvmOcclusionQuery*> occlusionQueries;
 
 	if (backEnd.viewDef->viewLights == NULL)
 		return;
@@ -96,61 +127,27 @@ void RB_Draw_LightOcclusion(void) {
 			continue;
 		}
 
-		if (!backEnd.viewDef->isEditor) {
-			if(vLight->lightDef->currentOcclusionQuery) {
-				// Only reap the occlusion query if it isn't stale.
-				if(!vLight->lightDef->currentOcclusionQuery->IsQueryStale())
-				{
-					if (vLight->lightDef->currentOcclusionQuery->IsVisible()) {
-						vLight->visibleFrame = tr.frameCount;
-
-						backEnd.perfMetrics.gpuCulledLights++;
-
-						if (!vLight->lightDef->parms.noShadows)
-							backEnd.perfMetrics.shadowedLightCount++;
-					}
-				}
-
-				delete vLight->lightDef->currentOcclusionQuery;
-				vLight->lightDef->currentOcclusionQuery = NULL;
-			}
+		if (!backEnd.viewDef->renderView.isEditor) {
+			RB_Reap_Occlusion(vLight);
 		}
 
 		backEnd.perfMetrics.frustumCulledLights++;
 
 		rvmOcclusionQuery*query = new rvmOcclusionQuery();
 		query->RunQuery(vLight);
-		if (!backEnd.viewDef->isEditor) {
-			vLight->lightDef->currentOcclusionQuery = query;
-		}
-		else {
-			occlusionQueries.Append(query);
-		}
+		vLight->lightDef->currentOcclusionQuery = query;
 	}
 
 	glDepthMask(GL_TRUE);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 	// Test the occlusion queries(if in editor, reap immediately). 
-	if (backEnd.viewDef->isEditor)
+	if (backEnd.viewDef->renderView.isEditor)
 	{
-		for (int i = 0; i < occlusionQueries.Num(); i++) {
-			if (occlusionQueries[i]->IsVisible()) {
-				occlusionQueries[i]->GetViewLight()->visibleFrame = tr.frameCount;
-
-				backEnd.perfMetrics.gpuCulledLights++;
-
-				if (!occlusionQueries[i]->GetViewLight()->lightDef->parms.noShadows)
-					backEnd.perfMetrics.shadowedLightCount++;
-			}
-
-			delete occlusionQueries[i];
+		for (vLight = backEnd.viewDef->viewLights; vLight; vLight = vLight->next) {
+			RB_Reap_Occlusion(vLight);
 		}
 	}
-	occlusionQueries.Clear();
-
 
 	renderProgManager.Unbind();
-
-	
 }

@@ -314,7 +314,7 @@ void rvGEWorkspace::Render ( HDC hdc )
 	tr.viewDef->scissor.y1 = 0;
 	tr.viewDef->scissor.x2 = mRect.w;
 	tr.viewDef->scissor.y2 = mRect.h;
-	tr.viewDef->isEditor = true;
+	tr.viewDef->renderView.isGuiEditor = true;
 	renderSystem->BeginFrame(mWindowWidth, mWindowHeight );
 	
 	// Draw the gui

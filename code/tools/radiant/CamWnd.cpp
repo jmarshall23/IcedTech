@@ -2081,11 +2081,15 @@ void CCamWnd::Cam_Render() {
 	refdef.window_height = m_Camera.height;
 	refdef.fov_x = 90;
 	refdef.fov_y = 2 * atan((float)m_Camera.height / m_Camera.width) * idMath::M_RAD2DEG;
+	refdef.isEditor = true;
 
 	// only set in animation mode to give a consistent look 
 	if (animationMode) {
 		refdef.time = eventLoop->Milliseconds();
 	}
+
+	// TODO This should be done in the engine when in editor mode!
+	cmdSystem->BufferCommandText(CMD_EXEC_NOW, "nukeShadowCache\n");
 
 	game->RenderScene(&refdef, g_qeglobals.rw);
 

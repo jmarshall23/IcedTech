@@ -88,6 +88,7 @@ idRenderLightLocal::idRenderLightLocal() {
 	lightHasMoved			= false;
 	world					= NULL;
 	index					= 0;
+	visibleFrame			= 0;
 	areaNum					= 0;
 	lastModifiedFrameNum	= 0;
 	currentOcclusionQuery   = NULL;

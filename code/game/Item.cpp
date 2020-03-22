@@ -319,6 +319,9 @@ void idItem::Spawn( void ) {
 	lastCycle = -1;
 	itemShellHandle = -1;
 	shellMaterial = declManager->FindMaterial( "itemHighlightShell" );
+
+	// Require dynamic shadows.
+	renderEntity.hasDynamicShadows = true;
 }
 
 /*

@@ -325,7 +325,7 @@ void RB_Interaction_DrawInteractions( void ) {
 	for ( vLight = backEnd.viewDef->viewLights ; vLight ; vLight = vLight->next ) {
 		backEnd.vLight = vLight;
 
-		if( vLight->visibleFrame - tr.frameCount > r_occlusionQueryDelay.GetInteger()) {
+		if (vLight->lightDef->visibleFrame + r_occlusionQueryDelay.GetInteger() < tr.frameCount) {
 			continue;
 		}
 

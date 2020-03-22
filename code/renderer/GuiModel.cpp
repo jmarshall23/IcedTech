@@ -243,7 +243,7 @@ void idGuiModel::EmitFullScreen( void ) {
 	viewDef = (viewDef_t *)R_ClearedFrameAlloc( sizeof( *viewDef ) );
 
 	// for gui editor
-	if ( !tr.viewDef || !tr.viewDef->isEditor ) {
+	if ( !tr.viewDef || !tr.viewDef->renderView.isGuiEditor) {
 		viewDef->renderView.x = 0;
 		viewDef->renderView.y = 0;
 		viewDef->renderView.width = SCREEN_WIDTH;

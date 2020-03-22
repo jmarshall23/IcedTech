@@ -199,6 +199,9 @@ public:
 	virtual void			ForceUpdate();
 	virtual int				GetIndex();
 
+	// Frame that the light was visible.
+	int						visibleFrame;
+
 	renderLight_t			parms;					// specification
 
 	bool					lightHasMoved;			// the light has changed its position since it was
@@ -239,7 +242,7 @@ public:
 	shadowFrustum_t			shadowFrustums[6];
 
 	int						viewCount;				// if == tr.viewCount, the light is on the viewDef->viewLights list
-	struct viewLight_s *	viewLight;
+	struct viewLight_t*	viewLight;
 
 	areaReference_t *		references;				// each area the light is present in will have a lightRef
 	idInteraction *			firstInteraction;		// doubly linked list
@@ -312,8 +315,8 @@ public:
 // which the front end may be modifying simultaniously if running in SMP mode.
 // a viewLight may exist even without any surfaces, and may be relevent for fogging,
 // but should never exist if its volume does not intersect the view frustum
-typedef struct viewLight_s {
-	struct viewLight_s *	next;
+struct viewLight_t {
+	viewLight_t*	next;
 
 	// back end should NOT reference the lightDef, because it can change when running SMP
 	idRenderLightLocal *	lightDef;
@@ -325,9 +328,6 @@ typedef struct viewLight_s {
 
 	// Start shadow map slice.
 	int						shadowMapSlice;
-
-	// Frame that the light was visible.
-	int						visibleFrame;
 
 	// if the view isn't inside the light, we can use the non-reversed
 	// shadow drawing, avoiding the draws of the front and rear caps
@@ -355,7 +355,7 @@ typedef struct viewLight_s {
 	const struct drawSurf_s	*localShadows;				// don't shadow local Surfaces
 	const struct drawSurf_s	*globalInteractions;		// get shadows from everything
 	const struct drawSurf_s	*translucentInteractions;	// get shadows from everything
-} viewLight_t;
+};
 
 
 // a viewEntity is created whenever a idRenderEntityLocal is considered for inclusion
@@ -417,8 +417,6 @@ typedef struct viewDef_s {
 	bool				isMirror;				// the portal is a mirror, invert the face culling
 	bool				isXraySubview;
 
-	bool				isEditor;
-
 	int					numClipPlanes;			// mirrors will often use a single clip plane
 	idPlane				clipPlanes[MAX_CLIP_PLANES];		// in world space, the positive side
 												// of the plane is the visible side
@@ -439,7 +437,7 @@ typedef struct viewDef_s {
 	int					numDrawSurfs;			// it is allocated in frame temporary memory
 	int					maxDrawSurfs;			// may be resized
 
-	struct viewLight_s	*viewLights;			// chain of all viewLights effecting view
+	struct viewLight_t *viewLights;			// chain of all viewLights effecting view
 	struct viewEntity_s	*viewEntitys;			// chain of all viewEntities effecting view, including off screen ones casting shadows
 	// we use viewEntities as a check to see if a given view consists solely
 	// of 2D rendering, which we can optimize in certain ways.  A 2D view will
@@ -725,6 +723,7 @@ typedef struct {
 	int					c_copyFrameBuffer;
 
 	int					c_numShadowMapSlices;
+	int					currentShadowMapSlice;
 
 	bool				ignoreScissorOptimization;
 } backEndState_t;

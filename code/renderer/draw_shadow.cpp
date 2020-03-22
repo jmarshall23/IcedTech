@@ -95,6 +95,11 @@ void RB_Shadow_CullInteractions(viewLight_t* vLight, idPlane frustumPlanes[6]) {
 			culled = CULL_OCCLUDER_AND_RECEIVER;
 		}
 
+		// If this entity requires dynamic shadows, and this is a static light, then don't render the realtime entity.
+		if(entityDef->parms.hasDynamicShadows && !vLight->lightDef->parms.dynamicShadows) {
+			culled = CULL_OCCLUDER_AND_RECEIVER;
+		}
+
 		for (int i = 0; i < inter->numSurfaces; i++) {
 			surfaceInteraction_t* surfInt = &inter->surfaces[i];
 
@@ -503,8 +508,29 @@ RB_DrawPointlightShadow
 ===================
 */
 void RB_DrawPointlightShadow(viewLight_t *vLight) {
+	// Check to see if this shadow has been cached.
+	int cachedShadowMapId = renderShadowSystem.CheckShadowCache(vLight);
+	if (cachedShadowMapId >= 0) {
+		vLight->shadowMapSlice = cachedShadowMapId;
+		return;
+	}
+
+	int shadowMapId = renderShadowSystem.FindNextAvailableShadowMap(vLight, 6);
+	if(shadowMapId == -1) {
+		common->DWarning("Too many realtime shadow casting lights in the scene!\n");
+		return;
+	}
+
+	vLight->shadowMapSlice = shadowMapId;
 	for(int i = 0; i < 6; i++) {
-		rvmRenderShadowAtlasEntry* shadowMapEntry = renderShadowSystem.GetShadowAtlasEntry(backEnd.c_numShadowMapSlices);
+		rvmRenderShadowAtlasEntry_t* shadowMapEntry;
+		
+		// Set the initial shadow map slice which is needed for rendering.
+		backEnd.currentShadowMapSlice = shadowMapId + i;
+
+		shadowMapEntry = renderShadowSystem.GetShadowAtlasEntry(backEnd.currentShadowMapSlice);
+
+		shadowMapEntry->Mark(vLight->lightDef->parms.uniqueLightId);
 
 		int entrySize = shadowMapEntry->sliceSizeX;
 		int entryX = shadowMapEntry->x;
@@ -512,6 +538,9 @@ void RB_DrawPointlightShadow(viewLight_t *vLight) {
 
 		glViewport(entryX, entryY, entrySize, entrySize);
 		glScissor(entryX, entryY, entrySize, entrySize);
+
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glStencilFunc(GL_ALWAYS, 0, 255);
 
 		RB_RenderShadowBuffer(vLight, i);
 
@@ -525,7 +554,24 @@ RB_DrawSpotlightShadow
 ===================
 */
 void RB_DrawSpotlightShadow(viewLight_t* vLight) {
-	rvmRenderShadowAtlasEntry* shadowMapEntry = renderShadowSystem.GetShadowAtlasEntry(backEnd.c_numShadowMapSlices);
+	// Check to see if this shadow has been cached.
+	int cachedShadowMapId = renderShadowSystem.CheckShadowCache(vLight);
+	if (cachedShadowMapId > 0) {
+		vLight->shadowMapSlice = cachedShadowMapId;
+		return;
+	}
+
+	int shadowMapId = renderShadowSystem.FindNextAvailableShadowMap(vLight, 6); // TODO having 6 here is WRONG but we need the cache system to handle variable length slices first!
+	if (shadowMapId == -1) {
+		common->DWarning("Too many realtime shadow casting lights in the scene!\n");
+		return;
+	}
+
+	vLight->shadowMapSlice = shadowMapId;
+
+	rvmRenderShadowAtlasEntry_t* shadowMapEntry = renderShadowSystem.GetShadowAtlasEntry(shadowMapId);
+
+	shadowMapEntry->Mark(vLight->lightDef->parms.uniqueLightId);
 
 	int entrySize = shadowMapEntry->sliceSizeX;
 	int entryX = shadowMapEntry->x;
@@ -556,14 +602,6 @@ void RB_Draw_ShadowMaps(void) {
 	// ensures that depth writes are enabled for the depth clear
 	GL_State(GLS_DEFAULT);
 
-	int shadowMapSize = renderShadowSystem.GetShadowMapSize();
-
-	glViewport(0, 0, shadowMapSize, shadowMapSize);
-	glScissor(0, 0, shadowMapSize, shadowMapSize);
-
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glStencilFunc(GL_ALWAYS, 0, 255);
-
 	renderProgManager.BindShader_Shadow();
 
 	backEnd.c_numShadowMapSlices = 0;
@@ -577,12 +615,14 @@ void RB_Draw_ShadowMaps(void) {
 		if (vLight->lightDef->parms.ambientLight)
 			continue;
 
-		if (vLight->visibleFrame - tr.frameCount > r_occlusionQueryDelay.GetInteger()) {
+		if (vLight->lightDef->visibleFrame + r_occlusionQueryDelay.GetInteger() < tr.frameCount) {
 			continue;
 		}
 
-		// Set the initial shadow map slice which is needed for rendering.
-		vLight->shadowMapSlice = backEnd.c_numShadowMapSlices;
+		if (!vLight->localInteractions && !vLight->globalInteractions
+			&& !vLight->translucentInteractions) {
+			continue;
+		}
 
 		// all light side projections must currently match, so non-centered
 		// and non-cubic lights must take the largest length

@@ -121,6 +121,8 @@ private:
 
 	idPlayer *			player;
 	renderView_t		view;
+
+	int					viewFrameId;
 };
 
 #endif /* !__GAME_PLAYERVIEW_H__ */

@@ -1,18 +1,16 @@
 // RenderShadows.h
 //
 
+struct viewLight_t;
+
 //
-// rvmRenderShadowAtlasEntry
+// rvmRenderShadowAtlasEntry_t
 //
-struct rvmRenderShadowAtlasEntry {
-	rvmRenderShadowAtlasEntry() {
-		x = -1;
-		y = -1;
-		sliceSizeX = -1;
-		sliceSizeY = -1;
-		textureX = -1;
-		textureY = -1;
-	}
+struct rvmRenderShadowAtlasEntry_t {
+
+	rvmRenderShadowAtlasEntry_t();
+	void Reset(void);
+	void Mark(int uniqueLightId);
 
 	int x;
 	int y;
@@ -20,12 +18,15 @@ struct rvmRenderShadowAtlasEntry {
 	int sliceSizeY;
 	float textureX;
 	float textureY;
+	int uniqueLightId;
+	double lastTouchedTime;
 };
 
 //
 // rvmRenderShadowSystem
 //
 class rvmRenderShadowSystem {
+	friend class rvmRenderShadowAtlasEntry_t;
 public:
 	rvmRenderShadowSystem();
 
@@ -54,15 +55,25 @@ public:
 	float				GetShadowMapAtlasSize(void) { return (float)r_shadowMapAtlasSize.GetInteger(); }
 
 	// Returns the atlas entry for the requested index.
-	rvmRenderShadowAtlasEntry* GetShadowAtlasEntry(int idx) { return &shadowAtlasEntries[idx]; }
+	rvmRenderShadowAtlasEntry_t* GetShadowAtlasEntry(int idx) { return &shadowAtlasEntries[idx]; }
+
+	// Checks to see if the light is cached.
+	int					CheckShadowCache(viewLight_t *vLight);
+
+	// Finds the next available shadow map.
+	int					FindNextAvailableShadowMap(viewLight_t* vLight, int numSlices);
+
+	// Nukes the shadow map cache.
+	void				NukeShadowMapCache(void);
 private:
 	static idCVar		r_shadowMapAtlasSize;
 	static idCVar		r_shadowMapAtlasSliceSize;
+	static idCVar		r_shadowMapEvictionTime;
 private:
 	idImage*			atlasEntriesLookupTexture;
 
 	idRenderTexture*	shadowMapAtlasRT;
-	rvmRenderShadowAtlasEntry* shadowAtlasEntries;
+	rvmRenderShadowAtlasEntry_t* shadowAtlasEntries;
 };
 
 extern rvmRenderShadowSystem renderShadowSystem;

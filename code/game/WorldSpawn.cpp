@@ -121,7 +121,7 @@ void idWorldspawn::CreateAmbientLight(void) {
 	ambientLightDict.Set("classname", "light");
 	ambientLightDict.Set("name", "worldspawn_ambient_light");
 	ambientLightDict.Set("origin", "0 0 0");
-	ambientLightDict.Set("noshadows", "0");
+	ambientLightDict.Set("noshadows", "1");
 	ambientLightDict.Set("nospecular", "0");
 	ambientLightDict.Set("nodiffuse", "0");
 	ambientLightDict.Set("falloff", "0");
