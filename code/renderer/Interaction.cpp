@@ -657,6 +657,8 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 
 		sint->shader = shader;
 
+		sint->forceVirtualTextureHighQuality = entityDef->parms.forceVirtualTextureHighQuality;
+
 		// save the ambient tri pointer so we can reject lightTri interactions
 		// when the ambient surface isn't in view, and we can get shared vertex
 		// and shadow data from the source surface
@@ -890,24 +892,6 @@ void idInteraction::AddActiveInteraction( void ) {
 					}
 					if ( lightTris->indexCache ) {
 						vertexCache.Touch( lightTris->indexCache );
-					}
-
-					// add the surface to the light list
-
-					const idMaterial *shader = sint->shader;
-					R_GlobalShaderOverride( &shader );
-
-					// there will only be localSurfaces if the light casts shadows and
-					// there are surfaces with NOSELFSHADOW
-					if ( sint->shader->Coverage() == MC_TRANSLUCENT ) {
-						R_LinkLightSurf( &vLight->translucentInteractions, lightTris, 
-							vEntity, lightDef, shader, lightScissor, false, vEntity->entityDef->parms.forceVirtualTextureHighQuality);
-					} else if ( !lightDef->parms.noShadows && sint->shader->TestMaterialFlag(MF_NOSELFSHADOW) ) {
-						R_LinkLightSurf( &vLight->localInteractions, lightTris, 
-							vEntity, lightDef, shader, lightScissor, false, vEntity->entityDef->parms.forceVirtualTextureHighQuality);
-					} else {
-						R_LinkLightSurf( &vLight->globalInteractions, lightTris, 
-							vEntity, lightDef, shader, lightScissor, false, vEntity->entityDef->parms.forceVirtualTextureHighQuality);
 					}
 				}
 			}

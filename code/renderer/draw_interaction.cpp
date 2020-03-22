@@ -67,15 +67,15 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	idVec4 virtualMapping;
 	idVec4 virtualPageInfo;
 
-	if (din->surf->material->IsVirtualTextured())
+	if (din->surf->shader->IsVirtualTextured())
 	{
-		virtualMapping.x = din->surf->material->GetVirtualTextureHeightInPages();
+		virtualMapping.x = din->surf->shader->GetVirtualTextureHeightInPages();
 		virtualMapping.y = VIRTUALTEXTURE_TILESIZE;
 		virtualMapping.z = vt_ImageSize.GetInteger();
-		virtualMapping.w = din->surf->material->GetVirtualTextureWidthInPages();
+		virtualMapping.w = din->surf->shader->GetVirtualTextureWidthInPages();
 
-		virtualPageInfo.x = din->surf->material->GetVirtualAlbedoImage()->GetWidth(0);
-		virtualPageInfo.y = din->surf->material->GetVirtualAlbedoImage()->GetHeight(0);
+		virtualPageInfo.x = din->surf->shader->GetVirtualAlbedoImage()->GetWidth(0);
+		virtualPageInfo.y = din->surf->shader->GetVirtualAlbedoImage()->GetHeight(0);
 
 		if(din->surf->forceVirtualTextureHighQuality)
 		{
@@ -83,7 +83,7 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 		}
 		else
 		{
-			virtualPageInfo.z = din->surf->material->GetVirtualAlbedoImage()->GetNumMips();
+			virtualPageInfo.z = din->surf->shader->GetVirtualAlbedoImage()->GetNumMips();
 		}
 		virtualPageInfo.w = 0;
 	}
@@ -144,16 +144,16 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	GL_SelectTextureNoClient( 4 );
 	din->specularImage->Bind();
 
-	if (din->surf->material->IsVirtualTextured())
+	if (din->surf->shader->IsVirtualTextured())
 	{
 		GL_SelectTextureNoClient(5);
-		din->surf->material->GetVirtualPageOffsetsImage()->Bind();
+		din->surf->shader->GetVirtualPageOffsetsImage()->Bind();
 	}
 
 	// texture 7 is the reflection cube map.
 	GL_SelectTextureNoClient(6);
-	if(din->surf->material->HasReflections() && din->surf->geo->reflectionCaptureImage) {
-		din->surf->geo->reflectionCaptureImage->Bind();
+	if(din->surf->shader->HasReflections() && din->surf->ambientTris->reflectionCaptureImage) {
+		din->surf->ambientTris->reflectionCaptureImage->Bind();
 	}
 	else {
 		globalImages->blackCubeMapImage->Bind();
@@ -180,17 +180,17 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 		renderShadowSystem.GetAtlasLookupImage()->Bind();
 	}
 	
-	if (din->surf->material->IsVirtualTextured())
+	if (din->surf->shader->IsVirtualTextured())
 	{
 		// texture 10 is the always resident mip chain texture.
 		GL_SelectTextureNoClient(9);
-		din->surf->material->GetVTResidentImage()->Bind();
+		din->surf->shader->GetVTResidentImage()->Bind();
 	}
 
 
 
 	// draw it
-	RB_DrawElementsWithCounters( din->surf->geo );
+	RB_DrawElementsWithCounters( din->surf->ambientTris);
 }
 
 
@@ -200,8 +200,8 @@ RB_Interaction_CreateDrawInteractions
 
 =============
 */
-void RB_Interaction_CreateDrawInteractions( const drawSurf_t *surf ) {
-	if ( !surf ) {
+void RB_Interaction_CreateDrawInteractions(idInteraction* interaction) {
+	if (!interaction) {
 		return;
 	}
 
@@ -247,11 +247,21 @@ void RB_Interaction_CreateDrawInteractions( const drawSurf_t *surf ) {
 	}
 
 
-	for ( ; surf ; surf=surf->nextOnLight ) {
+	for(int i = 0; i < interaction->numSurfaces; i++) {
 		// perform setup here that will not change over multiple interaction passes
+		surfaceInteraction_t* surf = &interaction->surfaces[i];
+
+		if (!surf->ambientTris) {
+			continue;
+		}
+
+		const srfTriangles_t* tri = surf->ambientTris;
+		if (!tri->ambientCache) {
+			R_CreateAmbientCache(const_cast<srfTriangles_t*>(tri), false);
+		}
 		
 		// set the vertex pointers
-		idDrawVert	*ac = (idDrawVert *)vertexCache.Position( surf->geo->ambientCache );
+		idDrawVert	*ac = (idDrawVert *)vertexCache.Position( surf->ambientTris->ambientCache );
 		glColorPointer( 4, GL_UNSIGNED_BYTE, sizeof( idDrawVert ), ac->color );
 		glVertexAttribPointerARB(PC_ATTRIB_INDEX_NORMAL, 3, GL_FLOAT, false, sizeof( idDrawVert ), ac->normal.ToFloatPtr() );
 		//glVertexAttribPointerARB( 10, 3, GL_FLOAT, false, sizeof( idDrawVert ), ac->tangents[1].ToFloatPtr() );
@@ -263,7 +273,7 @@ void RB_Interaction_CreateDrawInteractions( const drawSurf_t *surf ) {
 
 		// this may cause RB_Interaction_DrawInteraction to be exacuted multiple
 		// times with different colors and images if the surface or light have multiple layers
-		RB_CreateSingleDrawInteractions( surf, RB_Interaction_DrawInteraction );
+		RB_CreateDrawInteractions( interaction, surf, RB_Interaction_DrawInteraction );
 	}
 
 	glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_COLOR);
@@ -337,11 +347,6 @@ void RB_Interaction_DrawInteractions( void ) {
 			continue;
 		}
 
-		if ( !vLight->localInteractions && !vLight->globalInteractions
-			&& !vLight->translucentInteractions ) {
-			continue;
-		}
-
 		lightShader = vLight->lightShader;
 
 		// clear the stencil buffer if needed
@@ -362,10 +367,9 @@ void RB_Interaction_DrawInteractions( void ) {
 		//}
 		glStencilFunc(GL_ALWAYS, 128, 255);
 
-		//RB_StencilShadowPass(vLight->globalShadows);
-		RB_Interaction_CreateDrawInteractions(vLight->localInteractions);
-		//RB_StencilShadowPass(vLight->localShadows);
-		RB_Interaction_CreateDrawInteractions(vLight->globalInteractions);
+		for (idInteraction* inter = vLight->lightDef->firstInteraction; inter; inter = inter->lightNext) {
+			RB_Interaction_CreateDrawInteractions(inter);
+		}
 
 		renderProgManager.Unbind();
 
@@ -376,10 +380,10 @@ void RB_Interaction_DrawInteractions( void ) {
 
 		glStencilFunc( GL_ALWAYS, 128, 255 );
 
-		backEnd.depthFunc = GLS_DEPTHFUNC_LESS;
-		RB_Interaction_CreateDrawInteractions( vLight->translucentInteractions );
-
-		backEnd.depthFunc = GLS_DEPTHFUNC_EQUAL;
+		//backEnd.depthFunc = GLS_DEPTHFUNC_LESS;
+		//RB_Interaction_CreateDrawInteractions( vLight->translucentInteractions );
+		//
+		//backEnd.depthFunc = GLS_DEPTHFUNC_EQUAL;
 	}
 
 	// disable stencil shadow test

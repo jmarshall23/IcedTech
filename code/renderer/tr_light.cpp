@@ -662,61 +662,6 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 //===============================================================================================================
 
 /*
-=================
-R_LinkLightSurf
-=================
-*/
-void R_LinkLightSurf( const drawSurf_t **link, const srfTriangles_t *tri, const viewEntity_t *space, const idRenderLightLocal *light, const idMaterial *shader, const idScreenRect &scissor, bool viewInsideShadow, bool forceVirtualTextureHighQuality ) {
-	drawSurf_t		*drawSurf;
-
-	if ( !space ) {
-		space = &tr.viewDef->worldSpace;
-	}
-
-	drawSurf = (drawSurf_t *)R_FrameAlloc( sizeof( *drawSurf ) );
-
-	drawSurf->geo = tri;
-	drawSurf->space = space;
-	drawSurf->material = shader;
-	drawSurf->scissorRect = scissor;
-	drawSurf->forceVirtualTextureHighQuality = forceVirtualTextureHighQuality;
-	drawSurf->dsFlags = 0;
-	if ( viewInsideShadow ) {
-		drawSurf->dsFlags |= DSF_VIEW_INSIDE_SHADOW;
-	}
-
-	if ( !shader ) {
-		// shadows won't have a shader
-		drawSurf->shaderRegisters = NULL;
-	} else {
-		// process the shader expressions for conditionals / color / texcoords
-		const float *constRegs = shader->ConstantRegisters();
-		if ( constRegs ) {
-			// this shader has only constants for parameters
-			drawSurf->shaderRegisters = constRegs;
-		} else {
-			// FIXME: share with the ambient surface?
-			float *regs = (float *)R_FrameAlloc( shader->GetNumRegisters() * sizeof( float ) );
-			drawSurf->shaderRegisters = regs;
-			shader->EvaluateRegisters( regs, space->entityDef->parms.shaderParms, tr.viewDef, space->entityDef->parms.referenceSound );
-		}
-
-		// calculate the specular coordinates if we aren't using vertex programs
-		if ( !tr.backEndRendererHasVertexPrograms && !r_skipSpecular.GetBool() && tr.backEndRenderer != BE_ARB ) {
-			R_SpecularTexGen( drawSurf, light->globalLightOrigin, tr.viewDef->renderView.vieworg );
-			// if we failed to allocate space for the specular calculations, drop the surface
-			if ( !drawSurf->dynamicTexCoords ) {
-				return;
-			}
-		}
-	}
-
-	// actually link it in
-	drawSurf->nextOnLight = *link;
-	*link = drawSurf;
-}
-
-/*
 ======================
 R_ClippedLightScissorRectangle
 ======================
@@ -992,46 +937,6 @@ void R_AddLightSurfaces( void ) {
 			}
 			// touch the surface so it won't get purged
 			vertexCache.Touch( light->frustumTris->ambientCache );
-		}
-
-		// add the prelight shadows for the static world geometry
-		if ( light->parms.prelightModel && r_useOptimizedShadows.GetBool() ) {
-
-			if ( !light->parms.prelightModel->NumSurfaces() ) {
-				common->Error( "no surfs in prelight model '%s'", light->parms.prelightModel->Name() );
-			}
-
-			srfTriangles_t	*tri = light->parms.prelightModel->Surface( 0 )->geometry;
-			if ( !tri->shadowVertexes ) {
-				common->Error( "R_AddLightSurfaces: prelight model '%s' without shadowVertexes", light->parms.prelightModel->Name() );
-			}
-
-			// these shadows will all have valid bounds, and can be culled normally
-			if ( r_useShadowCulling.GetBool() ) {
-				if ( R_CullLocalBox( tri->bounds, tr.viewDef->worldSpace.modelMatrix, 5, tr.viewDef->frustum ) ) {
-					continue;
-				}
-			}
-
-			// if we have been purged, re-upload the shadowVertexes
-			if ( !tri->shadowCache ) {
-				R_CreatePrivateShadowCache( tri );
-				if ( !tri->shadowCache ) {
-					continue;
-				}
-			}
-
-			// touch the shadow surface so it won't get purged
-			vertexCache.Touch( tri->shadowCache );
-
-			if ( !tri->indexCache && r_useIndexBuffers.GetBool() ) {
-				vertexCache.Alloc( tri->indexes, tri->numIndexes * sizeof( tri->indexes[0] ), &tri->indexCache, true );
-			}
-			if ( tri->indexCache ) {
-				vertexCache.Touch( tri->indexCache );
-			}
-
-			R_LinkLightSurf( &vLight->globalShadows, tri, NULL, light, NULL, vLight->scissorRect, true /* FIXME? */, false );
 		}
 	}
 }
@@ -1556,17 +1461,6 @@ R_RemoveUnecessaryViewLights
 void R_RemoveUnecessaryViewLights( void ) {
 	viewLight_t		*vLight;
 
-	// go through each visible light
-	for ( vLight = tr.viewDef->viewLights ; vLight ; vLight = vLight->next ) {
-		// if the light didn't have any lit surfaces visible, there is no need to
-		// draw any of the shadows.  We still keep the vLight for debugging
-		// draws
-		if ( !vLight->localInteractions && !vLight->globalInteractions && !vLight->translucentInteractions ) {
-			vLight->localShadows = NULL;
-			vLight->globalShadows = NULL;
-		}
-	}
-
 	if ( r_useShadowSurfaceScissor.GetBool() ) {
 		// shrink the light scissor rect to only intersect the surfaces that will actually be drawn.
 		// This doesn't seem to actually help, perhaps because the surface scissor
@@ -1580,24 +1474,6 @@ void R_RemoveUnecessaryViewLights( void ) {
 			}
 
 			surfRect.Clear();
-
-			for ( surf = vLight->globalInteractions ; surf ; surf = surf->nextOnLight ) {
-				surfRect.Union( surf->scissorRect );
-			}
-			for ( surf = vLight->localShadows ; surf ; surf = surf->nextOnLight ) {
-				const_cast<drawSurf_t *>(surf)->scissorRect.Intersect( surfRect );
-			}
-
-			for ( surf = vLight->localInteractions ; surf ; surf = surf->nextOnLight ) {
-				surfRect.Union( surf->scissorRect );
-			}
-			for ( surf = vLight->globalShadows ; surf ; surf = surf->nextOnLight ) {
-				const_cast<drawSurf_t *>(surf)->scissorRect.Intersect( surfRect );
-			}
-
-			for ( surf = vLight->translucentInteractions ; surf ; surf = surf->nextOnLight ) {
-				surfRect.Union( surf->scissorRect );
-			}
 
 			vLight->scissorRect.Intersect( surfRect );
 		}

@@ -525,10 +525,10 @@ void RB_DetermineLightScale( void ) {
 	for ( vLight = backEnd.viewDef->viewLights ; vLight ; vLight = vLight->next ) {
 		// lights with no surfaces or shaderparms may still be present
 		// for debug display
-		if ( !vLight->localInteractions && !vLight->globalInteractions
-			&& !vLight->translucentInteractions ) {
-			continue;
-		}
+		//if ( !vLight->localInteractions && !vLight->globalInteractions
+		//	&& !vLight->translucentInteractions ) {
+		//	continue;
+		//}
 
 		shader = vLight->lightShader;
 		numStages = shader->GetNumStages();
@@ -709,79 +709,88 @@ This can be used by different draw_* backends to decompose a complex light / sur
 interaction into primitive interactions
 =============
 */
-void RB_CreateSingleDrawInteractions( const drawSurf_t *surf, void (*DrawInteraction)(const drawInteraction_t *) ) {
-	const idMaterial	*surfaceShader = surf->material;
-	const float			*surfaceRegs = surf->shaderRegisters;
-	const viewLight_t	*vLight = backEnd.vLight;
-	const idMaterial	*lightShader = vLight->lightShader;
-	const float			*lightRegs = vLight->shaderRegisters;
+void RB_CreateDrawInteractions(const idInteraction *lightInter, const surfaceInteraction_t* surfInteraction, void (*DrawInteraction)(const drawInteraction_t*)) {
+	const idMaterial* surfaceShader = surfInteraction->shader;
+	//const float* surfaceRegs = surfInteraction->shader->shaderRegisters;
+	const viewLight_t* vLight = backEnd.vLight;
+	const idMaterial* lightShader = vLight->lightShader;
+	const float* lightRegs = vLight->shaderRegisters;
 	drawInteraction_t	inter;
 
-	if ( r_skipInteractions.GetBool() || !surf->geo || !surf->geo->ambientCache ) {
+	if (r_skipInteractions.GetBool()) {
 		return;
 	}
 
-	if ( tr.logFile ) {
-		RB_LogComment( "---------- RB_CreateSingleDrawInteractions %s on %s ----------\n", lightShader->GetName(), surfaceShader->GetName() );
+	if (tr.logFile) {
+		RB_LogComment("---------- RB_CreateSingleDrawInteractions %s on %s ----------\n", lightShader->GetName(), surfaceShader->GetName());
 	}
 
-	RB_SetMVP(surf->space->mvp);
-	RB_SetModelMatrix(surf->space->modelMatrix);
+	float* surfaceRegs = (float*)R_FrameAlloc(surfaceShader->GetNumRegisters() * sizeof(float));
+	surfaceShader->EvaluateRegisters(surfaceRegs, lightInter->entityDef->parms.shaderParms, backEnd.viewDef, lightInter->entityDef->parms.referenceSound);
+
+	idRenderMatrix	matrix, transposeMatrix, mvp;
+	idRenderMatrix::Multiply(*(idRenderMatrix*)lightInter->entityDef->modelMatrix, *(idRenderMatrix*)backEnd.viewDef->worldSpace.modelViewMatrix, matrix);
+	
+	idRenderMatrix::Transpose(matrix, transposeMatrix);
+	idRenderMatrix::Multiply(backEnd.viewDef->projectionRenderMatrix, transposeMatrix, mvp);
+
+	RB_SetMVP(mvp);
+	RB_SetModelMatrix(lightInter->entityDef->modelMatrix);
 
 	// change the matrix and light projection vectors if needed
-	if ( surf->space != backEnd.currentSpace ) {
-		backEnd.currentSpace = surf->space;
-		glLoadMatrixf( surf->space->modelViewMatrix );
-	}
+//	if (surf->space != backEnd.currentSpace) {
+//		backEnd.currentSpace = surf->space;
+//	//	glLoadMatrixf(surf->space->modelViewMatrix);
+//	}
 
 	// change the scissor if needed
-	if ( r_useScissor.GetBool() && !backEnd.currentScissor.Equals( surf->scissorRect ) ) {
-		backEnd.currentScissor = surf->scissorRect;
-		glScissor( backEnd.viewDef->viewport.x1 + backEnd.currentScissor.x1, 
+//	if (r_useScissor.GetBool() && !backEnd.currentScissor.Equals(surf->scissorRect)) {
+//		backEnd.currentScissor = surf->scissorRect;
+		glScissor(backEnd.viewDef->viewport.x1 + backEnd.currentScissor.x1,
 			backEnd.viewDef->viewport.y1 + backEnd.currentScissor.y1,
 			backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-			backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1 );
-	}
+			backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
+//	}
 
 	// hack depth range if needed
-	if ( surf->space->weaponDepthHack ) {
-		RB_EnterWeaponDepthHack();
-	}
+	//if (surf->space->weaponDepthHack) {
+	//	RB_EnterWeaponDepthHack();
+	//}
+	//
+	//if (surf->space->modelDepthHack) {
+	//	RB_EnterModelDepthHack(surf->space->modelDepthHack);
+	//}
 
-	if ( surf->space->modelDepthHack ) {
-		RB_EnterModelDepthHack( surf->space->modelDepthHack );
-	}
-
-	inter.surf = surf;
+	inter.surf = surfInteraction;
 	inter.lightFalloffImage = vLight->falloffImage;
 
-	R_GlobalPointToLocal( surf->space->modelMatrix, vLight->globalLightOrigin, inter.localLightOrigin.ToVec3() );
-	R_GlobalPointToLocal( surf->space->modelMatrix, backEnd.viewDef->renderView.vieworg, inter.localViewOrigin.ToVec3() );
+	R_GlobalPointToLocal(lightInter->entityDef->modelMatrix, vLight->globalLightOrigin, inter.localLightOrigin.ToVec3());
+	R_GlobalPointToLocal(lightInter->entityDef->modelMatrix, backEnd.viewDef->renderView.vieworg, inter.localViewOrigin.ToVec3());
 	inter.localLightOrigin[3] = vLight->lightDef->parms.ambientLight;
 	inter.localViewOrigin[3] = 1;
 	inter.ambientLight = lightShader->IsAmbientLight();
 
 	// the base projections may be modified by texture matrix on light stages
 	idPlane lightProject[4];
-	for ( int i = 0 ; i < 4 ; i++ ) {
-		R_GlobalPlaneToLocal( surf->space->modelMatrix, backEnd.vLight->lightProject[i], lightProject[i] );
+	for (int i = 0; i < 4; i++) {
+		R_GlobalPlaneToLocal(lightInter->entityDef->modelMatrix, backEnd.vLight->lightProject[i], lightProject[i]);
 	}
 
-	for ( int lightStageNum = 0 ; lightStageNum < lightShader->GetNumStages() ; lightStageNum++ ) {
-		const shaderStage_t	*lightStage = lightShader->GetStage( lightStageNum );
+	for (int lightStageNum = 0; lightStageNum < lightShader->GetNumStages(); lightStageNum++) {
+		const shaderStage_t* lightStage = lightShader->GetStage(lightStageNum);
 
 		// ignore stages that fail the condition
-		if ( !lightRegs[ lightStage->conditionRegister ] ) {
+		if (!lightRegs[lightStage->conditionRegister]) {
 			continue;
 		}
 
 		inter.lightImage = lightStage->texture.image;
 
-		memcpy( inter.lightProjection, lightProject, sizeof( inter.lightProjection ) );
+		memcpy(inter.lightProjection, lightProject, sizeof(inter.lightProjection));
 		// now multiply the texgen by the light texture matrix
-		if ( lightStage->texture.hasMatrix ) {
-			RB_GetShaderTextureMatrix( lightRegs, &lightStage->texture, backEnd.lightTextureMatrix );
-			RB_BakeTextureMatrixIntoTexgen( reinterpret_cast<class idPlane *>(inter.lightProjection), backEnd.lightTextureMatrix );
+		if (lightStage->texture.hasMatrix) {
+			RB_GetShaderTextureMatrix(lightRegs, &lightStage->texture, backEnd.lightTextureMatrix);
+			RB_BakeTextureMatrixIntoTexgen(reinterpret_cast<class idPlane*>(inter.lightProjection), backEnd.lightTextureMatrix);
 		}
 
 		inter.bumpImage = NULL;
@@ -794,82 +803,82 @@ void RB_CreateSingleDrawInteractions( const drawSurf_t *surf, void (*DrawInterac
 
 		// backEnd.lightScale is calculated so that lightColor[] will never exceed
 		// tr.backEndRendererMaxLight
-		lightColor[0] = backEnd.lightScale * lightRegs[ lightStage->color.registers[0] ];
-		lightColor[1] = backEnd.lightScale * lightRegs[ lightStage->color.registers[1] ];
-		lightColor[2] = backEnd.lightScale * lightRegs[ lightStage->color.registers[2] ];
-		lightColor[3] = lightRegs[ lightStage->color.registers[3] ];
+		lightColor[0] = backEnd.lightScale * lightRegs[lightStage->color.registers[0]];
+		lightColor[1] = backEnd.lightScale * lightRegs[lightStage->color.registers[1]];
+		lightColor[2] = backEnd.lightScale * lightRegs[lightStage->color.registers[2]];
+		lightColor[3] = lightRegs[lightStage->color.registers[3]];
 
 		// go through the individual stages
-		for ( int surfaceStageNum = 0 ; surfaceStageNum < surfaceShader->GetNumStages() ; surfaceStageNum++ ) {
-			const shaderStage_t	*surfaceStage = surfaceShader->GetStage( surfaceStageNum );
+		for (int surfaceStageNum = 0; surfaceStageNum < surfaceShader->GetNumStages(); surfaceStageNum++) {
+			const shaderStage_t* surfaceStage = surfaceShader->GetStage(surfaceStageNum);
 
-			switch( surfaceStage->lighting ) {
-				case SL_AMBIENT: {
-					// ignore ambient stages while drawing interactions
-					break;
+			switch (surfaceStage->lighting) {
+			case SL_AMBIENT: {
+				// ignore ambient stages while drawing interactions
+				break;
+			}
+			case SL_BUMP: {
+				// ignore stage that fails the condition
+				//if (!surfaceRegs[surfaceStage->conditionRegister]) {
+				//	break;
+				//}
+				// draw any previous interaction
+				RB_SubmittInteraction(&inter, DrawInteraction);
+				inter.diffuseImage = NULL;
+				inter.specularImage = NULL;
+				R_SetDrawInteraction(surfaceStage, surfaceRegs, &inter.bumpImage, inter.bumpMatrix, NULL);
+				break;
+			}
+			case SL_DIFFUSE: {
+				// ignore stage that fails the condition
+				//if (!surfaceRegs[surfaceStage->conditionRegister]) {
+				//	break;
+				//}
+				if (inter.diffuseImage) {
+					RB_SubmittInteraction(&inter, DrawInteraction);
 				}
-				case SL_BUMP: {
-					// ignore stage that fails the condition
-					if ( !surfaceRegs[ surfaceStage->conditionRegister ] ) {
-						break;
-					}
-					// draw any previous interaction
-					RB_SubmittInteraction( &inter, DrawInteraction );
-					inter.diffuseImage = NULL;
-					inter.specularImage = NULL;
-					R_SetDrawInteraction( surfaceStage, surfaceRegs, &inter.bumpImage, inter.bumpMatrix, NULL );
-					break;
+				R_SetDrawInteraction(surfaceStage, surfaceRegs, &inter.diffuseImage,
+					inter.diffuseMatrix, inter.diffuseColor.ToFloatPtr());
+				inter.diffuseColor[0] *= lightColor[0];
+				inter.diffuseColor[1] *= lightColor[1];
+				inter.diffuseColor[2] *= lightColor[2];
+				inter.diffuseColor[3] *= lightColor[3];
+				inter.vertexColor = surfaceStage->vertexColor;
+				break;
+			}
+			case SL_SPECULAR: {
+				// ignore stage that fails the condition
+				//if (!surfaceRegs[surfaceStage->conditionRegister]) {
+				//	break;
+				//}
+				if (inter.specularImage) {
+					RB_SubmittInteraction(&inter, DrawInteraction);
 				}
-				case SL_DIFFUSE: {
-					// ignore stage that fails the condition
-					if ( !surfaceRegs[ surfaceStage->conditionRegister ] ) {
-						break;
-					}
-					if ( inter.diffuseImage ) {
-						RB_SubmittInteraction( &inter, DrawInteraction );
-					}
-					R_SetDrawInteraction( surfaceStage, surfaceRegs, &inter.diffuseImage,
-											inter.diffuseMatrix, inter.diffuseColor.ToFloatPtr() );
-					inter.diffuseColor[0] *= lightColor[0];
-					inter.diffuseColor[1] *= lightColor[1];
-					inter.diffuseColor[2] *= lightColor[2];
-					inter.diffuseColor[3] *= lightColor[3];
+				// jmarshall - add no specular support(great for fill lighting).
+				if (!vLight->lightDef->parms.noSpecular)
+				{
+					R_SetDrawInteraction(surfaceStage, surfaceRegs, &inter.specularImage,
+						inter.specularMatrix, inter.specularColor.ToFloatPtr());
+					inter.specularColor[0] *= lightColor[0];
+					inter.specularColor[1] *= lightColor[1];
+					inter.specularColor[2] *= lightColor[2];
+					inter.specularColor[3] *= lightColor[3];
 					inter.vertexColor = surfaceStage->vertexColor;
-					break;
 				}
-				case SL_SPECULAR: {
-					// ignore stage that fails the condition
-					if ( !surfaceRegs[ surfaceStage->conditionRegister ] ) {
-						break;
-					}
-					if ( inter.specularImage ) {
-						RB_SubmittInteraction( &inter, DrawInteraction );
-					}
-// jmarshall - add no specular support(great for fill lighting).
-					if (!vLight->lightDef->parms.noSpecular)
-					{
-						R_SetDrawInteraction(surfaceStage, surfaceRegs, &inter.specularImage,
-							inter.specularMatrix, inter.specularColor.ToFloatPtr());
-						inter.specularColor[0] *= lightColor[0];
-						inter.specularColor[1] *= lightColor[1];
-						inter.specularColor[2] *= lightColor[2];
-						inter.specularColor[3] *= lightColor[3];
-						inter.vertexColor = surfaceStage->vertexColor;
-					}
-// jmarshall end
-					break;
-				}
+				// jmarshall end
+				break;
+			}
 			}
 		}
 
 		// draw the final interaction
-		RB_SubmittInteraction( &inter, DrawInteraction );
+		RB_SubmittInteraction(&inter, DrawInteraction);
 	}
 
 	// unhack depth range if needed
-	if ( surf->space->weaponDepthHack || surf->space->modelDepthHack != 0.0f ) {
-		RB_LeaveDepthHack();
-	}
+	//if (surf->space->weaponDepthHack || surf->space->modelDepthHack != 0.0f) {
+	//	RB_LeaveDepthHack();
+	//}
 }
 
 /*

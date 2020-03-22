@@ -619,11 +619,6 @@ void RB_Draw_ShadowMaps(void) {
 			continue;
 		}
 
-		if (!vLight->localInteractions && !vLight->globalInteractions
-			&& !vLight->translucentInteractions) {
-			continue;
-		}
-
 		// all light side projections must currently match, so non-centered
 		// and non-cubic lights must take the largest length
 		viewLightAxialSize = R_Shadow_CalcLightAxialSize(vLight);

@@ -61,7 +61,15 @@ typedef struct {
 } srfCullInfo_t;
 
 
-typedef struct {		
+struct surfaceInteraction_t {
+	surfaceInteraction_t()
+	{
+		ambientTris = NULL;
+		shader = NULL;
+		expCulled = 0;
+		forceVirtualTextureHighQuality = false;
+	}
+
 	// so we can check ambientViewCount before adding lightTris, and get
 	// at the shared vertex and possibly shadowVertex caches
 	srfTriangles_t *		ambientTris;
@@ -70,8 +78,10 @@ typedef struct {
 
 	int						expCulled;			// only for the experimental shadow buffer renderer
 
+	bool					forceVirtualTextureHighQuality;
+
 	srfCullInfo_t			cullInfo;
-} surfaceInteraction_t;
+};
 
 
 typedef struct areaNumRef_s {

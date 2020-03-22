@@ -349,12 +349,6 @@ struct viewLight_t {
 	const idMaterial *		lightShader;				// light shader used by backend
 	const float	*			shaderRegisters;			// shader registers used by backend
 	idImage *				falloffImage;				// falloff image used by backend
-
-	const struct drawSurf_s	*globalShadows;				// shadow everything
-	const struct drawSurf_s	*localInteractions;			// don't get local shadows
-	const struct drawSurf_s	*localShadows;				// don't shadow local Surfaces
-	const struct drawSurf_s	*globalInteractions;		// get shadows from everything
-	const struct drawSurf_s	*translucentInteractions;	// get shadows from everything
 };
 
 
@@ -459,7 +453,7 @@ typedef struct viewDef_s {
 // complex light / surface interactions are broken up into multiple passes of a
 // simple interaction shader
 typedef struct {
-	const drawSurf_t *	surf;
+	const surfaceInteraction_t*	surf;
 
 	idImage *			lightImage;
 	idImage *			lightFalloffImage;
@@ -1267,9 +1261,6 @@ viewLight_t *R_SetLightDefViewLight( idRenderLightLocal *def );
 void R_AddDrawSurf( const srfTriangles_t *tri, const viewEntity_t *space, const renderEntity_t *renderEntity,
 					const idMaterial *shader, const idScreenRect &scissor );
 
-void R_LinkLightSurf( const drawSurf_t **link, const srfTriangles_t *tri, const viewEntity_t *space, 
-				   const idRenderLightLocal *light, const idMaterial *shader, const idScreenRect &scissor, bool viewInsideShadow, bool forceVirtualTextureHighQuality);
-
 bool R_CreateAmbientCache( srfTriangles_t *tri, bool needsLighting );
 bool R_CreateLightingCache( const idRenderEntityLocal *ent, const idRenderLightLocal *light, srfTriangles_t *tri );
 void R_CreatePrivateShadowCache( srfTriangles_t *tri );
@@ -1344,7 +1335,7 @@ void RB_RenderDrawSurfChainWithFunction( const drawSurf_t *drawSurfs,
 void RB_DrawShaderPasses( drawSurf_t **drawSurfs, int numDrawSurfs );
 void RB_LoadShaderTextureMatrix( const float *shaderRegisters, const textureStage_t *texture );
 void RB_GetShaderTextureMatrix( const float *shaderRegisters, const textureStage_t *texture, float matrix[16] );
-void RB_CreateSingleDrawInteractions( const drawSurf_t *surf, void (*DrawInteraction)(const drawInteraction_t *) );
+void RB_CreateDrawInteractions(const idInteraction* lightInter, const surfaceInteraction_t* surfInteraction, void (*DrawInteraction)(const drawInteraction_t*));
 
 const shaderStage_t *RB_SetLightTexture( const idRenderLightLocal *light );
 

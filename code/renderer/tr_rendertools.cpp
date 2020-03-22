@@ -300,72 +300,49 @@ RB_ShowOverdraw
 ==================
 */
 void RB_ShowOverdraw( void ) {
-	const idMaterial *	material;
-	int					i;
-	drawSurf_t * *		drawSurfs;
-	const drawSurf_t *	surf;
-	int					numDrawSurfs;
-	viewLight_t *		vLight;
-
-	if ( r_showOverDraw.GetInteger() == 0 ) {
-		return;
-	}
-
-	material = declManager->FindMaterial( "textures/common/overdrawtest", false );
-	if ( material == NULL ) {
-		return;
-	}
-
-	drawSurfs = backEnd.viewDef->drawSurfs;
-	numDrawSurfs = backEnd.viewDef->numDrawSurfs;
-
-	int interactions = 0;
-	for ( vLight = backEnd.viewDef->viewLights; vLight; vLight = vLight->next ) {
-		for ( surf = vLight->localInteractions; surf; surf = surf->nextOnLight ) {
-			interactions++;
-		}
-		for ( surf = vLight->globalInteractions; surf; surf = surf->nextOnLight ) {
-			interactions++;
-		}
-	}
-
-	drawSurf_t **newDrawSurfs = (drawSurf_t **)R_FrameAlloc( numDrawSurfs + interactions * sizeof( newDrawSurfs[0] ) );
-
-	for ( i = 0; i < numDrawSurfs; i++ ) {
-		surf = drawSurfs[i];
-		if ( surf->material ) {
-			const_cast<drawSurf_t *>(surf)->material = material;
-		}
-		newDrawSurfs[i] = const_cast<drawSurf_t *>(surf);
-	}
-
-	for ( vLight = backEnd.viewDef->viewLights; vLight; vLight = vLight->next ) {
-		for ( surf = vLight->localInteractions; surf; surf = surf->nextOnLight ) {
-			const_cast<drawSurf_t *>(surf)->material = material;
-			newDrawSurfs[i++] = const_cast<drawSurf_t *>(surf);
-		}
-		for ( surf = vLight->globalInteractions; surf; surf = surf->nextOnLight ) {
-			const_cast<drawSurf_t *>(surf)->material = material;
-			newDrawSurfs[i++] = const_cast<drawSurf_t *>(surf);
-		}
-		vLight->localInteractions = NULL;
-		vLight->globalInteractions = NULL;
-	}
-
-	switch( r_showOverDraw.GetInteger() ) {
-		case 1: // geometry overdraw
-			const_cast<viewDef_t *>(backEnd.viewDef)->drawSurfs = newDrawSurfs;
-			const_cast<viewDef_t *>(backEnd.viewDef)->numDrawSurfs = numDrawSurfs;
-			break;
-		case 2: // light interaction overdraw
-			const_cast<viewDef_t *>(backEnd.viewDef)->drawSurfs = &newDrawSurfs[numDrawSurfs];
-			const_cast<viewDef_t *>(backEnd.viewDef)->numDrawSurfs = interactions;
-			break;
-		case 3: // geometry + light interaction overdraw
-			const_cast<viewDef_t *>(backEnd.viewDef)->drawSurfs = newDrawSurfs;
-			const_cast<viewDef_t *>(backEnd.viewDef)->numDrawSurfs += interactions;
-			break;
-	}
+	//const idMaterial *	material;
+	//int					i;
+	//drawSurf_t * *		drawSurfs;
+	//const drawSurf_t *	surf;
+	//int					numDrawSurfs;
+	//viewLight_t *		vLight;
+	//
+	//if ( r_showOverDraw.GetInteger() == 0 ) {
+	//	return;
+	//}
+	//
+	//material = declManager->FindMaterial( "textures/common/overdrawtest", false );
+	//if ( material == NULL ) {
+	//	return;
+	//}
+	//
+	//drawSurfs = backEnd.viewDef->drawSurfs;
+	//numDrawSurfs = backEnd.viewDef->numDrawSurfs;
+	//
+	//drawSurf_t **newDrawSurfs = (drawSurf_t **)R_FrameAlloc( numDrawSurfs + interactions * sizeof( newDrawSurfs[0] ) );
+	//
+	//for ( i = 0; i < numDrawSurfs; i++ ) {
+	//	surf = drawSurfs[i];
+	//	if ( surf->material ) {
+	//		const_cast<drawSurf_t *>(surf)->material = material;
+	//	}
+	//	newDrawSurfs[i] = const_cast<drawSurf_t *>(surf);
+	//}
+	//
+	//switch( r_showOverDraw.GetInteger() ) {
+	//	case 1: // geometry overdraw
+	//		const_cast<viewDef_t *>(backEnd.viewDef)->drawSurfs = newDrawSurfs;
+	//		const_cast<viewDef_t *>(backEnd.viewDef)->numDrawSurfs = numDrawSurfs;
+	//		break;
+	//	case 2: // light interaction overdraw
+	//		const_cast<viewDef_t *>(backEnd.viewDef)->drawSurfs = &newDrawSurfs[numDrawSurfs];
+	//		const_cast<viewDef_t *>(backEnd.viewDef)->numDrawSurfs = interactions;
+	//		break;
+	//	case 3: // geometry + light interaction overdraw
+	//		const_cast<viewDef_t *>(backEnd.viewDef)->drawSurfs = newDrawSurfs;
+	//		const_cast<viewDef_t *>(backEnd.viewDef)->numDrawSurfs += interactions;
+	//		break;
+	//}
 }
 
 /*
@@ -487,50 +464,50 @@ void RB_ShowLightCount( void ) {
 	const drawSurf_t	*surf;
 	const viewLight_t	*vLight;
 
-	if ( !r_showLightCount.GetBool() ) {
-		return;
-	}
-
-	GL_State( GLS_DEPTHFUNC_EQUAL );
-
-	RB_SimpleWorldSetup();
-	glClearStencil( 0 );
-	glClear( GL_STENCIL_BUFFER_BIT );
-
-	glEnable( GL_STENCIL_TEST );
-
-	// optionally count everything through walls
-	if ( r_showLightCount.GetInteger() >= 2 ) {
-		glStencilOp( GL_KEEP, GL_INCR, GL_INCR );
-	} else {
-		glStencilOp( GL_KEEP, GL_KEEP, GL_INCR );
-	}
-
-	glStencilFunc( GL_ALWAYS, 1, 255 );
-
-	globalImages->defaultImage->Bind();
-
-	for ( vLight = backEnd.viewDef->viewLights ; vLight ; vLight = vLight->next ) {
-		for ( i = 0 ; i < 2 ; i++ ) {
-			for ( surf = i ? vLight->localInteractions: vLight->globalInteractions; surf; surf = (drawSurf_t *)surf->nextOnLight ) {
-				RB_SimpleSurfaceSetup( surf );
-				if ( !surf->geo->ambientCache ) {
-					continue;
-				}
-
-				const idDrawVert	*ac = (idDrawVert *)vertexCache.Position( surf->geo->ambientCache );
-				glVertexPointer( 3, GL_FLOAT, sizeof( idDrawVert ), &ac->xyz );
-				RB_DrawElementsWithCounters( surf->geo );
-			}
-		}
-	}
-
-	// display the results
-	R_ColorByStencilBuffer();
-
-	if ( r_showLightCount.GetInteger() > 2 ) {
-		RB_CountStencilBuffer();
-	}
+//	if ( !r_showLightCount.GetBool() ) {
+//		return;
+//	}
+//
+//	GL_State( GLS_DEPTHFUNC_EQUAL );
+//
+//	RB_SimpleWorldSetup();
+//	glClearStencil( 0 );
+//	glClear( GL_STENCIL_BUFFER_BIT );
+//
+//	glEnable( GL_STENCIL_TEST );
+//
+//	// optionally count everything through walls
+//	if ( r_showLightCount.GetInteger() >= 2 ) {
+//		glStencilOp( GL_KEEP, GL_INCR, GL_INCR );
+//	} else {
+//		glStencilOp( GL_KEEP, GL_KEEP, GL_INCR );
+//	}
+//
+//	glStencilFunc( GL_ALWAYS, 1, 255 );
+//
+//	globalImages->defaultImage->Bind();
+//
+//	for ( vLight = backEnd.viewDef->viewLights ; vLight ; vLight = vLight->next ) {
+//		for ( i = 0 ; i < 2 ; i++ ) {
+//			for ( surf = i ? vLight->localInteractions: vLight->globalInteractions; surf; surf = (drawSurf_t *)surf->nextOnLight ) {
+//				RB_SimpleSurfaceSetup( surf );
+//				if ( !surf->geo->ambientCache ) {
+//					continue;
+//				}
+//
+//				const idDrawVert	*ac = (idDrawVert *)vertexCache.Position( surf->geo->ambientCache );
+//				glVertexPointer( 3, GL_FLOAT, sizeof( idDrawVert ), &ac->xyz );
+//				RB_DrawElementsWithCounters( surf->geo );
+//			}
+//		}
+//	}
+//
+//	// display the results
+//	R_ColorByStencilBuffer();
+//
+//	if ( r_showLightCount.GetInteger() > 2 ) {
+//		RB_CountStencilBuffer();
+//	}
 }
 
 
@@ -543,77 +520,7 @@ plane extends from, allowing you to see doubled edges
 =================
 */
 void RB_ShowSilhouette( void ) {
-	int		i;
-	const drawSurf_t	*surf;
-	const viewLight_t	*vLight;
-
-	if ( !r_showSilhouette.GetBool() ) {
-		return;
-	}
-
-	//
-	// clear all triangle edges to black
-	//
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	globalImages->BindNull();
-	glDisable( GL_TEXTURE_2D );
-	glDisable( GL_STENCIL_TEST );
-
-	glColor3f( 0, 0, 0 );
-
-	GL_State( GLS_POLYMODE_LINE );
-
-	GL_Cull( CT_TWO_SIDED );
-	glDisable( GL_DEPTH_TEST );
-
-	RB_RenderDrawSurfListWithFunction( backEnd.viewDef->drawSurfs, backEnd.viewDef->numDrawSurfs, 
-		RB_T_RenderTriangleSurface );
-
-
-	//
-	// now blend in edges that cast silhouettes
-	//
-	RB_SimpleWorldSetup();
-	glColor3f( 0.5, 0, 0 );
-	GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-
-	for ( vLight = backEnd.viewDef->viewLights ; vLight ; vLight = vLight->next ) {
-		for ( i = 0 ; i < 2 ; i++ ) {
-			for ( surf = i ? vLight->localShadows : vLight->globalShadows
-				; surf ; surf = (drawSurf_t *)surf->nextOnLight ) {
-				RB_SimpleSurfaceSetup( surf );
-
-				const srfTriangles_t	*tri = surf->geo;
-
-				glVertexPointer( 3, GL_FLOAT, sizeof( shadowCache_t ), vertexCache.Position( tri->shadowCache ) );
-				glBegin( GL_LINES );
-
-				for ( int j = 0 ; j < tri->numIndexes ; j+=3 ) {
-					int		i1 = tri->indexes[j+0];
-					int		i2 = tri->indexes[j+1];
-					int		i3 = tri->indexes[j+2];
-
-					if ( (i1 & 1) + (i2 & 1) + (i3 & 1) == 1 ) {
-						if ( (i1 & 1) + (i2 & 1) == 0 ) {
-							glArrayElement( i1 );
-							glArrayElement( i2 );
-						} else if ( (i1 & 1 ) + (i3 & 1) == 0 ) {
-							glArrayElement( i1 );
-							glArrayElement( i3 );
-						}
-					}
-				}
-				glEnd();
-
-			}
-		}
-	}
-
-	glEnable( GL_DEPTH_TEST );
-
-	GL_State( GLS_DEFAULT );
-	glColor3f( 1,1,1 );
-	GL_Cull( CT_FRONT_SIDED );
+	
 }
 
 
@@ -627,76 +534,7 @@ and count up the total fill usage
 =================
 */
 static void RB_ShowShadowCount( void ) {
-	int		i;
-	const drawSurf_t	*surf;
-	const viewLight_t	*vLight;
-
-	if ( !r_showShadowCount.GetBool() ) {
-		return;
-	}
-
-	GL_State( GLS_DEFAULT );
-
-	glClearStencil( 0 );
-	glClear( GL_STENCIL_BUFFER_BIT );
-
-	glEnable( GL_STENCIL_TEST );
-
-	glStencilOp( GL_KEEP, GL_INCR, GL_INCR );
-
-	glStencilFunc( GL_ALWAYS, 1, 255 );
-
-	globalImages->defaultImage->Bind();
-
-	// draw both sides
-	GL_Cull( CT_TWO_SIDED );
-
-	for ( vLight = backEnd.viewDef->viewLights ; vLight ; vLight = vLight->next ) {
-		for ( i = 0 ; i < 2 ; i++ ) {
-			for ( surf = i ? vLight->localShadows : vLight->globalShadows 
-				; surf ; surf = (drawSurf_t *)surf->nextOnLight ) {
-				RB_SimpleSurfaceSetup( surf );
-				const srfTriangles_t	*tri = surf->geo;
-				if ( !tri->shadowCache ) {
-					continue;
-				}
-
-				if ( r_showShadowCount.GetInteger() == 3 ) {
-					// only show turboshadows
-					if ( tri->numShadowIndexesNoCaps != tri->numIndexes ) {
-						continue;
-					}
-				}
-				if ( r_showShadowCount.GetInteger() == 4 ) {
-					// only show static shadows
-					if ( tri->numShadowIndexesNoCaps == tri->numIndexes ) {
-						continue;
-					}
-				}
-
-				shadowCache_t *cache = (shadowCache_t *)vertexCache.Position( tri->shadowCache );
-				glVertexPointer( 4, GL_FLOAT, sizeof( *cache ), &cache->xyz );
-				RB_DrawElementsWithCounters( tri );
-			}
-		}
-	}
-
-	// display the results
-	R_ColorByStencilBuffer();
-
-	if ( r_showShadowCount.GetInteger() == 2 ) {
-		common->Printf( "all shadows " );
-	} else if ( r_showShadowCount.GetInteger() == 3 ) {
-		common->Printf( "turboShadows " );
-	} else if ( r_showShadowCount.GetInteger() == 4 ) {
-		common->Printf( "static shadows " );
-	}
-
-	if ( r_showShadowCount.GetInteger() >= 2 ) {
-		RB_CountStencilBuffer();
-	}
-
-	GL_Cull( CT_FRONT_SIDED );
+	
 }
 
 

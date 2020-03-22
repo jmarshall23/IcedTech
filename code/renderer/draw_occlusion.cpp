@@ -122,11 +122,6 @@ void RB_Draw_LightOcclusion(void) {
 	glDepthMask(GL_FALSE);
 
 	for (vLight = backEnd.viewDef->viewLights; vLight; vLight = vLight->next) {
-		if (!vLight->localInteractions && !vLight->globalInteractions
-			&& !vLight->translucentInteractions) {
-			continue;
-		}
-
 		if (!backEnd.viewDef->renderView.isEditor) {
 			RB_Reap_Occlusion(vLight);
 		}
