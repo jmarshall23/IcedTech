@@ -1,0 +1,7 @@
+textures/skies/mars
+{
+	qer_editorimage textures/skies/mars.png
+	{
+		map textures/skies/mars.png
+	}
+}
