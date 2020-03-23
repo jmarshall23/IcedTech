@@ -286,13 +286,13 @@ set(src_engine
 	./sound/SoundVoice.h
 	./sound/WaveFile.cpp
 	./sound/WaveFile.h
-	./sound/XAudio2
-	./sound/XAudio2/XA2_SoundHardware.cpp
-	./sound/XAudio2/XA2_SoundHardware.h
-	./sound/XAudio2/XA2_SoundSample.cpp
-	./sound/XAudio2/XA2_SoundSample.h
-	./sound/XAudio2/XA2_SoundVoice.cpp
-	./sound/XAudio2/XA2_SoundVoice.h
+	./sound/OpenAL
+	./sound/OpenAL/AL_SoundHardware.cpp
+	./sound/OpenAL/AL_SoundHardware.h
+	./sound/OpenAL/AL_SoundSample.cpp
+	./sound/OpenAL/AL_SoundSample.h
+	./sound/OpenAL/AL_SoundVoice.cpp
+	./sound/OpenAL/AL_SoundVoice.h
 
 	# System
 	./sys/sys_intrinsics.h
@@ -542,10 +542,10 @@ target_include_directories(External PRIVATE ./external/Recast/include ./external
 # DoomDLL Project
 add_definitions(-D__DOOM_DLL__)
 add_library(DoomDLL SHARED  ${src_engine} )
-target_link_libraries(DoomDLL idLib External Tools "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib")
+target_link_libraries(DoomDLL idLib External Tools "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib" "${CMAKE_SOURCE_DIR}/external/openal/out/build/x64-Release/OpenAL32.lib")
 add_precompiled_header( DoomDLL Engine_precompiled.h  SOURCE_CXX ./framework/Engine_precompiled.cpp )
 set_target_properties(DoomDLL PROPERTIES OUTPUT_NAME "DoomDLL" LINK_FLAGS "/STACK:16777216,16777216 /PDB:\"DoomDLL.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/exports.def")
-target_include_directories(DoomDLL PRIVATE ./external/Recast/include ./external/detour/Include)
+target_include_directories(DoomDLL PRIVATE ./external/Recast/include ./external/detour/Include ./external/openal/include)
 
 # Launcher Project
 add_executable(Launcher ${src_launcher})

@@ -318,6 +318,8 @@ public:
 	virtual void			InitStreamBuffers() = 0;
 	virtual void			FreeStreamBuffers() = 0;
 
+	virtual void*			GetOpenALDevice() const = 0;
+
 	// video playback needs to get this
 	virtual void *			GetIXAudio2() const = 0;
 

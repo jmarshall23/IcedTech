@@ -348,7 +348,17 @@ idSoundSystemLocal::GetIXAudio2
 ========================
 */
 void * idSoundSystemLocal::GetIXAudio2() const {
-	return (void *)hardware.GetIXAudio2();
+	return NULL;
+}
+
+/*
+========================
+idSoundSystemLocal::GetOpenALDevice
+========================
+*/
+// RB begin
+void* idSoundSystemLocal::GetOpenALDevice() const {
+	return (void*)hardware.GetOpenALDevice();
 }
 
 /*

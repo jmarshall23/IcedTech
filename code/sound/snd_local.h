@@ -82,16 +82,31 @@ typedef enum {
 
 #define OPERATION_SET 1
 
-#include <dxsdkver.h>
+#include "OpenAL/AL_SoundSample.h"
+#include "OpenAL/AL_SoundVoice.h"
+#include "OpenAL/AL_SoundHardware.h"
 
-#include <xaudio2.h>
-#include <xaudio2fx.h>
-#include <X3DAudio.h>
-#include <xma2defs.h>
-#include "XAudio2/XA2_SoundSample.h"
-#include "XAudio2/XA2_SoundVoice.h"
-#include "XAudio2/XA2_SoundHardware.h"
+ID_INLINE_EXTERN ALenum CheckALErrors_(const char* filename, int line)
+{
+	ALenum err = alGetError();
+	if (err != AL_NO_ERROR)
+	{
+		common->Printf("OpenAL Error: %s (0x%x), @ %s %d\n", alGetString(err), err, filename, line);
+	}
+	return err;
+}
+#define CheckALErrors() CheckALErrors_(__FILE__, __LINE__)
 
+ID_INLINE_EXTERN ALCenum CheckALCErrors_(ALCdevice* device, const char* filename, int linenum)
+{
+	ALCenum err = alcGetError(device);
+	if (err != ALC_NO_ERROR)
+	{
+		common->Printf("ALC Error: %s (0x%x), @ %s %d\n", alcGetString(device, err), err, filename, linenum);
+	}
+	return err;
+}
+#define CheckALCErrors(x) CheckALCErrors_((x), __FILE__, __LINE__)
 
 
 //------------------------
@@ -405,6 +420,9 @@ public:
 
 	virtual void *			GetIXAudio2() const;
 
+
+	virtual void*			GetOpenALDevice() const;
+
 	// for the sound level meter window
 	virtual cinData_t		ImageForTime( const int milliseconds, const bool waveform );
 
@@ -437,16 +455,21 @@ public:
 
 //	virtual void			Preload( idPreloadManifest & preload );
 
-	struct bufferContext_t {
+	struct bufferContext_t
+	{
 		bufferContext_t() :
-			voice( NULL ),
-			sample( NULL ),
-			bufferNumber( 0 )
+			voice(NULL),
+			sample(NULL),
+			bufferNumber(0)
 		{ }
-		idSoundVoice_XAudio2 *	voice;
-		idSoundSample_XAudio2 * sample;
+
+		idSoundVoice_OpenAL* voice;
+		idSoundSample_OpenAL* sample;
+
 		int bufferNumber;
 	};
+
+
 
 	// Get a stream buffer from the free pool, returns NULL if none are available
 	bufferContext_t *			ObtainStreamBufferContext();
