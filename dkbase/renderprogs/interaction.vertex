@@ -28,6 +28,10 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "global.inc"
 
+#ifdef ID_GPU_SKIN
+	uniform matrices_ubo { float4 matrices[408]; };
+#endif
+
 struct VS_IN {
 	float4 position : POSITION;
 	float2 texcoord : TEXCOORD0;
@@ -50,7 +54,66 @@ struct VS_OUT {
 };
 
 void main( VS_IN vertex, out VS_OUT result ) {
+#ifdef ID_GPU_SKIN
+	float4 vModelNormal = vertex.normal * 2.0 - 1.0;
+	float4 vModelTangent = vertex.tangent * 2.0 - 1.0;
+	float3 vModelBinormal = cross( vModelNormal.xyz, vModelTangent.xyz ) * vModelTangent.w;
 
+	//--------------------------------------------------------------
+	// GPU transformation of the normal / binormal / bitangent
+	//
+	// multiplying with 255.1 give us the same result and is faster than floor( w * 255 + 0.5 )
+	//--------------------------------------------------------------
+	const float w0 = vertex.color.x;
+	const float w1 = vertex.color.y;
+	const float w2 = vertex.color.z;
+	const float w3 = vertex.color.w;
+
+	float4 matX, matY, matZ;	// must be float4 for vec4
+	float joint = vertex.color.x * 255.1 * 3;
+	matX = matrices[int(joint+0)] * w0;
+	matY = matrices[int(joint+1)] * w0;
+	matZ = matrices[int(joint+2)] * w0;
+
+	joint = vertex.color.y * 255.1 * 3;
+	matX += matrices[int(joint+0)] * w1;
+	matY += matrices[int(joint+1)] * w1;
+	matZ += matrices[int(joint+2)] * w1;
+
+	joint = vertex.color.z * 255.1 * 3;
+	matX += matrices[int(joint+0)] * w2;
+	matY += matrices[int(joint+1)] * w2;
+	matZ += matrices[int(joint+2)] * w2;
+
+	joint = vertex.color.w * 255.1 * 3;
+	matX += matrices[int(joint+0)] * w3;
+	matY += matrices[int(joint+1)] * w3;
+	matZ += matrices[int(joint+2)] * w3;
+
+	float3 vNormal;
+	vNormal.x = dot3( matX, vModelNormal );
+	vNormal.y = dot3( matY, vModelNormal );
+	vNormal.z = dot3( matZ, vModelNormal );
+	vNormal = normalize( vNormal );
+
+	float3 vTangent;
+	vTangent.x = dot3( matX, vModelTangent );
+	vTangent.y = dot3( matY, vModelTangent );
+	vTangent.z = dot3( matZ, vModelTangent );
+	vTangent = normalize( vTangent );
+
+	float3 vBinormal;
+	vBinormal.x = dot3( matX, vModelBinormal );
+	vBinormal.y = dot3( matY, vModelBinormal );
+	vBinormal.z = dot3( matZ, vModelBinormal );
+	vBinormal = normalize( vBinormal );
+
+	float4 vertex_position;
+	vertex_position.x = dot4( matX, vertex.position );
+	vertex_position.y = dot4( matY, vertex.position );
+	vertex_position.z = dot4( matZ, vertex.position );
+	vertex_position.w = 1.0;
+#else
 	float3 vNormal = vertex.normal.xyz;
 	float4 vTangent = vertex.tangent;
 	
@@ -58,17 +121,20 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	if(vertex.color[3] != 0)
 		sign = 1;
 		
-	float3 vBinormal = cross( vNormal.xyz, vTangent.xyz ) * sign;
+	float3 vBinormal = cross( vNormal.xyz, vTangent.xyz ) * sign;	
+	float4 vertex_position = vertex.position;
+#endif
 
-	result.position.x = dot4( vertex.position, rpMVPmatrixX );
-	result.position.y = dot4( vertex.position, rpMVPmatrixY );
-	result.position.z = dot4( vertex.position, rpMVPmatrixZ );
-	result.position.w = dot4( vertex.position, rpMVPmatrixW );
+
+	result.position.x = dot4( vertex_position, rpMVPmatrixX );
+	result.position.y = dot4( vertex_position, rpMVPmatrixY );
+	result.position.z = dot4( vertex_position, rpMVPmatrixZ );
+	result.position.w = dot4( vertex_position, rpMVPmatrixW );
 
 	float4 defaultTexCoord = float4( 0.0f, 0.5f, 0.0f, 1.0f );
 
 	//calculate vector to light in R0
-	float4 toLight = float4(rpLocalLightOrigin.xyz, 0) - vertex.position;
+	float4 toLight = float4(rpLocalLightOrigin.xyz, 0) - vertex_position;
 
 	//result.texcoord0   
 	result.texcoord0.x = dot3( vTangent.xyz, toLight );
@@ -81,12 +147,12 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	result.texcoord1.x = dot4( vertex.texcoord.xy, rpBumpMatrixS );
 	result.texcoord1.y = dot4( vertex.texcoord.xy, rpBumpMatrixT );
 
-	//result.texcoord5.xyz = vertex.position.xyz;
+	//result.texcoord5.xyz = vertex_position.xyz;
 	float4 modelVertex;
-	modelVertex.x = dot4( vertex.position, rpModelMatrixX );
-	modelVertex.y = dot4( vertex.position, rpModelMatrixY );
-	modelVertex.z = dot4( vertex.position, rpModelMatrixZ );
-	modelVertex.w = dot4( vertex.position, rpModelMatrixW );
+	modelVertex.x = dot4( vertex_position, rpModelMatrixX );
+	modelVertex.y = dot4( vertex_position, rpModelMatrixY );
+	modelVertex.z = dot4( vertex_position, rpModelMatrixZ );
+	modelVertex.w = dot4( vertex_position, rpModelMatrixW );
 	
 	
 	result.texcoord5.x = modelVertex.x;
@@ -96,13 +162,13 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	
 	//# texture 2 has one texgen
 	result.texcoord2 = defaultTexCoord;
-	result.texcoord2.x = dot4( vertex.position, rpLightFalloffS );
+	result.texcoord2.x = dot4( vertex_position, rpLightFalloffS );
 
 	//# texture 3 has three texgens
-	result.texcoord3.x = dot4( vertex.position, rpLightProjectionS );
-	result.texcoord3.y = dot4( vertex.position, rpLightProjectionT );
+	result.texcoord3.x = dot4( vertex_position, rpLightProjectionS );
+	result.texcoord3.y = dot4( vertex_position, rpLightProjectionT );
 	result.texcoord3.z = 0.0f;
-	result.texcoord3.w = dot4( vertex.position, rpLightProjectionQ );
+	result.texcoord3.w = dot4( vertex_position, rpLightProjectionQ );
 
 	//# textures 4 takes the base coordinates by the texture matrix
 	result.texcoord4 = defaultTexCoord;

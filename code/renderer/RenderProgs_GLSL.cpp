@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar r_skipStripDeadCode( "r_skipStripDeadCode", "0", CVAR_BOOL, "Skip stripping dead code" );
 idCVar r_useUniformArrays( "r_useUniformArrays", "1", CVAR_BOOL, "" );
-idCVar r_renderProgVersion("r_renderProgVersion", "3", CVAR_INTEGER, "which version of renderprogs to use");
+idCVar r_renderProgVersion("r_renderProgVersion", "4", CVAR_INTEGER, "which version of renderprogs to use");
 
 #define VERTEX_UNIFORM_ARRAY_NAME				"_va_"
 #define FRAGMENT_UNIFORM_ARRAY_NAME				"_fa_"
@@ -896,10 +896,10 @@ idStr ConvertCG2GLSL( const idStr & in, const char * name, bool isVertexProgram,
 	idStr out;
 
 	if ( isVertexProgram ) {
-		out.ReAllocate( idStr::Length( vertexInsert ) + in.Length() * 2, false );
+		out.ReAllocate( idStr::Length( vertexInsert ) + in.Length() * 2, false );		
 		out += vertexInsert;
 	} else {
-		out.ReAllocate( idStr::Length( fragmentInsert ) + in.Length() * 2, false );
+		out.ReAllocate( idStr::Length( fragmentInsert ) + in.Length() * 2, false );		
 		out += fragmentInsert;
 	}
 
@@ -932,7 +932,7 @@ idStr ConvertCG2GLSL( const idStr & in, const char * name, bool isVertexProgram,
 idRenderProgManager::LoadGLSLShader
 ================================================================================================
 */
-GLuint idRenderProgManager::LoadGLSLShader( GLenum target, const char * name, idList<int> & uniforms ) {
+GLuint idRenderProgManager::LoadGLSLShader( GLenum target, const char * name, const char* outname, const char* macros, idList<int> & uniforms ) {
 
 	idStr inFile;
 	idStr outFileHLSL;
@@ -940,11 +940,11 @@ GLuint idRenderProgManager::LoadGLSLShader( GLenum target, const char * name, id
 	idStr outFileUniforms;
 	inFile.Format( "renderprogs\\%s", name );
 	inFile.StripFileExtension();
-	outFileHLSL.Format( "generated\\renderprogs\\v%d\\glsl\\%s", r_renderProgVersion.GetInteger(), name );
+	outFileHLSL.Format( "generated\\renderprogs\\v%d\\glsl\\%s", r_renderProgVersion.GetInteger(), outname);
 	outFileHLSL.StripFileExtension();
-	outFileGLSL.Format( "generated\\renderprogs\\v%d\\glsl\\%s", r_renderProgVersion.GetInteger(), name );
+	outFileGLSL.Format( "generated\\renderprogs\\v%d\\glsl\\%s", r_renderProgVersion.GetInteger(), outname);
 	outFileGLSL.StripFileExtension();
-	outFileUniforms.Format( "generated\\renderprogs\\v%d\\glsl\\%s", r_renderProgVersion.GetInteger(), name );
+	outFileUniforms.Format( "generated\\renderprogs\\v%d\\glsl\\%s", r_renderProgVersion.GetInteger(), outname);
 	outFileUniforms.StripFileExtension();
 	if ( target == GL_FRAGMENT_SHADER ) {
 		inFile += ".pixel";
@@ -979,7 +979,11 @@ GLuint idRenderProgManager::LoadGLSLShader( GLenum target, const char * name, id
 		if ( len <= 0 ) {
 			return false;
 		}
-		idStr hlslCode( ( const char* ) hlslFileBuffer );
+		idStr hlslCodeWithMacros;
+		hlslCodeWithMacros += macros;
+		hlslCodeWithMacros += (const char *)hlslFileBuffer;
+		idStr hlslCode = hlslCodeWithMacros;
+		
 		idStr programHLSL = StripDeadCode( hlslCode, inFile );
 		programGLSL = ConvertCG2GLSL( programHLSL, inFile, target == GL_VERTEX_SHADER, programUniforms );
 
@@ -1230,8 +1234,8 @@ void idRenderProgManager::LoadGLSLProgram( const int programIndex, const int ver
 			} else {
 				common->Printf( "While linking GLSL program %d with vertexShader %s and fragmentShader %s\n", 
 					programIndex, 
-					( vertexShaderIndex >= 0 ) ? vertexShaders[vertexShaderIndex].name.c_str() : "<Invalid>", 
-					( fragmentShaderIndex >= 0 ) ? fragmentShaders[ fragmentShaderIndex ].name.c_str() : "<Invalid>" );
+					( vertexShaderIndex >= 0 ) ? vertexShaders[vertexShaderIndex].out_name : "<Invalid>", 
+					( fragmentShaderIndex >= 0 ) ? fragmentShaders[ fragmentShaderIndex ].out_name : "<Invalid>" );
 				common->Printf( "%s\n", infoLog );
 			}
 
@@ -1245,8 +1249,8 @@ void idRenderProgManager::LoadGLSLProgram( const int programIndex, const int ver
 		glDeleteProgram( program );
 		idLib::Error( "While linking GLSL program %d with vertexShader %s and fragmentShader %s\n", 
 			programIndex, 
-			( vertexShaderIndex >= 0 ) ? vertexShaders[vertexShaderIndex].name.c_str() : "<Invalid>", 
-			( fragmentShaderIndex >= 0 ) ? fragmentShaders[ fragmentShaderIndex ].name.c_str() : "<Invalid>" );
+			( vertexShaderIndex >= 0 ) ? vertexShaders[vertexShaderIndex].out_name : "<Invalid>",
+			( fragmentShaderIndex >= 0 ) ? fragmentShaders[ fragmentShaderIndex ].out_name : "<Invalid>" );
 		return;
 	}
 

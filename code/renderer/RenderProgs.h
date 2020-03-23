@@ -269,6 +269,7 @@ protected:
 		BUILTIN_SKYCOLOR,
 
 		BUILDIN_VIRTUALTEXTURE_FEEDBACK,
+		BUILDIN_VIRTUALTEXTURE_FEEDBACK_SKINNING,
 
 		MAX_BUILTINS
 	};
@@ -277,23 +278,27 @@ protected:
 
 	GLuint	LoadShader( GLenum target, const char * name, const char * startToken );
 	bool	CompileGLSL( GLenum target, const char * name );
-	GLuint	LoadGLSLShader( GLenum target, const char * name, idList<int> & uniforms );
+	GLuint	LoadGLSLShader( GLenum target, const char * name, const char *outname, const char *macros, idList<int> & uniforms );
 	void	LoadGLSLProgram( const int programIndex, const int vertexShaderIndex, const int fragmentShaderIndex );
 
 	static const GLuint INVALID_PROGID = 0xFFFFFFFF;
 
 	struct vertexShader_t {
-					vertexShader_t() : progId( INVALID_PROGID ), usesJoints( false ), optionalSkinning( false ) {}
+					vertexShader_t() : progId( INVALID_PROGID ), usesJoints( false ), optionalSkinning( false ), out_name(NULL), macros(NULL) {}
 		idStr		name;
 		GLuint		progId;
 		bool		usesJoints;
 		bool		optionalSkinning;
+		const char* out_name;
+		const char* macros;
 		idList<int>	uniforms;
 	};
 	struct fragmentShader_t {
-					fragmentShader_t() : progId( INVALID_PROGID ) {}
+					fragmentShader_t() : progId( INVALID_PROGID ), out_name(NULL), macros(NULL) {}
 		idStr		name;
 		GLuint		progId;
+		const char* out_name;
+		const char* macros;
 		idList<int>	uniforms;
 	};
 

@@ -76,46 +76,49 @@ void idRenderProgManager::Init() {
 	struct builtinShaders_t {
 		int index;
 		const char * name;
+		const char * out_name;
+		const char * macros;
 	} builtins[] = {
-		{ BUILTIN_GUI, "gui.vfp" },
-		{ BUILTIN_COLOR, "color.vfp" },
-		{ BUILTIN_SIMPLESHADE, "simpleshade.vfp" },
-		{ BUILTIN_TEXTURED, "texture.vfp" },
-		{ BUILTIN_TEXTURE_VERTEXCOLOR, "texture_color.vfp" },
-		{ BUILTIN_TEXTURE_VERTEXCOLOR_SKINNED, "texture_color_skinned.vfp" },
-		{ BUILTIN_TEXTURE_TEXGEN_VERTEXCOLOR, "texture_color_texgen.vfp" },
-		{ BUILTIN_INTERACTION, "interaction.vfp" },
-		{ BUILTIN_INTERACTION_SKINNED, "interaction_skinned.vfp" },
-		{ BUILTIN_INTERACTION_AMBIENT, "interactionAmbient.vfp" },
-		{ BUILTIN_INTERACTION_AMBIENT_SKINNED, "interactionAmbient_skinned.vfp" },
-		{ BUILTIN_ENVIRONMENT, "environment.vfp" },
-		{ BUILTIN_ENVIRONMENT_SKINNED, "environment_skinned.vfp" },
-		{ BUILTIN_BUMPY_ENVIRONMENT, "bumpyEnvironment.vfp" },
-		{ BUILTIN_BUMPY_ENVIRONMENT_SKINNED, "bumpyEnvironment_skinned.vfp" },
+		{ BUILTIN_GUI, "gui.vfp", "gui.vfp", "" },
+		{ BUILTIN_COLOR, "color.vfp", "color.vfp", "" },
+		{ BUILTIN_SIMPLESHADE, "simpleshade.vfp", "simpleshade.vfp", "" },
+		{ BUILTIN_TEXTURED, "texture.vfp", "texture.vfp", "" },
+		{ BUILTIN_TEXTURE_VERTEXCOLOR, "texture_color.vfp", "texture_color.vfp", "" },
+		{ BUILTIN_TEXTURE_VERTEXCOLOR_SKINNED, "texture_color_skinned.vfp", "texture_color_skinned.vfp", "" },
+		{ BUILTIN_TEXTURE_TEXGEN_VERTEXCOLOR, "texture_color_texgen.vfp", "texture_color_texgen.vfp", "" },
+		{ BUILTIN_INTERACTION, "interaction.vfp", "interaction.vfp", "" },
+		{ BUILTIN_INTERACTION_SKINNED, "interaction.vfp", "interaction_skinned.vfp", "#define ID_GPU_SKIN\n" },
+		{ BUILTIN_INTERACTION_AMBIENT, "interaction.vfp", "interaction.vfp", "#define ID_AMBIENT_LIGHT\n" },
+		{ BUILTIN_INTERACTION_AMBIENT_SKINNED, "interaction.vfp", "interaction_skinned.vfp", "#define ID_GPU_SKIN\n#define ID_AMBIENT_LIGHT\n" },
+		{ BUILTIN_ENVIRONMENT, "environment.vfp", "environment.vfp", "" },
+		{ BUILTIN_ENVIRONMENT_SKINNED, "environment.vfp", "environment_skinned.vfp", "#define ID_GPU_SKIN\n" },
+		{ BUILTIN_BUMPY_ENVIRONMENT, "bumpyEnvironment.vfp", "bumpyEnvironment.vfp", "" },
+		{ BUILTIN_BUMPY_ENVIRONMENT_SKINNED, "bumpyEnvironment_skinned.vfp", "bumpyEnvironment_skinned.vfp", "" },
 
-		{ BUILTIN_DEPTH, "depth.vfp" },
-		{ BUILTIN_DEPTH_SKINNED, "depth_skinned.vfp" },
-		{ BUILTIN_SHADOW_DEBUG, "shadowDebug.vfp" },
-		{ BUILTIN_SHADOW_DEBUG_SKINNED, "shadowDebug_skinned.vfp" },
+		{ BUILTIN_DEPTH, "depth.vfp", "depth.vfp", "" },
+		{ BUILTIN_DEPTH_SKINNED, "depth.vfp", "depth_skinned.vfp", "#define ID_GPU_SKIN\n" },
+		{ BUILTIN_SHADOW_DEBUG, "shadowDebug.vfp", "shadowDebug.vfp", "" },
+		{ BUILTIN_SHADOW_DEBUG_SKINNED, "shadowDebug_skinned.vfp", "shadowDebug_skinned.vfp", "" },
 
-		{ BUILTIN_BLENDLIGHT, "blendlight.vfp" },
-		{ BUILTIN_FOG, "fog.vfp" },
-		{ BUILTIN_FOG_SKINNED, "fog_skinned.vfp" },
-		{ BUILTIN_SKYBOX, "skybox.vfp" },
-		{ BUILTIN_WOBBLESKY, "wobblesky.vfp" },
-		{ BUILTIN_POSTPROCESS, "postprocess.vfp" },
-		{ BUILTIN_STEREO_DEGHOST, "stereoDeGhost.vfp" },
-		{ BUILTIN_STEREO_WARP, "stereoWarp.vfp" },
-		{ BUILTIN_ZCULL_RECONSTRUCT, "zcullReconstruct.vfp" },
-		{ BUILTIN_BINK, "bink.vfp" },
-		{ BUILTIN_BINK_GUI, "bink_gui.vfp" },
-		{ BUILTIN_STEREO_INTERLACE, "stereoInterlace.vfp" },
-		{ BUILTIN_MOTION_BLUR, "motionBlur.vfp" },
-		{ BUILTIN_TESTIMAGE, "testimage.vfp" },
-		{ BUILDIN_VIRTUALTEXTURE_FEEDBACK, "feedback.vfp" },
-		{ BUILTIN_SHADOW, "shadow.vfp"},
-		{ BUILTIN_SHADOW_SKINNED, "shadow_skinned.vfp"},
-		{ BUILTIN_SKYCOLOR, "sky_color.vfp"},
+		{ BUILTIN_BLENDLIGHT, "blendlight.vfp", "blendlight.vfp", "" },
+		{ BUILTIN_FOG, "fog.vfp", "fog.vfp", "" },
+		{ BUILTIN_FOG_SKINNED, "fog_skinned.vfp", "fog_skinned.vfp", "" },
+		{ BUILTIN_SKYBOX, "skybox.vfp", "skybox.vfp", "" },
+		{ BUILTIN_WOBBLESKY, "wobblesky.vfp", "wobblesky.vfp", "" },
+		{ BUILTIN_POSTPROCESS, "postprocess.vfp", "postprocess.vfp", "" },
+		{ BUILTIN_STEREO_DEGHOST, "stereoDeGhost.vfp", "stereoDeGhost.vfp", "" },
+		{ BUILTIN_STEREO_WARP, "stereoWarp.vfp", "stereoWarp.vfp", "" },
+		{ BUILTIN_ZCULL_RECONSTRUCT, "zcullReconstruct.vfp", "zcullReconstruct.vfp", "" },
+		{ BUILTIN_BINK, "bink.vfp", "bink.vfp", "" },
+		{ BUILTIN_BINK_GUI, "bink_gui.vfp", "bink_gui.vfp", "" },
+		{ BUILTIN_STEREO_INTERLACE, "stereoInterlace.vfp", "stereoInterlace.vfp", "" },
+		{ BUILTIN_MOTION_BLUR, "motionBlur.vfp", "motionBlur.vfp", "" },
+		{ BUILTIN_TESTIMAGE, "testimage.vfp", "testimage.vfp", "" },
+		{ BUILDIN_VIRTUALTEXTURE_FEEDBACK, "feedback.vfp", "feedback.vfp", "" },
+		{ BUILDIN_VIRTUALTEXTURE_FEEDBACK_SKINNING, "feedback.vfp", "feedback_skinning.vfp", "#define ID_GPU_SKIN\n" },
+		{ BUILTIN_SHADOW, "shadow.vfp", "shadow.vfp", ""},
+		{ BUILTIN_SHADOW_SKINNED, "shadow.vfp", "shadow_skinned.vfp", "#define ID_GPU_SKIN\n"},
+		{ BUILTIN_SKYCOLOR, "sky_color.vfp", "sky_color.vfp", ""},
 	};
 	int numBuiltins = sizeof( builtins ) / sizeof( builtins[0] );
 	vertexShaders.SetNum( numBuiltins );
@@ -124,7 +127,11 @@ void idRenderProgManager::Init() {
 
 	for ( int i = 0; i < numBuiltins; i++ ) {
 		vertexShaders[i].name = builtins[i].name;
+		vertexShaders[i].out_name = builtins[i].out_name;
+		vertexShaders[i].macros = builtins[i].macros;
 		fragmentShaders[i].name = builtins[i].name;
+		fragmentShaders[i].out_name = builtins[i].out_name;
+		fragmentShaders[i].macros = builtins[i].macros;
 		builtinShaders[builtins[i].index] = i;
 		LoadVertexShader( i );
 		LoadFragmentShader( i );
@@ -264,7 +271,17 @@ void idRenderProgManager::LoadVertexShader( int index ) {
 	if ( vertexShaders[index].progId != INVALID_PROGID ) {
 		return; // Already loaded
 	}
-	vertexShaders[index].progId = ( GLuint ) LoadGLSLShader( GL_VERTEX_SHADER, vertexShaders[index].name, vertexShaders[index].uniforms );
+
+	if (vertexShaders[index].out_name == NULL) {
+		vertexShaders[index].out_name = vertexShaders[index].name;
+	}
+
+	if (vertexShaders[index].macros == NULL) {
+		vertexShaders[index].macros = "";
+	}
+
+
+	vertexShaders[index].progId = ( GLuint ) LoadGLSLShader( GL_VERTEX_SHADER, vertexShaders[index].name, vertexShaders[index].out_name, vertexShaders[index].macros, vertexShaders[index].uniforms );
 }
 
 /*
@@ -276,7 +293,16 @@ void idRenderProgManager::LoadFragmentShader( int index ) {
 	if ( fragmentShaders[index].progId != INVALID_PROGID ) {
 		return; // Already loaded
 	}
-	fragmentShaders[index].progId = ( GLuint ) LoadGLSLShader( GL_FRAGMENT_SHADER, fragmentShaders[index].name, fragmentShaders[index].uniforms );
+
+	if (fragmentShaders[index].out_name == NULL) {
+		fragmentShaders[index].out_name = fragmentShaders[index].name;
+	}
+
+	if (fragmentShaders[index].macros == NULL) {
+		fragmentShaders[index].macros = "";
+	}
+
+	fragmentShaders[index].progId = ( GLuint ) LoadGLSLShader( GL_FRAGMENT_SHADER, fragmentShaders[index].name, fragmentShaders[index].out_name, fragmentShaders[index].macros,  fragmentShaders[index].uniforms );
 }
 
 /*
