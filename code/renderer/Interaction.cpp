@@ -321,6 +321,9 @@ void idInteraction::FreeSurfaces( void ) {
 
 		R_FreeInteractionCullInfo(sint->cullInfo);
 	}
+
+	surfaces.Clear();
+
 	this->numSurfaces = -1;
 }
 
@@ -618,10 +621,8 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 	// create slots for each of the model's surfaces
 	//
 	numSurfaces = model->NumSurfaces();
-	if(numSurfaces >= MAX_INTERACTION_SURFS) {
-		common->FatalError("CreateInteraction: NumSurfaces exceeds MAX_INTERACTION_SURFS!\n");
-	}
-	memset(&surfaces[0], 0, sizeof(*surfaces) * numSurfaces);
+	surfaces.SetNum(numSurfaces);
+	memset(surfaces.Ptr(), 0, sizeof(surfaceInteraction_t) * numSurfaces);
 
 	interactionGenerated = false;
 

@@ -7887,7 +7887,7 @@ Version 2
 "dynamicshadow" "0"
 "noshadows" "0"
 "nospecular" "0"
-"falloff" "0.000000"
+"falloff" "0"
 "_color" "1 0.93 0.68"
 "light_radius" "300 300 150"
 }
@@ -8344,4 +8344,16 @@ Version 2
 "falloff" "0"
 "_color" "0.54 0.22 0.11"
 "light_radius" "600 600 600"
+}
+// entity 75
+{
+"classname" "light"
+"name" "light_97"
+"origin" "416 808 288"
+"noshadows" "0"
+"nospecular" "0"
+"nodiffuse" "0"
+"falloff" "0"
+"_color" "2 1.2 0.86"
+"light_radius" "300 300 800"
 }
