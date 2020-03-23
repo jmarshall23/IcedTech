@@ -26,46 +26,40 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-float4 modelPosition = vertex.position;
-BRANCH if ( rpEnableSkinning.x > 0.0 ) {
-	//--------------------------------------------------------------
-	// GPU transformation of the normal / binormal / bitangent
-	//
-	// multiplying with 255.1 give us the same result and is faster than floor( w * 255 + 0.5 )
-	//--------------------------------------------------------------
-	const float w0 = vertex.color2.x;
-	const float w1 = vertex.color2.y;
-	const float w2 = vertex.color2.z;
-	const float w3 = vertex.color2.w;
+float4 vertex_position = vertex.position;
 
-	float4 matX, matY, matZ;	// must be float4 for vec4
-	float joint = vertex.color.x * 255.1 * 3;
-	matX = matrices[int(joint+0)] * w0;
-	matY = matrices[int(joint+1)] * w0;
-	matZ = matrices[int(joint+2)] * w0;
+//--------------------------------------------------------------
+// GPU transformation of the normal / binormal / bitangent
+//
+// multiplying with 255.1 give us the same result and is faster than floor( w * 255 + 0.5 )
+//--------------------------------------------------------------
+const float w0 = vertex.color2.x;
+const float w1 = vertex.color2.y;
+const float w2 = vertex.color2.z;
+const float w3 = vertex.color2.w;
 
-	joint = vertex.color.y * 255.1 * 3;
-	matX += matrices[int(joint+0)] * w1;
-	matY += matrices[int(joint+1)] * w1;
-	matZ += matrices[int(joint+2)] * w1;
+float4 matX, matY, matZ;	// must be float4 for vec4
+float joint = vertex.color.x * 255.1 * 3;
+matX = matrices[int(joint+0)] * w0;
+matY = matrices[int(joint+1)] * w0;
+matZ = matrices[int(joint+2)] * w0;
 
-	joint = vertex.color.z * 255.1 * 3;
-	matX += matrices[int(joint+0)] * w2;
-	matY += matrices[int(joint+1)] * w2;
-	matZ += matrices[int(joint+2)] * w2;
+joint = vertex.color.y * 255.1 * 3;
+matX += matrices[int(joint+0)] * w1;
+matY += matrices[int(joint+1)] * w1;
+matZ += matrices[int(joint+2)] * w1;
 
-	joint = vertex.color.w * 255.1 * 3;
-	matX += matrices[int(joint+0)] * w3;
-	matY += matrices[int(joint+1)] * w3;
-	matZ += matrices[int(joint+2)] * w3;
+joint = vertex.color.z * 255.1 * 3;
+matX += matrices[int(joint+0)] * w2;
+matY += matrices[int(joint+1)] * w2;
+matZ += matrices[int(joint+2)] * w2;
 
-	modelPosition.x = dot4( matX, vertex.position );
-	modelPosition.y = dot4( matY, vertex.position );
-	modelPosition.z = dot4( matZ, vertex.position );
-	modelPosition.w = 1.0;
-}
+joint = vertex.color.w * 255.1 * 3;
+matX += matrices[int(joint+0)] * w3;
+matY += matrices[int(joint+1)] * w3;
+matZ += matrices[int(joint+2)] * w3;
 
-result.position.x = dot4( modelPosition, rpMVPmatrixX );
-result.position.y = dot4( modelPosition, rpMVPmatrixY );
-result.position.z = dot4( modelPosition, rpMVPmatrixZ );
-result.position.w = dot4( modelPosition, rpMVPmatrixW );
+vertex_position.x = dot4( matX, vertex.position );
+vertex_position.y = dot4( matY, vertex.position );
+vertex_position.z = dot4( matZ, vertex.position );
+vertex_position.w = 1.0;
