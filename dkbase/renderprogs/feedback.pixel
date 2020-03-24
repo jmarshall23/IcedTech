@@ -44,7 +44,7 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	float2 texCoords = frac(fragment.texcoord0.xy);
 	//texCoords.y = 1.0 - texCoords.y;
 	
-	int feedbackMipLevel = ComputeMipMapLevel(samp0, fragment.worldVertex.xyz, rpLocalViewOrigin.xyz, rpVirtualTextureFeedback.w).x;
+	int feedbackMipLevel = ComputeMipMapLevel(samp0, fragment.worldVertex.xyz, rpGlobalEyePos.xyz, rpVirtualTextureFeedback.w).x;
 
 	ivec2 pageOffsetTextureSizeMip = textureSize(samp0, feedbackMipLevel).xy;
 

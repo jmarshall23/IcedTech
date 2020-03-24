@@ -63,6 +63,8 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	Draw_SetVertexParm(RENDERPARM_SPECULARMATRIX_S, din->specularMatrix[0].ToFloatPtr() );
 	Draw_SetVertexParm(RENDERPARM_SPECULARMATRIX_T, din->specularMatrix[1].ToFloatPtr() );
 
+	Draw_SetVertexParm(RENDERPARM_GLOBALEYEPOS, backEnd.viewDef->renderView.vieworg.ToFloatPtr());
+
 	// Set up the virtual texturing parametors.
 	idVec4 virtualMapping;
 	idVec4 virtualPageInfo;

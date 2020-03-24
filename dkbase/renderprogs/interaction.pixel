@@ -60,7 +60,7 @@ struct PS_OUT {
 float2 GetPhysicalTexCoords(float2 texCoords, int isNormal) {
 	float2 deviceTexCoords = frac(texCoords);
 
-	int2 feedbackMipLevel = ComputeMipMapLevel(samp5, fragment.texcoord5.xyz, rpLocalViewOrigin.xyz, rpVirtualPageInfo.z);
+	int2 feedbackMipLevel = ComputeMipMapLevel(samp5, fragment.texcoord5.xyz, rpGlobalEyePos.xyz, rpVirtualPageInfo.z);
 	
 	// Stupid OpenGL requires use to invert the texture coordinates.
 	if (isNormal == 1)

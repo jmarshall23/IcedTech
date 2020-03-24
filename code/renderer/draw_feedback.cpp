@@ -210,6 +210,8 @@ void RB_STD_DrawFeedbackPass(drawSurf_t	 **drawSurfs, int numDrawSurfs) {
 	// decal surfaces may enable polygon offset
 	glPolygonOffset(r_offsetFactor.GetFloat(), r_offsetUnits.GetFloat());
 
+	Draw_SetVertexParm(RENDERPARM_GLOBALEYEPOS, backEnd.viewDef->renderView.vieworg.ToFloatPtr());
+
 	GL_State(GLS_DEPTHFUNC_LESS);
 
 	glDisable(GL_VERTEX_PROGRAM_ARB);
