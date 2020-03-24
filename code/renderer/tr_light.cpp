@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "tr_local.h"
+#include "Model_local.h"
 
 static const float CHECK_BOUNDS_EPSILON = 1.0f;
 
@@ -1072,7 +1073,7 @@ R_AddDrawSurf
 =================
 */
 void R_AddDrawSurf( const srfTriangles_t *tri, const viewEntity_t *space, const renderEntity_t *renderEntity,
-					const idMaterial *shader, const idScreenRect &scissor ) {
+					const idMaterial *shader, const idScreenRect &scissor, idRenderModel* model) {
 	drawSurf_t		*drawSurf;
 	const float		*shaderParms;
 	static float	refRegs[MAX_EXPRESSION_REGISTERS];	// don't put on stack, or VC++ will do a page touch
@@ -1085,6 +1086,22 @@ void R_AddDrawSurf( const srfTriangles_t *tri, const viewEntity_t *space, const 
 	drawSurf->scissorRect = scissor;
 	drawSurf->sort = shader->GetSort() + tr.sortOffset;
 	drawSurf->dsFlags = 0;
+
+	// GPU skinning.
+	if(model && model->IsSkeletalMesh()) {
+		const idRenderModelMD5Instance* staticRenderModel = (const idRenderModelMD5Instance*)model;
+
+		drawSurf->skinning.jointBuffer = staticRenderModel->jointBuffer;
+		if (drawSurf->skinning.jointBuffer)
+		{
+			drawSurf->skinning.numInvertedJoints = staticRenderModel->numInvertedJoints;
+			drawSurf->skinning.jointsInverted = staticRenderModel->jointsInverted;
+		}
+	}
+	else
+	{
+		memset(&drawSurf->skinning, 0, sizeof(rvmSkeletalSurf_t));
+	}
 
 	// bumping this offset each time causes surfaces with equal sort orders to still
 	// deterministically draw in the order they are added
@@ -1223,7 +1240,7 @@ Walks through the viewEntitys list and creates drawSurf_t for each surface of
 each viewEntity that has a non-empty scissorRect
 ===============
 */
-static void R_AddAmbientDrawsurfs( viewEntity_t *vEntity ) {
+static void R_AddAmbientDrawsurfs( viewEntity_t *vEntity, idRenderModel* instanceModel ) {
 	int					i, total;
 	idRenderEntityLocal	*def;
 	srfTriangles_t		*tri;
@@ -1309,7 +1326,7 @@ static void R_AddAmbientDrawsurfs( viewEntity_t *vEntity ) {
 			}
 
 			// add the surface for drawing
-			R_AddDrawSurf( tri, vEntity, &vEntity->entityDef->parms, shader, vEntity->scissorRect );
+			R_AddDrawSurf( tri, vEntity, &vEntity->entityDef->parms, shader, vEntity->scissorRect, instanceModel);
 
 			// ambientViewCount is used to allow light interactions to be rejected
 			// if the ambient surface isn't visible at all
@@ -1410,7 +1427,7 @@ void R_AddModelSurfaces( void ) {
 				continue;
 			}
 
-			R_AddAmbientDrawsurfs( vEntity );
+			R_AddAmbientDrawsurfs( vEntity, model );
 			tr.pc.c_visibleViewEntities++;
 		} else {
 			tr.pc.c_shadowViewEntities++;

@@ -16,6 +16,14 @@ void RB_T_FillFeedbackPass(const drawSurf_t *surf) {
 	const float	*regs;
 	float		color[4];
 	const srfTriangles_t	*tri;
+	const rvmSkeletalSurf_t* skinning = &surf->skinning;
+
+	if(surf->skinning.HasSkinning()) {
+		renderProgManager.BindShader_VirtualTextureFeedback_Skinning();
+	}
+	else {
+		renderProgManager.BindShader_VirtualTextureFeedback();
+	}
 
 	tri = surf->geo;
 	shader = surf->material;
@@ -100,6 +108,10 @@ void RB_T_FillFeedbackPass(const drawSurf_t *surf) {
 	glVertexAttribPointerARB(PC_ATTRIB_INDEX_ST, 2, GL_FLOAT, false, sizeof(idDrawVert), ac->st.ToFloatPtr());
 	glVertexAttribPointerARB(PC_ATTRIB_INDEX_VERTEX, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
 
+	if(surf->skinning.HasSkinning()) {
+		RB_BindJointBuffer(skinning->jointBuffer, skinning->jointsInverted->ToFloatPtr(), skinning->numInvertedJoints, (void*)&ac->color, (void*)&ac->color2);
+	}
+
 	idVec4 diffuseMatrix[2];
 	idVec4 virtualTextureFeedbackParms;
 	if (surf->material->IsVirtualTextured())
@@ -163,6 +175,10 @@ void RB_T_FillFeedbackPass(const drawSurf_t *surf) {
 	glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_TANGENT);
 	glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_VERTEX);
 	glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_NORMAL);
+
+	if (surf->skinning.HasSkinning()) {
+		RB_UnBindJointBuffer();
+	}
 }
 
 /*
@@ -198,8 +214,6 @@ void RB_STD_DrawFeedbackPass(drawSurf_t	 **drawSurfs, int numDrawSurfs) {
 
 	glDisable(GL_VERTEX_PROGRAM_ARB);
 	glDisable(GL_FRAGMENT_PROGRAM_ARB);
-
-	renderProgManager.BindShader_VirtualTextureFeedback();
 
 	backEnd.ignoreScissorOptimization = true;
 	RB_RenderDrawSurfListWithFunction(drawSurfs, numDrawSurfs, RB_T_FillFeedbackPass);

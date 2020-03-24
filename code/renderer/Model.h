@@ -37,6 +37,8 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
+class idJointBuffer;
+
 // shared between the renderer, game, and Maya export DLL
 #define MD5_VERSION_STRING		"MD5Version"
 #define MD5_MESH_EXT			"md5mesh"
@@ -217,6 +219,9 @@ public:
 
 	// Forces fast load path.
 	virtual void				ForceFastLoad() = 0;
+
+	// Returns true if this mesh is a skeletal mesh.
+	virtual bool				IsSkeletalMesh() const = 0;
 
 	// internal use
 	virtual bool				IsLoaded() = 0;

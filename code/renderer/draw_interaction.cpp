@@ -220,8 +220,6 @@ void RB_Interaction_CreateDrawInteractions(idInteraction* interaction) {
 	//glEnable(GL_VERTEX_PROGRAM_ARB);
 	//glEnable(GL_FRAGMENT_PROGRAM_ARB);
 
-	renderProgManager.BindShader_Interaction();
-
 	// enable the vertex arrays
 	glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_ST);
 	glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_COLOR);
@@ -255,6 +253,13 @@ void RB_Interaction_CreateDrawInteractions(idInteraction* interaction) {
 			continue;
 		}
 
+		if (surf->skinning.HasSkinning()) {
+			renderProgManager.BindShader_InteractionSkinned();
+		}
+		else {
+			renderProgManager.BindShader_Interaction();
+		}
+
 		const srfTriangles_t* tri = surf->ambientTris;
 		if (!tri->ambientCache) {
 			R_CreateAmbientCache(const_cast<srfTriangles_t*>(tri), false);
@@ -271,9 +276,18 @@ void RB_Interaction_CreateDrawInteractions(idInteraction* interaction) {
 		glVertexAttribPointerARB(PC_ATTRIB_INDEX_VERTEX, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
 		glVertexAttribPointerARB(PC_ATTRIB_INDEX_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void *)&ac->color);
 
+		if (surf->skinning.HasSkinning()) {
+			const rvmSkeletalSurf_t* skinning = &surf->skinning;
+			RB_BindJointBuffer(skinning->jointBuffer, skinning->jointsInverted->ToFloatPtr(), skinning->numInvertedJoints, (void*)&ac->color, (void*)&ac->color2);
+		}
+
 		// this may cause RB_Interaction_DrawInteraction to be exacuted multiple
 		// times with different colors and images if the surface or light have multiple layers
 		RB_CreateDrawInteractions( interaction, surf, RB_Interaction_DrawInteraction );
+
+		if (surf->skinning.HasSkinning()) {
+			RB_UnBindJointBuffer();
+		}
 	}
 
 	glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_COLOR);

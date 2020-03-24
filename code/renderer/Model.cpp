@@ -400,6 +400,15 @@ int idRenderModelStatic::NumSurfaces() const {
 
 /*
 ================
+idRenderModelStatic::IsSkeletalMesh
+================
+*/
+bool idRenderModelStatic::IsSkeletalMesh() const {
+	return false;
+}
+
+/*
+================
 idRenderModelStatic::NumBaseSurfaces
 ================
 */

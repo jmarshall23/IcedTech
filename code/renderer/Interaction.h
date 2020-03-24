@@ -68,18 +68,18 @@ struct surfaceInteraction_t {
 		shader = NULL;
 		expCulled = 0;
 		forceVirtualTextureHighQuality = false;
+
 	}
 
+	// GPU skinning
+	rvmSkeletalSurf_t		skinning;
+	
 	// so we can check ambientViewCount before adding lightTris, and get
 	// at the shared vertex and possibly shadowVertex caches
 	srfTriangles_t *		ambientTris;
-
 	const idMaterial *		shader;
-
 	int						expCulled;			// only for the experimental shadow buffer renderer
-
 	bool					forceVirtualTextureHighQuality;
-
 	srfCullInfo_t			cullInfo;
 };
 

@@ -515,7 +515,7 @@ void idRenderModelDecal::AddDecalDrawSurf( viewEntity_t *space ) {
 	newTri->ambientCache = vertexCache.AllocFrameTemp( tri.verts, tri.numVerts * sizeof( idDrawVert ) );
 
 	// create the drawsurf
-	R_AddDrawSurf( newTri, space, &space->entityDef->parms, material, space->scissorRect );
+	R_AddDrawSurf( newTri, space, &space->entityDef->parms, material, space->scissorRect, NULL);
 }
 
 /*

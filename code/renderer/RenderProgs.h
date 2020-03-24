@@ -203,6 +203,7 @@ public:
 	void	BindShader_MotionBlur() { BindShader_Builtin( BUILTIN_MOTION_BLUR); }
 
 	void    BindShader_VirtualTextureFeedback() { BindShader_Builtin(BUILDIN_VIRTUALTEXTURE_FEEDBACK); }
+	void    BindShader_VirtualTextureFeedback_Skinning() { BindShader_Builtin(BUILDIN_VIRTUALTEXTURE_FEEDBACK_SKINNING); }
 
 	// the joints buffer should only be bound for vertex programs that use joints
 	bool	ShaderUsesJoints() const { return vertexShaders[currentVertexShader].usesJoints; }

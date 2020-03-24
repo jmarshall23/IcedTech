@@ -99,6 +99,13 @@ void RB_T_FillDepthBuffer(const drawSurf_t* surf) {
 		drawSolid = true;
 	}
 
+	if (surf->skinning.HasSkinning()) {
+		renderProgManager.BindShader_DepthSkinned();
+	}
+	else {
+		renderProgManager.BindShader_Depth();
+	}
+
 	// we may have multiple alpha tested stages
 	if (shader->Coverage() == MC_PERFORATED) {
 		// if the only alpha tested stages are condition register omitted,
@@ -151,6 +158,11 @@ void RB_T_FillDepthBuffer(const drawSurf_t* surf) {
 		}
 	}
 
+	if (surf->skinning.HasSkinning()) {
+		const rvmSkeletalSurf_t* skinning = &surf->skinning;
+		RB_BindJointBuffer(skinning->jointBuffer, skinning->jointsInverted->ToFloatPtr(), skinning->numInvertedJoints, (void*)&ac->color, (void*)&ac->color2);
+	}
+
 	// draw the entire surface solid
 	if (drawSolid) {
 		glColor4fv(color);
@@ -160,6 +172,9 @@ void RB_T_FillDepthBuffer(const drawSurf_t* surf) {
 		RB_DrawElementsWithCounters(tri);
 	}
 
+	if (surf->skinning.HasSkinning()) {
+		RB_UnBindJointBuffer();
+	}
 
 	// reset polygon offset
 	if (shader->TestMaterialFlag(MF_POLYGONOFFSET)) {

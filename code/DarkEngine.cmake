@@ -111,6 +111,7 @@ set(src_engine
 	./renderer/draw_interaction.cpp
 	./renderer/draw_occlusion.cpp
 	./renderer/draw_shadow.cpp
+	./renderer/draw_skin.cpp
 	./renderer/draw_sky.cpp
 	./renderer/DXT
 	./renderer/GLMatrix.cpp

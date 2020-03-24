@@ -56,6 +56,20 @@ const int FOG_ENTER_SIZE = 64;
 const float FOG_ENTER = (FOG_ENTER_SIZE+1.0f)/(FOG_ENTER_SIZE*2);
 // picky to get the bilerp correct at terminator
 
+struct rvmSkeletalSurf_t {
+	rvmSkeletalSurf_t() {
+		jointBuffer = NULL;
+		numInvertedJoints = 0;
+		jointsInverted = NULL;
+	}
+
+	bool	HasSkinning(void) const { return jointBuffer != NULL && jointsInverted != NULL; }
+
+	// GPU skinning.
+	idJointBuffer* jointBuffer;
+	int		numInvertedJoints;
+	idJointMat* jointsInverted;
+};
 
 // idScreenRect gets carried around with each drawSurf, so it makes sense
 // to keep it compact, instead of just using the idBounds class
@@ -117,19 +131,20 @@ SURFACES
 // drawSurf_t are always allocated and freed every frame, they are never cached
 static const int	DSF_VIEW_INSIDE_SHADOW	= 1;
 
-typedef struct drawSurf_s {
+struct drawSurf_t {
 	const srfTriangles_t	*geo;
 	const struct viewEntity_s *space;
 	const idMaterial		*material;	// may be NULL for shadow volumes
 	float					sort;		// material->sort, modified by gui / entity sort offsets
 	const float				*shaderRegisters;	// evaluated and adjusted for referenceShaders
-	const struct drawSurf_s	*nextOnLight;	// viewLight chains
+	drawSurf_t				*nextOnLight;	// viewLight chains
 	idScreenRect			scissorRect;	// for scissor clipping, local inside renderView viewport
 	int						dsFlags;			// DSF_VIEW_INSIDE_SHADOW, etc
 	struct vertCache_s		*dynamicTexCoords;	// float * in vertex cache memory
+	rvmSkeletalSurf_t		skinning;			// skinning information for this surface.
 	bool					forceVirtualTextureHighQuality;
 	// specular directions for non vertex program cards, skybox texcoords, etc
-} drawSurf_t;
+};
 
 
 typedef struct {
@@ -423,7 +438,7 @@ typedef struct viewDef_s {
 	// renderView x/y/width/height
 
 	struct viewDef_s *	superView;				// never go into an infinite subview loop 
-	struct drawSurf_s *	subviewSurface;
+	struct drawSurf_t*	subviewSurface;
 
 	// drawSurfs are the visible surfaces of the viewEntities, sorted
 	// by the material sort parameter
@@ -1259,7 +1274,7 @@ viewEntity_t *R_SetEntityDefViewEntity( idRenderEntityLocal *def );
 viewLight_t *R_SetLightDefViewLight( idRenderLightLocal *def );
 
 void R_AddDrawSurf( const srfTriangles_t *tri, const viewEntity_t *space, const renderEntity_t *renderEntity,
-					const idMaterial *shader, const idScreenRect &scissor );
+					const idMaterial *shader, const idScreenRect &scissor, idRenderModel* model);
 
 bool R_CreateAmbientCache( srfTriangles_t *tri, bool needsLighting );
 bool R_CreateLightingCache( const idRenderEntityLocal *ent, const idRenderLightLocal *light, srfTriangles_t *tri );
@@ -1402,6 +1417,9 @@ void	R_ReloadARBPrograms_f( const idCmdArgs &args );
 int		R_FindARBProgram( GLenum target, const char *program );
 
 void	RB_Draw_LightOcclusion(void);
+
+void RB_BindJointBuffer(idJointBuffer* jointBuffer, float* inverseJointPose, int numJoints, void* colorOffset, void* color2Offset);
+void RB_UnBindJointBuffer(void);
 
 typedef enum {
 	PROG_INVALID,

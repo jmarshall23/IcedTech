@@ -56,9 +56,13 @@ struct VS_OUT {
 
 void main( VS_IN vertex, out VS_OUT result ) {
 #ifdef ID_GPU_SKIN
-	float4 vModelNormal = vertex.normal * 2.0 - 1.0;
-	float4 vModelTangent = vertex.tangent * 2.0 - 1.0;
-	float3 vModelBinormal = cross( vModelNormal.xyz, vModelTangent.xyz ) * vModelTangent.w;
+	float4 vModelNormal = vertex.normal;
+	float4 vModelTangent = vertex.tangent;
+	float sign = -1;
+	if(vertex.color[3] != 0)
+		sign = 1;
+		
+	float3 vModelBinormal = cross( vModelNormal.xyz, vModelTangent.xyz ) * sign;	
 
 	#include "skinning.inc"
 

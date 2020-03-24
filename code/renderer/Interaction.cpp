@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "tr_local.h"
+#include "Model_local.h"
 
 /*
 ===========================================================================
@@ -656,6 +657,16 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 		sint->shader = shader;
 
 		sint->forceVirtualTextureHighQuality = entityDef->parms.forceVirtualTextureHighQuality;
+
+// jmarshall GPU skinning.
+		if (model->IsSkeletalMesh())
+		{
+			const idRenderModelMD5Instance* staticRenderModel = (const idRenderModelMD5Instance*)model;
+			sint->skinning.jointBuffer = staticRenderModel->jointBuffer;
+			sint->skinning.numInvertedJoints = staticRenderModel->numInvertedJoints;
+			sint->skinning.jointsInverted = staticRenderModel->jointsInverted;
+		}
+// jmarshall end
 
 		// save the ambient tri pointer so we can reject lightTri interactions
 		// when the ambient surface isn't in view, and we can get shared vertex

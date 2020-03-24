@@ -159,6 +159,13 @@ void RB_Shadow_RenderOccluders(viewLight_t* vLight) {
 				continue;
 			}
 
+			if(surfInt->skinning.HasSkinning()) {
+				renderProgManager.BindShader_ShadowSkinned();
+			}
+			else {
+				renderProgManager.BindShader_Shadow();
+			}
+
 			// render it
 			const srfTriangles_t* tri = surfInt->ambientTris;
 			if (!tri->ambientCache) {
@@ -171,10 +178,19 @@ void RB_Shadow_RenderOccluders(viewLight_t* vLight) {
 			glVertexAttribPointerARB(PC_ATTRIB_INDEX_ST, 2, GL_FLOAT, false, sizeof(idDrawVert), ac->st.ToFloatPtr());
 			glVertexAttribPointerARB(PC_ATTRIB_INDEX_VERTEX, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
 			
+			if (surfInt->skinning.HasSkinning()) {
+				const rvmSkeletalSurf_t* skinning = &surfInt->skinning;
+				RB_BindJointBuffer(skinning->jointBuffer, skinning->jointsInverted->ToFloatPtr(), skinning->numInvertedJoints, (void*)&ac->color, (void*)&ac->color2);
+			}
+
 			//if (surfInt->shader) {
 			//	surfInt->shader->GetEditorImage()->Bind();
 			//}
 			RB_DrawElementsWithCounters(tri);
+
+			if (surfInt->skinning.HasSkinning()) {
+				RB_UnBindJointBuffer();
+			}
 		}
 
 		glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_COLOR);
@@ -601,8 +617,6 @@ void RB_Draw_ShadowMaps(void) {
 
 	// ensures that depth writes are enabled for the depth clear
 	GL_State(GLS_DEFAULT);
-
-	renderProgManager.BindShader_Shadow();
 
 	backEnd.c_numShadowMapSlices = 0;
 
