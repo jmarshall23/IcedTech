@@ -227,7 +227,6 @@ private:
 	idList<const idMaterial *>	materials;
 
 	int							dataSize;
-	idStr						name;
 	struct mdrHeader_t			*modelData;
 
 	idRenderModelStatic			*cachedModel;
