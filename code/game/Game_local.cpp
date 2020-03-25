@@ -314,6 +314,10 @@ void idGameLocal::Init( void ) {
 	// init the game render system.
 	InitGameRenderSystem();
 
+	// Create the various jobs we need on the game side.
+	clientPhysicsJob = parallelJobManager->AllocJobList(JOBLIST_GAME_CLIENTPHYSICS, JOBLIST_PRIORITY_MEDIUM, 2, 0, NULL);
+	parallelJobManager->RegisterJob((jobRun_t)idGameLocal::ClientEntityJob_t, "G_ClientPhysics");
+
 	// load in the bot itemtable.
 	botItemTable = FindEntityDef("bot_itemtable", false);
 	if(botItemTable == NULL) {
@@ -2212,6 +2216,9 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 	}
 #endif
 
+	clientPhysicsJob->Wait();
+	gameLocal.clientEntityThreadWork.Clear();
+
 // jmarshall
 	//botGoalManager.UpdateEntityItems();
 // jmarshall end
@@ -2411,6 +2418,25 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 		soundSystem->SetMute( false );
 		skipCinematic = false;		
 	}
+
+	// Submit any work we are going to reap the next frame.
+	{
+		static rvmClientPhysicsJobParams_t clientPhysicsJob1Params;
+		//static rvmClientPhysicsJobParams_t clientPhysicsJob2Params;
+
+		clientPhysicsJob1Params.clientThreadId = ENTITYNUM_CLIENT;
+		clientPhysicsJob1Params.startClientEntity = 0;
+		clientPhysicsJob1Params.numClientEntities = gameLocal.clientEntityThreadWork.Num();
+
+		//clientPhysicsJob1Params.clientThreadId = ENTITYNUM_CLIENT2;
+		//clientPhysicsJob2Params.startClientEntity = clientPhysicsJob1Params.numClientEntities;
+		//clientPhysicsJob2Params.numClientEntities = gameLocal.clientEntityThreadWork.Num();
+
+		clientPhysicsJob->AddJobA((jobRun_t)idGameLocal::ClientEntityJob_t, &clientPhysicsJob1Params);
+		//clientPhysicsJob->AddJobA((jobRun_t)idGameLocal::ClientEntityJob_t, &clientPhysicsJob2Params);
+		clientPhysicsJob->Submit();
+	}	
+	
 
 	// show any debug info for this frame
 	RunDebugInfo();
@@ -3211,6 +3237,13 @@ void idGameLocal::SpawnMapEntities( void ) {
 	args.SetInt("spawn_entnum", ENTITYNUM_CLIENT);
 	// jnewquist: Use accessor for static class type 
 	if (!SpawnEntityType(rvClientPhysics::Type, &args, true) || !entities[ENTITYNUM_CLIENT]) {
+		Error("Problem spawning client physics entity");
+	}
+
+	args.Clear();
+	args.SetInt("spawn_entnum", ENTITYNUM_CLIENT2);
+	// jnewquist: Use accessor for static class type 
+	if (!SpawnEntityType(rvClientPhysics::Type, &args, true) || !entities[ENTITYNUM_CLIENT2]) {
 		Error("Problem spawning client physics entity");
 	}
 
@@ -4495,11 +4528,22 @@ void idGameLocal::SpawnDebris(const idDeclEntityDef** debrisArray, int debrisArr
 	if (nextDebrisSpawnTime > gameLocal.realClientTime)
 		return;
 
-	nextDebrisSpawnTime = gameLocal.realClientTime + SEC2MS(1);
+	nextDebrisSpawnTime = gameLocal.realClientTime + SEC2MS(0.8);
 
 	args.Set("origin", origin.ToString());
 
 	entity = static_cast<rvmClientEffect_debris*>(gameLocal.SpawnEntityType(rvmClientEffect_debris::Type, &args));
 	entity->LaunchEffect(debrisArray, debrisArraySize, origin, axis, shaderName);
+}
+
+/*
+===================
+idGameLocal::ClientEntityJob_t
+===================
+*/
+void idGameLocal::ClientEntityJob_t(rvmClientPhysicsJobParams_t* params) {
+	for (int i = params->startClientEntity; i < params->numClientEntities; i++) {
+		gameLocal.clientEntityThreadWork[i]->RunThreadedPhysics(params->clientThreadId);
+	}	
 }
 // jmarshall end

@@ -23,6 +23,7 @@ rvClientEntity::rvClientEntity( void ) {
 	bindJoint = INVALID_JOINT;
 	bindOrientated = false;
 	stopSimulation = false;
+	hasThreadedResults = false;
 	
 	memset( &refSound, 0, sizeof(refSound) );
 	//refSound.referenceSoundHandle = -1;
@@ -360,40 +361,65 @@ rvClientEntity::RunPhysics
 ================
 */
 void rvClientEntity::RunPhysics ( void ) {
-	idPhysics* physics = GetPhysics( );
-	if( !physics ) {
+	idPhysics* physics = GetPhysics();
+	if (!physics) {
+		hasThreadedResults = false;
 		return;
 	}
 
-	if (stopSimulation)
+	if (stopSimulation) {
+		hasThreadedResults = false;
 		return;
+	}
 
-	rvClientPhysics* clientPhysics = (rvClientPhysics*)gameLocal.entities[ENTITYNUM_CLIENT];
-	static_cast<rvClientPhysics*>( clientPhysics )->currentEntityNumber = entityNumber;
+	if (hasThreadedResults) {
+		worldOrigin = worldOriginThread;
+		worldVelocity = worldVelocityThread;
+		worldAxis = worldAxisThread;
+	}
+
+	gameLocal.clientEntityThreadWork.Append(this);
+
+	hasThreadedResults = false;
+}
+
+//
+// rvClientEntity::RunThreadedPhysics
+//
+void rvClientEntity::RunThreadedPhysics(int threadClient) {
+	idPhysics* physics = GetPhysics();
+	if (!physics) {
+		return;
+	}
+
+	rvClientPhysics* clientPhysics = (rvClientPhysics*)gameLocal.entities[threadClient];
+	static_cast<rvClientPhysics*>(clientPhysics)->currentEntityNumber = entityNumber;
 
 	// order important: 1) set client physics bind master to client ent's bind master
 	//					2) set physics to client ent's physics, which sets physics 
 	//					   master to client ent's master
 	//					3) set client physics origin to client ent origin, depends on
 	//					   proper bind master from 1
-	clientPhysics->PushBindInfo( bindMaster, bindJoint, bindOrientated );
-	clientPhysics->SetPhysics( physics );
-	clientPhysics->PushOriginInfo( bindMaster ? bindOrigin : worldOrigin, bindMaster ? bindAxis : worldAxis );
+	clientPhysics->PushBindInfo(bindMaster, bindJoint, bindOrientated);
+	clientPhysics->SetPhysics(physics);
+	clientPhysics->PushOriginInfo(bindMaster ? bindOrigin : worldOrigin, bindMaster ? bindAxis : worldAxis);
 
-	physics->Evaluate ( gameLocal.time - gameLocal.previousTime, gameLocal.time );
+	physics->Evaluate(gameLocal.time - gameLocal.previousTime, gameLocal.time);
 
-	worldOrigin = physics->GetOrigin();
-	worldVelocity = physics->GetLinearVelocity();
-	worldAxis = physics->GetAxis();
+	worldOriginThread = physics->GetOrigin();
+	worldVelocityThread = physics->GetLinearVelocity();
+	worldAxisThread = physics->GetAxis();
 
 	// order important: 1) restore previous bind master
 	//					2) reset physics with previous bind master
 	//					3) reset origin with previous bind master
 	clientPhysics->PopBindInfo();
-	clientPhysics->SetPhysics( NULL );
+	clientPhysics->SetPhysics(NULL);
 	clientPhysics->PopOriginInfo();
 
 	UpdateAnimationControllers();
+
+	hasThreadedResults = true;
 }
 
 /*
@@ -524,10 +550,10 @@ void rvClientEntity::InitDefaultPhysics( const idVec3 &origin, const idMat3 &axi
 		}
 	}
 
-	defaultPhysicsObj.SetSelf( gameLocal.entities[ENTITYNUM_CLIENT] );
-	defaultPhysicsObj.SetClipModel( clipModel, 1.0f );
-	defaultPhysicsObj.SetOrigin( origin );
-	defaultPhysicsObj.SetAxis( axis );
+	defaultPhysicsObj.SetSelf(gameLocal.entities[ENTITYNUM_CLIENT]);
+	defaultPhysicsObj.SetClipModel(clipModel, 1.0f);
+	defaultPhysicsObj.SetOrigin(origin);
+	defaultPhysicsObj.SetAxis(axis);
 
 	physics = &defaultPhysicsObj;
 

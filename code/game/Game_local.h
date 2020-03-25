@@ -91,6 +91,7 @@ class rvClientEntity;
 #define	ENTITYNUM_WORLD			(MAX_GENTITIES-2)
 #define	ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES-2)
 #define ENTITYNUM_CLIENT		(MAX_GENTITIES-3)
+#define ENTITYNUM_CLIENT2		(MAX_GENTITIES-4)
 
 #define	CENTITYNUM_BITS			12
 #define	MAX_CENTITIES			(1<<CENTITYNUM_BITS)
@@ -262,6 +263,15 @@ struct rvmGameRender_t {
 struct rvmGameDelayRemoveEntry_t {
 	int32_t removeTime;
 	idEntity *entity;
+};
+
+//
+// rvmClientPhysicsJobParams_t
+//
+struct rvmClientPhysicsJobParams_t {
+	int startClientEntity;
+	int numClientEntities;
+	int clientThreadId;
 };
 
 //============================================================================
@@ -533,7 +543,8 @@ public:
 
 	void					Trace(trace_t& results, const idVec3& start, const idVec3& end, int contentMask, int passEntity);
 public:
-	int						nextDebrisSpawnTime;
+	int						 nextDebrisSpawnTime;
+	idList<rvClientEntity*>  clientEntityThreadWork;
 private:
 	const static int		INITIAL_SPAWN_COUNT = 1;
 
@@ -650,6 +661,8 @@ private:
 	void					InitJobSystem(void);
 	void					ShutdownJobSystem(void);
 
+	static void				ClientEntityJob_t(rvmClientPhysicsJobParams_t *params);
+
 // jmarshall
 	void					RunBotFrame(void);
 
@@ -669,6 +682,8 @@ private:
 // jmarshall end
 
 	int						clientSpawnCount;
+
+	idParallelJobList		*clientPhysicsJob;
 };
 
 //============================================================================
