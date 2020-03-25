@@ -612,11 +612,18 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 
 	bounds = model->Bounds( &entityDef->parms );
 
+// jmarshall We don't need exact frustum checks its too slow.
 	// if it doesn't contact the light frustum, none of the surfaces will
-	if ( R_CullLocalBox( bounds, entityDef->modelMatrix, 6, lightDef->frustum ) ) {
+	//if ( R_CullLocalBox( bounds, entityDef->modelMatrix, 6, lightDef->frustum ) ) {
+	//	MakeEmpty();
+	//	return;
+	//}
+	bounds += entityDef->parms.origin;
+	if(!bounds.IntersectsBounds(lightDef->globalLightBounds)) {
 		MakeEmpty();
 		return;
 	}
+// jmarshall end
 
 	//
 	// create slots for each of the model's surfaces
@@ -650,10 +657,12 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 			continue;
 		}
 
+// jmarshall - no need to test each surface.
 		// try to cull each surface
-		if ( R_CullLocalBox( tri->bounds, entityDef->modelMatrix, 6, lightDef->frustum ) ) {
-			continue;
-		}
+		//if ( R_CullLocalBox( tri->bounds, entityDef->modelMatrix, 6, lightDef->frustum ) ) {
+		//	continue;
+		//}
+// jmarshall end
 
 		surfaceInteraction_t *sint = &surfaces[c];
 
@@ -869,7 +878,10 @@ void idInteraction::AddActiveInteraction( void ) {
 				// try to cull before adding
 				// FIXME: this may not be worthwhile. We have already done culling on the ambient,
 				// but individual surfaces may still be cropped somewhat more
-				if ( !R_CullLocalBox( lightTris->bounds, vEntity->modelMatrix, 5, tr.viewDef->frustum ) ) {
+// jmarshall - this is costing more then it's saving.
+				//if ( !R_CullLocalBox( lightTris->bounds, vEntity->modelMatrix, 5, tr.viewDef->frustum ) ) {
+				{
+// jmarshall end
 
 					// make sure the original surface has its ambient cache created
 					srfTriangles_t *tri = sint->ambientTris;

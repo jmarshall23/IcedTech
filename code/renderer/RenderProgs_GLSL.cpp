@@ -1149,6 +1149,8 @@ void idRenderProgManager::CommitUniforms() {
 	if (progID == -1)
 		return;
 
+	idVec4* glslUniformsPtr = glslUniforms.Ptr();
+
 	const glslProgram_t & prog = glslPrograms[progID];
 
 	if ( r_useUniformArrays.GetBool() ) {
@@ -1158,7 +1160,7 @@ void idRenderProgManager::CommitUniforms() {
 			const idList<int> & vertexUniforms = vertexShaders[prog.vertexShaderIndex].uniforms;
 			if ( prog.vertexUniformArray != -1 && vertexUniforms.Num() > 0 ) {
 				for ( int i = 0; i < vertexUniforms.Num(); i++ ) {
-					localVectors[i] = glslUniforms[vertexUniforms[i]];
+					localVectors[i] = glslUniformsPtr[vertexUniforms[i]];
 				}
 				glUniform4fv( prog.vertexUniformArray, vertexUniforms.Num(), localVectors->ToFloatPtr() );
 			}
@@ -1168,7 +1170,7 @@ void idRenderProgManager::CommitUniforms() {
 			const idList<int> & fragmentUniforms = fragmentShaders[prog.fragmentShaderIndex].uniforms;
 			if ( prog.fragmentUniformArray != -1 && fragmentUniforms.Num() > 0 ) {
 				for ( int i = 0; i < fragmentUniforms.Num(); i++ ) {
-					localVectors[i] = glslUniforms[fragmentUniforms[i]];
+					localVectors[i] = glslUniformsPtr[fragmentUniforms[i]];
 				}
 				glUniform4fv( prog.fragmentUniformArray, fragmentUniforms.Num(), localVectors->ToFloatPtr() );
 			}
@@ -1176,7 +1178,7 @@ void idRenderProgManager::CommitUniforms() {
 	} else {
 		for ( int i = 0; i < prog.uniformLocations.Num(); i++ ) {
 			const glslUniformLocation_t & uniformLocation = prog.uniformLocations[i];
-			glUniform4fv( uniformLocation.uniformIndex, 1, glslUniforms[uniformLocation.parmIndex].ToFloatPtr() );
+			glUniform4fv( uniformLocation.uniformIndex, 1, glslUniformsPtr[uniformLocation.parmIndex].ToFloatPtr() );
 		}
 	}
 }
