@@ -419,6 +419,8 @@ public:
 	static idVec3				CrossProduct(const idVec3& a, const idVec3& b);
 	static idVec3				CreateVector(float x, float y, float z);
 	static idVec4				CreateVector(float x, float y, float z, float w);
+
+	static idVec3				ReflectVector(idVec3 vector, idVec3 normal);
 // jmarshall end
 	static const float			PI;							// pi
 	static const float			TWO_PI;						// pi * 2

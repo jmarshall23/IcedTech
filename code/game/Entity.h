@@ -105,6 +105,7 @@ public:
 
 
 class idEntity : public idClass {
+	friend class rvClientPhysics;
 public:
 	static const int		MAX_PVS_AREAS = 4;
 
@@ -132,6 +133,8 @@ public:
 	idList< idEntityPtr<idEntity> >	targets;		// when this entity is activated these entities entity are activated
 
 	int						health;					// FIXME: do all objects really need health?
+
+	idLinkList<rvClientEntity>	clientEntities;
 
 	struct entityFlags_s {
 		bool				notarget			:1;	// if true never attack or target this entity
@@ -167,6 +170,9 @@ public:
 							// clients generate views based on all the player specific options,
 							// cameras have custom code, and everything else just uses the axis orientation
 	virtual renderView_t *	GetRenderView();
+
+	void					StopAllEffects(bool destroyParticles);
+	void					RemoveClientEntities(void);		// deletes any client entities bound to this object
 
 	// thinking
 	virtual void			Think( void );
@@ -221,6 +227,8 @@ public:
 	int						GetListenerId( void ) const;
 	idSoundEmitter *		GetSoundEmitter( void ) const;
 	void					FreeSoundEmitter( bool immediate );
+	void					GetPosition(idVec3& origin, idMat3& axis) const;
+	idVec3					GetForwardVector(void);
 
 	// entity binding
 	virtual void			PreBind( void );

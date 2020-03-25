@@ -180,4 +180,14 @@ idMath::CreateVector
 idVec4 idMath::CreateVector(float x, float y, float z, float w) {
 	return idVec4(x, y, z, w);
 }
+
+/*
+========================
+idMath::ReflectVector
+========================
+*/
+idVec3 idMath::ReflectVector(idVec3 vector, idVec3 normal) {
+	float n = 2 * DotProduct(vector, normal);
+	return vector - normal * n;
+}
 // jmarshall end

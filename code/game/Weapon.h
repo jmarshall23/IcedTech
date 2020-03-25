@@ -60,6 +60,8 @@ static const int LIGHTID_VIEW_MUZZLE_FLASH = 100;
 
 class idMoveableItem;
 
+#define DEBRIS_MODEL_COUNT		3
+
 class rvmWeaponObject : public idClass {
 public:
 	CLASS_PROTOTYPE(rvmWeaponObject);
@@ -234,6 +236,8 @@ public: // old and deprecated
 	bool					Event_IsInvisible(void);
 	void					Event_NetEndReload(void);
 
+	void					Event_CreateDebris(idVec3 origin, idMat3 axis, const char *shaderName);
+
 	idEntity				*GetWorldModel(void) { return worldModel.GetEntity(); }
 private:
 	weaponStatus_t			state;
@@ -385,6 +389,8 @@ private:
 	void					MuzzleRise(idVec3 &origin, idMat3 &axis);
 	void					UpdateNozzleFx(void);
 	void					UpdateFlashPosition(void);
+
+	const idDeclEntityDef*			debrisEntityDef[DEBRIS_MODEL_COUNT];
 
 	// script events
 

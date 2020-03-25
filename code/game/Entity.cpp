@@ -597,6 +597,10 @@ idEntity::~idEntity( void ) {
 	Unbind();
 	QuitTeam();
 
+	StopSound(SCHANNEL_ANY, false);
+
+	RemoveClientEntities();
+
 	gameLocal.RemoveEntityFromHash( name.c_str(), this );
 
 	delete renderView;
@@ -1131,6 +1135,12 @@ void idEntity::FreeModelDef( void ) {
 	if ( modelDefHandle != -1 ) {
 		gameRenderWorld->FreeEntityDef( modelDefHandle );
 		modelDefHandle = -1;
+
+		rvClientEntity* cent;
+
+		for (cent = clientEntities.Next(); cent != NULL; cent = cent->bindNode.Next()) {
+			cent->FreeEntityDef();
+		}
 	}
 }
 
@@ -1653,6 +1663,39 @@ void idEntity::SetSoundVolume( float volume ) {
 
 /*
 ================
+idEntity::RemoveClientEntities
+================
+*/
+void idEntity::RemoveClientEntities(void) {
+	rvClientEntity* cent;
+	// Unbinding should remove the node from the list so keep using the head until
+	// there are no more entities
+	for (cent = clientEntities.Next(); cent != NULL; cent = clientEntities.Next()) {
+		cent->Unbind();
+		delete cent;
+	}
+	clientEntities.Clear();
+}
+
+/*
+================
+idEntity::StopAllEffects
+================
+*/
+void idEntity::StopAllEffects(bool destroyParticles) {
+	rvClientEntity* cent;
+	rvClientEntity* next;
+
+	for (cent = clientEntities.Next(); cent != NULL; cent = next) {
+		next = cent->bindNode.Next();
+		//if (cent->IsType(rvClientEffect::GetClassType())) {
+		//	static_cast<rvClientEffect*>(cent)->Stop(destroyParticles);
+		//}
+	}
+}
+
+/*
+================
 idEntity::UpdateSound
 ================
 */
@@ -1669,6 +1712,27 @@ void idEntity::UpdateSound( void ) {
 
 		refSound.referenceSound->UpdateEmitter( refSound.origin, refSound.listenerId, &refSound.parms );
 	}
+}
+
+/*
+================
+idEntity::GetForwardVector
+================
+*/
+idVec3 idEntity::GetForwardVector(void) {
+	idVec3 forward;
+	renderEntity.axis.ToAngles().ToVectors(&forward);
+	return forward;
+}
+
+/*
+================
+idEntity::GetPosition
+================
+*/
+void idEntity::GetPosition(idVec3& origin, idMat3& axis) const {
+	origin = renderEntity.origin;
+	axis = renderEntity.axis;
 }
 
 /*

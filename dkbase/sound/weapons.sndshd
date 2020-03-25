@@ -975,11 +975,10 @@ player_machinegun_mech {
 player_machinegun_fire {
 	minDistance	5
 	maxDistance	30
-	volume	14
+	volume	0
 
-	sound/ed/machinegun/fire1e.wav
-	sound/ed/machinegun/fire2e.wav
-	sound/ed/machinegun/fire3e.wav
+	sound/weapon/ed/machinegun/fire4e.wav
+
 	
 }
 

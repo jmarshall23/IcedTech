@@ -217,6 +217,7 @@ typedef struct {
 	idSoundEmitter *			referenceSound;	// this is the interface to the sound system, created
 												// with idSoundWorld::AllocSoundEmitter() when needed
 	idVec3						origin;
+	idVec3						velocity;
 	int							listenerId;		// SSF_PRIVATE_SOUND only plays if == listenerId from PlaceListener
 												// no spatialization will be performed if == listenerID
 	const idSoundShader *		shader;			// this really shouldn't be here, it is a holdover from single channel behavior

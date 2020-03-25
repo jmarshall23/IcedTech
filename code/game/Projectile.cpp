@@ -1927,26 +1927,27 @@ void idBFGProjectile::Launch( const idVec3 &start, const idVec3 &dir, const idVe
 			idPlayer *player = static_cast<idPlayer*>( ent );
 			player->playerView.EnableBFGVision( true );
 		}
-
-		beamTarget_t bt;
-		memset( &bt.renderEntity, 0, sizeof( renderEntity_t ) );
-		bt.renderEntity.origin = GetPhysics()->GetOrigin();
-		bt.renderEntity.axis = GetPhysics()->GetAxis();
-		bt.renderEntity.shaderParms[ SHADERPARM_BEAM_WIDTH ] = beamWidth;
-		bt.renderEntity.shaderParms[ SHADERPARM_RED ] = 1.0f;
-		bt.renderEntity.shaderParms[ SHADERPARM_GREEN ] = 1.0f;
-		bt.renderEntity.shaderParms[ SHADERPARM_BLUE ] = 1.0f;
-		bt.renderEntity.shaderParms[ SHADERPARM_ALPHA ] = 1.0f;
-		bt.renderEntity.shaderParms[ SHADERPARM_DIVERSITY] = gameLocal.random.CRandomFloat() * 0.75;
-		bt.renderEntity.hModel = renderModelManager->FindModel( "_beam" );
-		bt.renderEntity.callback = NULL;
-		bt.renderEntity.numJoints = 0;
-		bt.renderEntity.joints = NULL;
-		bt.renderEntity.bounds.Clear();
-		bt.renderEntity.customSkin = declManager->FindSkin( skin );
-		bt.target = ent;
-		bt.modelDefHandle = gameRenderWorld->AddEntityDef( &bt.renderEntity );
-		beamTargets.Append( bt );
+// jmarshall - fix me
+		//beamTarget_t bt;
+		//memset( &bt.renderEntity, 0, sizeof( renderEntity_t ) );
+		//bt.renderEntity.origin = GetPhysics()->GetOrigin();
+		//bt.renderEntity.axis = GetPhysics()->GetAxis();
+		//bt.renderEntity.shaderParms[ SHADERPARM_BEAM_WIDTH ] = beamWidth;
+		//bt.renderEntity.shaderParms[ SHADERPARM_RED ] = 1.0f;
+		//bt.renderEntity.shaderParms[ SHADERPARM_GREEN ] = 1.0f;
+		//bt.renderEntity.shaderParms[ SHADERPARM_BLUE ] = 1.0f;
+		//bt.renderEntity.shaderParms[ SHADERPARM_ALPHA ] = 1.0f;
+		//bt.renderEntity.shaderParms[ SHADERPARM_DIVERSITY] = gameLocal.random.CRandomFloat() * 0.75;
+		//bt.renderEntity.hModel = renderModelManager->FindModel( "_beam" );
+		//bt.renderEntity.callback = NULL;
+		//bt.renderEntity.numJoints = 0;
+		//bt.renderEntity.joints = NULL;
+		//bt.renderEntity.bounds.Clear();
+		//bt.renderEntity.customSkin = declManager->FindSkin( skin );
+		//bt.target = ent;
+		//bt.modelDefHandle = gameRenderWorld->AddEntityDef( &bt.renderEntity );
+		//beamTargets.Append( bt );
+// jmarshall end
 	}
 	if ( numListedEntities ) {
 		StartSound( "snd_beam", SND_CHANNEL_BODY2, 0, false, NULL );

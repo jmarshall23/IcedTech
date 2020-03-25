@@ -7,7 +7,7 @@
 CLASS_DECLARATION(rvmWeaponObject, rvmWeaponMachineGun)
 END_CLASS
 
-#define MACHINEGUN_FIRERATE			0.075
+#define MACHINEGUN_FIRERATE			0.25
 #define MACHINEGUN_LOWAMMO			10
 #define MACHINEGUN_NUMPROJECTILES	1
 
@@ -165,6 +165,25 @@ void rvmWeaponMachineGun::Fire() {
 	case FIRE_NOTSET:
 		next_attack = gameLocal.realClientTime + SEC2MS(MACHINEGUN_FIRERATE);
 		owner->Event_LaunchProjectiles(MACHINEGUN_NUMPROJECTILES, spread, 0, 1, 1);
+
+		// Create debris if we hit a wall.
+		{
+			trace_t tr;
+			idVec3 end;
+
+			end = owner->GetOrigin() + (owner->GetForwardVector() * 1000);
+
+			gameLocal.Trace(tr, owner->GetOrigin(), end, CONTENTS_BODY, 0);
+			if(tr.c.entityNum == ENTITYNUM_WORLD) {
+				const char* shaderName = tr.c.material->GetName();
+
+				idVec3 dir = tr.endpos - owner->GetOrigin();
+				dir.Normalize();
+
+				idVec3 reflectedDir = idMath::ReflectVector(dir, tr.c.normal);
+				owner->Event_CreateDebris(tr.endpos, reflectedDir.ToMat3(), shaderName);
+			}
+		}
 
 		owner->Event_PlayAnim(ANIMCHANNEL_ALL, "fire", false);
 		owner->Event_FireSound();

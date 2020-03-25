@@ -168,6 +168,10 @@ idWeapon::Spawn
 void idWeapon::Spawn( void ) {
 	BaseSpawn();
 
+	for(int i = 0; i < DEBRIS_MODEL_COUNT; i++) {
+		debrisEntityDef[i] = gameLocal.FindEntityDef(va("debris_debris%d", i), false);
+	}
+
 	if ( !gameLocal.isClient ) {
 		// setup the world model
 		worldModel = static_cast< idAnimatedEntity * >( gameLocal.SpawnEntityType( idAnimatedEntity::Type, NULL ) );
@@ -2696,6 +2700,15 @@ void idWeapon::Event_CreateProjectile( void ) {
 	else {
 		idThread::ReturnEntity( NULL );
 	}
+}
+
+/*
+================
+idWeapon::Event_CreateDebris
+================
+*/
+void idWeapon::Event_CreateDebris(idVec3 origin, idMat3 axis, const char* shaderName) {
+	gameLocal.SpawnDebris(debrisEntityDef, DEBRIS_MODEL_COUNT, origin, axis, shaderName);
 }
 
 /*

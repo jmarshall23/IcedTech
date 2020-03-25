@@ -607,7 +607,7 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 	const idMaterial*	shader;
 	bool				interactionGenerated;
 	idBounds			bounds;
-
+	 
 	tr.pc.c_createInteractions++;
 
 	bounds = model->Bounds( &entityDef->parms );
@@ -642,6 +642,9 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 		// determine the shader for this surface, possibly by skinning
 		shader = surf->shader;
 		shader = R_RemapShaderBySkin( shader, entityDef->parms.customSkin, entityDef->parms.customShader );
+		if(entityDef->parms.customShader != NULL) {
+			shader = shader;
+		}
 
 		if ( !shader ) {
 			continue;

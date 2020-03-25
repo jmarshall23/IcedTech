@@ -1,0 +1,14 @@
+entityDef debris_debris0 {
+	"model"		"models/debris/debris_1.mdr"
+	"clipmodel"	"models/debris/debris_1_cm.mdr"
+}
+
+entityDef debris_debris1 {
+	"model"		"models/debris/debris_2.mdr"
+	"clipmodel"	"models/debris/debris_2_cm.mdr"
+}
+
+entityDef debris_debris2 {
+	"model"		"models/debris/debris_3.mdr"
+	"clipmodel"	"models/debris/debris_3_cm.mdr"
+}

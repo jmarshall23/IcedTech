@@ -158,6 +158,14 @@ set(src_game
 	./game/bot/botai/BotAI_respawn.cpp
 	./game/bot/botai/BotAI_SeekLTG.cpp
 	./game/bot/botai/BotAI.h
+	./game/client/ClientEntity.cpp
+	./game/client/ClientEntity.h
+	./game/client/ClientModel.cpp
+	./game/client/ClientModel.h
+	./game/client/ClientMoveable.cpp
+	./game/client/ClientMoveable.h
+	./game/ClientEffects.cpp
+	./game/ClientEffects.h
 	./game/ReflectionProbe.cpp
 	./game/ReflectionProbe.h
 	./game/game_navigation.cpp

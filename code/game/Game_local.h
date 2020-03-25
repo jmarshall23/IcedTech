@@ -82,6 +82,7 @@ class idThread;
 class idEditEntities;
 class idLocationEntity;
 class rvmBot;
+class rvClientEntity;
 
 #define	MAX_CLIENTS				32
 #define	GENTITYNUM_BITS			12
@@ -89,6 +90,10 @@ class rvmBot;
 #define	ENTITYNUM_NONE			(MAX_GENTITIES-1)
 #define	ENTITYNUM_WORLD			(MAX_GENTITIES-2)
 #define	ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES-2)
+#define ENTITYNUM_CLIENT		(MAX_GENTITIES-3)
+
+#define	CENTITYNUM_BITS			12
+#define	MAX_CENTITIES			(1<<CENTITYNUM_BITS)
 
 //============================================================================
 
@@ -236,6 +241,10 @@ public:
 	type *					GetEntity( void ) const;
 	int						GetEntityNum( void ) const;
 
+							idEntityPtr(type* ent) { *this = ent; }
+	idEntityPtr<type>& operator=(idEntityPtr<type>& ent) { *this = ent.GetEntity(); return *this; }
+	type* operator->(void) const;
+	operator type* (void) const;
 private:
 	int						spawnId;
 };
@@ -276,6 +285,14 @@ public:
 	bool					sortPushers;			// true if active lists needs to be reordered to place pushers at the front
 	bool					sortTeamMasters;		// true if active lists needs to be reordered to place physics team masters before their slaves
 	idDict					persistentLevelInfo;	// contains args that are kept around between levels
+
+	rvClientEntity*				clientEntities[MAX_CENTITIES];	// index to client entities
+	int							clientSpawnIds[MAX_CENTITIES];	// for use in idClientEntityPtr
+	idLinkList<rvClientEntity>	clientSpawnedEntities;			// all client side entities
+	int							num_clientEntities;				// current number of client entities
+	int							firstFreeClientIndex;			// first free index in the client entities array
+
+	int							entityRegisterTime;
 
 	// can be used to automatically effect every material in the world that references globalParms
 	float					globalShaderParms[ MAX_GLOBAL_SHADER_PARMS ];	
@@ -418,13 +435,19 @@ public:
 	gameState_t				GameState( void ) const;
 	idEntity *				SpawnEntityType( const idTypeInfo &classdef, const idDict *args = NULL, bool bIsClientReadSnapshot = false );
 	bool					SpawnEntityDef( const idDict &args, idEntity **ent = NULL, bool setDefaults = true );
+	bool					SpawnClientEntityDef(const idDict& args, rvClientEntity** cent, bool setDefaults, const char* spawn);
 	int						GetSpawnId( const idEntity *ent ) const;
+
+	void					RegisterClientEntity(rvClientEntity* cent);
+	void					UnregisterClientEntity(rvClientEntity* cent);
 
 	const idDeclEntityDef *	FindEntityDef( const char *name, bool makeDefault = true ) const;
 	const idDict *			FindEntityDefDict( const char *name, bool makeDefault = true ) const;
 
 	void					RegisterEntity( idEntity *ent );
 	void					UnregisterEntity( idEntity *ent );
+
+	void					SpawnDebris(const idDeclEntityDef** debrisArray, int debrisArraySize, idVec3 origin, idMat3 axis, const char* shaderName);
 
 	bool					RequirementMet( idEntity *activator, const idStr &requires, int removeItem );
 
@@ -509,6 +532,8 @@ public:
 	const char*				GetMapFileName() { return mapFileName.c_str(); }
 
 	void					Trace(trace_t& results, const idVec3& start, const idVec3& end, int contentMask, int passEntity);
+public:
+	int						nextDebrisSpawnTime;
 private:
 	const static int		INITIAL_SPAWN_COUNT = 1;
 
@@ -642,6 +667,8 @@ private:
 // jmarshall
 	rvmNavFile				*navMeshFile;
 // jmarshall end
+
+	int						clientSpawnCount;
 };
 
 //============================================================================
@@ -702,6 +729,16 @@ ID_INLINE type *idEntityPtr<type>::GetEntity( void ) const {
 		return static_cast<type *>( gameLocal.entities[ entityNum ] );
 	}
 	return NULL;
+}
+
+template< class type >
+ID_INLINE type* idEntityPtr<type>::operator->(void) const {
+	return GetEntity();
+}
+
+template< class type >
+ID_INLINE idEntityPtr<type>::operator type* (void) const {
+	return GetEntity();
 }
 
 template< class type >
@@ -780,6 +817,11 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "SmokeParticles.h"
 
 #include "Entity.h"
+
+#include "client/ClientEntity.h"
+#include "client/ClientMoveable.h"
+#include "client/ClientModel.h"
+#include "ClientEffects.h"
 
 #include "GameEdit.h"
 #include "AF.h"
