@@ -772,7 +772,7 @@ int idBotGoalManager::BotGetLevelItemGoal(int index, char* name, bot_goal_t* goa
 
 		if (itemconfig->iteminfo[li->iteminfo].name == name)
 		{
-			goal->areanum = li->goalareanum;
+//			goal->areanum = li->goalareanum;
 			goal->origin = li->goalorigin;
 			goal->entitynum = li->item->entityNumber;
 			goal->mins = itemconfig->iteminfo[li->iteminfo].mins;
@@ -1349,7 +1349,7 @@ int idBotGoalManager::BotChooseLTGItem(int goalstate, idVec3 origin, int* invent
 	VectorCopy(bestitem->goalorigin, goal.origin);
 	VectorCopy(iteminfo->mins, goal.mins);
 	VectorCopy(iteminfo->maxs, goal.maxs);
-	goal.areanum = bestitem->goalareanum;
+//	goal.areanum = bestitem->goalareanum;
 	goal.entitynum = bestitem->item->entityNumber;
 	goal.number = bestitem->number;
 	goal.flags = GFL_ITEM;
@@ -1451,8 +1451,8 @@ int idBotGoalManager::BotChooseNBGItem(int goalstate, idVec3 origin, int* invent
 		if (li->flags & IFL_NOTBOT)
 			continue;
 		//if the item is in a possible goal area
-		if (!li->goalareanum)
-			continue;
+//		if (!li->goalareanum)
+//			continue;
 		//FIXME: is this a good thing? added this for items that never spawned into the game (f.i. CTF flags in obelisk)
 		if (!li->item && !(li->flags & IFL_ROAM))
 			continue;
@@ -1520,7 +1520,7 @@ int idBotGoalManager::BotChooseNBGItem(int goalstate, idVec3 origin, int* invent
 	VectorCopy(bestitem->goalorigin, goal.origin);
 	VectorCopy(iteminfo->mins, goal.mins);
 	VectorCopy(iteminfo->maxs, goal.maxs);
-	goal.areanum = bestitem->goalareanum;
+//	goal.areanum = bestitem->goalareanum;
 	goal.entitynum = bestitem->item->entityNumber;
 	goal.number = bestitem->number;
 	goal.flags = GFL_ITEM;

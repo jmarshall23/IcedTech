@@ -367,7 +367,7 @@ entityDef player_doommarine_mp {
 	"deplete_rate"						"1.5"	// every x seconds
 	"deplete_ammount"					"2"		// how much
 	"weapon"							"weapon_fists,weapon_machinegun"
-	"current_weapon"					"3"
+	"current_weapon"					"2"
 	"ammo_clip"							"100"
 	"damage_scale head"					"2"
 	

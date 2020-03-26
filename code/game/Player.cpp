@@ -4890,13 +4890,8 @@ void idPlayer::UpdateViewAngles( void ) {
 
 	// if dead
 	if ( health <= 0 ) {
-		if ( pm_thirdPersonDeath.GetBool() ) {
-			viewAngles.roll = 0.0f;
-			viewAngles.pitch = 30.0f;
-		} else {
-			viewAngles.roll = 40.0f;
-			viewAngles.pitch = -15.0f;
-		}
+		viewAngles.roll = 0.0f;
+		viewAngles.pitch = 30.0f;
 		return;
 	}
 
@@ -6416,9 +6411,9 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 	heartInfo.Init( 0, 0, 0, BASE_HEARTRATE );
 	AdjustHeartRate( DEAD_HEARTRATE, 10.0f, 0.0f, true );
 
-	if ( !g_testDeath.GetBool() ) {
-		playerView.Fade( colorBlack, 12000 );
-	}
+	//if ( !g_testDeath.GetBool() ) {
+	//	playerView.Fade( colorBlack, 12000 );
+	//}
 
 	AI_DEAD = true;
 	SetAnimState( ANIMCHANNEL_LEGS, "Legs_Death", 4 );
@@ -7273,7 +7268,7 @@ void idPlayer::CalculateRenderView( void ) {
 			}
 		} else if ( pm_thirdPerson.GetBool() ) {
 			OffsetThirdPersonView( pm_thirdPersonAngle.GetFloat(), pm_thirdPersonRange.GetFloat(), pm_thirdPersonHeight.GetFloat(), pm_thirdPersonClip.GetBool() );
-		} else if ( pm_thirdPersonDeath.GetBool() ) {
+		} else if ( health <= 0) {
 			range = gameLocal.time < minRespawnTime ? ( gameLocal.time + RAGDOLL_DEATH_TIME - minRespawnTime ) * ( 120.0f / RAGDOLL_DEATH_TIME ) : 120.0f;
 			OffsetThirdPersonView( 0.0f, 20.0f + range, 0.0f, false );
 		} else {

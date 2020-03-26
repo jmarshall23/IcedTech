@@ -60,8 +60,6 @@ static const int LIGHTID_VIEW_MUZZLE_FLASH = 100;
 
 class idMoveableItem;
 
-#define DEBRIS_MODEL_COUNT		3
-
 class rvmWeaponObject : public idClass {
 public:
 	CLASS_PROTOTYPE(rvmWeaponObject);
@@ -389,8 +387,6 @@ private:
 	void					MuzzleRise(idVec3 &origin, idMat3 &axis);
 	void					UpdateNozzleFx(void);
 	void					UpdateFlashPosition(void);
-
-	const idDeclEntityDef*			debrisEntityDef[DEBRIS_MODEL_COUNT];
 
 	// script events
 

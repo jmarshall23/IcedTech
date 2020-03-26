@@ -318,6 +318,15 @@ void idGameLocal::Init( void ) {
 	clientPhysicsJob = parallelJobManager->AllocJobList(JOBLIST_GAME_CLIENTPHYSICS, JOBLIST_PRIORITY_MEDIUM, 2, 0, NULL);
 	parallelJobManager->RegisterJob((jobRun_t)idGameLocal::ClientEntityJob_t, "G_ClientPhysics");
 
+	// load all of the debris decls.
+	for (int i = 0; i < DEBRIS_MODEL_COUNT; i++) {
+		debrisEntityDef[i] = gameLocal.FindEntityDef(va("debris_debris%d", i), false);
+
+		if(debrisEntityDef[i] == NULL) {
+			gameLocal.Error("Failed to load debris decl %d\n", i);
+		}		
+	}
+
 	// load in the bot itemtable.
 	botItemTable = FindEntityDef("bot_itemtable", false);
 	if(botItemTable == NULL) {
@@ -4521,19 +4530,19 @@ void idGameLocal::UnregisterClientEntity(rvClientEntity* cent) {
 idGameLocal::SpawnDebris
 ===================
 */
-void idGameLocal::SpawnDebris(const idDeclEntityDef** debrisArray, int debrisArraySize, idVec3 origin, idMat3 axis, const char* shaderName) {
+void idGameLocal::SpawnDebris(idVec3 origin, idMat3 axis, const char* shaderName) {
 	rvmClientEffect_debris* entity;
 	idDict args;
 
 	if (nextDebrisSpawnTime > gameLocal.realClientTime)
 		return;
 
-	nextDebrisSpawnTime = gameLocal.realClientTime + SEC2MS(0.8);
+	nextDebrisSpawnTime = gameLocal.realClientTime + SEC2MS(0.5);
 
 	args.Set("origin", origin.ToString());
 
 	entity = static_cast<rvmClientEffect_debris*>(gameLocal.SpawnEntityType(rvmClientEffect_debris::Type, &args));
-	entity->LaunchEffect(debrisArray, debrisArraySize, origin, axis, shaderName);
+	entity->LaunchEffect(debrisEntityDef, DEBRIS_MODEL_COUNT, origin, axis, shaderName);
 }
 
 /*

@@ -1,6 +1,7 @@
 textures/liquids/lavahell
 {
 	qer_editorimage textures/liquids/lavahell.png
+	lava
 
 	{
 		program emissive.vfp

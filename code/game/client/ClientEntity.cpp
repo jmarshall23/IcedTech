@@ -37,6 +37,7 @@ rvClientEntity::~rvClientEntity
 rvClientEntity::~rvClientEntity( void ) {
 	Unbind();
 	gameLocal.UnregisterClientEntity( this );
+	gameLocal.clientEntityThreadWork.Remove(this);
 
 	// Free sound emitter
 	//soundSystem->FreeSoundEmitter( SOUNDWORLD_GAME, refSound.referenceSoundHandle, true );

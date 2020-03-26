@@ -62,7 +62,7 @@ void main( VS_IN vertex, out VS_OUT result ) {
 
 	// texture 2 takes the deform magnitude and scales it by the projection distance
 	float4 vec = float4( 0, 1, 0, 1 );
-	vec.z  = dot4( modelPosition, rpModelViewMatrixZ );
+	vec.z  = dot4( vertex_position, rpModelViewMatrixZ );
 
 	// magicProjectionAdjust is a magic scalar that scales the projection since we changed from 
 	// using the X axis to the Y axis to calculate R1.  It is an approximation to closely match 

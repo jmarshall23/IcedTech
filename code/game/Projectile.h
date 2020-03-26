@@ -224,46 +224,4 @@ private:
 	void					ApplyDamage();
 };
 
-/*
-===============================================================================
-
-  idDebris
-	
-===============================================================================
-*/
-
-class idDebris : public idEntity {
-public :
-	CLASS_PROTOTYPE( idDebris );
-
-							idDebris();
-							~idDebris();
-
-	// save games
-	void					Save( idSaveGame *savefile ) const;					// archives object for save game file
-	void					Restore( idRestoreGame *savefile );					// unarchives object from save game file
-
-	void					Spawn( void );
-
-	void					Create( idEntity *owner, const idVec3 &start, const idMat3 &axis );
-	void					Launch( void );
-	void					Think( void );
-	void					Killed( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location );
-	void					Explode( void );
-	void					Fizzle( void );
-	virtual bool			Collide( const trace_t &collision, const idVec3 &velocity );
-
-
-private:
-	idEntityPtr<idEntity>	owner;
-	idPhysics_RigidBody		physicsObj;
-	const idDeclParticle *	smokeFly;
-	int						smokeFlyTime;
-	const idSoundShader *	sndBounce;
-
-
-	void					Event_Explode( void );
-	void					Event_Fizzle( void );
-};
-
 #endif /* !__GAME_PROJECTILE_H__ */

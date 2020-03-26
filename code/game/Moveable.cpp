@@ -1012,40 +1012,6 @@ void idExplodingBarrel::Killed( idEntity *inflictor, idEntity *attacker, int dam
 	}
 
 	ExplodingEffects( );
-	
-	//FIXME: need to precache all the debris stuff here and in the projectiles
-	const idKeyValue *kv = spawnArgs.MatchPrefix( "def_debris" );
-	// bool first = true;
-	while ( kv ) {
-		const idDict *debris_args = gameLocal.FindEntityDefDict( kv->GetValue(), false );
-		if ( debris_args ) {
-			idEntity *ent;
-			idVec3 dir;
-			idDebris *debris;
-			//if ( first ) {
-				dir = physicsObj.GetAxis()[1];
-			//	first = false;
-			//} else {
-				dir.x += gameLocal.random.CRandomFloat() * 4.0f;
-				dir.y += gameLocal.random.CRandomFloat() * 4.0f;
-				//dir.z = gameLocal.random.RandomFloat() * 8.0f;
-			//}
-			dir.Normalize();
-
-			gameLocal.SpawnEntityDef( *debris_args, &ent, false );
-			if ( !ent || !ent->IsType( idDebris::Type ) ) {
-				gameLocal.Error( "'projectile_debris' is not an idDebris" );
-			}
-
-			debris = static_cast<idDebris *>(ent);
-			debris->Create( this, physicsObj.GetOrigin(), dir.ToMat3() );
-			debris->Launch();
-			debris->GetRenderEntity()->shaderParms[ SHADERPARM_TIME_OF_DEATH ] = ( gameLocal.time + 1500 ) * 0.001f;
-			debris->UpdateVisuals();
-			
-		}
-		kv = spawnArgs.MatchPrefix( "def_debris", kv );
-	}
 
 	physicsObj.PutToRest();
 	CancelEvents( &EV_Explode );

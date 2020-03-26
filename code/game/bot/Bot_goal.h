@@ -121,7 +121,6 @@ struct levelitem_t
 		flags = 0;
 		weight = 0;
 		origin.Zero();
-		goalareanum = 0;
 		goalorigin.Zero();
 		item = nullptr;
 		timeout = 0;
@@ -134,7 +133,6 @@ struct levelitem_t
 	int flags;							//item flags
 	float weight;						//fixed roam weight
 	idVec3 origin;						//origin of the item
-	int goalareanum;					//area the item is in
 	idVec3 goalorigin;					//goal origin within the area
 	//int entitynum;						//entity number
 	idItem* item;

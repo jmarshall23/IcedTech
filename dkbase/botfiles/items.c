@@ -340,7 +340,7 @@ maxs		{13,13,13}
 } 
 
 
-iteminfo "weapon_gauntlet"
+iteminfo "weapon_fists"
 {
 name		"Gauntlet"
 model		"models/weapons2/gauntlet/gauntlet.md3"

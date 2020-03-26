@@ -40,6 +40,13 @@ void rvmBot::BotInputToUserCommand(bot_input_t* bi, usercmd_t* ucmd, int time) {
 	//if (bi->actionflags & ACTION_FOLLOWME) ucmd->buttons |= BUTTON_FOLLOWME;
 	//
 	ucmd->impulse |= bi->weapon;
+	if(bi->lastWeaponNum != bi->weapon) {
+		ucmd->flags = UCF_IMPULSE_SEQUENCE;
+		bi->lastWeaponNum = bi->weapon;
+	}
+	else {
+		ucmd->flags = 0;
+	}
 	
 	//set the view angles
 	//NOTE: the ucmd->angles are the angles WITHOUT the delta angles

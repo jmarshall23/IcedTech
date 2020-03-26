@@ -405,7 +405,7 @@ void idMultiplayerGame::UpdatePlayerRanks() {
 	}
 // jmarshall
 	// Check for rank changes.
-	if (gameLocal.gameType == GAME_DM && gameState != WARMUP && leadFragCount > 0) {
+	if (gameLocal.gameType == GAME_DM && gameState >= GAMEON && leadFragCount > 0) {
 		for (j = 0; j < gameLocal.numClients; j++) {
 			if (playerStateSorted[j] == NULL)
 				continue;
@@ -2139,7 +2139,8 @@ idMultiplayerGame::DrawScoreBoard
 ================
 */
 void idMultiplayerGame::DrawScoreBoard( idPlayer *player ) {
-	if ( player->scoreBoardOpen || gameState == GAMEREVIEW ) {
+	// jmarshall: always draw the scoreboard when dead.
+	if ( player->scoreBoardOpen || player->health <= 0 || gameState == GAMEREVIEW ) {
 		if ( !playerState[ player->entityNumber ].scoreBoardUp ) {
 			scoreBoard->Activate( true, gameLocal.time );
 			playerState[ player->entityNumber ].scoreBoardUp = true;

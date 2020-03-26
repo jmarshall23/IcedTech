@@ -162,39 +162,6 @@ bool rvmBotAIBotActionBase::EntityIsDead(idEntity* entity) {
 
 /*
 ==================
-rvmBotAIBotActionBase::InFieldOfVision
-==================
-*/
-bool rvmBotAIBotActionBase::InFieldOfVision(idAngles viewangles, float fov, idAngles angles)
-{
-	int i;
-	float diff, angle;
-
-	for (i = 0; i < 2; i++) {
-		angle = idMath::AngleMod(viewangles[i]);
-		angles[i] = idMath::AngleMod(angles[i]);
-		diff = angles[i] - angle;
-		if (angles[i] > angle) {
-			if (diff > 180.0) diff -= 360.0;
-		}
-		else {
-			if (diff < -180.0) diff += 360.0;
-		}
-		if (diff > 0) {
-			if (diff > fov * 0.5)
-				return false;
-		}
-		else {
-			if (diff < -fov * 0.5)
-				return false;
-		}
-	}
-	return true;
-}
-
-
-/*
-==================
 BotEntityVisibleTest
 
 returns visibility in the range [0, 1] taking fog and water surfaces into account
@@ -207,10 +174,12 @@ float rvmBotAIBotActionBase::BotEntityVisibleTest(int viewer, idVec3 eye, idAngl
 	idEntity* entinfo;
 	idVec3 dir, start, end, middle;
 	idAngles entangles;
+	idPlayer* viewEnt;
 
 	//calculate middle of bounding box
 	//BotEntityInfo(ent, &entinfo);
 	entinfo = gameLocal.entities[ent];
+	viewEnt = gameLocal.entities[viewer]->Cast<idPlayer>();
 
 	//VectorAdd(entinfo->r.mins, entinfo->r.maxs, middle);
 	//VectorScale(middle, 0.5, middle);
@@ -223,7 +192,7 @@ float rvmBotAIBotActionBase::BotEntityVisibleTest(int viewer, idVec3 eye, idAngl
 	dir = middle - eye;
 	entangles = dir.ToAngles();
 
-	if (!InFieldOfVision(viewangles, fov, entangles))
+	if (!viewEnt->CheckFOV(entinfo->GetOrigin()))
 		return 0;
 
 	pc = gameLocal.clip.PointContents(eye); 
@@ -445,9 +414,12 @@ int rvmBotAIBotActionBase::BotFindEnemy(bot_state_t* bs, int curenemy) {
 	idPlayer* curenemyinfo = NULL;
 	idVec3 dir;
 	idAngles angles;
+	idPlayer* clientEnt;
 
 	alertness = botCharacterStatsManager.Characteristic_BFloat(bs->character, CHARACTERISTIC_ALERTNESS, 0, 1);
 	easyfragger = botCharacterStatsManager.Characteristic_BFloat(bs->character, CHARACTERISTIC_EASY_FRAGGER, 0, 1);
+
+	clientEnt = gameLocal.entities[bs->client]->Cast<idPlayer>();
 
 	//check if the health decreased
 	healthdecrease = bs->lasthealth > bs->inventory[INVENTORY_HEALTH];
@@ -508,8 +480,8 @@ int rvmBotAIBotActionBase::BotFindEnemy(bot_state_t* bs, int curenemy) {
 // jmarshall end
 
 		//calculate the distance towards the enemy
-
-		dir = entinfo->GetOrigin() - bs->origin;
+		idVec3 potentialTargetOrigin = entinfo->GetPhysics()->GetOrigin();
+		dir = potentialTargetOrigin - bs->origin;
 		squaredist = dir.LengthSqr(); 
 
 		// jmarshall
@@ -537,9 +509,14 @@ int rvmBotAIBotActionBase::BotFindEnemy(bot_state_t* bs, int curenemy) {
 		else
 			f = 90 + 90 - (90 - (squaredist > Square(810) ? Square(810) : squaredist) / (810 * 9));
 		//check if the enemy is visible
-		vis = BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, f, i);
-		if (vis <= 0)
-			continue;
+		
+		// If we were last hit by someone then assume they are visible.
+		if (bs->attackerEntity != entinfo)
+		{
+			vis = BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, f, i);
+			if (vis <= 0)
+				continue;
+		}
 
 		//if the enemy is quite far away, not shooting and the bot is not damaged
 		if (curenemy < 0 && squaredist > Square(100) && !healthdecrease && !entinfo->IsShooting())
@@ -549,7 +526,7 @@ int rvmBotAIBotActionBase::BotFindEnemy(bot_state_t* bs, int curenemy) {
 			angles = dir.ToAngles();
 
 			//if the bot isn't in the fov of the enemy
-			if (!InFieldOfVision(bs->viewangles, 90, angles)) {
+			if (!clientEnt->CheckFOV(entinfo->GetOrigin())) {
 				//update some stuff for this enemy
 				BotUpdateBattleInventory(bs, i);
 
@@ -1199,11 +1176,13 @@ void rvmBotAIBotActionBase::BotGetRandomPointNearPosition(idVec3 point, idVec3 &
 		gameLocal.GetRandomPointNearPosition(point, randomPoint, radius);
 		gameLocal.Trace(trace, point, randomPoint, CONTENTS_SOLID, 0);
 
-		if (trace.fraction > 0.2f)
+		if (trace.fraction == 1.0f)
 			return;
 
 		index++;
 	}
+
+	randomPoint = point;
 }
 
 /*
@@ -1217,6 +1196,11 @@ int rvmBotAIBotActionBase::BotMoveInRandomDirection(bot_state_t* bs) {
 	ent->ResetPathFinding();
 
 	float dist = idMath::Distance(ent->GetPhysics()->GetOrigin(), bs->random_move_position);
+
+	if(!ent->PointVisible(bs->random_move_position)) {
+		dist = 0;
+	}
+
 	if (dist < 25 || bs->random_move_position.Length() == 0) {
 		BotGetRandomPointNearPosition(ent->GetPhysics()->GetOrigin(), bs->random_move_position, 50.0f);
 	}
@@ -1302,7 +1286,7 @@ void rvmBotAIBotActionBase::BotCheckAttack(bot_state_t* bs) {
 
 	//vectoangles(dir, angles);
 	angles = dir.ToAngles();
-	if (!InFieldOfVision(bs->viewangles, fov, angles))
+	if (!self->CheckFOV(entinfo->GetPhysics()->GetOrigin()))
 		return;
 
 	//trap_Trace(&bsptrace, bs->eye, NULL, NULL, bs->aimtarget, bs->client, CONTENTS_SOLID | CONTENTS_PLAYERCLIP);

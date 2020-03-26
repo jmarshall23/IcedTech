@@ -416,6 +416,7 @@ struct bot_input_t
 		viewangles.Zero();
 		actionflags = 0;
 		weapon = 0;
+		lastWeaponNum = 0;
 		respawn = false;
 	}
 
@@ -425,6 +426,7 @@ struct bot_input_t
 	idAngles viewangles;		//the view angles
 	int actionflags;		//one of the ACTION_? flags
 	int weapon;				//weapon to use
+	int lastWeaponNum;
 	bool respawn;
 };
 
@@ -737,6 +739,7 @@ struct bot_state_t {
 	{		
 		action = 0;
 		lastaction = NULL;
+		attackerEntity = NULL;
 		client = 0;
 		entitynum = 0;
 		setupcount = 0;
@@ -780,6 +783,7 @@ struct bot_state_t {
 	int ws;
 	int enemy;
 	int client;
+	idEntity* attackerEntity;
 	int lasthealth;
 	int entitynum;
 	int setupcount;
@@ -835,6 +839,8 @@ public:
 	virtual void			Spawn(void) override;
 	virtual void			Think(void) override;
 	virtual void			SpawnToPoint(const idVec3& spawn_origin, const idAngles& spawn_angles) override;
+	virtual	void			Damage(idEntity* inflictor, idEntity* attacker, const idVec3& dir, const char* damageDefName, const float damageScale, const int location) override;
+
 
 	void			BotInputFrame(void);
 	void			Bot_ResetUcmd(usercmd_t& ucmd);

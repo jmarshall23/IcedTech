@@ -44,6 +44,8 @@ If you have questions concerning this license or the applicable additional terms
 #define LAGO_MATERIAL	"textures/sfx/lagometer"
 #define LAGO_IMAGE		"textures/sfx/lagometer.tga"
 
+#define DEBRIS_MODEL_COUNT		3
+
 #define	MASK_SHOT		(CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE)
 
 // if set to 1 the server sends the client PVS with snapshots and the client compares against what it sees
@@ -457,7 +459,7 @@ public:
 	void					RegisterEntity( idEntity *ent );
 	void					UnregisterEntity( idEntity *ent );
 
-	void					SpawnDebris(const idDeclEntityDef** debrisArray, int debrisArraySize, idVec3 origin, idMat3 axis, const char* shaderName);
+	void					SpawnDebris(idVec3 origin, idMat3 axis, const char* shaderName);
 
 	bool					RequirementMet( idEntity *activator, const idStr &requires, int removeItem );
 
@@ -684,6 +686,8 @@ private:
 	int						clientSpawnCount;
 
 	idParallelJobList		*clientPhysicsJob;
+private:
+	const idDeclEntityDef* debrisEntityDef[DEBRIS_MODEL_COUNT];
 };
 
 //============================================================================

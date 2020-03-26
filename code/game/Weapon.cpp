@@ -168,10 +168,6 @@ idWeapon::Spawn
 void idWeapon::Spawn( void ) {
 	BaseSpawn();
 
-	for(int i = 0; i < DEBRIS_MODEL_COUNT; i++) {
-		debrisEntityDef[i] = gameLocal.FindEntityDef(va("debris_debris%d", i), false);
-	}
-
 	if ( !gameLocal.isClient ) {
 		// setup the world model
 		worldModel = static_cast< idAnimatedEntity * >( gameLocal.SpawnEntityType( idAnimatedEntity::Type, NULL ) );
@@ -2704,15 +2700,6 @@ void idWeapon::Event_CreateProjectile( void ) {
 
 /*
 ================
-idWeapon::Event_CreateDebris
-================
-*/
-void idWeapon::Event_CreateDebris(idVec3 origin, idMat3 axis, const char* shaderName) {
-	gameLocal.SpawnDebris(debrisEntityDef, DEBRIS_MODEL_COUNT, origin, axis, shaderName);
-}
-
-/*
-================
 idWeapon::Event_LaunchProjectiles
 ================
 */
@@ -3064,19 +3051,19 @@ void idWeapon::Event_EjectBrass( void ) {
 		return;
 	}
 
-	gameLocal.SpawnEntityDef( brassDict, &ent, false );
-	if ( !ent || !ent->IsType( idDebris::Type ) ) {
-		gameLocal.Error( "'%s' is not an idDebris", weaponDef ? weaponDef->dict.GetString( "def_ejectBrass" ) : "def_ejectBrass" );
-	}
-	idDebris *debris = static_cast<idDebris *>(ent);
-	debris->Create( owner, origin, axis );
-	debris->Launch();
-
-	linear_velocity = 40 * ( playerViewAxis[0] + playerViewAxis[1] + playerViewAxis[2] );
-	angular_velocity.Set( 10 * gameLocal.random.CRandomFloat(), 10 * gameLocal.random.CRandomFloat(), 10 * gameLocal.random.CRandomFloat() );
-
-	debris->GetPhysics()->SetLinearVelocity( linear_velocity );
-	debris->GetPhysics()->SetAngularVelocity( angular_velocity );
+	//gameLocal.SpawnEntityDef( brassDict, &ent, false );
+	//if ( !ent || !ent->IsType( idDebris::Type ) ) {
+	//	gameLocal.Error( "'%s' is not an idDebris", weaponDef ? weaponDef->dict.GetString( "def_ejectBrass" ) : "def_ejectBrass" );
+	//}
+	//idDebris *debris = static_cast<idDebris *>(ent);
+	//debris->Create( owner, origin, axis );
+	//debris->Launch();
+	//
+	//linear_velocity = 40 * ( playerViewAxis[0] + playerViewAxis[1] + playerViewAxis[2] );
+	//angular_velocity.Set( 10 * gameLocal.random.CRandomFloat(), 10 * gameLocal.random.CRandomFloat(), 10 * gameLocal.random.CRandomFloat() );
+	//
+	//debris->GetPhysics()->SetLinearVelocity( linear_velocity );
+	//debris->GetPhysics()->SetAngularVelocity( angular_velocity );
 }
 
 /*
@@ -3106,6 +3093,14 @@ idWeapon::WeaponState
 ===============
 */
 void idWeapon::WeaponState(weaponStatus_t state, int blendFrames) {
+// jmarshall: hack we don't have reloading in Darklight Arena.
+	if(state == WP_RELOAD) {
+		state = WP_IDLE;
+	//	currentWeaponObject->ResetStates();
+		Event_AddToClip(ClipSize());
+	}
+// jmarshall end
+
 	animBlendFrames = blendFrames;
 	idealState = state;
 }

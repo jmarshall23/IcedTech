@@ -661,25 +661,25 @@ entityDef player_base {
 	"blink_max"							"8.0"
 	
 	// weapon slots
-	"def_weapon0"						"weapon_fists"
+	"def_weapon0"						""
 	"weapon0_best"						"0"					// whether weapon should be chosen when out of ammo
 	"weapon0_cycle"						"1"					// whether weapon should be selected when using next/prev weapon
 	"weapon0_toggle"					"0"					// whether selecting weapon twice switches between current and previous weapons
 	"weapon0_allowempty"				"1"					// whether you can select the weapon when it's out of ammo
 	
-	"def_weapon1"						"weapon_pistol"
+	"def_weapon1"						"weapon_fists"
 	"weapon1_best"						"1"
 	"weapon1_cycle"						"1"
 	"weapon1_toggle"					"0"
 	"weapon1_allowempty"				"1"
 	
-	"def_weapon2"						"weapon_shotgun"
+	"def_weapon2"						"weapon_machinegun"
 	"weapon2_best"						"1"
 	"weapon2_cycle"						"1"
 	"weapon2_toggle"					"0"
 	"weapon2_allowempty"				"1"
 	
-	"def_weapon3"						"weapon_machinegun"
+	"def_weapon3"						"weapon_shotgun"
 	"weapon3_best"						"1"
 	"weapon3_cycle"						"1"
 	"weapon3_toggle"					"0"
@@ -691,7 +691,7 @@ entityDef player_base {
 	"weapon4_toggle"					"0"
 	"weapon4_allowempty"				"1"
 	
-	"def_weapon5"						"weapon_handgrenade"
+	"def_weapon5"						"weapon_rocketlauncher"
 	"weapon5_best"						"0"
 	"weapon5_cycle"						"1"
 	"weapon5_toggle"					"0"
@@ -703,7 +703,7 @@ entityDef player_base {
 	"weapon6_toggle"					"0"
 	"weapon6_allowempty"				"1"
 	
-	"def_weapon7"						"weapon_rocketlauncher"
+	"def_weapon7"						"weapon_handgrenade"
 	"weapon7_best"						"0"
 	"weapon7_cycle"						"1"
 	"weapon7_toggle"					"0"
@@ -772,7 +772,7 @@ entityDef player_base {
 	// NOTE: default ammo must be specified explicitly.
 	"weapon"							"weapon_fists,weapon_machinegun"
 	"weapon_nightmare"					"weapon_fists,weapon_machinegun"
-	"current_weapon"					"0"
+	"current_weapon"					"2"
 	
 	"pm_jumpheight"						"65"
 	"pm_stepsize"						"16"

@@ -26,7 +26,6 @@ protected:
 	bool		EntityIsDead(idEntity* entity);
 	float		BotEntityVisible(int viewer, idVec3 eye, idAngles viewangles, float fov, int ent);
 	float		BotEntityVisibleTest(int viewer, idVec3 eye, idAngles viewangles, float fov, int ent, bool allowHeightTest);
-	bool		InFieldOfVision(idAngles viewangles, float fov, idAngles angles);
 	void		BotUpdateBattleInventory(bot_state_t* bs, int enemy);
 	float		BotAggression(bot_state_t* bs);
 	int			BotWantsToRetreat(bot_state_t* bs);

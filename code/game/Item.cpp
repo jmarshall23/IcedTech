@@ -951,8 +951,17 @@ void idMoveableItem::Spawn( void ) {
 
 	// load the trace model
 	if ( !collisionModelManager->TrmFromModel( clipModelName, trm ) ) {
-		gameLocal.Error( "idMoveableItem '%s': cannot load collision model %s", name.c_str(), clipModelName.c_str() );
-		return;
+		gameLocal.Warning( "idMoveableItem '%s': cannot load collision model %s, defaulting", name.c_str(), clipModelName.c_str() );
+
+		idRenderModel* model = renderModelManager->FindModel(clipModelName);
+		if (model)
+		{
+			trm = idTraceModel(model->Bounds());
+		}
+		else
+		{
+			return;
+		}
 	}
 
 	// if the model should be shrinked

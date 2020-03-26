@@ -7,6 +7,7 @@
 idCVar bot_pathdebug("bot_pathdebug", "0", CVAR_BOOL | CVAR_CHEAT, "force the bot to path to player");
 idCVar bot_goaldist("bot_goaldist", "20", CVAR_INTEGER | CVAR_CHEAT, "");
 idCVar bot_debugnav("bot_debugnav", "0", CVAR_BOOL | CVAR_CHEAT, "draws navmesh paths for the bot");
+idCVar bot_showstate("bot_showstate", "0", CVAR_BOOL | CVAR_CHEAT, "draws the bot state above the bot");
 
 CLASS_DECLARATION(idPlayer, rvmBot)
 END_CLASS
@@ -39,7 +40,7 @@ rvmBot::BotUpdateInventory
 */
 void rvmBot::BotUpdateInventory(void) {
 	bs.inventory[INVENTORY_ARMOR]			= inventory.armor;
-	bs.inventory[INVENTORY_GAUNTLET]		= 0;
+	bs.inventory[INVENTORY_GAUNTLET]		= 1;
 	bs.inventory[INVENTORY_SHOTGUN]			= HasWeapon(weapon_shotgun);
 	bs.inventory[INVENTORY_MACHINEGUN]		= HasWeapon(weapon_machinegun);
 	bs.inventory[INVENTORY_GRENADELAUNCHER] = 0;
@@ -142,7 +143,23 @@ void rvmBot::BotMoveToGoalOrigin(void) {
 	bs.botinput.dir = bs.currentGoal.nextMoveOrigin - GetPhysics()->GetOrigin();
 
 	idAngles ang(0, bs.botinput.dir.ToYaw(), 0);
-	bs.botinput.viewangles = ang;
+	if(bs.enemy >= 0) {
+		idPlayer* enemy = gameLocal.entities[bs.enemy]->Cast<idPlayer>();
+		if(enemy) {
+			idVec3 enemyDir = enemy->GetPhysics()->GetOrigin() - GetPhysics()->GetOrigin();
+			enemyDir.Normalize();
+			idAngles angles = enemyDir.ToAngles();
+			angles.pitch = 0;
+			angles.roll = 0;
+			bs.botinput.viewangles = angles;
+		}
+		else {
+			bs.botinput.viewangles = ang;
+		}
+	}
+	else {
+		bs.botinput.viewangles = ang;
+	}
 	bs.botinput.speed = pm_runspeed.GetInteger();
 
 	bs.botinput.dir.Normalize();
@@ -171,7 +188,6 @@ rvmBot::ServerThink
 void rvmBot::ServerThink(void) {
 	bs.origin = GetPhysics()->GetOrigin();
 	bs.eye = GetEyePosition();
-//	bs.viewangles = viewAngles;
 	bs.thinktime = Bot_Time();
 	bs.botinput.actionflags = 0;
 
@@ -230,6 +246,7 @@ void rvmBot::ServerThink(void) {
 
 		BotMoveToGoalOrigin();
 
+		bs.viewangles = bs.botinput.viewangles;
 
 		if (bot_debugnav.GetBool() && navWaypoints.Num() > 1)
 		{
@@ -259,8 +276,27 @@ void rvmBot::ServerThink(void) {
 	{
 		bs.botinput.viewangles = bs.viewangles;
 	}
+
+	if(bot_showstate.GetBool()) {
+		idMat3 axis = GetPhysics()->GetAxis();
+		idVec4 color_white(1, 1, 1, 1);
+		gameRenderWorld->DrawTextA(bs.action->GetName(), GetPhysics()->GetOrigin() + idVec3(0, 0, 100), 0.5f, color_white, axis);
+	}
+
+	bs.attackerEntity = NULL; // Has to be consumed immedaitly. 
+	bs.botinput.weapon = bs.weaponnum;
 }
 
+/*
+=======================
+rvmBot::Damage
+=======================
+*/
+void rvmBot::Damage(idEntity* inflictor, idEntity* attacker, const idVec3& dir, const char* damageDefName, const float damageScale, const int location) {
+	idPlayer::Damage(inflictor, attacker,dir, damageDefName, damageScale, location);
+
+	bs.attackerEntity = attacker;
+}
 
 /*
 =======================
