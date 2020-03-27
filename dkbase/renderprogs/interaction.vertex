@@ -156,7 +156,7 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	toLight = normalize( toLight );
 
 	//# calculate normalized vector to viewer in R1
-	float4 toView = normalize( rpLocalViewOrigin - modelVertex );
+	float4 toView = normalize( rpGlobalEyePos - modelVertex );
 	
 	//# add together to become the half angle vector in object space (non-normalized)
 	float4 halfAngleVector = toLight + toView;
