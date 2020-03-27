@@ -131,6 +131,8 @@ void idMaterial::CommonInit() {
 		virtualTextureHeightInPages[i] = 0;
 	}
 
+	emissiveImage = NULL;
+
 	virtualTexturePageSource = 0;
 	virtualTexturePageOffsetNumMips = 0;
 	virtualAlbedoImage = nullptr;
@@ -2273,6 +2275,11 @@ void idMaterial::ParseMaterial( idLexer &src ) {
 			newSrc.SetFlags( LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS | LEXFL_ALLOWPATHNAMES );
 			ParseStage( newSrc, trpDefault );
 			newSrc.FreeSource();
+			continue;
+		}
+		else if ( !token.Icmp("emissivemap")) {
+			src.ReadTokenOnLine(&token);
+			emissiveImage = globalImages->ImageFromFile(token, TF_DEFAULT, TR_REPEAT, TD_DEFAULT);
 			continue;
 		}
 		// DECAL_MACRO for backwards compatibility with the preprocessor macros

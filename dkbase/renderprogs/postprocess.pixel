@@ -160,11 +160,11 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	float2 tCoords = fragment.texcoord0;
 	float4 albedo = CaSUpSample( samp0, tCoords );
 	
-	float4 emissive_mask = tex2D( samp1, tCoords );
+	//float4 emissive_mask = tex2D( samp1, tCoords );
 	
-	float2 imageSize = rpRenderTargetSize.xy * 0.1;
-	float4 emissive = blur13(samp0, tCoords, imageSize, float2(0, 1));
-	emissive += blur13(samp0, tCoords, imageSize, float2(1, 0));
+	float2 imageSize = rpRenderTargetSize.xy * 0.25;
+	float4 emissive = blur13(samp1, tCoords, imageSize, float2(0, 1));
+	emissive += blur13(samp1, tCoords, imageSize, float2(1, 0));
 	
-	result.color = (albedo) + (emissive_mask * emissive );
+	result.color = (albedo * 1.5) + (emissive);
 }

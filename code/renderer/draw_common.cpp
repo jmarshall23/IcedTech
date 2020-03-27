@@ -1510,6 +1510,18 @@ void	RB_STD_DrawView( void ) {
 	drawSurfs = (drawSurf_t **)&backEnd.viewDef->drawSurfs[0];
 	numDrawSurfs = backEnd.viewDef->numDrawSurfs;
 
+	if(backEnd.feedbackRenderTexture)
+	{
+		float screenCorrectionParm[4];
+		screenCorrectionParm[0] = 1.0f / (float)renderSystem->GetScreenWidth();
+		screenCorrectionParm[1] = 1.0f / (float)renderSystem->GetScreenHeight();
+		screenCorrectionParm[2] = (float)renderSystem->GetScreenWidth();
+		screenCorrectionParm[3] = (float)renderSystem->GetScreenHeight();
+		RB_SetFragmentParm(RENDERPARM_SCREENCORRECTIONFACTOR, screenCorrectionParm);
+
+		RB_SetVertexParms(RENDERPARM_UNPROJMATRIX_X, backEnd.viewDef->unprojectionToCameraRenderMatrix[0], 4);
+	}
+
 	// Render the shadow maps. 
 	RB_Draw_ShadowMaps();
 

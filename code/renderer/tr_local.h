@@ -404,6 +404,12 @@ typedef struct viewDef_s {
 	// specified in the call to DrawScene()
 	renderView_t		renderView;
 
+	float				unprojectionToCameraMatrix[16];
+	idRenderMatrix		unprojectionToCameraRenderMatrix;
+
+	float				unprojectionToWorldMatrix[16];
+	idRenderMatrix		unprojectionToWorldRenderMatrix;
+
 	float				projectionMatrix[16];
 	idRenderMatrix		projectionRenderMatrix;	// tech5 version of projectionMatrix
 	viewEntity_t		worldSpace;

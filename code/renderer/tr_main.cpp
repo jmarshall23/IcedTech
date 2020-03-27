@@ -726,7 +726,6 @@ void R_AddSkySurfaces(void) {
 	}
 }
 
-
 /*
 ================
 R_RenderView
@@ -774,6 +773,8 @@ void R_RenderView( viewDef_t *parms ) {
 	}
 	// remove the Z-near to avoid portals from being near clipped
 	tr.viewDef->frustum[4][3] -= r_znear.GetFloat();
+
+	R_SetupUnprojection(tr.viewDef);
 
 
 	// identify all the visible portalAreas, and the entityDefs and

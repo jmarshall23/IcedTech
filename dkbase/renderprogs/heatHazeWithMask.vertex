@@ -52,7 +52,7 @@ struct VS_OUT {
 void main( VS_IN vertex, out VS_OUT result ) {
 
 	#include "skinning.inc"
-
+/*
 	// texture 0 takes the texture coordinates unmodified
 	result.texcoord0 = float4( vertex.texcoord.xy, 0, 0 );
 
@@ -81,4 +81,5 @@ void main( VS_IN vertex, out VS_OUT result ) {
 
 	const float4 deformMagnitude = rpUser1;
 	result.texcoord2 = x * deformMagnitude;
+*/
 }

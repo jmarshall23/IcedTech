@@ -258,6 +258,9 @@ struct rvmGameRender_t {
 	idRenderTexture			*forwardRenderPassResolvedRT;
 	idRenderTexture			*feedbackRenderPassRT[2];
 	const idMaterial		*noPostProcessMaterial;
+	const idMaterial		*ssaoMaterial;
+
+	idImage					*postProcessCurrentRender;
 
 	int						feedbackBufferId;
 };

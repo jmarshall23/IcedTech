@@ -35,12 +35,14 @@ void idGameLocal::InitGameRenderSystem(void) {
 
 		idImage *albedoImage = renderSystem->CreateImage("_forwardRenderAlbedo", &opts, TF_LINEAR);
 		idImage *emissiveImage = renderSystem->CreateImage("_forwardRenderEmissive", &opts, TF_LINEAR);
+		opts.format = FMT_RGBAF16;
+		idImage *normalImage = renderSystem->CreateImage("_forwardRenderNormal", &opts, TF_LINEAR);
 
 		opts.numMSAASamples = renderSystem->GetNumMSAASamples();
 		opts.format = FMT_DEPTH_STENCIL;
 		idImage *depthImage = renderSystem->CreateImage("_forwardRenderDepth", &opts, TF_LINEAR);
 
-		gameRender.forwardRenderPassRT = renderSystem->CreateRenderTexture(albedoImage, depthImage, emissiveImage);
+		gameRender.forwardRenderPassRT = renderSystem->CreateRenderTexture(albedoImage, depthImage, emissiveImage, normalImage);
 	}
 
 	{
@@ -56,10 +58,13 @@ void idGameLocal::InitGameRenderSystem(void) {
 
 		idImage *albedoImage = renderSystem->CreateImage("_forwardRenderResolvedAlbedo", &opts, TF_LINEAR);
 		idImage *emissiveImage = renderSystem->CreateImage("_forwardRenderResolvedEmissive", &opts, TF_LINEAR);
+		opts.format = FMT_RGBAF16;
+		idImage* normalImage = renderSystem->CreateImage("_forwardRenderResolvedNormal", &opts, TF_LINEAR);
+
 		opts.format = FMT_DEPTH;
 		idImage *depthImage = renderSystem->CreateImage("_forwardRenderResolvedDepth", &opts, TF_LINEAR);
 
-		gameRender.forwardRenderPassResolvedRT = renderSystem->CreateRenderTexture(albedoImage, depthImage, emissiveImage);
+		gameRender.forwardRenderPassResolvedRT = renderSystem->CreateRenderTexture(albedoImage, depthImage, emissiveImage, normalImage);
 	}
 
 	{
@@ -87,6 +92,21 @@ void idGameLocal::InitGameRenderSystem(void) {
 	gameRender.feedbackBufferId = 0;
 
 	gameRender.noPostProcessMaterial = declManager->FindMaterial("postprocess/nopostprocess", false);
+	gameRender.ssaoMaterial = declManager->FindMaterial("postprocess/ssao", false);
+
+	{
+		idImageOpts opts;
+		opts.format = FMT_RGBA8;
+		opts.colorFormat = CFM_DEFAULT;
+		opts.numLevels = 1;
+		opts.textureType = TT_2D;
+		opts.isPersistant = true;
+		opts.width = renderSystem->GetScreenWidth();
+		opts.height = renderSystem->GetScreenHeight();
+		opts.numMSAASamples = 0;
+
+		gameRender.postProcessCurrentRender = renderSystem->CreateImage("_postProcessCurrentRender", &opts, TF_LINEAR);
+	}
 }
 
 /*
@@ -98,6 +118,8 @@ void idGameLocal::ResizeRenderTextures(int width, int height) {
 	// Resize all of the different render textures.
 	renderSystem->ResizeRenderTexture(gameRender.forwardRenderPassRT, width, height);
 	renderSystem->ResizeRenderTexture(gameRender.forwardRenderPassResolvedRT, width, height);
+
+	renderSystem->ResizeImage(gameRender.postProcessCurrentRender, width, height);
 }
 
 /*
@@ -168,6 +190,9 @@ void idGameLocal::RenderScene(const renderView_t *view, idRenderWorld *renderWor
 	{
 		// Render to the back buffer.
 		renderSystem->DrawStretchPic(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f, 1.0f, 0.0f, gameRender.noPostProcessMaterial);
+
+		// Render SSAO.
+		renderSystem->DrawStretchPic(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f, 1.0f, 0.0f, gameRender.ssaoMaterial);
 
 		// Copy everything to _currentRender
 		//renderSystem->CaptureRenderToImage("_currentRender");

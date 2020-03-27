@@ -257,10 +257,10 @@ static const char * GLSLParmNames[] = {
 	"rpModelMatrixZ",
 	"rpModelMatrixW",
 
-	"rpProjectionMatrixX",
-	"rpProjectionMatrixY",
-	"rpProjectionMatrixZ",
-	"rpProjectionMatrixW",
+	"rpUnProjectionMatrixX",
+	"rpUnProjectionMatrixY",
+	"rpUnProjectionMatrixZ",
+	"rpUnProjectionMatrixW",
 
 	"rpModelViewMatrixX",
 	"rpModelViewMatrixY",

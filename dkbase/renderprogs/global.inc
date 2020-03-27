@@ -65,10 +65,10 @@ uniform float4 rpModelMatrixY			:	register(c26);
 uniform float4 rpModelMatrixZ			:	register(c27);
 uniform float4 rpModelMatrixW			:	register(c28);
 
-uniform float4 rpProjectionMatrixX		:	register(c29);
-uniform float4 rpProjectionMatrixY		:	register(c30);
-uniform float4 rpProjectionMatrixZ		:	register(c31);
-uniform float4 rpProjectionMatrixW		:	register(c32);
+uniform float4 rpUnProjectionMatrixX		:	register(c29);
+uniform float4 rpUnProjectionMatrixY		:	register(c30);
+uniform float4 rpUnProjectionMatrixZ		:	register(c31);
+uniform float4 rpUnProjectionMatrixW		:	register(c32);
 
 uniform float4 rpModelViewMatrixX		:	register(c33);
 uniform float4 rpModelViewMatrixY		:	register(c34);
@@ -275,6 +275,22 @@ float2 Rotate2D( float2 inTC, float2 cs ) {
 	finalTC.y = dot4( inTC, tc1 );
 	return finalTC;
 }
+
+// https://aras-p.info/texts/CompactNormalStorage.html
+half2 encodeNormal (half3 normal)
+{
+    return half2(normal.xy*0.5+0.5);
+}
+
+// https://aras-p.info/texts/CompactNormalStorage.html
+half3 decodeNormal (half2 enc)
+{
+    half3 n;
+    n.xy = enc*2-1;
+    n.z = sqrt(1-dot(n.xy, n.xy));
+    return n;
+}
+
 
 // better noise function available at https://github.com/ashima/webgl-noise
 float rand( float2 co ) {

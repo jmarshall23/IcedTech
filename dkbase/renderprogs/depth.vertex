@@ -34,21 +34,43 @@ If you have questions concerning this license or the applicable additional terms
 
 struct VS_IN {
 	float4 position : POSITION;
+	float2 texcoord : TEXCOORD0;
+	float4 normal : NORMAL;
 	float4 color : COLOR0;
 	float4 color2 : COLOR1;
 };
 
 struct VS_OUT {
-	float4 position : POSITION;
+	float4 position  : POSITION;
+	float4 texcoord0	: TEXCOORD0;
+	float4 texcoord1	: TEXCOORD1;
 };
 
 void main( VS_IN vertex, out VS_OUT result ) {
 #ifdef ID_GPU_SKIN
+	float4 vModelNormal = vertex.normal;
 	#include "skinning.inc"
+	
+	float3 vNormal;
+	vNormal.x = dot3( matX, vModelNormal );
+	vNormal.y = dot3( matY, vModelNormal );
+	vNormal.z = dot3( matZ, vModelNormal );
+	vNormal = normalize( vNormal );
 #else
 	float4 vertex_position = vertex.position;
+	float3 vNormal = vertex.normal.xyz;
 #endif
 
+	result.texcoord0.x = vertex.texcoord.x; //dot4( vertex.texcoord.xy, rpDiffuseMatrixS );
+	result.texcoord0.y = vertex.texcoord.y; //dot4( vertex.texcoord.xy, rpDiffuseMatrixT );
+	result.texcoord0.z = 0;
+	result.texcoord0.w = 0;
+	
+	result.texcoord1.x = dot3(vNormal.xyz, rpModelViewMatrixX );
+	result.texcoord1.y = dot3(vNormal.xyz, rpModelViewMatrixY );
+	result.texcoord1.z = dot3(vNormal.xyz, rpModelViewMatrixZ );	
+	result.texcoord1.w = 0;
+	
 	result.position.x = dot4( vertex_position, rpMVPmatrixX );
 	result.position.y = dot4( vertex_position, rpMVPmatrixY );
 	result.position.z = dot4( vertex_position, rpMVPmatrixZ );

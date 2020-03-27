@@ -32,6 +32,7 @@ textures/gothic_light/gothic_light2
 	diffusemap textures/gothic_light/gothic_light2.png
 	bumpmap textures/gothic_light/gothic_light2_normal.png
 	specularmap textures/gothic_light/gothic_light2_spec.png
+	emissivemap textures/gothic_light/gothic_light2_blend.png
 }
 textures/gothic_light/gothic_light2_blend
 {
@@ -54,19 +55,13 @@ textures/gothic_light/gothic_light3
 	bumpmap textures/gothic_light/gothic_light3_normal.png
 	specularmap textures/gothic_light/gothic_light3_spec.png
 }
-textures/gothic_light/ironcrosslt2.blend
-{
-	qer_editorimage textures/gothic_light/ironcrosslt2.blend.png
-	diffusemap textures/gothic_light/ironcrosslt2.blend.png
-	bumpmap textures/gothic_light/ironcrosslt2.blend_normal.png
-	specularmap textures/gothic_light/ironcrosslt2.blend_spec.png
-}
 textures/gothic_light/ironcrosslt2
 {
 	qer_editorimage textures/gothic_light/ironcrosslt2.png
 	diffusemap textures/gothic_light/ironcrosslt2.png
 	bumpmap textures/gothic_light/ironcrosslt2_normal.png
 	specularmap textures/gothic_light/ironcrosslt2_spec.png
+	emissivemap textures/gothic_light/ironcrosslt2_blend.png
 }
 textures/gothic_light/ironcrossltbkgrd
 {
@@ -95,4 +90,5 @@ textures/gothic_light/skulllight01
 	diffusemap textures/gothic_light/skulllight01.png
 	bumpmap textures/gothic_light/skulllight01_normal.png
 	specularmap textures/gothic_light/skulllight01_spec.png
+	emissivemap textures/gothic_light/skulllight01skulllight01_e.png
 }

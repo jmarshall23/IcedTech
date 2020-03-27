@@ -456,3 +456,53 @@ void R_SetupProjectionMatrix( viewDef_t *viewDef ) {
 	//	viewDef->projectionMatrix[1*4+3] = -viewDef->projectionMatrix[1*4+3];
 	//}
 }
+
+
+/*
+=================
+R_SetupUnprojection
+create a matrix with similar functionality like gluUnproject, project from window space to world space
+=================
+*/
+void R_SetupUnprojection(viewDef_t* viewDef)
+{
+	R_MatrixFullInverse(viewDef->projectionMatrix, viewDef->unprojectionToCameraMatrix);
+	idRenderMatrix::Transpose(*(idRenderMatrix*)viewDef->unprojectionToCameraMatrix, viewDef->unprojectionToCameraRenderMatrix);
+
+
+	R_MatrixMultiply(viewDef->worldSpace.modelViewMatrix, viewDef->projectionMatrix, viewDef->unprojectionToWorldMatrix);
+	R_MatrixFullInverse(viewDef->unprojectionToWorldMatrix, viewDef->unprojectionToWorldMatrix);
+
+	idRenderMatrix::Transpose(*(idRenderMatrix*)viewDef->unprojectionToWorldMatrix, viewDef->unprojectionToWorldRenderMatrix);
+}
+
+void R_MatrixFullInverse(const float a[16], float r[16])
+{
+	idMat4	am;
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			am[i][j] = a[j * 4 + i];
+		}
+	}
+
+	//	idVec4 test( 100, 100, 100, 1 );
+	//	idVec4	transformed, inverted;
+	//	transformed = test * am;
+
+	if (!am.InverseSelf())
+	{
+		common->Error("Invert failed");
+	}
+	//	inverted = transformed * am;
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			r[j * 4 + i] = am[i][j];
+		}
+	}
+}

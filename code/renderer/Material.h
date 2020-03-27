@@ -581,6 +581,10 @@ public:
 
 	//------------------------------------------------------------------
 
+	idImage*			GetEmissiveImage(void) const { return emissiveImage; }
+
+	//------------------------------------------------------------------
+
 						// gets an image for the editor to use
 	idImage *			GetEditorImage( void ) const;
 	int					GetImageWidth( void ) const;
@@ -767,6 +771,8 @@ private:
 
 	// This texture contains virtualPageOffsets.
 	idImage				*virtualPageOffsetsImage;
+
+	idImage*			emissiveImage;
 };
 
 typedef idList<const idMaterial *> idMatList;

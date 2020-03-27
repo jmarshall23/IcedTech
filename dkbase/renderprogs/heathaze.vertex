@@ -53,7 +53,7 @@ struct VS_OUT {
 void main( VS_IN vertex, out VS_OUT result ) {
 
 	#include "skinning.inc"
-
+/*
 	//texture 0 takes the texture coordinates and adds a scroll
 	const float4 textureScroll = rpUser0;
 	result.texcoord0 = float4( vertex.texcoord.xy, 0, 0 ) + textureScroll;
@@ -79,4 +79,5 @@ void main( VS_IN vertex, out VS_OUT result ) {
 
 	const float4 deformMagnitude = rpUser1;
 	result.texcoord1 = x * deformMagnitude;
+*/
 }

@@ -4,6 +4,7 @@ models/weapons/machinegun/machinegun
 	bumpmap			models/weapons/machinegun/machinegun_normal.tga
 	diffusemap		models/weapons/machinegun/machinegun_d.tga
 	specularmap		models/weapons/machinegun/machinegun_spec.tga
+	emissivemap		models/weapons/machinegun/machinegun_e.tga
 } 
 
 models/weapons/plasmagun/plasmagun_world/Heavy_plasmagun
@@ -12,6 +13,7 @@ models/weapons/plasmagun/plasmagun_world/Heavy_plasmagun
 	bumpmap			models/weapons/plasmagun/plasmagun_normal.tga
 	diffusemap		models/weapons/plasmagun/plasmagun.tga
 	specularmap		models/weapons/plasmagun/plasmagun_spec.tga
+	emissivemap		models/weapons/plasmagun/plasmagun_e.tga
 } 
 
 models/weapons/plasmagun/plasmagun
@@ -20,6 +22,7 @@ models/weapons/plasmagun/plasmagun
 	bumpmap			models/weapons/plasmagun/plasmagun_normal.tga
 	diffusemap		models/weapons/plasmagun/plasmagun.tga
 	specularmap		models/weapons/plasmagun/plasmagun_spec.tga
+	emissivemap		models/weapons/plasmagun/plasmagun_e.tga
 }
 
 models/weapons/plasmagun/plasmagun/laser_beam

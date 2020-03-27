@@ -61,4 +61,7 @@ void R_LocalPlaneToGlobal( const float modelMatrix[16], const idPlane &in, idPla
 void R_SetupViewMatrix( viewDef_t *viewDef );
 void R_SetupProjectionMatrix( viewDef_t *viewDef );
 
+void R_MatrixFullInverse(const float a[16], float r[16]);
+void R_SetupUnprojection(viewDef_t* viewDef);
+
 #endif /* !__GLMATRIX_H__ */

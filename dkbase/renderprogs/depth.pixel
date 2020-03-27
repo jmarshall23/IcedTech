@@ -29,10 +29,29 @@ If you have questions concerning this license or the applicable additional terms
 #include "global.inc"
 
 uniform sampler2D samp0 : register(s0);
-struct PS_OUT {
-	float4 color : COLOR;
+uniform sampler2D samp1 : register(s1); // Emissive
+
+struct PS_IN {
+	float4 position  : VPOS;
+	float4 texcoord0 : TEXCOORD0_centroid;
+	float4 texcoord1 : TEXCOORD1_centroid;
 };
 
-void main( out PS_OUT result ) {
+struct PS_OUT {
+	half4 color : COLOR;
+	half4 color1 : COLOR1; 
+	half4 color2 : COLOR2;
+};
+
+void main( PS_IN fragment, out PS_OUT result ) {
+	float2 st = fragment.texcoord0.xy;
+//#ifdef ID_GPU_SKIN
+	st.y = 1.0 - st.y;
+//#endif
+	float4 emissive = tex2D( samp1, st );
+	float2 normal = encodeNormal(fragment.texcoord1.xyz);
+
 	result.color = float4( 0.0, 0.0, 0.0, 1.0 );
+	result.color1 = float4(emissive.x, emissive.y, emissive.z, 1.0);
+	result.color2 = float4(normal.x, normal.y, 0.0, 1.0);
 }

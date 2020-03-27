@@ -6,3 +6,13 @@ postprocess/nopostprocess
 		fragmentMap 1 _forwardRenderResolvedEmissive
 	}
 }
+
+postprocess/ssao
+{
+	{
+		blend modulate
+		program ssao.vfp
+		fragmentMap 0 _forwardRenderResolvedNormal
+		fragmentMap 1 _forwardRenderResolvedDepth
+	}	
+}

@@ -89,9 +89,12 @@ void RB_T_FillDepthBuffer(const drawSurf_t* surf) {
 		color[3] = 1;
 	}
 
+	glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_NORMAL);
+
 	idDrawVert* ac = (idDrawVert*)vertexCache.Position(tri->ambientCache);
 	glVertexPointer(3, GL_FLOAT, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
 	glTexCoordPointer(2, GL_FLOAT, sizeof(idDrawVert), reinterpret_cast<void*>(&ac->st));
+	glVertexAttribPointerARB(PC_ATTRIB_INDEX_NORMAL, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->normal.ToFloatPtr());
 
 	bool drawSolid = false;
 
@@ -111,45 +114,45 @@ void RB_T_FillDepthBuffer(const drawSurf_t* surf) {
 		// if the only alpha tested stages are condition register omitted,
 		// draw a normal opaque surface
 		bool	didDraw = false;
-
+	
 		glEnable(GL_ALPHA_TEST);
 		// perforated surfaces may have multiple alpha tested stages
 		for (stage = 0; stage < shader->GetNumStages(); stage++) {
 			pStage = shader->GetStage(stage);
-
+	
 			if (!pStage->hasAlphaTest) {
 				continue;
 			}
-
+	
 			// check the stage enable condition
 			if (regs[pStage->conditionRegister] == 0) {
 				continue;
 			}
-
+	
 			// if we at least tried to draw an alpha tested stage,
 			// we won't draw the opaque surface
 			didDraw = true;
-
+	
 			// set the alpha modulate
 			color[3] = regs[pStage->color.registers[3]];
-
+	
 			// skip the entire stage if alpha would be black
 			if (color[3] <= 0) {
 				continue;
 			}
 			glColor4fv(color);
-
+	
 			glAlphaFunc(GL_GREATER, regs[pStage->alphaTestRegister]);
-
+	
 			// bind the texture
 			pStage->texture.image->Bind();
-
+	
 			// set texture matrix and texGens
 			RB_PrepareStageTexturing(pStage, surf, ac);
-
+	
 			// draw it
 			RB_DrawElementsWithCounters(tri);
-
+	
 			RB_FinishStageTexturing(pStage, surf, ac);
 		}
 		glDisable(GL_ALPHA_TEST);
@@ -163,6 +166,27 @@ void RB_T_FillDepthBuffer(const drawSurf_t* surf) {
 		RB_BindJointBuffer(skinning->jointBuffer, skinning->jointsInverted->ToFloatPtr(), skinning->numInvertedJoints, (void*)&ac->color, (void*)&ac->color2);
 	}
 
+	float modelViewMatrixTranspose[16];
+	R_MatrixTranspose(surf->space->modelViewMatrix, modelViewMatrixTranspose);
+	RB_SetVertexParms(RENDERPARM_MODELVIEWMATRIX_X, modelViewMatrixTranspose, 4);
+
+	//for (stage = 0; stage < shader->GetNumStages(); stage++) {
+	//
+	//}
+	//
+	//Draw_SetVertexParm(RENDERPARM_DIFFUSEMATRIX_S, din->diffuseMatrix[0].ToFloatPtr());
+	//Draw_SetVertexParm(RENDERPARM_DIFFUSEMATRIX_T, din->diffuseMatrix[1].ToFloatPtr());
+
+	idImage* emissiveImage = surf->material->GetEmissiveImage();
+	if(emissiveImage == NULL) {
+		emissiveImage = globalImages->blackImage;
+	}
+
+	GL_SelectTextureNoClient(1);
+	emissiveImage->Bind();
+
+	GL_SelectTextureNoClient(0);
+
 	// draw the entire surface solid
 	if (drawSolid) {
 		glColor4fv(color);
@@ -171,6 +195,11 @@ void RB_T_FillDepthBuffer(const drawSurf_t* surf) {
 		// draw it
 		RB_DrawElementsWithCounters(tri);
 	}
+
+	GL_SelectTextureNoClient(1);
+	globalImages->BindNull();
+
+	GL_SelectTextureNoClient(0);
 
 	if (surf->skinning.HasSkinning()) {
 		RB_UnBindJointBuffer();
@@ -186,6 +215,7 @@ void RB_T_FillDepthBuffer(const drawSurf_t* surf) {
 		GL_State(GLS_DEPTHFUNC_LESS);
 	}
 
+	glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_NORMAL);
 }
 
 /*
