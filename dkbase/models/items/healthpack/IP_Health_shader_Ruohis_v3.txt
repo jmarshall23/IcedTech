@@ -1,0 +1,15 @@
+Well nowhere as detailed as Sevens pack. I went with a more subtle effect. In light areas - not as noticeable - in dark its VERY noticeable.
+ 
+These are basically completely Ruohis' work. I just added the shaders and extras (normal, gloss, glow)
+ 
+The buttons on the Healthpack do alternate and glow. However due to the resolution of the video - it isn't noticable. The same goes for the the red bar beside the buttons and below the cross on the mega health. It's also animated with a pulsing light that scrolls across.
+
+ooppee quakeone.com
+
+***
+There is only bh10 modified by ooppee used in this pk3. 
+bh25 and bh100 were modified from Ruohis' textures.
+
+Enchanced some details, made animation like on original boxes for bh25 and bh100.
+
+Smith

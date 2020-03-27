@@ -5,7 +5,7 @@
 ***********************************************************************/
 
 export fred {
-	mesh models/weapons/shotgun/shotgun.mb -dest models/weapons/shotgun/viewshotgun
+	mesh models/weapons/supershotgun/shotgun.mb -dest models/weapons/supershotgun/viewshotgun
 }
 
 entityDef weapon_shotgun {
@@ -19,7 +19,7 @@ entityDef weapon_shotgun {
 
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"
-	"model"						"models/weapons/shotgun/shotgun_world.mdr"
+	"model"						"models/weapons/supershotgun/world_supershotgun.mdr"
 	"model_view" 				"viewmodel_shotgun"
 	"model_world" 				"worldmodel_shotgun"
 	"joint_attach"				"SHOTGUN_ATTACHER"
@@ -90,7 +90,7 @@ model worldmodel_shotgun {
 }
 
 model viewmodel_shotgun {
-	mesh						models/weapons/shotgun/viewshotgun.md5mesh
+	mesh						models/weapons/supershotgun/viewshotgun.md5mesh
 }
 
 entityDef	damage_shotgun {
