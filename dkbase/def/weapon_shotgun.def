@@ -17,6 +17,11 @@ entityDef weapon_shotgun {
 	
 	"modelindex"				"MODELINDEX_SHOTGUN"
 
+	"viewmodel_offsetX"			"2"
+	"viewmodel_offsetY"			"0"
+	"viewmodel_offsetZ"			"-10"
+	
+
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"
 	"model"						"models/weapons/supershotgun/world_supershotgun.mdr"

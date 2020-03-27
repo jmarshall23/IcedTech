@@ -16,6 +16,10 @@ entityDef weapon_rocketlauncher {
 	"editor_rotatable"			"1"
 	
 	"modelindex"				"MODELINDEX_ROCKETLAUNCHER"
+	
+	"viewmodel_offsetX"			"2"
+	"viewmodel_offsetY"			"-10"
+	"viewmodel_offsetZ"			"-10"
 
 	"spawnclass"				"idItem"
 	"size"						"32 32 32"

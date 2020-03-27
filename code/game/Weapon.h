@@ -194,6 +194,8 @@ public:
 
 public:
 	void					WeaponState(weaponStatus_t state, int blendFrames);
+
+	idVec3					GetCurrentGunOffset(void) { return currentGunOffset; }
 public: // old and deprecated
 	void					Event_FireSound(void);
 	void					Event_Idle(void) { idealState = WP_IDLE; }
@@ -301,6 +303,8 @@ private:
 
 	renderLight_t			worldMuzzleFlash;	// positioned on world weapon bone
 	int						worldMuzzleFlashHandle;
+
+	idVec3					currentGunOffset;
 
 	idVec3					flashColor;
 	int						muzzleFlashEnd;

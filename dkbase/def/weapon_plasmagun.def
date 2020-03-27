@@ -15,6 +15,10 @@ entityDef weapon_plasmagun {
 	"editor_usage"				"Plasma Gun"
 	"editor_rotatable"		"1"
 	
+	"viewmodel_offsetX"			"2"
+	"viewmodel_offsetY"			"-10"
+	"viewmodel_offsetZ"			"-10"
+	
 	"modelindex"				"MODELINDEX_PLASMAGUN"
 
 	"spawnclass"				"idItem"

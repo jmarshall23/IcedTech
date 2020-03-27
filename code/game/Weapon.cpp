@@ -792,6 +792,10 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 	hideTime			= SEC2MS( weaponDef->dict.GetFloat( "hide_time", "0.3" ) );
 	hideDistance		= weaponDef->dict.GetFloat( "hide_distance", "-15" );
 
+	currentGunOffset.x  = weaponDef->dict.GetInt("viewmodel_offsetX");
+	currentGunOffset.y  = weaponDef->dict.GetInt("viewmodel_offsetY");
+	currentGunOffset.z  = weaponDef->dict.GetInt("viewmodel_offsetZ");
+
 	idStr snd_fire_name = weaponDef->dict.GetString("snd_fire", "not_used");
 	snd_fire = (idSoundShader *)declManager->FindSound(snd_fire_name, false);
 
