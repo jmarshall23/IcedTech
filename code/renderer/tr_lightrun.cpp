@@ -205,9 +205,6 @@ void R_CreateEntityRefs( idRenderEntityLocal *def ) {
 	// bump the view count so we can tell if an
 	// area already has a reference
 	tr.viewCount++;
-
-	// push these points down the BSP tree into areas
-	def->world->PushVolumeIntoTree( def, NULL, 8, transformed );
 }
 
 
@@ -648,12 +645,12 @@ void R_CreateLightRefs( idRenderLightLocal *light ) {
 	// we can limit the area references to those visible through the portals from the light center.
 	// We can't do this in the normal case, because shadows are cast from back facing triangles, which
 	// may be in areas not directly visible to the light projection center.
-	if ( light->parms.prelightModel && r_useLightPortalFlow.GetBool() && light->lightShader->LightCastsShadows() ) {
-		light->world->FlowLightThroughPortals( light );
-	} else {
-		// push these points down the BSP tree into areas
-		light->world->PushVolumeIntoTree( NULL, light, tri->numVerts, points );
-	}
+	//if ( light->parms.prelightModel && r_useLightPortalFlow.GetBool() && light->lightShader->LightCastsShadows() ) {
+	//	light->world->FlowLightThroughPortals( light );
+	//} else {
+	//	// push these points down the BSP tree into areas
+	//	light->world->PushVolumeIntoTree( NULL, light, tri->numVerts, points );
+	//}
 }
 
 /*
@@ -711,44 +708,7 @@ encloses any portals, which may allow them to be fogged closed.
 ======================
 */
 void R_CreateLightDefFogPortals( idRenderLightLocal *ldef ) {
-	areaReference_t		*lref;
-	portalArea_t		*area;
-
-	ldef->foggedPortals = NULL;
-
-	if ( !ldef->lightShader->IsFogLight() ) {
-		return;
-	}
-
-	// some fog lights will explicitly disallow portal fogging
-	if ( ldef->lightShader->TestMaterialFlag( MF_NOPORTALFOG ) ) {
-		return;
-	}
-
-	for ( lref = ldef->references ; lref ; lref = lref->ownerNext ) {
-		// check all the models in this area
-		area = lref->area;
-
-		portal_t	*prt;
-		doublePortal_t	*dp;
-
-		for ( prt = area->portals ; prt ; prt = prt->next ) {
-			dp = prt->doublePortal;
-
-			// we only handle a single fog volume covering a portal
-			// this will never cause incorrect drawing, but it may
-			// fail to cull a portal 
-			if ( dp->fogLight ) {
-				continue;
-			}
-			
-			if ( WindingCompletelyInsideLight( prt->w, ldef ) ) {
-				dp->fogLight = ldef;
-				dp->nextFoggedPortal = ldef->foggedPortals;
-				ldef->foggedPortals = dp;
-			}
-		}
-	}
+	
 }
 
 /*
@@ -759,30 +719,10 @@ Frees all references and lit surfaces from the light
 ====================
 */
 void R_FreeLightDefDerivedData( idRenderLightLocal *ldef ) {
-	areaReference_t	*lref, *nextRef;
-
-	// rmove any portal fog references
-	for ( doublePortal_t *dp = ldef->foggedPortals ; dp ; dp = dp->nextFoggedPortal ) {
-		dp->fogLight = NULL;
-	}
-
 	// free all the interactions
 	while ( ldef->firstInteraction != NULL ) {
 		ldef->firstInteraction->UnlinkAndFree();
 	}
-
-	// free all the references to the light
-	for ( lref = ldef->references ; lref ; lref = nextRef ) {
-		nextRef = lref->ownerNext;
-
-		// unlink from the area
-		lref->areaNext->areaPrev = lref->areaPrev;
-		lref->areaPrev->areaNext = lref->areaNext;
-
-		// put it back on the free list for reuse
-		ldef->world->areaReferenceAllocator.Free( lref );
-	}
-	ldef->references = NULL;	
 }
 
 /*
@@ -795,7 +735,6 @@ Does not actually free the entityDef.
 */
 void R_FreeEntityDefDerivedData( idRenderEntityLocal *def, bool keepDecals, bool keepCachedDynamicModel ) {
 	int i;
-	areaReference_t	*ref, *next;
 
 	// demo playback needs to free the joints, while normal play
 	// leaves them in the control of the game
@@ -835,19 +774,6 @@ void R_FreeEntityDefDerivedData( idRenderEntityLocal *def, bool keepDecals, bool
 		delete def->cachedDynamicModel;
 		def->cachedDynamicModel = NULL;
 	}
-
-	// free the entityRefs from the areas
-	for ( ref = def->entityRefs ; ref ; ref = next ) {
-		next = ref->ownerNext;
-
-		// unlink from the area
-		ref->areaNext->areaPrev = ref->areaPrev;
-		ref->areaPrev->areaNext = ref->areaNext;
-
-		// put it back on the free list for reuse
-		def->world->areaReferenceAllocator.Free( ref );
-	}	
-	def->entityRefs = NULL;
 }
 
 /*
@@ -993,13 +919,7 @@ void R_ReCreateWorldReferences( void ) {
 			if ( !def ) {
 				continue;
 			}
-			// the world model entities are put specifically in a single
-			// area, instead of just pushing their bounds into the tree
-			if ( i < rw->numPortalAreas ) {
-				rw->AddEntityRefToArea( def, &rw->portalAreas[i] );
-			} else {
-				R_CreateEntityRefs( def );
-			}
+			R_CreateEntityRefs(def);
 		}
 
 		for ( i = 0 ; i < rw->lightDefs.Num() ; i++ ) {

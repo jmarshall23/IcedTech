@@ -551,138 +551,135 @@ Both shadow and light surfaces have been generated.  Either or both surfaces may
 =================
 */
 void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) {
-	areaReference_t		*eref;
-	areaReference_t		*lref;
 	idRenderEntityLocal		*edef;
-	portalArea_t	*area;
 	idInteraction	*inter;
 
-	for ( lref = ldef->references ; lref ; lref = lref->ownerNext ) {
-		area = lref->area;
+	for(int i = 0; i < entityDefs.Num(); i++) {
+		edef = entityDefs[i];
 
-		// check all the models in this area
-		for ( eref = area->entityRefs.areaNext ; eref != &area->entityRefs ; eref = eref->areaNext ) {
-			edef = eref->entity;
+		if (edef == NULL)
+			continue;
 
-			// if the entity doesn't have any light-interacting surfaces, we could skip this,
+		// if the entity doesn't have any light-interacting surfaces, we could skip this,
 			// but we don't want to instantiate dynamic models yet, so we can't check that on
 			// most things
 
 			// if the entity isn't viewed
-			if ( tr.viewDef && edef->viewCount != tr.viewCount ) {
-				// if the light doesn't cast shadows, skip
-				if ( !ldef->lightShader->LightCastsShadows() ) {
-					continue;
-				}
-				// if we are suppressing its shadow in this view, skip
-				if ( !r_skipSuppress.GetBool() ) {
-					if ( edef->parms.suppressShadowInViewID && edef->parms.suppressShadowInViewID == tr.viewDef->renderView.viewID ) {
-						continue;
-					}
-					if ( edef->parms.suppressShadowInLightID && edef->parms.suppressShadowInLightID == ldef->parms.lightId ) {
-						continue;
-					}
-				}
-			}
-
-			// some big outdoor meshes are flagged to not create any dynamic interactions
-			// when the level designer knows that nearby moving lights shouldn't actually hit them
-			if ( edef->parms.noDynamicInteractions && edef->world->generateAllInteractionsCalled ) {
+		if (tr.viewDef && edef->viewCount != tr.viewCount) {
+			// if the light doesn't cast shadows, skip
+			if (!ldef->lightShader->LightCastsShadows()) {
 				continue;
 			}
-
-			// if any of the edef's interaction match this light, we don't
-			// need to consider it. 
-			if ( r_useInteractionTable.GetBool() && this->interactionTable ) {
-				// allocating these tables may take several megs on big maps, but it saves 3% to 5% of
-				// the CPU time.  The table is updated at interaction::AllocAndLink() and interaction::UnlinkAndFree()
-				int index = ldef->index * this->interactionTableWidth + edef->index;
-				inter = this->interactionTable[ index ];
-				if ( inter ) {
-					// if this entity wasn't in view already, the scissor rect will be empty,
-					// so it will only be used for shadow casting
-					if ( !inter->IsEmpty() ) {
-						R_SetEntityDefViewEntity( edef );
-					}
+			// if we are suppressing its shadow in this view, skip
+			if (!r_skipSuppress.GetBool()) {
+				if (edef->parms.suppressShadowInViewID && edef->parms.suppressShadowInViewID == tr.viewDef->renderView.viewID) {
 					continue;
 				}
-			} else {
-				// scan the doubly linked lists, which may have several dozen entries
-
-				// we could check either model refs or light refs for matches, but it is
-				// assumed that there will be less lights in an area than models
-				// so the entity chains should be somewhat shorter (they tend to be fairly close).
-				for ( inter = edef->firstInteraction; inter != NULL; inter = inter->entityNext ) {
-					if ( inter->lightDef == ldef ) {
-						break;
-					}
-				}
-
-				// if we already have an interaction, we don't need to do anything
-				if ( inter != NULL ) {
-					// if this entity wasn't in view already, the scissor rect will be empty,
-					// so it will only be used for shadow casting
-					if ( !inter->IsEmpty() ) {
-						R_SetEntityDefViewEntity( edef );
-					}
+				if (edef->parms.suppressShadowInLightID && edef->parms.suppressShadowInLightID == ldef->parms.lightId) {
 					continue;
 				}
 			}
-
-			bool hasLightChannel = false;
-
-			// Check to see if this interaction has at least one channel from this light.
-			for (int i = 0; i < 32; i++) {
-				if (ldef->parms.HasLightChannel(i)) {
-					if (edef->parms.HasLightChannel(i) || (i == LIGHT_CHANNEL_WORLD && edef->parms.hModel->IsWorldMesh())) {
-						hasLightChannel = true;
-						break;
-					}
-				}
-			}
-
-			if(!hasLightChannel) {
-				continue;
-			}
-
-			//
-			// create a new interaction, but don't do any work other than bbox to frustum culling
-			//
-			idInteraction *inter = idInteraction::AllocAndLink( edef, ldef );
-
-			// do a check of the entity reference bounds against the light frustum,
-			// trying to avoid creating a viewEntity if it hasn't been already
-			float	modelMatrix[16];
-			float	*m;
-
-			if ( edef->viewCount == tr.viewCount ) {
-				m = edef->viewEntity->modelMatrix;
-			} else {
-				R_AxisToModelMatrix( edef->parms.axis, edef->parms.origin, modelMatrix );
-				m = modelMatrix;
-			}
-
-// jmarshall - let's just do a simple bounds check here.
-			//if ( R_CullLocalBox( edef->referenceBounds, m, 6, ldef->frustum ) ) {
-			//	inter->MakeEmpty();
-			//	continue;
-			//}
-
-
-			idBounds entityBounds = edef->referenceBounds + edef->parms.origin;
-			idBounds lightBounds = ldef->globalLightBounds;
-
-			if(!lightBounds.IntersectsBounds(entityBounds)) {
-				continue;
-			}
-// jmarshall end
-
-			// we will do a more precise per-surface check when we are checking the entity
-
-			// if this entity wasn't in view already, the scissor rect will be empty,
-			// so it will only be used for shadow casting
-			R_SetEntityDefViewEntity( edef );
 		}
+
+		// some big outdoor meshes are flagged to not create any dynamic interactions
+		// when the level designer knows that nearby moving lights shouldn't actually hit them
+		if (edef->parms.noDynamicInteractions && edef->world->generateAllInteractionsCalled) {
+			continue;
+		}
+
+		// if any of the edef's interaction match this light, we don't
+		// need to consider it. 
+		if (r_useInteractionTable.GetBool() && this->interactionTable) {
+			// allocating these tables may take several megs on big maps, but it saves 3% to 5% of
+			// the CPU time.  The table is updated at interaction::AllocAndLink() and interaction::UnlinkAndFree()
+			int index = ldef->index * this->interactionTableWidth + edef->index;
+			inter = this->interactionTable[index];
+			if (inter) {
+				// if this entity wasn't in view already, the scissor rect will be empty,
+				// so it will only be used for shadow casting
+				if (!inter->IsEmpty()) {
+					R_SetEntityDefViewEntity(edef);
+				}
+				continue;
+			}
+		}
+		else {
+			// scan the doubly linked lists, which may have several dozen entries
+
+			// we could check either model refs or light refs for matches, but it is
+			// assumed that there will be less lights in an area than models
+			// so the entity chains should be somewhat shorter (they tend to be fairly close).
+			for (inter = edef->firstInteraction; inter != NULL; inter = inter->entityNext) {
+				if (inter->lightDef == ldef) {
+					break;
+				}
+			}
+
+			// if we already have an interaction, we don't need to do anything
+			if (inter != NULL) {
+				// if this entity wasn't in view already, the scissor rect will be empty,
+				// so it will only be used for shadow casting
+				if (!inter->IsEmpty()) {
+					R_SetEntityDefViewEntity(edef);
+				}
+				continue;
+			}
+		}
+
+		bool hasLightChannel = false;
+
+		// Check to see if this interaction has at least one channel from this light.
+		for (int i = 0; i < 32; i++) {
+			if (ldef->parms.HasLightChannel(i)) {
+				if (edef->parms.HasLightChannel(i) || (i == LIGHT_CHANNEL_WORLD && edef->parms.hModel->IsWorldMesh())) {
+					hasLightChannel = true;
+					break;
+				}
+			}
+		}
+
+		if (!hasLightChannel) {
+			continue;
+		}
+
+		//
+		// create a new interaction, but don't do any work other than bbox to frustum culling
+		//
+		idInteraction* inter = idInteraction::AllocAndLink(edef, ldef);
+
+		// do a check of the entity reference bounds against the light frustum,
+		// trying to avoid creating a viewEntity if it hasn't been already
+		float	modelMatrix[16];
+		float* m;
+
+		if (edef->viewCount == tr.viewCount) {
+			m = edef->viewEntity->modelMatrix;
+		}
+		else {
+			R_AxisToModelMatrix(edef->parms.axis, edef->parms.origin, modelMatrix);
+			m = modelMatrix;
+		}
+
+		// jmarshall - let's just do a simple bounds check here.
+		//if ( R_CullLocalBox( edef->referenceBounds, m, 6, ldef->frustum ) ) {
+		//	inter->MakeEmpty();
+		//	continue;
+		//}
+
+
+		idBounds entityBounds = edef->referenceBounds + edef->parms.origin;
+		idBounds lightBounds = ldef->globalLightBounds;
+
+		if (!lightBounds.IntersectsBounds(entityBounds)) {
+			continue;
+		}
+		// jmarshall end
+
+		// we will do a more precise per-surface check when we are checking the entity
+
+		// if this entity wasn't in view already, the scissor rect will be empty,
+		// so it will only be used for shadow casting
+		R_SetEntityDefViewEntity(edef);
 	}
 }
 
@@ -919,8 +916,10 @@ void R_AddLightSurfaces( void ) {
 			// calculate the screen area covered by the light frustum
 			// which will be used to crop the stencil cull
 			idScreenRect scissorRect = R_CalcLightScissorRectangle( vLight );
-			// intersect with the portal crossing scissor rectangle
-			vLight->scissorRect.Intersect( scissorRect );
+// jmarshall - removed portals.			
+			//vLight->scissorRect.Intersect( scissorRect );
+			vLight->scissorRect = scissorRect;
+// jmarshall end
 
 			if ( r_showLightScissors.GetBool() ) {
 				R_ShowColoredScreenRect( vLight->scissorRect, light->index );
@@ -1408,7 +1407,7 @@ void R_AddModelSurfaces( void ) {
 			// calculate the screen area covered by the entity
 			idScreenRect scissorRect = R_CalcEntityScissorRectangle( vEntity );
 			// intersect with the portal crossing scissor rectangle
-			vEntity->scissorRect.Intersect( scissorRect );
+			vEntity->scissorRect = scissorRect; // .Intersect(scissorRect);
 
 			if ( r_showEntityScissors.GetBool() ) {
 				R_ShowColoredScreenRect( vEntity->scissorRect, vEntity->entityDef->index );

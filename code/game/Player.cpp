@@ -6327,18 +6327,20 @@ void idPlayer::Think( void ) {
 			headRenderEnt->customSkin = NULL;
 		}
 	}
-
-	if ( gameLocal.isMultiplayer || g_showPlayerShadow.GetBool() ) {
-		renderEntity.suppressShadowInViewID	= 0;
-		if ( headRenderEnt ) {
-			headRenderEnt->suppressShadowInViewID = 0;
-		}
-	} else {
-		renderEntity.suppressShadowInViewID	= entityNumber+1;
-		if ( headRenderEnt ) {
-			headRenderEnt->suppressShadowInViewID = entityNumber+1;
+// jmarshall
+	//if ( gameLocal.isMultiplayer || g_showPlayerShadow.GetBool() ) {
+	//	renderEntity.suppressShadowInViewID	= 0;
+	//	if ( headRenderEnt ) {
+	//		headRenderEnt->suppressShadowInViewID = 0;
+	//	}
+	//} else {
+	if (gameLocal.GetLocalPlayer() == this) {
+		renderEntity.suppressShadowInViewID = entityNumber + 1;
+		if (headRenderEnt) {
+			headRenderEnt->suppressShadowInViewID = entityNumber + 1;
 		}
 	}
+	//}
 	// never cast shadows from our first-person muzzle flashes
 	renderEntity.suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + entityNumber;
 	if ( headRenderEnt ) {

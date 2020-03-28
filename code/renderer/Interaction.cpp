@@ -483,8 +483,9 @@ idInteraction::CalcInteractionScissorRectangle
 ==================
 */
 idScreenRect idInteraction::CalcInteractionScissorRectangle( const idFrustum &viewFrustum ) {
-	idBounds		projectionBounds;
-	idScreenRect	portalRect;
+// jmarshall - interaction scissors fix me!
+	return lightDef->viewLight->scissorRect;
+/*
 	idScreenRect	scissorRect;
 
 	if ( r_useInteractionScissors.GetInteger() == 0 ) {
@@ -503,45 +504,11 @@ idScreenRect idInteraction::CalcInteractionScissorRectangle( const idFrustum &vi
 		return lightDef->viewLight->scissorRect;
 	}
 
-	// calculate scissors for the portals through which the interaction is visible
-	if ( r_useInteractionScissors.GetInteger() > 1 ) {
-		areaNumRef_t *area;
-
-		if ( frustumState == idInteraction::FRUSTUM_VALID ) {
-			// retrieve all the areas the interaction frustum touches
-			for ( areaReference_t *ref = entityDef->entityRefs; ref; ref = ref->ownerNext ) {
-				area = entityDef->world->areaNumRefAllocator.Alloc();
-				area->areaNum = ref->area->areaNum;
-				area->next = frustumAreas;
-				frustumAreas = area;
-			}
-			frustumAreas = tr.viewDef->renderWorld->FloodFrustumAreas( frustum, frustumAreas );
-			frustumState = idInteraction::FRUSTUM_VALIDAREAS;
-		}
-
-		portalRect.Clear();
-		for ( area = frustumAreas; area; area = area->next ) {
-			portalRect.Union( entityDef->world->GetAreaScreenRect( area->areaNum ) );
-		}
-		portalRect.Intersect( lightDef->viewLight->scissorRect );
-	} else {
-		portalRect = lightDef->viewLight->scissorRect;
-	}
-
-	// early out if the interaction is not visible through any portals
-	if ( portalRect.IsEmpty() ) {
-		return portalRect;
-	}
-
 	// calculate bounds of the interaction frustum projected into the view frustum
 	if ( lightDef->parms.pointLight ) {
 		viewFrustum.ClippedProjectionBounds( frustum, idBox( lightDef->parms.origin, lightDef->parms.lightRadius, lightDef->parms.axis ), projectionBounds );
 	} else {
 		viewFrustum.ClippedProjectionBounds( frustum, idBox( lightDef->frustumTris->bounds ), projectionBounds );
-	}
-
-	if ( projectionBounds.IsCleared() ) {
-		return portalRect;
 	}
 
 	// derive a scissor rectangle from the projection bounds
@@ -555,6 +522,8 @@ idScreenRect idInteraction::CalcInteractionScissorRectangle( const idFrustum &vi
 	}
 
 	return scissorRect;
+*/
+// jmarshall end
 }
 
 /*
@@ -688,7 +657,8 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 
 		surfaceInteraction_t *sint = &surfaces[c];
 
-		sint->shader = shader;		
+		sint->shader = shader;	
+		sint->scissorRect = vEntity->scissorRect;
 		sint->forceVirtualTextureHighQuality = entityDef->parms.forceVirtualTextureHighQuality;
 
 // jmarshall GPU skinning.
@@ -850,6 +820,15 @@ void idInteraction::AddActiveInteraction( void ) {
 	// get out before making the dynamic model if the shadow scissor rectangle is empty
 	if ( shadowScissor.IsEmpty() ) {
 		return;
+	}
+
+	if (!r_skipSuppress.GetBool()) {
+		if (vEntity->entityDef->parms.suppressShadowInViewID && vEntity->entityDef->parms.suppressShadowInViewID == tr.viewDef->renderView.viewID) {
+			return;
+		}
+		if (vEntity->entityDef->parms.suppressShadowInLightID && vEntity->entityDef->parms.suppressShadowInLightID == vLight->lightDef->parms.lightId) {
+			return;
+		}
 	}
 
 	// We will need the dynamic surface created to make interactions, even if the

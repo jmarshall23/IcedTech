@@ -52,13 +52,6 @@ void		idRenderWorldLocal::StartWritingDemo( idDemoFile *demo ) {
 
 	WriteLoadMap();
 
-	// write the door portal state
-	for ( i = 0 ; i < numInterAreaPortals ; i++ ) {
-		if ( doublePortals[i].blockingBits ) {
-			SetPortalState( i+1, doublePortals[i].blockingBits );
-		}
-	}
-
 	// clear the archive counter on all defs
 	for ( i = 0 ; i < lightDefs.Num() ; i++ ) {
 		if ( lightDefs[i] ) {

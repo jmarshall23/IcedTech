@@ -744,13 +744,13 @@ void RB_CreateDrawInteractions(const idInteraction *lightInter, const surfaceInt
 //	}
 
 	// change the scissor if needed
-//	if (r_useScissor.GetBool() && !backEnd.currentScissor.Equals(surf->scissorRect)) {
-//		backEnd.currentScissor = surf->scissorRect;
+	if (r_useScissor.GetBool() && !backEnd.currentScissor.Equals(surfInteraction->scissorRect)) {
+		backEnd.currentScissor = surfInteraction->scissorRect; //->scissorRect;
 		glScissor(backEnd.viewDef->viewport.x1 + backEnd.currentScissor.x1,
 			backEnd.viewDef->viewport.y1 + backEnd.currentScissor.y1,
 			backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
 			backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
-//	}
+	}
 
 	// hack depth range if needed
 	//if (surf->space->weaponDepthHack) {

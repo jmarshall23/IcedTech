@@ -186,7 +186,6 @@ set(src_engine
 	./renderer/RenderWorld_demo.cpp
 	./renderer/RenderWorld_load.cpp
 	./renderer/RenderWorld_local.h
-	./renderer/RenderWorld_portals.cpp
 	./renderer/simplex.h
 	./renderer/tr_backend.cpp
 	./renderer/tr_deform.cpp

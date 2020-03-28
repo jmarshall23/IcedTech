@@ -161,18 +161,6 @@ typedef struct {
 	// that has adjacent frustums doesn't need to
 } shadowFrustum_t;
 
-
-// areas have references to hold all the lights and entities in them
-typedef struct areaReference_s {
-	struct areaReference_s *areaNext;				// chain in the area
-	struct areaReference_s *areaPrev;
-	struct areaReference_s *ownerNext;				// chain on either the entityDef or lightDef
-	idRenderEntityLocal *	entity;					// only one of entity / light will be non-NULL
-	idRenderLightLocal *	light;					// only one of entity / light will be non-NULL
-	struct portalArea_s	*	area;					// so owners can find all the areas they are in
-} areaReference_t;
-
-
 // idRenderLight should become the new public interface replacing the qhandle_t to light defs in the idRenderWorld interface
 class idRenderLight {
 public:
@@ -260,7 +248,6 @@ public:
 	int						viewCount;				// if == tr.viewCount, the light is on the viewDef->viewLights list
 	struct viewLight_t*	viewLight;
 
-	areaReference_t *		references;				// each area the light is present in will have a lightRef
 	idInteraction *			firstInteraction;		// doubly linked list
 	idInteraction *			lastInteraction;
 
@@ -318,7 +305,6 @@ public:
 	idRenderModelDecal *	decals;					// chain of decals that have been projected on this model
 	idRenderModelOverlay *	overlay;				// blood overlays on animated models
 
-	areaReference_t *		entityRefs;				// chain of all references
 	idInteraction *			firstInteraction;		// doubly linked list
 	idInteraction *			lastInteraction;
 

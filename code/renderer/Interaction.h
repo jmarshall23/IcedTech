@@ -74,6 +74,8 @@ struct surfaceInteraction_t {
 	int						expCulled;			// only for the experimental shadow buffer renderer
 	bool					forceVirtualTextureHighQuality;
 	srfCullInfo_t			cullInfo;
+
+	idScreenRect			scissorRect;
 };
 
 /*

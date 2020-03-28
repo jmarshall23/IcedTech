@@ -645,6 +645,57 @@ void R_TransposeGLMatrix( const float in[16], float out[16] ) {
 }
 
 /*
+=================
+R_SetupViewFrustum
+
+Setup that culling frustum planes for the current view
+FIXME: derive from modelview matrix times projection matrix
+=================
+*/
+static void R_SetupViewFrustum(void) {
+	int		i;
+	float	xs, xc;
+	float	ang;
+
+	ang = DEG2RAD(tr.viewDef->renderView.fov_x) * 0.5f;
+	idMath::SinCos(ang, xs, xc);
+
+	tr.viewDef->frustum[0] = xs * tr.viewDef->renderView.viewaxis[0] + xc * tr.viewDef->renderView.viewaxis[1];
+	tr.viewDef->frustum[1] = xs * tr.viewDef->renderView.viewaxis[0] - xc * tr.viewDef->renderView.viewaxis[1];
+
+	ang = DEG2RAD(tr.viewDef->renderView.fov_y) * 0.5f;
+	idMath::SinCos(ang, xs, xc);
+
+	tr.viewDef->frustum[2] = xs * tr.viewDef->renderView.viewaxis[0] + xc * tr.viewDef->renderView.viewaxis[2];
+	tr.viewDef->frustum[3] = xs * tr.viewDef->renderView.viewaxis[0] - xc * tr.viewDef->renderView.viewaxis[2];
+
+	// plane four is the front clipping plane
+	tr.viewDef->frustum[4] = /* vec3_origin - */ tr.viewDef->renderView.viewaxis[0];
+
+	for (i = 0; i < 5; i++) {
+		// flip direction so positive side faces out (FIXME: globally unify this)
+		tr.viewDef->frustum[i] = -tr.viewDef->frustum[i].Normal();
+		tr.viewDef->frustum[i][3] = -(tr.viewDef->renderView.vieworg * tr.viewDef->frustum[i].Normal());
+	}
+
+	// eventually, plane five will be the rear clipping plane for fog
+
+	float dNear, dFar, dLeft, dUp;
+
+	dNear = r_znear.GetFloat();
+	if (tr.viewDef->renderView.cramZNear) {
+		dNear *= 0.25f;
+	}
+
+	dFar = MAX_WORLD_SIZE;
+	dLeft = dFar * tan(DEG2RAD(tr.viewDef->renderView.fov_x * 0.5f));
+	dUp = dFar * tan(DEG2RAD(tr.viewDef->renderView.fov_y * 0.5f));
+	tr.viewDef->viewFrustum.SetOrigin(tr.viewDef->renderView.vieworg);
+	tr.viewDef->viewFrustum.SetAxis(tr.viewDef->renderView.viewaxis);
+	tr.viewDef->viewFrustum.SetSize(dNear, dFar, dLeft, dUp);
+}
+
+/*
 ===================
 R_ConstrainViewFrustum
 ===================
@@ -776,10 +827,20 @@ void R_RenderView( viewDef_t *parms ) {
 
 	R_SetupUnprojection(tr.viewDef);
 
+	// jmarshall: for now just send all the viewEntitys and viewLights to the backend for rendering.
+	idRenderWorldLocal* renderWorld = static_cast<idRenderWorldLocal*>(parms->renderWorld);
+	for (int i = 0; i < renderWorld->lightDefs.Num(); i++) {
+		viewLight_t* vLight;
+		idRenderLightLocal* light = renderWorld->lightDefs[i];
 
-	// identify all the visible portalAreas, and the entityDefs and
-	// lightDefs that are in them and pass culling.
-	static_cast<idRenderWorldLocal *>(parms->renderWorld)->FindViewLightsAndEntities();
+		if (light == NULL)
+			continue;
+
+		vLight = R_SetLightDefViewLight(light);
+	}
+
+	// setup the view frustum.
+	R_SetupViewFrustum();
 
 	// constrain the view frustum to the view lights and entities
 	R_ConstrainViewFrustum();
@@ -797,7 +858,7 @@ void R_RenderView( viewDef_t *parms ) {
 	R_AddSkySurfaces();
 
 	// any viewLight that didn't have visible surfaces can have it's shadows removed
-	R_RemoveUnecessaryViewLights();
+	//R_RemoveUnecessaryViewLights();
 
 	// sort all the ambient surfaces for translucency ordering
 	R_SortDrawSurfs();

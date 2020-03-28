@@ -63,10 +63,6 @@ void R_ListRenderLightDefs_f( const idCmdArgs &args ) {
 
 		// count up the references
 		int	rCount = 0;
-		for ( areaReference_t *ref = ldef->references ; ref ; ref = ref->ownerNext ) {
-			rCount++;
-		}
-		totalRef += rCount;
 
 		common->Printf( "%4i: %3i intr %2i refs %s\n", i, iCount, rCount, ldef->lightShader->GetName());
 		active++;
@@ -107,10 +103,6 @@ void R_ListRenderEntityDefs_f( const idCmdArgs &args ) {
 
 		// count up the references
 		int	rCount = 0;
-		for ( areaReference_t *ref = mdef->entityRefs ; ref ; ref = ref->ownerNext ) {
-			rCount++;
-		}
-		totalRef += rCount;
 
 		common->Printf( "%4i: %3i intr %2i refs %s\n", i, iCount, rCount, mdef->parms.hModel->Name());
 		active++;
@@ -132,12 +124,6 @@ idRenderWorldLocal::idRenderWorldLocal() {
 
 	areaNodes = NULL;
 	numAreaNodes = 0;
-
-	portalAreas = NULL;
-	numPortalAreas = 0;
-
-	doublePortals = NULL;
-	numInterAreaPortals = 0;
 
 	interactionTable = 0;
 	interactionTableWidth = 0;
@@ -503,8 +489,6 @@ idRenderWorldLocal::ProjectDecalOntoWorld
 */
 void idRenderWorldLocal::ProjectDecalOntoWorld( const idFixedWinding &winding, const idVec3 &projectionOrigin, const bool parallel, const float fadeDepth, const idMaterial *material, const int startTime ) {
 	int i, areas[10], numAreas;
-	const areaReference_t *ref;
-	const portalArea_t *area;
 	const idRenderModel *model;
 	idRenderEntityLocal *def;
 	decalProjectionInfo_t info, localInfo;
@@ -515,44 +499,41 @@ void idRenderWorldLocal::ProjectDecalOntoWorld( const idFixedWinding &winding, c
 
 	// get the world areas touched by the projection volume
 	numAreas = BoundsInAreas( info.projectionBounds, areas, 10 );
+// jmarshall
+	for (i = 0; i < entityDefs.Num(); i++) {
+		def = entityDefs[i];
 
-	// check all areas for models
-	for ( i = 0; i < numAreas; i++ ) {
+		if (def == NULL)
+			continue;
 
-		area = &portalAreas[ areas[i] ];
-
-		// check all models in this area
-		for ( ref = area->entityRefs.areaNext; ref != &area->entityRefs; ref = ref->areaNext ) {
-			def = ref->entity;
-
-			// completely ignore any dynamic or callback models
-			model = def->parms.hModel;
-			if ( model == NULL || model->IsDynamicModel() != DM_STATIC || def->parms.callback ) {
-				continue;
-			}
-
-			if ( def->parms.customShader != NULL && !def->parms.customShader->AllowOverlays() ) {
-				continue;
-			}
-
-			idBounds bounds;
-			bounds.FromTransformedBounds( model->Bounds( &def->parms ), def->parms.origin, def->parms.axis );
-
-			// if the model bounds do not overlap with the projection bounds
-			if ( !info.projectionBounds.IntersectsBounds( bounds ) ) {
-				continue;
-			}
-
-			// transform the bounding planes, fade planes and texture axis into local space
-			idRenderModelDecal::GlobalProjectionInfoToLocal( localInfo, info, def->parms.origin, def->parms.axis );
-			localInfo.force = ( def->parms.customShader != NULL );
-
-			if ( !def->decals ) {
-				def->decals = idRenderModelDecal::Alloc();
-			}
-			def->decals->CreateDecal( model, localInfo );
+		// completely ignore any dynamic or callback models
+		model = def->parms.hModel;
+		if (model == NULL || model->IsDynamicModel() != DM_STATIC || def->parms.callback) {
+			continue;
 		}
+
+		if (def->parms.customShader != NULL && !def->parms.customShader->AllowOverlays()) {
+			continue;
+		}
+
+		idBounds bounds;
+		bounds.FromTransformedBounds(model->Bounds(&def->parms), def->parms.origin, def->parms.axis);
+
+		// if the model bounds do not overlap with the projection bounds
+		if (!info.projectionBounds.IntersectsBounds(bounds)) {
+			continue;
+		}
+
+		// transform the bounding planes, fade planes and texture axis into local space
+		idRenderModelDecal::GlobalProjectionInfoToLocal(localInfo, info, def->parms.origin, def->parms.axis);
+		localInfo.force = (def->parms.customShader != NULL);
+
+		if (!def->decals) {
+			def->decals = idRenderModelDecal::Alloc();
+		}
+		def->decals->CreateDecal(model, localInfo);
 	}
+// jmarshall end
 }
 
 /*
@@ -791,7 +772,7 @@ NumAreas
 ===================
 */
 int idRenderWorldLocal::NumAreas( void ) const {
-	return numPortalAreas;
+	return 1; // jmarshall: portal numareas.
 }
 
 /*
@@ -800,20 +781,7 @@ NumPortalsInArea
 ===================
 */
 int idRenderWorldLocal::NumPortalsInArea( int areaNum ) {
-	portalArea_t	*area;
-	int				count;
-	portal_t		*portal;
-
-	if ( areaNum >= numPortalAreas || areaNum < 0 ) {
-		common->Error( "idRenderWorld::NumPortalsInArea: bad areanum %i", areaNum );
-	}
-	area = &portalAreas[areaNum];
-
-	count = 0;
-	for ( portal = area->portals ; portal ; portal = portal->next ) {
-		count++;
-	}
-	return count;
+	return 0; // jmarshall: portals.
 }
 
 /*
@@ -822,33 +790,57 @@ GetPortal
 ===================
 */
 exitPortal_t idRenderWorldLocal::GetPortal( int areaNum, int portalNum ) {
-	portalArea_t	*area;
-	int				count;
-	portal_t		*portal;
 	exitPortal_t	ret;
 
-	if ( areaNum > numPortalAreas ) {
-		common->Error( "idRenderWorld::GetPortal: areaNum > numAreas" );
-	}
-	area = &portalAreas[areaNum];
-
-	count = 0;
-	for ( portal = area->portals ; portal ; portal = portal->next ) {
-		if ( count == portalNum ) {
-			ret.areas[0] = areaNum;
-			ret.areas[1] = portal->intoArea;
-			ret.w = portal->w;
-			ret.blockingBits = portal->doublePortal->blockingBits;
-			ret.portalHandle = portal->doublePortal - doublePortals + 1;
-			return ret;
-		}
-		count++;
-	}
-
-	common->Error( "idRenderWorld::GetPortal: portalNum > numPortals" );
+	// jmarshall: portals. 
 
 	memset( &ret, 0, sizeof( ret ) );
 	return ret;
+}
+
+/*
+===================
+AreasAreConnected
+===================
+*/
+bool idRenderWorldLocal::AreasAreConnected(int areaNum1, int areaNum2, portalConnection_t connection) {
+	return false; // jmarshall: portals.
+}
+
+/*
+===================
+NumPortals
+===================
+*/
+int	idRenderWorldLocal::NumPortals(void) const { 
+	return 0; // jmarshall: portals.
+}
+
+/*
+===================
+FindPortal
+===================
+*/
+qhandle_t idRenderWorldLocal::FindPortal(const idBounds& b) const { 
+	return -1; // jmarshall: portals.
+}
+
+/*
+===================
+SetPortalState
+===================
+*/
+void idRenderWorldLocal::SetPortalState(qhandle_t portal, int blockingBits) { 
+	// jmarshall: portals.
+}
+
+/*
+===================
+GetPortalState
+===================
+*/
+int	idRenderWorldLocal::GetPortalState(qhandle_t portal) { 
+	return 0; // jmarshall: portals.
 }
 
 /*
@@ -860,34 +852,7 @@ it will return 0 <= value < tr.world->numPortalAreas
 ===============
 */
 int idRenderWorldLocal::PointInArea( const idVec3 &point ) const {
-	areaNode_t	*node;
-	int			nodeNum;
-	float		d;
-	
-	node = areaNodes;
-	if ( !node ) {
-		return -1;
-	}
-	while( 1 ) {
-		d = point * node->plane.Normal() + node->plane[3];
-		if (d > 0) {
-			nodeNum = node->children[0];
-		} else {
-			nodeNum = node->children[1];
-		}
-		if ( nodeNum == 0 ) {
-			return -1;		// in solid
-		}
-		if ( nodeNum < 0 ) {
-			nodeNum = -1 - nodeNum;
-			if ( nodeNum >= numPortalAreas ) {
-				common->Error( "idRenderWorld::PointInArea: area out of range" );
-			}
-			return nodeNum;
-		}
-		node = areaNodes + nodeNum;
-	}
-	
+	// jmarshall: areas.
 	return -1;
 }
 
@@ -1155,13 +1120,11 @@ const char* playerMaterialExcludeList[] = {
 };
 
 bool idRenderWorldLocal::Trace( modelTrace_t &trace, const idVec3 &start, const idVec3 &end, const float radius, bool skipDynamic, bool skipPlayer /*_D3XP*/ ) const {
-	areaReference_t * ref;
 	idRenderEntityLocal *def;
-	portalArea_t * area;
 	idRenderModel * model;
 	srfTriangles_t * tri;
 	localTrace_t localTrace;
-	int areas[128], numAreas, i, j, numSurfaces;
+	int i, j, numSurfaces;
 	idBounds traceBounds, bounds;
 	float modelMatrix[16];
 	idVec3 localStart, localEnd;
@@ -1175,125 +1138,116 @@ bool idRenderWorldLocal::Trace( modelTrace_t &trace, const idVec3 &start, const 
 	traceBounds.AddPoint( start );
 	traceBounds.AddPoint( end );
 
-	// get the world areas the trace is in
-	numAreas = BoundsInAreas( traceBounds, areas, 128 );
-
 	numSurfaces = 0;
 
-	// check all areas for models
-	for ( i = 0; i < numAreas; i++ ) {
+	for (i = 0; i < entityDefs.Num(); i++) {
+		def = entityDefs[i];
 
-		area = &portalAreas[ areas[i] ];
+		model = def->parms.hModel;
+		if (!model) {
+			continue;
+		}
 
-		// check all models in this area
-		for ( ref = area->entityRefs.areaNext; ref != &area->entityRefs; ref = ref->areaNext ) {
-			def = ref->entity;
-
-			model = def->parms.hModel;
-			if ( !model ) {
+		if (model->IsDynamicModel() != DM_STATIC) {
+			if (skipDynamic) {
 				continue;
 			}
-
-			if ( model->IsDynamicModel() != DM_STATIC ) {
-				if ( skipDynamic ) {
-					continue;
-				}
 
 #if 1	/* _D3XP addition. could use a cleaner approach */
-				if ( skipPlayer ) {
-					idStr name = model->Name();
-					const char *exclude;
-					int k;
+			if (skipPlayer) {
+				idStr name = model->Name();
+				const char* exclude;
+				int k;
 
-					for ( k = 0; playerModelExcludeList[k]; k++ ) {
-						exclude = playerModelExcludeList[k];
-						if ( name == exclude ) {
-							break;
-						}
-					}
-
-					if ( playerModelExcludeList[k] ) {
-						continue;
+				for (k = 0; playerModelExcludeList[k]; k++) {
+					exclude = playerModelExcludeList[k];
+					if (name == exclude) {
+						break;
 					}
 				}
-#endif
 
-				model = R_EntityDefDynamicModel( def );
-				if ( !model ) {
-					continue;	// can happen with particle systems, which don't instantiate without a valid view
+				if (playerModelExcludeList[k]) {
+					continue;
 				}
 			}
+#endif
 
-			bounds.FromTransformedBounds( model->Bounds( &def->parms ), def->parms.origin, def->parms.axis );
+			model = R_EntityDefDynamicModel(def);
+			if (!model) {
+				continue;	// can happen with particle systems, which don't instantiate without a valid view
+			}
+		}
 
-			// if the model bounds do not overlap with the trace bounds
-			if ( !traceBounds.IntersectsBounds( bounds ) || !bounds.LineIntersection( start, trace.point ) ) {
+		bounds.FromTransformedBounds(model->Bounds(&def->parms), def->parms.origin, def->parms.axis);
+
+		// if the model bounds do not overlap with the trace bounds
+		if (!traceBounds.IntersectsBounds(bounds) || !bounds.LineIntersection(start, trace.point)) {
+			continue;
+		}
+
+		// check all model surfaces
+		for (j = 0; j < model->NumSurfaces(); j++) {
+			const modelSurface_t* surf = model->Surface(j);
+
+			shader = R_RemapShaderBySkin(surf->shader, def->parms.customSkin, def->parms.customShader);
+
+			// if no geometry or no shader
+			if (!surf->geometry || !shader) {
 				continue;
 			}
 
-			// check all model surfaces
-			for ( j = 0; j < model->NumSurfaces(); j++ ) {
-				const modelSurface_t *surf = model->Surface( j );
+#if 1 /* _D3XP addition. could use a cleaner approach */
+			if (skipPlayer) {
+				idStr name = shader->GetName();
+				const char* exclude;
+				int k;
 
-				shader = R_RemapShaderBySkin( surf->shader, def->parms.customSkin, def->parms.customShader );
+				for (k = 0; playerMaterialExcludeList[k]; k++) {
+					exclude = playerMaterialExcludeList[k];
+					if (name == exclude) {
+						break;
+					}
+				}
 
-				// if no geometry or no shader
-				if ( !surf->geometry || !shader ) {
+				if (playerMaterialExcludeList[k]) {
 					continue;
 				}
-
-#if 1 /* _D3XP addition. could use a cleaner approach */
-				if ( skipPlayer ) {
-					idStr name = shader->GetName();
-					const char *exclude;
-					int k;
-
-					for ( k = 0; playerMaterialExcludeList[k]; k++ ) {
-						exclude = playerMaterialExcludeList[k];
-						if ( name == exclude ) {
-							break;
-						}
-					}
-
-					if ( playerMaterialExcludeList[k] ) {
-						continue;
-					}
-				}
+			}
 #endif
 
-				tri = surf->geometry;
+			tri = surf->geometry;
 
-				bounds.FromTransformedBounds( tri->bounds, def->parms.origin, def->parms.axis );
+			bounds.FromTransformedBounds(tri->bounds, def->parms.origin, def->parms.axis);
 
-				// if triangle bounds do not overlap with the trace bounds
-				if ( !traceBounds.IntersectsBounds( bounds ) || !bounds.LineIntersection( start, trace.point ) ) {
-					continue;
-				}
+			// if triangle bounds do not overlap with the trace bounds
+			if (!traceBounds.IntersectsBounds(bounds) || !bounds.LineIntersection(start, trace.point)) {
+				continue;
+			}
 
-				numSurfaces++;
+			numSurfaces++;
 
-				// transform the points into local space
-				R_AxisToModelMatrix( def->parms.axis, def->parms.origin, modelMatrix );
-				R_GlobalPointToLocal( modelMatrix, start, localStart );
-				R_GlobalPointToLocal( modelMatrix, end, localEnd );
+			// transform the points into local space
+			R_AxisToModelMatrix(def->parms.axis, def->parms.origin, modelMatrix);
+			R_GlobalPointToLocal(modelMatrix, start, localStart);
+			R_GlobalPointToLocal(modelMatrix, end, localEnd);
 
-				localTrace = R_LocalTrace( localStart, localEnd, radius, surf->geometry );
+			localTrace = R_LocalTrace(localStart, localEnd, radius, surf->geometry);
 
-				if ( localTrace.fraction < trace.fraction ) {
-					trace.fraction = localTrace.fraction;
-					R_LocalPointToGlobal( modelMatrix, localTrace.point, trace.point );
-					trace.normal = localTrace.normal * def->parms.axis;
-					trace.material = shader;
-					trace.entity = &def->parms;
-					trace.jointNumber = model->NearestJoint( j, localTrace.indexes[0], localTrace.indexes[1], localTrace.indexes[2] );
+			if (localTrace.fraction < trace.fraction) {
+				trace.fraction = localTrace.fraction;
+				R_LocalPointToGlobal(modelMatrix, localTrace.point, trace.point);
+				trace.normal = localTrace.normal * def->parms.axis;
+				trace.material = shader;
+				trace.entity = &def->parms;
+				trace.jointNumber = model->NearestJoint(j, localTrace.indexes[0], localTrace.indexes[1], localTrace.indexes[2]);
 
-					traceBounds.Clear();
-					traceBounds.AddPoint( start );
-					traceBounds.AddPoint( start + trace.fraction * (end - start) );
-				}
+				traceBounds.Clear();
+				traceBounds.AddPoint(start);
+				traceBounds.AddPoint(start + trace.fraction * (end - start));
 			}
 		}
 	}
+
 	return ( trace.fraction < 1.0f );
 }
 
@@ -1374,63 +1328,6 @@ CREATE MODEL REFS
 
 =================================================================================
 */
-
-/*
-=================
-AddEntityRefToArea
-
-This is called by R_PushVolumeIntoTree and also directly
-for the world model references that are precalculated.
-=================
-*/
-void idRenderWorldLocal::AddEntityRefToArea( idRenderEntityLocal *def, portalArea_t *area ) {
-	areaReference_t	*ref;
-
-	if ( !def ) {
-		common->Error( "idRenderWorldLocal::AddEntityRefToArea: NULL def" );
-	}
-
-	ref = areaReferenceAllocator.Alloc();
-
-	tr.pc.c_entityReferences++;
-
-	ref->entity = def;
-
-	// link to entityDef
-	ref->ownerNext = def->entityRefs;
-	def->entityRefs = ref;
-
-	// link to end of area list
-	ref->area = area;
-	ref->areaNext = &area->entityRefs;
-	ref->areaPrev = area->entityRefs.areaPrev;
-	ref->areaNext->areaPrev = ref;
-	ref->areaPrev->areaNext = ref;
-}
-
-/*
-===================
-AddLightRefToArea
-
-===================
-*/
-void idRenderWorldLocal::AddLightRefToArea( idRenderLightLocal *light, portalArea_t *area ) {
-	areaReference_t	*lref;
-
-	// add a lightref to this area
-	lref = areaReferenceAllocator.Alloc();
-	lref->light = light;
-	lref->area = area;
-	lref->ownerNext = light->references;
-	light->references = lref;
-	tr.pc.c_lightReferences++;
-
-	// doubly linked list so we can free them easily later
-	area->lightRefs.areaNext->areaPrev = lref;
-	lref->areaNext = area->lightRefs.areaNext;
-	lref->areaPrev = &area->lightRefs;
-	area->lightRefs.areaNext = lref;
-}
 
 /*
 ===================
@@ -1527,196 +1424,6 @@ void idRenderWorldLocal::FreeInteractions() {
 			def->firstInteraction->UnlinkAndFree();
 		}
 	}
-}
-
-/*
-==================
-PushVolumeIntoTree
-
-Used for both light volumes and model volumes.
-
-This does not clip the points by the planes, so some slop
-occurs.
-
-tr.viewCount should be bumped before calling, allowing it
-to prevent double checking areas.
-
-We might alternatively choose to do this with an area flow.
-==================
-*/
-void idRenderWorldLocal::PushVolumeIntoTree_r( idRenderEntityLocal *def, idRenderLightLocal *light, const idSphere *sphere, int numPoints, const idVec3 (*points), 
-								 int nodeNum ) {
-	int			i;
-	areaNode_t	*node;
-	bool	front, back;
-
-	if ( nodeNum < 0 ) {
-		portalArea_t	*area;
-		int		areaNum = -1 - nodeNum;
-
-		area = &portalAreas[ areaNum ];
-		if ( area->viewCount == tr.viewCount ) {
-			return;	// already added a reference here
-		}
-		area->viewCount = tr.viewCount;
-
-		if ( def ) {
-			AddEntityRefToArea( def, area );
-		}
-		if ( light ) {
-			AddLightRefToArea( light, area );
-		}
-
-		return;
-	}
-
-	node = areaNodes + nodeNum;
-
-	// if we know that all possible children nodes only touch an area
-	// we have already marked, we can early out
-	if ( r_useNodeCommonChildren.GetBool() &&
-		node->commonChildrenArea != CHILDREN_HAVE_MULTIPLE_AREAS ) {
-		// note that we do NOT try to set a reference in this area
-		// yet, because the test volume may yet wind up being in the
-		// solid part, which would cause bounds slightly poked into
-		// a wall to show up in the next room
-		if ( portalAreas[ node->commonChildrenArea ].viewCount == tr.viewCount ) {
-			return;
-		}
-	}
-
-	// if the bounding sphere is completely on one side, don't
-	// bother checking the individual points
-	float sd = node->plane.Distance( sphere->GetOrigin() );
-	if ( sd >= sphere->GetRadius() ) {
-		nodeNum = node->children[0];
-		if ( nodeNum ) {	// 0 = solid
-			PushVolumeIntoTree_r( def, light, sphere, numPoints, points, nodeNum );
-		}
-		return;
-	}
-	if ( sd <= -sphere->GetRadius() ) {
-		nodeNum = node->children[1];
-		if ( nodeNum ) {	// 0 = solid
-			PushVolumeIntoTree_r( def, light, sphere, numPoints, points, nodeNum );
-		}
-		return;
-	}
-
-	// exact check all the points against the node plane
-	front = back = false;
-#ifdef MACOS_X	//loop unrolling & pre-fetching for performance
-	const idVec3 norm = node->plane.Normal();
-	const float plane3 = node->plane[3];
-	float D0, D1, D2, D3;
-
-	for ( i = 0 ; i < numPoints - 4; i+=4 ) {
-		D0 = points[i+0] * norm + plane3;
-		D1 = points[i+1] * norm + plane3;
-		if ( !front && D0 >= 0.0f ) {
-		    front = true;
-		} else if ( !back && D0 <= 0.0f ) {
-		    back = true;
-		}
-		D2 = points[i+1] * norm + plane3;
-		if ( !front && D1 >= 0.0f ) {
-		    front = true;
-		} else if ( !back && D1 <= 0.0f ) {
-		    back = true;
-		}
-		D3 = points[i+1] * norm + plane3;
-		if ( !front && D2 >= 0.0f ) {
-		    front = true;
-		} else if ( !back && D2 <= 0.0f ) {
-		    back = true;
-		}
-		
-		if ( !front && D3 >= 0.0f ) {
-		    front = true;
-		} else if ( !back && D3 <= 0.0f ) {
-		    back = true;
-		}
-		if ( back && front ) {
-		    break;
-		}
-	}
-	if(!(back && front)) {
-		for (; i < numPoints ; i++ ) {
-			float d;
-			d = points[i] * node->plane.Normal() + node->plane[3];
-			if ( d >= 0.0f ) {
-				front = true;
-			} else if ( d <= 0.0f ) {
-				back = true;
-			}
-			if ( back && front ) {
-				break;
-			}
-		}	
-	}
-#else
-	for ( i = 0 ; i < numPoints ; i++ ) {
-		float d;
-
-		d = points[i] * node->plane.Normal() + node->plane[3];
-		if ( d >= 0.0f ) {
-		    front = true;
-		} else if ( d <= 0.0f ) {
-		    back = true;
-		}
-		if ( back && front ) {
-		    break;
-		}
-	}
-#endif
-	if ( front ) {
-		nodeNum = node->children[0];
-		if ( nodeNum ) {	// 0 = solid
-			PushVolumeIntoTree_r( def, light, sphere, numPoints, points, nodeNum );
-		}
-	}
-	if ( back ) {
-		nodeNum = node->children[1];
-		if ( nodeNum ) {	// 0 = solid
-			PushVolumeIntoTree_r( def, light, sphere, numPoints, points, nodeNum );
-		}
-	}
-}
-
-/*
-==============
-PushVolumeIntoTree
-==============
-*/
-void idRenderWorldLocal::PushVolumeIntoTree( idRenderEntityLocal *def, idRenderLightLocal *light, int numPoints, const idVec3 (*points) ) {
-	int i;
-	float radSquared, lr;
-	idVec3 mid, dir;
-
-	if ( areaNodes == NULL ) {
-		return;
-	}
-
-	// calculate a bounding sphere for the points
-	mid.Zero();
-	for ( i = 0; i < numPoints; i++ ) {
-		mid += points[i];
-	}
-	mid *= ( 1.0f / numPoints );
-
-	radSquared = 0;
-
-	for ( i = 0; i < numPoints; i++ ) {
-		dir = points[i] - mid;
-		lr = dir * dir;
-		if ( lr > radSquared ) {
-			radSquared = lr;
-		}
-	}
-
-	idSphere sphere( mid, sqrt( radSquared ) );
-
-	PushVolumeIntoTree_r( def, light, &sphere, numPoints, points, 0 );
 }
 
 //===================================================================
@@ -2166,7 +1873,7 @@ idRenderWorldLocal::ConnectGeometryReflectionProbes
 ===============
 */
 void idRenderWorldLocal::ConnectGeometryReflectionProbes(void) {
-	for (int i = 0; i < numPortalAreas; i++) {
+	for (int i = 0; i < numModelAreas; i++) {
 		idRenderModel* model = renderModelManager->FindModel(va("_area%i", i));
 
 		for (int d = 0; d < model->NumSurfaces(); d++)

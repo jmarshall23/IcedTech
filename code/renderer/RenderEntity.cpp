@@ -48,7 +48,6 @@ idRenderEntityLocal::idRenderEntityLocal() {
 	visibleCount			= 0;
 	decals					= NULL;
 	overlay					= NULL;
-	entityRefs				= NULL;
 	firstInteraction		= NULL;
 	lastInteraction			= NULL;
 	needsPortalSky			= false;
@@ -100,7 +99,6 @@ idRenderLightLocal::idRenderLightLocal() {
 	numShadowFrustums		= 0;
 	viewCount				= 0;
 	viewLight				= NULL;
-	references				= NULL;
 	foggedPortals			= NULL;
 	firstInteraction		= NULL;
 	lastInteraction			= NULL;

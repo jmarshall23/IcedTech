@@ -1473,21 +1473,21 @@ Debugging tool, won't work correctly with SMP or when mirrors are present
 =====================
 */
 void RB_ShowPortals( void ) {
-	if ( !r_showPortals.GetBool() ) {
-		return;
-	}
-
-	// all portals are expressed in world coordinates
-	RB_SimpleWorldSetup();
-
-	globalImages->BindNull();
-	glDisable( GL_DEPTH_TEST );
-
-	GL_State( GLS_DEFAULT );
-
-	((idRenderWorldLocal *)backEnd.viewDef->renderWorld)->ShowPortals();
-
-	glEnable( GL_DEPTH_TEST );
+	//if ( !r_showPortals.GetBool() ) {
+	//	return;
+	//}
+	//
+	//// all portals are expressed in world coordinates
+	//RB_SimpleWorldSetup();
+	//
+	//globalImages->BindNull();
+	//glDisable( GL_DEPTH_TEST );
+	//
+	//GL_State( GLS_DEFAULT );
+	//
+	//((idRenderWorldLocal *)backEnd.viewDef->renderWorld)->ShowPortals();
+	//
+	//glEnable( GL_DEPTH_TEST );
 }
 
 /*
