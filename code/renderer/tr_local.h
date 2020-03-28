@@ -250,6 +250,7 @@ public:
 
 
 	idPlane					frustum[6];				// in global space, positive side facing out, last two are front/back
+	idPlane					previousFrustum[6];		// in global space, positive side facing out, last two are front/back
 	idWinding *				frustumWindings[6];		// used for culling
 	srfTriangles_t *		frustumTris;			// triangulated frustumWindings[]
 
@@ -1308,6 +1309,8 @@ void R_RemoveUnecessaryViewLights( void );
 
 void R_FreeDerivedData( void );
 void R_ReCreateWorldReferences( void );
+
+void R_FreeLightDefFrustum(idRenderLightLocal* ldef);
 
 void R_CreateEntityRefs( idRenderEntityLocal *def );
 void R_CreateLightRefs( idRenderLightLocal *light );

@@ -236,6 +236,12 @@ public:
 	// dump any ambient caches on the model surfaces
 	virtual void				FreeVertexCache() = 0;
 
+	// returns if this mesh is part of the compiled world.
+	virtual bool				IsWorldMesh(void) const = 0;
+
+	// marks this mesh as a world mesh.
+	virtual void				MarkWorldMesh(void) = 0;
+
 	// returns the name of the model
 	virtual const char	*		Name() const = 0;
 

@@ -457,6 +457,20 @@ static float R_ComputeParallelLightProjectionMatrix(idRenderLightLocal * light, 
 
 /*
 =================
+R_CompareViewFrustum
+=================
+*/
+bool R_CompareViewFrustum(idPlane frustum[6], idPlane frustum2[6]) {
+	for(int i = 0; i < 6; i++) {
+		if(frustum[i] != frustum2[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/*
+=================
 R_DeriveLightData
 
 Fills everything in based on light->parms
@@ -543,9 +557,16 @@ void R_DeriveLightData( idRenderLightLocal *light ) {
 		light->globalLightOrigin = light->parms.origin + light->parms.axis * light->parms.lightCenter;
 	}
 
-	R_FreeLightDefFrustum( light );
+	if (light->frustumTris == NULL || R_CompareViewFrustum(light->previousFrustum, light->frustum))
+	{
+		R_FreeLightDefFrustum(light);
 
-	light->frustumTris = R_PolytopeSurface( 6, light->frustum, light->frustumWindings );
+		light->frustumTris = R_PolytopeSurface(6, light->frustum, light->frustumWindings);
+		
+		for (int i = 0; i < 6; i++) {
+			light->previousFrustum[i] = light->frustum[i];
+		}
+	}
 
 	idRenderMatrix localProject;
 	float zScale = 1.0f;
@@ -761,9 +782,7 @@ void R_FreeLightDefDerivedData( idRenderLightLocal *ldef ) {
 		// put it back on the free list for reuse
 		ldef->world->areaReferenceAllocator.Free( lref );
 	}
-	ldef->references = NULL;
-
-	R_FreeLightDefFrustum( ldef );
+	ldef->references = NULL;	
 }
 
 /*

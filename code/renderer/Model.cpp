@@ -382,6 +382,24 @@ const char *idRenderModelStatic::Name() const {
 
 /*
 ================
+idRenderModelStatic::IsWorldMesh
+================
+*/
+bool idRenderModelStatic::IsWorldMesh(void) const {
+	return isWorldMesh;
+}
+
+/*
+================
+idRenderModelStatic::MarkWorldMesh
+================
+*/
+void idRenderModelStatic::MarkWorldMesh(void) {
+	isWorldMesh = true;
+}
+
+/*
+================
 idRenderModelStatic::Timestamp
 ================
 */

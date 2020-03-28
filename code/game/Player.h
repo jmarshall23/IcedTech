@@ -519,6 +519,8 @@ public:
 
 	int						GetPrevWeapon(void) { return previousWeapon; }
 private:
+	void					CreateLightRigs(void);
+
 	idPlayer*				focusTarget;
 
 	jointHandle_t			hipJoint;
@@ -611,6 +613,9 @@ private:
 	bool					smoothedOriginUpdated;
 	idVec3					smoothedOrigin;
 	idAngles				smoothedAngles;
+
+	idLight*				playerLightRig1;
+	idLight*				playerLightRig2;
 
 	// mp
 	bool					ready;					// from userInfo

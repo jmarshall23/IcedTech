@@ -35,6 +35,18 @@ rvmBot::~rvmBot() {
 
 /*
 ==================
+rvmBot::SetEnemy
+==================
+*/
+void rvmBot::SetEnemy(idPlayer* player) {
+	if(bs.enemy == -1) {
+		bs.enemy = player->entityNumber;
+		bs.action = &botAIBattleRetreat;
+	}
+}
+
+/*
+==================
 rvmBot::BotUpdateInventory
 ==================
 */

@@ -111,6 +111,8 @@ idRenderLightLocal::~idRenderLightLocal() {
 		delete currentOcclusionQuery;
 		currentOcclusionQuery = NULL;
 	}
+
+	R_FreeLightDefFrustum(this);
 }
 
 void idRenderLightLocal::FreeRenderLight() {

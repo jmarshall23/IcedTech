@@ -45,6 +45,8 @@ If you have questions concerning this license or the applicable additional terms
 #define	PROC_FILE_ID				"mapWorldFile001"
 // jamrshall end
 
+#define LIGHT_CHANNEL_WORLD				0
+
 // shader parms
 const int MAX_GLOBAL_SHADER_PARMS	= 12;
 
@@ -83,18 +85,15 @@ typedef bool(*deferredEntityCallback_t)( renderEntity_t *, const renderView_t* )
 
 // jmarshall - added constructor here.
 struct renderEntity_t {
-	renderEntity_t()
-	{
-		hModel = nullptr;
-		joints = nullptr;
-		hasDynamicShadows = false;
-		skipEntityViewCulling = false;
-		forceVirtualTextureHighQuality = false;
-	}
+	renderEntity_t();
 
-	bool HasValidJoints() const { return joints != nullptr; }
+	bool HasValidJoints() const;
+	void SetLightChannel(int lightChannel, bool enabled);
+	bool HasLightChannel(int lightChannel);
 
 	idRenderModel *			hModel;				// this can only be null if callback is set
+
+	int						lightChannel;
 
 	int						entityNum;
 	int						bodyId;
@@ -175,43 +174,69 @@ struct renderEntity_t {
 	int						timeGroup;
 	int						xrayIndex;
 };
+
+/*
+=========================
+renderEntity_t::renderEntity_t
+=========================
+*/
+ID_INLINE renderEntity_t::renderEntity_t()
+{
+	lightChannel = 0;
+	SetLightChannel(0, true);
+	hModel = nullptr;
+	joints = nullptr;
+	hasDynamicShadows = false;
+	skipEntityViewCulling = false;
+	forceVirtualTextureHighQuality = false;
+}
+
+/*
+=========================
+renderEntity_t::SetLightChannel
+=========================
+*/
+ID_INLINE void renderEntity_t::SetLightChannel(int lightChannel, bool enabled) {
+	if(enabled) {
+		this->lightChannel |= 1 << lightChannel;
+	}
+	else {
+		this->lightChannel &= ~(1UL << lightChannel);
+	}
+}
+
+/*
+=========================
+renderEntity_t::HasLightChannel
+=========================
+*/
+ID_INLINE bool renderEntity_t::HasLightChannel(int lightChannel) {
+	return (!!((this->lightChannel) & (1ULL << (lightChannel))));
+}
+
+/*
+=========================
+renderEntity_t::HasValidJoints
+=========================
+*/
+ID_INLINE bool renderEntity_t::HasValidJoints() const { 
+	return joints != nullptr; 
+}
+
 // jmarshall end
 
 struct renderLight_t {
-	renderLight_t()
-	{
-		axis.Zero();
-		origin.Zero();
-		uniqueLightId = -1;
-		suppressLightInViewID = -1;
-		allowLightInViewID = -1;
-		noShadows = false;
-		noSpecular = false;
-		pointLight = false;
-		parallel = false;
-		lightRadius.Zero();
-		lightCenter.Zero();
-		ambientLight = false;
-		target.Zero();
-		right.Zero();
-		up.Zero();
-		start.Zero();
-		end.Zero();
-		prelightModel = NULL;
-		lightId = 0;
-		shader = NULL;
-		referenceSound = NULL;
-		dynamicShadows = false;
-		name = "";
+	renderLight_t();
 
-		for (int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++)
-			shaderParms[i] = 0;
-	}
+	void SetLightChannel(int lightChannel, bool enabled);
+	bool HasLightChannel(int lightChannel);
 
 	idStr					name;				// for debugging.
 
 	idMat3					axis;				// rotation vectors, must be unit length
 	idVec3					origin;
+
+	int						lightChannel;
 
 	int						uniqueLightId;		// light id that is unique to this light
 
@@ -261,6 +286,67 @@ struct renderLight_t {
 	float					shaderParms[MAX_ENTITY_SHADER_PARMS];		// can be used in any way by shader
 	idSoundEmitter *		referenceSound;		// for shader sound tables, allowing effects to vary with sounds
 };
+
+/*
+=========================
+renderLight_t::renderLight_t
+=========================
+*/
+ID_INLINE renderLight_t::renderLight_t()
+{
+	lightChannel = 0;
+	SetLightChannel(0, true);
+
+	axis.Zero();
+	origin.Zero();
+	uniqueLightId = -1;
+	suppressLightInViewID = -1;
+	allowLightInViewID = -1;
+	noShadows = false;
+	noSpecular = false;
+	pointLight = false;
+	parallel = false;
+	lightRadius.Zero();
+	lightCenter.Zero();
+	ambientLight = false;
+	target.Zero();
+	right.Zero();
+	up.Zero();
+	start.Zero();
+	end.Zero();
+	prelightModel = NULL;
+	lightId = 0;
+	shader = NULL;
+	referenceSound = NULL;
+	dynamicShadows = false;
+	name = "";
+
+	for (int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++)
+		shaderParms[i] = 0;
+}
+
+/*
+=========================
+renderLight_t::SetLightChannel
+=========================
+*/
+ID_INLINE void renderLight_t::SetLightChannel(int lightChannel, bool enabled) {
+	if (enabled) {
+		this->lightChannel |= 1 << lightChannel;
+	}
+	else {
+		this->lightChannel &= ~(1UL << lightChannel);
+	}
+}
+
+/*
+=========================
+renderLight_t::HasLightChannel
+=========================
+*/
+ID_INLINE bool renderLight_t::HasLightChannel(int lightChannel) {
+	return (!!((this->lightChannel) & (1ULL << (lightChannel))));
+}
 
 
 struct renderView_t {

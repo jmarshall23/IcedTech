@@ -44,6 +44,9 @@ If you have questions concerning this license or the applicable additional terms
 #define LAGO_MATERIAL	"textures/sfx/lagometer"
 #define LAGO_IMAGE		"textures/sfx/lagometer.tga"
 
+#define LIGHT_CHANNEL_LIGHTRIG_PLAYER   1
+#define LIGHT_CHANNEL_LIGHTRIG_ITEMS	2
+
 #define DEBRIS_MODEL_COUNT		3
 
 #define	MASK_SHOT		(CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE)
@@ -445,6 +448,8 @@ public:
 	void					UnRegisterBot(rvmBot* bot) { registeredBots.Remove(bot); }
 // jmarshall end
 
+	void					AlertBots(idPlayer *player, idVec3 alert_position);
+
 	bool					CheatsOk( bool requirePlayer = true );
 	void					SetSkill( int value );
 	gameState_t				GameState( void ) const;
@@ -550,6 +555,8 @@ public:
 public:
 	int						 nextDebrisSpawnTime;
 	idList<rvClientEntity*>  clientEntityThreadWork;
+
+	int						uniqueLightCount;
 private:
 	const static int		INITIAL_SPAWN_COUNT = 1;
 

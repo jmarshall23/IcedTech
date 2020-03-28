@@ -203,7 +203,7 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	half4 lightFalloff =	idtex2Dproj( samp1, fragment.texcoord2 );
 	half4 lightProj	=		idtex2Dproj( samp2, fragment.texcoord3 );
 	half4 YCoCG =			tex2D( samp3, albedoST);
-	half4 specTex =			tex2D( samp4, specST);
+	half4 specTex =			float4(0.5, 0.5, 1.0, 1.0);//tex2D( samp4, specST); // stupid hack to fix broken data.
 
 	half3 lightVector = normalize( fragment.texcoord0.xyz );
 	half3 diffuseMap = YCoCG.xyz; //ConvertYCoCgToRGB( YCoCG );
@@ -263,7 +263,7 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	float shadow = CalculateShadows(fragment.texcoord5.xyz, rpLightOrigin.xyz);
 
 #if 1
-	result.color.xyz = ( diffuseColor + pbr ) * lightColor * shadow; // * fragment.color.xyz;
+	result.color.xyz = ( diffuseColor + (pbr * (reflection.xyz * 10)) ) * lightColor * shadow; // * fragment.color.xyz;
 #else
 	result.color.xyz = float3(shadow, shadow, shadow);
 	//result.color.xyz = ( diffuseColor + pbr ) * lightColor * ShadowCubeDebugUVColor(fragment.texcoord5.xyz, rpLightOrigin.xyz);

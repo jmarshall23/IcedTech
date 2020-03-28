@@ -123,16 +123,7 @@ RB_LogComment
 ====================
 */
 void RB_LogComment( const char *comment, ... ) {
-   va_list marker;
-
-	if ( !tr.logFile ) {
-		return;
-	}
-
-	fprintf( tr.logFile, "// " );
-	va_start( marker, comment );
-	vfprintf( tr.logFile, comment, marker );
-	va_end( marker );
+  
 }
 
 

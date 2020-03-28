@@ -184,6 +184,7 @@ void idGameLocal::Clear( void ) {
 	firstFreeIndex = 0;
 	nextDebrisSpawnTime = 0;
 	num_entities = 0;
+	uniqueLightCount = 0;
 	spawnedEntities.Clear();
 	activeEntities.Clear();
 	numEntitiesToDeactivate = 0;
@@ -1153,6 +1154,8 @@ void idGameLocal::MapPopulate( void ) {
 	if ( isMultiplayer ) {
 		cvarSystem->SetCVarBool( "r_skipSpecular", false );
 	}
+
+	uniqueLightCount = 0;
 
 	// load the sky
 	LoadSky();
@@ -4555,4 +4558,30 @@ void idGameLocal::ClientEntityJob_t(rvmClientPhysicsJobParams_t* params) {
 		gameLocal.clientEntityThreadWork[i]->RunThreadedPhysics(params->clientThreadId);
 	}	
 }
+
+/*
+===================
+idGameLocal::AlertBots
+===================
+*/
+void idGameLocal::AlertBots(idPlayer* player, idVec3 alert_position) {
+	for(int i = 0; i < MAX_CLIENTS; i++) {
+		rvmBot* bot = NULL;
+
+		if (entities[i] == NULL)
+			continue;
+
+		bot = entities[i]->Cast<rvmBot>();
+		if (bot == NULL)
+			continue;
+
+		trace_t tr;
+		Trace(tr, alert_position, bot->GetRenderEntity()->origin, CONTENTS_SOLID, 0);
+
+		if(tr.fraction == 1.0f) {
+			bot->SetEnemy(player);
+		}
+	}
+}
+
 // jmarshall end

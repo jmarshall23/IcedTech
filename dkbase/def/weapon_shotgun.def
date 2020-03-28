@@ -18,7 +18,7 @@ entityDef weapon_shotgun {
 	"modelindex"				"MODELINDEX_SHOTGUN"
 
 	"viewmodel_offsetX"			"2"
-	"viewmodel_offsetY"			"0"
+	"viewmodel_offsetY"			"-4"
 	"viewmodel_offsetZ"			"-10"
 	
 

@@ -62,14 +62,7 @@ typedef struct {
 
 
 struct surfaceInteraction_t {
-	surfaceInteraction_t()
-	{
-		ambientTris = NULL;
-		shader = NULL;
-		expCulled = 0;
-		forceVirtualTextureHighQuality = false;
-
-	}
+	surfaceInteraction_t();
 
 	// GPU skinning
 	rvmSkeletalSurf_t		skinning;
@@ -83,6 +76,18 @@ struct surfaceInteraction_t {
 	srfCullInfo_t			cullInfo;
 };
 
+/*
+=========================
+surfaceInteraction_t::surfaceInteraction_t
+=========================
+*/
+ID_INLINE surfaceInteraction_t::surfaceInteraction_t()
+{
+	ambientTris = NULL;
+	shader = NULL;
+	expCulled = 0;
+	forceVirtualTextureHighQuality = false;	
+}
 
 typedef struct areaNumRef_s {
 	struct areaNumRef_s *	next;
@@ -98,6 +103,9 @@ public:
 	// this may be 0 if the light and entity do not actually intersect
 	// -1 = an untested interaction
 	int						numSurfaces;
+
+	// What light channels affect this interaction.
+	int						lightChannel;
 
 	// if there is a whole-entity optimized shadow hull, it will
 	// be present as a surfaceInteraction_t with a NULL ambientTris, but
@@ -120,6 +128,9 @@ public:
 	// over the world, we use a custom pool allocater to avoid memory allocation overhead
 	// and fragmentation
 	static idInteraction *	AllocAndLink( idRenderEntityLocal *edef, idRenderLightLocal *ldef );
+
+	// Returns true if the lighting channel is attached to this interaction.
+	bool					HasLightChannel(int lightChannel);
 
 	// unlinks from the entity and light, frees all surfaceInteractions,
 	// and puts it back on the free list

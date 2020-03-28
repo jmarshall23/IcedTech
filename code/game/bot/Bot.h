@@ -841,6 +841,7 @@ public:
 	virtual void			SpawnToPoint(const idVec3& spawn_origin, const idAngles& spawn_angles) override;
 	virtual	void			Damage(idEntity* inflictor, idEntity* attacker, const idVec3& dir, const char* damageDefName, const float damageScale, const int location) override;
 
+	void			SetEnemy(idPlayer* player);
 
 	void			BotInputFrame(void);
 	void			Bot_ResetUcmd(usercmd_t& ucmd);

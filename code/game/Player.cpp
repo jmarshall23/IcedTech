@@ -1406,6 +1406,42 @@ void idPlayer::Init( void ) {
 
 /*
 ==============
+idPlayer::CreateLightRigs
+==============
+*/
+void idPlayer::CreateLightRigs(void) {
+	idDict playerLightRigDef;
+
+	idEntity* entity = gameLocal.FindEntity(va("player_light_rig_%d_1", entityNumber));
+	if(entity) {
+		return;
+	}
+
+	playerLightRigDef.Set("classname", "light");
+	playerLightRigDef.Set("name", va("player_light_rig_%d_1", entityNumber));
+	playerLightRigDef.Set("origin", "0 0 0");
+	playerLightRigDef.Set("noshadows", "1");
+	playerLightRigDef.Set("nospecular", "0");
+	playerLightRigDef.Set("nodiffuse", "0");
+	playerLightRigDef.Set("falloff", "0");
+	playerLightRigDef.Set("ambient", "0");
+	playerLightRigDef.Set("litchannel", va("%d", LIGHT_CHANNEL_LIGHTRIG_PLAYER));
+	playerLightRigDef.Set("_color", "0.375 0.375 0.375");
+	playerLightRigDef.Set("light_radius", "200 200 200");
+
+	if (!gameLocal.SpawnEntityDef(playerLightRigDef, (idEntity**)&playerLightRig1, true))
+		gameLocal.Error("Failed to spawn weapon light rig!");
+
+	playerLightRigDef.Set("name", va("player_light_rig_%d_2", entityNumber));
+
+	if (!gameLocal.SpawnEntityDef(playerLightRigDef, (idEntity**)&playerLightRig2, true))
+		gameLocal.Error("Failed to spawn weapon light rig!");
+
+	renderEntity.SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_PLAYER, true);
+}
+
+/*
+==============
 idPlayer::Spawn
 
 Prepare any resources used by the player.
@@ -2260,6 +2296,8 @@ void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_a
 	}
 
 	privateCameraView = NULL;
+
+	CreateLightRigs();
 
 	BecomeActive( TH_THINK );
 
@@ -6127,6 +6165,16 @@ void idPlayer::Think( void ) {
 		return;
 	}
 
+	{
+		idVec3 forward = renderEntity.axis.ToAngles().ToForward();
+
+		idVec3 playerLightRigOffset(0, 0, 90);
+
+		playerLightRig1->SetOrigin((renderEntity.origin + playerLightRigOffset) + (forward * 25));
+		playerLightRig2->SetOrigin((renderEntity.origin + playerLightRigOffset) - (forward * 25));
+	}
+
+
 	// clear the ik before we do anything else so the skeleton doesn't get updated twice
 	walkIK.ClearJointMods();
 	
@@ -7010,10 +7058,11 @@ void idPlayer::CalculateViewWeaponPos( idVec3 &origin, idMat3 &axis ) {
 
 	// these cvars are just for hand tweaking before moving a value to the weapon def
 	idVec3	gunpos( g_gun_x.GetFloat(), g_gun_y.GetFloat(), g_gun_z.GetFloat() );
-
+// jmarshall
 	if(gunpos.Length() <= 0) {
 		gunpos = weapon->GetCurrentGunOffset();
 	}
+// jmarshall end
 
 // jmarshall
 //	if (weapon.GetEntity()->GetState() == WP_FIRE) {

@@ -646,10 +646,20 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 				m = modelMatrix;
 			}
 
-			if ( R_CullLocalBox( edef->referenceBounds, m, 6, ldef->frustum ) ) {
-				inter->MakeEmpty();
+// jmarshall - let's just do a simple bounds check here.
+			//if ( R_CullLocalBox( edef->referenceBounds, m, 6, ldef->frustum ) ) {
+			//	inter->MakeEmpty();
+			//	continue;
+			//}
+
+
+			idBounds entityBounds = edef->referenceBounds + edef->parms.origin;
+			idBounds lightBounds = ldef->globalLightBounds;
+
+			if(!lightBounds.IntersectsBounds(entityBounds)) {
 				continue;
 			}
+// jmarshall end
 
 			// we will do a more precise per-surface check when we are checking the entity
 

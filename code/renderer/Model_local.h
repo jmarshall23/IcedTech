@@ -62,6 +62,8 @@ public:
 	virtual void				FinishSurfaces();
 	virtual void				FreeVertexCache();
 	virtual bool				IsSkeletalMesh() const;
+	virtual bool				IsWorldMesh(void) const;
+	virtual void				MarkWorldMesh(void);
 	virtual const char *		Name() const;
 	virtual void				Print() const;
 	virtual void				List() const;
@@ -115,6 +117,8 @@ public:
 	idList<modelSurface_t>		surfaces;
 	idBounds					bounds;
 	int							overlaysAdded;
+
+	bool						isWorldMesh;
 
 	// when an md5 is instantiated, the inverted joints array is stored to allow GPU skinning
 	int							numInvertedJoints;

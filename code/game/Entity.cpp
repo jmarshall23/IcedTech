@@ -466,6 +466,9 @@ void idEntity::Spawn( void ) {
 	gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, &renderEntity );
 
 	renderEntity.entityNum = entityNumber;
+
+	// By default all render entities are affected by the world.
+	renderEntity.SetLightChannel(LIGHT_CHANNEL_WORLD, true);
 	
 	// go dormant within 5 frames so that when the map starts most monsters are dormant
 	dormantStart = gameLocal.time - DELAY_DORMANT_TIME + gameLocal.msec * 5;

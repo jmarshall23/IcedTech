@@ -373,6 +373,96 @@ entityDef player_doommarine_mp {
 	
 	// ignore flashlight when cycling weapons
 	"weapon11_cycle"					"0"
+	
+	"def_weapon0"						""
+	"weapon0_best"						"0"					// whether weapon should be chosen when out of ammo
+	"weapon0_cycle"						"1"					// whether weapon should be selected when using next/prev weapon
+	"weapon0_toggle"					"0"					// whether selecting weapon twice switches between current and previous weapons
+	"weapon0_allowempty"				"1"					// whether you can select the weapon when it's out of ammo
+	
+	"def_weapon1"						"weapon_fists"
+	"weapon1_best"						"1"
+	"weapon1_cycle"						"1"
+	"weapon1_toggle"					"0"
+	"weapon1_allowempty"				"1"
+	
+	"def_weapon2"						"weapon_machinegun"
+	"weapon2_best"						"1"
+	"weapon2_cycle"						"1"
+	"weapon2_toggle"					"0"
+	"weapon2_allowempty"				"1"
+	
+	"def_weapon3"						"weapon_shotgun"
+	"weapon3_best"						"1"
+	"weapon3_cycle"						"1"
+	"weapon3_toggle"					"0"
+	"weapon3_allowempty"				"1"
+	
+	"def_weapon4"						"weapon_chaingun"
+	"weapon4_best"						"1"
+	"weapon4_cycle"						"1"
+	"weapon4_toggle"					"0"
+	"weapon4_allowempty"				"1"
+	
+	"def_weapon5"						"weapon_rocketlauncher"
+	"weapon5_best"						"0"
+	"weapon5_cycle"						"1"
+	"weapon5_toggle"					"0"
+	"weapon5_allowempty"				"0"
+	
+	"def_weapon6"						"weapon_plasmagun"
+	"weapon6_best"						"1"
+	"weapon6_cycle"						"1"
+	"weapon6_toggle"					"0"
+	"weapon6_allowempty"				"1"
+	
+	"def_weapon7"						"weapon_handgrenade"
+	"weapon7_best"						"0"
+	"weapon7_cycle"						"1"
+	"weapon7_toggle"					"0"
+	"weapon7_allowempty"				"1"
+	
+	"def_weapon8"						"weapon_bfg"
+	"weapon8_best"						"0"
+	"weapon8_cycle"						"1"
+	"weapon8_toggle"					"0"
+	"weapon8_allowempty"				"1"
+	
+	"def_weapon9"						"weapon_soulcube"
+	"weapon9_best"						"0"
+	"weapon9_cycle"						"1"
+	"weapon9_toggle"					"1"
+	"weapon9_allowempty"				"1"
+	
+	"def_weapon10"						"weapon_chainsaw"
+	"weapon10_best"						"0"
+	"weapon10_cycle"					"1"
+	"weapon10_toggle"					"0"
+	"weapon10_allowempty"				"1"
+	
+	"def_weapon11"						"weapon_flashlight"
+	"weapon11_best"						"0"
+	"weapon11_cycle"					"1"
+	"weapon11_toggle"					"1"
+	"weapon11_allowempty"				"1"
+	
+	"def_weapon12"						"weapon_pda"
+	"weapon12_best"						"0"
+	"weapon12_cycle"					"0"
+	"weapon12_toggle"					"0"
+	"weapon12_allowempty"				"1"
+	
+	"def_weapon13"						""	
+	"weapon13_best"						"0"
+	"weapon13_cycle"					"0"
+	"weapon13_toggle"					"0"
+	"weapon13_allowempty"				"0"
+	
+	"def_weapon14"						""
+	"weapon14_best"						"0"
+	"weapon14_cycle"					"0"
+	"weapon14_toggle"					"0"
+	"weapon14_allowempty"				"0"
 
 	"snd_teleport_enter"					"world_teleportin"
 	"snd_teleport_exit"					"player_sounds_teleport_exit"

@@ -239,6 +239,7 @@ idInteraction::idInteraction
 */
 idInteraction::idInteraction( void ) {
 	numSurfaces				= 0;
+	lightChannel			= 0;
 	entityDef				= NULL;
 	lightDef				= NULL;
 	lightNext				= NULL;
@@ -269,6 +270,13 @@ idInteraction *idInteraction::AllocAndLink( idRenderEntityLocal *edef, idRenderL
 
 	interaction->lightDef = ldef;
 	interaction->entityDef = edef;
+
+	interaction->lightChannel = edef->parms.lightChannel;
+
+	// World meshes are only on channel LIGHT_CHANNEL_WORLD.
+	if(edef->parms.hModel->IsWorldMesh()) {
+		interaction->lightChannel |= 1 << LIGHT_CHANNEL_WORLD;
+	}
 
 	interaction->numSurfaces = -1;		// not checked yet
 	//interaction->surfaces = NULL;
@@ -394,6 +402,15 @@ void idInteraction::UnlinkAndFree( void ) {
 
 	// put it back on the free list
 	renderWorld->interactionAllocator.Free( this );
+}
+
+/*
+=========================
+idInteraction::HasLightChannel
+=========================
+*/
+bool idInteraction::HasLightChannel(int lightChannel) {
+	return (!!((this->lightChannel) & (1ULL << (lightChannel))));
 }
 
 /*
@@ -666,8 +683,7 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 
 		surfaceInteraction_t *sint = &surfaces[c];
 
-		sint->shader = shader;
-
+		sint->shader = shader;		
 		sint->forceVirtualTextureHighQuality = entityDef->parms.forceVirtualTextureHighQuality;
 
 // jmarshall GPU skinning.

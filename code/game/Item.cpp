@@ -72,6 +72,7 @@ idItem::idItem() {
 	orgOrigin.Zero();
 	canPickUp = true;
 	fl.networkSync = true;
+	itemLightRig1 = nullptr;
 }
 
 /*
@@ -83,6 +84,11 @@ idItem::~idItem() {
 	// remove the highlight shell
 	if ( itemShellHandle != -1 ) {
 		gameRenderWorld->FreeEntityDef( itemShellHandle );
+	}
+
+	if (itemLightRig1) {
+		itemLightRig1->PostEventMS(&EV_Remove, 0);
+		itemLightRig1 = NULL;
 	}
 }
 
@@ -231,6 +237,8 @@ void idItem::Think( void ) {
 		}
 	}
 
+	itemLightRig1->SetOrigin(renderEntity.origin);
+
 	Present();
 }
 
@@ -293,6 +301,27 @@ void idItem::Spawn( void ) {
 // jmarshall
 	modelindex = gameLocal.GetBotItemEntry(spawnArgs.GetString("modelindex"));
 // jmarshall end
+
+
+	// Create the lighting rigs.
+	idDict itemLightRigDef;
+
+	itemLightRigDef.Set("classname", "light");
+	itemLightRigDef.Set("name", va("item_light_rig_%d_1", entityNumber));
+	itemLightRigDef.Set("origin", "0 0 0");
+	itemLightRigDef.Set("noshadows", "1");
+	itemLightRigDef.Set("nospecular", "0");
+	itemLightRigDef.Set("nodiffuse", "0");
+	itemLightRigDef.Set("falloff", "0");
+	itemLightRigDef.Set("ambient", "0");
+	itemLightRigDef.Set("litchannel", va("%d", LIGHT_CHANNEL_LIGHTRIG_ITEMS));
+	itemLightRigDef.Set("_color", "0.375 0.375 0.375");
+	itemLightRigDef.Set("light_radius", "200 200 200");
+
+	if (!gameLocal.SpawnEntityDef(itemLightRigDef, (idEntity**)&itemLightRig1, true))
+		gameLocal.Error("Failed to spawn weapon light rig!");
+
+	renderEntity.SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_ITEMS, true);
 
 	giveTo = spawnArgs.GetString( "owner" );
 	if ( giveTo.Length() ) {

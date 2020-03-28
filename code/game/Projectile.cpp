@@ -783,6 +783,9 @@ void idProjectile::Explode( const trace_t &collision, idEntity *ignore ) {
 	idVec3 dir = collision.endpos - owner->GetOrigin();
 	dir.Normalize();
 
+	// Alert any bots near were we just exploded.
+	gameLocal.AlertBots(owner->Cast<idPlayer>(), collision.endpos);
+
 	// Spawn Debris
 	if (collision.c.material != NULL && collision.c.entityNum == ENTITYNUM_WORLD) {
 		idVec3 reflectedDir = idMath::ReflectVector(dir, collision.c.normal);

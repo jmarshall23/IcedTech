@@ -65,6 +65,7 @@ void rvClientModel::Spawn ( void ) {
 	gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, &renderEntity );
 
 	renderEntity.entityNum = entityNumber;
+	renderEntity.SetLightChannel(LIGHT_CHANNEL_WORLD, true);
 
 	spawnarg = spawnArgs.GetString( "model" );
 	if ( spawnarg && *spawnarg ) {

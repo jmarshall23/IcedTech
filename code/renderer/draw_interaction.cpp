@@ -384,6 +384,22 @@ void RB_Interaction_DrawInteractions( void ) {
 		glStencilFunc(GL_ALWAYS, 128, 255);
 
 		for (idInteraction* inter = vLight->lightDef->firstInteraction; inter; inter = inter->lightNext) {
+
+			bool hasLightChannel = false;
+			
+			// Check to see if this interaction has at least one channel from this light.
+			for (int i = 0; i < 32; i++) {
+				if (vLight->lightDef->parms.HasLightChannel(i)) {
+					if (inter->HasLightChannel(i)) {
+						hasLightChannel = true;
+						break;
+					}
+				}
+			}
+
+			if (!hasLightChannel)
+				continue;
+
 			RB_Interaction_CreateDrawInteractions(inter);
 		}
 

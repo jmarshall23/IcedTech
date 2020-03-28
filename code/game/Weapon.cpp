@@ -1820,6 +1820,9 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 	// update animation
 	UpdateAnimation();
 
+	// Make sure the light rig player channel is enabled. 
+	renderEntity.SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_PLAYER, true);
+
 	// only show the surface in player view
 	renderEntity.allowSurfaceInViewID = owner->entityNumber+1;
 

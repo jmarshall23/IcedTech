@@ -84,6 +84,8 @@ void idGameEdit::ParseSpawnArgsToRenderLight( const idDict *args, renderLight_t 
 
 	memset( renderLight, 0, sizeof( *renderLight ) );
 
+	renderLight->SetLightChannel(LIGHT_CHANNEL_WORLD, true);
+
 	if (!args->GetVector("light_origin", "", renderLight->origin)) {
 		args->GetVector( "origin", "", renderLight->origin );
 	}
@@ -329,11 +331,25 @@ void idLight::Spawn( void ) {
 	baseColor.Set( renderLight.shaderParms[ SHADERPARM_RED ], renderLight.shaderParms[ SHADERPARM_GREEN ], renderLight.shaderParms[ SHADERPARM_BLUE ] );
 
 	// Set the unique light id for this light.
-	renderLight.name = spawnArgs.GetString("name");
+	renderLight.name = va("%s_%d", spawnArgs.GetString("name"), gameLocal.uniqueLightCount++);
 	renderLight.uniqueLightId = idStr::Hash(renderLight.name);
 
 	// Wether or not this light is going to cast dynamic shadows.
 	renderLight.dynamicShadows = spawnArgs.GetBool("dynamicshadow");
+
+	// Setup the lighting channels.
+	{
+		idStr litChannel = spawnArgs.GetString("litchannel", "");
+		if (litChannel.Length() > 0) {
+			renderLight.lightChannel = 0; // If we have light channels set, we have to opt into any channel we want to use.
+
+			idParser litChannelParser;
+			litChannelParser.LoadMemory(litChannel, litChannel.Length(), "litChannel");
+			while (!litChannelParser.EndOfFile()) {
+				renderLight.SetLightChannel(litChannelParser.ParseInt(), true);
+			}
+		}
+	}
 
 	// set the number of light levels
 	spawnArgs.GetInt( "levels", "1", levels );

@@ -198,6 +198,8 @@ idRenderModel *idRenderWorldLocal::ParseModel( idLexer *src ) {
 	}
 // jmarshall end
 
+	model->MarkWorldMesh();
+
 	model->FinishSurfaces();
 
 	return model;
