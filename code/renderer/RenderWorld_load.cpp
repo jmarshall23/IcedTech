@@ -40,6 +40,8 @@ idRenderWorldLocal::FreeWorld
 void idRenderWorldLocal::FreeWorld() {
 	int i;
 
+	numModelAreas = 0;
+
 	// this will free all the lightDefs and entityDefs
 	FreeDefs();
 
@@ -517,6 +519,10 @@ bool idRenderWorldLocal::InitFromMap( const char *name, bool fastLoad) {
 		if ( token == "model" ) {
 			lastModel = ParseModel( src );
 
+			if(strstr(lastModel->Name(), "_area")) {
+				numModelAreas++;
+			}
+
 			// add it to the model manager list
 			renderModelManager->AddModel( lastModel );
 
@@ -591,7 +597,7 @@ void idRenderWorldLocal::AddWorldModelEntities() {
 	// add the world model for each portal area
 	// we can't just call AddEntityDef, because that would place the references
 	// based on the bounding box, rather than explicitly into the correct area
-	for ( i = 0 ; i < numPortalAreas ; i++ ) {
+	for ( i = 0 ; i < numModelAreas; i++ ) {
 		idRenderEntityLocal	*def;
 		int			index;
 
@@ -638,7 +644,7 @@ void idRenderWorldLocal::AddWorldModelEntities() {
 		def->parms.shaderParms[2] =
 		def->parms.shaderParms[3] = 1;
 
-		AddEntityRefToArea( def, &portalAreas[i] );
+		AddEntityRefToArea( def, &portalAreas[0] );
 	}
 }
 

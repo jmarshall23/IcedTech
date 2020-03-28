@@ -620,14 +620,16 @@ static void WriteOutputEntity( int entityNum ) {
 		WriteOutputSurfaces( entityNum, i );
 	}
 
+// jmarshall
 	// we will completely skip the portals and nodes if it is a single area
-	if ( entityNum == 0 && e->numAreas > 1 ) {
-		// output the area portals
-		WriteOutputPortals( e );
-
-		// output the nodes
-		WriteOutputNodes( e->tree->headnode );
-	}
+	//if ( entityNum == 0 && e->numAreas > 1 ) {
+	//	// output the area portals
+	//	WriteOutputPortals( e );
+	//
+	//	// output the nodes
+	//	WriteOutputNodes( e->tree->headnode );
+	//}
+// jmarshall end
 }
 
 

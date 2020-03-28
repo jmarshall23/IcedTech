@@ -269,6 +269,8 @@ private:
 	bool					isLegacyWorldFile;
 	bool					isFastLoaded;
 
+	int						numModelAreas;
+
 	idList<rvmWorldReflectionProbe_t> reflectionProbes;
 // jmarshall end
 };

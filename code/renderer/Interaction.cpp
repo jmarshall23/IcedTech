@@ -624,6 +624,11 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 	const idMaterial*	shader;
 	bool				interactionGenerated;
 	idBounds			bounds;
+	viewLight_t* vLight;
+	viewEntity_t* vEntity;
+
+	vLight = lightDef->viewLight;
+	vEntity = entityDef->viewEntity;
 	 
 	tr.pc.c_createInteractions++;
 
