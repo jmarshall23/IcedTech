@@ -206,7 +206,6 @@ public:
 	areaNumRef_t *			FloodFrustumAreas( const idFrustum &frustum, areaNumRef_t *areas );
 	bool					CullEntityByPortals( const idRenderEntityLocal *entity, const struct portalStack_s *ps );
 	void					AddAreaEntityRefs( int areaNum, const struct portalStack_s *ps );
-	bool					CullLightByPortals( const idRenderLightLocal *light, const struct portalStack_s *ps );
 	void					AddAreaLightRefs( int areaNum, const struct portalStack_s *ps );
 	void					AddAreaRefs( int areaNum, const struct portalStack_s *ps );
 	void					BuildConnectedAreas_r( int areaNum );

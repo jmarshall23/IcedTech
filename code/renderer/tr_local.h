@@ -1065,6 +1065,7 @@ extern idCVar r_testGammaBias;			// draw a grid pattern to test gamma levels
 extern idCVar r_testARBProgram;			// experiment with vertex/fragment programs
 
 extern idCVar r_singleLight;			// suppress all but one light
+extern idCVar r_singleLightChannel;
 extern idCVar r_singleEntity;			// suppress all but one entity
 extern idCVar r_singleArea;				// only draw the portal area the view is actually in
 extern idCVar r_singleSurface;			// suppress all but one surface on each entity
