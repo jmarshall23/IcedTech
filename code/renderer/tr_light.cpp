@@ -1415,6 +1415,19 @@ void R_AddModelSurfaces( void ) {
 			continue;
 		}
 
+
+		// Suppress mesh surfaces if requested.
+		if (!r_skipSuppress.GetBool()) {
+			if (vEntity->entityDef->parms.suppressSurfaceInViewID
+				&& vEntity->entityDef->parms.suppressSurfaceInViewID == tr.viewDef->renderView.viewID) {
+				return;
+			}
+			if (vEntity->entityDef->parms.allowSurfaceInViewID
+				&& vEntity->entityDef->parms.allowSurfaceInViewID != tr.viewDef->renderView.viewID) {
+				return;
+			}
+		}
+
 		// add the ambient surface if it has a visible rectangle
 		if ( !vEntity->scissorRect.IsEmpty() ) {
 			model = R_EntityDefDynamicModel( vEntity->entityDef );

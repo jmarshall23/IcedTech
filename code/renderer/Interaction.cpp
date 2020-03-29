@@ -822,11 +822,21 @@ void idInteraction::AddActiveInteraction( void ) {
 		return;
 	}
 
+	// Suppress shadows and meshs surfaces if requested.
 	if (!r_skipSuppress.GetBool()) {
 		if (vEntity->entityDef->parms.suppressShadowInViewID && vEntity->entityDef->parms.suppressShadowInViewID == tr.viewDef->renderView.viewID) {
 			return;
 		}
 		if (vEntity->entityDef->parms.suppressShadowInLightID && vEntity->entityDef->parms.suppressShadowInLightID == vLight->lightDef->parms.lightId) {
+			return;
+		}
+
+		if (vEntity->entityDef->parms.suppressSurfaceInViewID
+			&& vEntity->entityDef->parms.suppressSurfaceInViewID == tr.viewDef->renderView.viewID) {
+			return;
+		}
+		if (vEntity->entityDef->parms.allowSurfaceInViewID
+			&& vEntity->entityDef->parms.allowSurfaceInViewID != tr.viewDef->renderView.viewID) {
 			return;
 		}
 	}
