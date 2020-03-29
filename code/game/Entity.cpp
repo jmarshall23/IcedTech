@@ -237,6 +237,22 @@ void idGameEdit::ParseSpawnArgsToRenderEntity( const idDict *args, renderEntity_
 		renderEntity->bounds.Zero();
 	}
 
+	// Setup the lighting channels.
+	{
+		renderEntity->SetLightChannel(LIGHT_CHANNEL_WORLD, true);
+
+		idStr litChannel = args->GetString("litchannel", "");
+		if (litChannel.Length() > 0) {
+			renderEntity->lightChannel = 0; // If we have light channels set, we have to opt into any channel we want to use.
+
+			idParser litChannelParser;
+			litChannelParser.LoadMemory(litChannel, litChannel.Length(), "litChannel");
+			while (!litChannelParser.EndOfFile()) {
+				renderEntity->SetLightChannel(litChannelParser.ParseInt(), true);
+			}
+		}
+	}
+
 	temp = args->GetString( "skin" );
 	if ( temp[0] != '\0' ) {
 		renderEntity->customSkin = declManager->FindSkin( temp );

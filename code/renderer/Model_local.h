@@ -227,6 +227,8 @@ private:
 
 	int							numLods;
 
+	idBounds					bounds;
+
 	idList<struct mdrFrame_t *>	frames;
 	idList<const idMaterial *>	materials;
 

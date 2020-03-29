@@ -115,6 +115,8 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 	idStr shaderPrefix = name;
 	shaderPrefix.StripFileExtension();
 
+	bounds.Clear();
+
 	pinmodel = (mdrHeader_t *)buffer;
 
 	pinmodel->version = LittleLong(pinmodel->version);
@@ -196,6 +198,11 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 				frame->localOrigin[j] = LittleFloat(cframe->localOrigin[j]);
 			}
 
+			if (i == 0) {
+				bounds[0] = frame->bounds[0];
+				bounds[1] = frame->bounds[1];
+			}
+
 			frame->radius = LittleFloat(cframe->radius);
 			frame->name[0] = '\0';	// No name supplied in the compressed version.
 
@@ -237,6 +244,11 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 				frame->bounds[0][j] = LittleFloat(curframe->bounds[0][j]);
 				frame->bounds[1][j] = LittleFloat(curframe->bounds[1][j]);
 				frame->localOrigin[j] = LittleFloat(curframe->localOrigin[j]);
+			}
+
+			if(i == 0) {
+				bounds[0] = frame->bounds[0];
+				bounds[1] = frame->bounds[1];
 			}
 
 			frame->radius = LittleFloat(curframe->radius);
@@ -298,7 +310,9 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 			strlwr(surf->name);
 
 			// register the shaders
-			const char *materialName = va("%s/%s", shaderPrefix.c_str(), surf->shader);
+			idStr materialName = va("%s/%s", shaderPrefix.c_str(), surf->shader);
+			materialName.Replace(" ", "_");
+			materialName.Replace("-", "_");
 			sh = declManager->FindMaterial(materialName, true); //R_FindShader(surf->shader, LIGHTMAP_NONE, qtrue);
 			if (sh != nullptr)
 			{
@@ -333,7 +347,7 @@ bool rvmRenderModelMDR::LoadMDRFile(void *buffer, int filesize) {
 				v->normal[2] = LittleFloat(curv->normal[2]);
 
 				v->texCoords[0] = LittleFloat(curv->texCoords[0]);
-				v->texCoords[1] = 1.0 - LittleFloat(curv->texCoords[1]);
+				v->texCoords[1] = LittleFloat(curv->texCoords[1]);
 
 				v->numWeights = curv->numWeights;
 				weight = &v->weights[0];
@@ -490,7 +504,7 @@ idRenderModelMD3::Bounds
 =================
 */
 idBounds rvmRenderModelMDR::Bounds(const struct renderEntity_t *ent) const {
-	return idBounds(idVec3(-128, -128,-128), idVec3(128, 128, 128));
+	return bounds;
 }
 
 /*

@@ -91,6 +91,31 @@ void idGameEdit::ParseSpawnArgsToRenderLight( const idDict *args, renderLight_t 
 	}
 
 	// Set the unique light id for this light.
+	if(renderLight->name == NULL) {
+		renderLight->uniqueLightId = 0; // This should only happen in the editor!
+	}
+	else {
+		renderLight->uniqueLightId = idStr::Hash(renderLight->name);
+	}
+
+	// Wether or not this light is going to cast dynamic shadows.
+	renderLight->dynamicShadows = args->GetBool("dynamicshadow");
+
+	// Setup the lighting channels.
+	{
+		idStr litChannel = args->GetString("litchannel", "");
+		if (litChannel.Length() > 0) {
+			renderLight->lightChannel = 0; // If we have light channels set, we have to opt into any channel we want to use.
+
+			idParser litChannelParser;
+			litChannelParser.LoadMemory(litChannel, litChannel.Length(), "litChannel");
+			while (!litChannelParser.EndOfFile()) {
+				renderLight->SetLightChannel(litChannelParser.ParseInt(), true);
+			}
+		}
+	}
+
+	// Set the unique light id for this light.
 	renderLight->name = args->GetString("name");
 	renderLight->uniqueLightId = idStr::Hash(renderLight->name);
 
@@ -320,6 +345,10 @@ void idLight::Spawn( void ) {
 
 	BaseSpawn();
 
+	// Set the Unique Name for the light.
+	uniqueLightName = va("%s_%d", spawnArgs.GetString("name"), gameLocal.uniqueLightCount++);
+	renderLight.name = uniqueLightName.c_str();
+
 	// do the parsing the same way dmap and the editor do
 	gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &renderLight );
 
@@ -329,28 +358,6 @@ void idLight::Spawn( void ) {
 
 	// set the base color from the shader parms
 	baseColor.Set( renderLight.shaderParms[ SHADERPARM_RED ], renderLight.shaderParms[ SHADERPARM_GREEN ], renderLight.shaderParms[ SHADERPARM_BLUE ] );
-
-	// Set the unique light id for this light.
-	uniqueLightName = va("%s_%d", spawnArgs.GetString("name"), gameLocal.uniqueLightCount++);
-	renderLight.name = uniqueLightName.c_str();
-	renderLight.uniqueLightId = idStr::Hash(renderLight.name);
-
-	// Wether or not this light is going to cast dynamic shadows.
-	renderLight.dynamicShadows = spawnArgs.GetBool("dynamicshadow");
-
-	// Setup the lighting channels.
-	{
-		idStr litChannel = spawnArgs.GetString("litchannel", "");
-		if (litChannel.Length() > 0) {
-			renderLight.lightChannel = 0; // If we have light channels set, we have to opt into any channel we want to use.
-
-			idParser litChannelParser;
-			litChannelParser.LoadMemory(litChannel, litChannel.Length(), "litChannel");
-			while (!litChannelParser.EndOfFile()) {
-				renderLight.SetLightChannel(litChannelParser.ParseInt(), true);
-			}
-		}
-	}
 
 	// set the number of light levels
 	spawnArgs.GetInt( "levels", "1", levels );
