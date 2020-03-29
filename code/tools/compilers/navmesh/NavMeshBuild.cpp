@@ -102,12 +102,20 @@ bool LoadWorldFile(idStr mapName, WorldGeometry_t &geometry, int &crcMAP)
 		const char *className = entity->epairs.GetString("classname");
 
 		if (!idStr::Icmp(className, "func_static")) {
-			// Mesh's are opt in for the navmesh.
-			if (entity->epairs.GetBool("navmesh")) {
+			// Mesh's are opt out for the navmesh.
+			if (!entity->epairs.GetBool("nonavmesh")) {
 				const char* modelName = entity->epairs.GetString("model");
 				if (!modelName) {
 					continue;
 				}
+
+				// Check to see if we have a low res collision model. 
+				idStr collisionModel = modelName;
+				collisionModel.Replace(".mdr", "_collision.mdr");
+				if(fileSystem->FileExists(collisionModel.c_str())) {
+					modelName = collisionModel;
+				}
+
 				idRenderModel* model = renderModelManager->FindModel(modelName);
 
 				idMat3	axis;

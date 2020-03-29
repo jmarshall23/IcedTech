@@ -181,14 +181,16 @@ rvmNavFileLocal::WriteNavToOBJ
 */
 void rvmNavFileLocal::WriteNavToOBJ(const char *name, rcPolyMeshDetail *mesh) {
 	idStr navFileName;
-	navFileName = "maps/";
+	if (!strstr(name, "maps/")) {
+		navFileName = "maps/";
+	}
 	navFileName += name;
 	navFileHeader_t header;
 
 	navFileName.SetFileExtension("_navmesh.obj");
 
 	// Open the nav file for writing.
-	idFileScoped file(fileSystem->OpenFileWrite(navFileName));
+	idFileScoped file(fileSystem->OpenFileWrite(navFileName, "fs_basepath"));
 
 	idList<idVec3> vertexes;
 	for(int i = 0; i < mesh->nverts; i++)

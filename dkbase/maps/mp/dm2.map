@@ -809,7 +809,7 @@ Version 2
 "dynamicshadow" "0"
 "noshadows" "0"
 "nospecular" "0"
-"falloff" "0.000000"
+"falloff" "0"
 "_color" "0.37 1 0.88"
 "light_radius" "600 600 600"
 }
