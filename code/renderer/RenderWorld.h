@@ -231,7 +231,7 @@ struct renderLight_t {
 	void SetLightChannel(int lightChannel, bool enabled);
 	bool HasLightChannel(int lightChannel);
 
-	idStr					name;				// for debugging.
+	const char				*name;				// for debugging.
 
 	idMat3					axis;				// rotation vectors, must be unit length
 	idVec3					origin;
