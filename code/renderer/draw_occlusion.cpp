@@ -112,6 +112,15 @@ void RB_Draw_LightOcclusion(void) {
 	if (backEnd.viewDef->viewLights == NULL)
 		return;
 
+	// the scissor may be smaller than the viewport for subviews
+	if (r_useScissor.GetBool() && !backEnd.ignoreScissorOptimization) {
+		glScissor(tr.viewportOffset[0] + backEnd.viewDef->viewport.x1 + backEnd.viewDef->scissor.x1,
+			tr.viewportOffset[1] + backEnd.viewDef->viewport.y1 + backEnd.viewDef->scissor.y1,
+			backEnd.viewDef->scissor.x2 + 1 - backEnd.viewDef->scissor.x1,
+			backEnd.viewDef->scissor.y2 + 1 - backEnd.viewDef->scissor.y1);
+		backEnd.currentScissor = backEnd.viewDef->scissor;
+	}
+
 	renderProgManager.BindShader_Depth();
 
 	RB_SetMVP(backEnd.viewDef->worldSpace.mvp);

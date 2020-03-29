@@ -771,42 +771,16 @@ stencil clears and interaction drawing
 int	c_clippedLight, c_unclippedLight;
 
 idScreenRect	R_CalcLightScissorRectangle( viewLight_t *vLight ) {
-	// Calculate the matrix that projects the zero-to-one cube to exactly cover the
-		// light frustum in clip space.
-	idRenderMatrix invProjectMVPMatrix;
-	idRenderMatrix::Multiply(tr.viewDef->worldSpace.mvp, vLight->lightDef->inverseBaseLightProject, invProjectMVPMatrix);
+	idScreenRect	r;
 
-	// Calculate the projected bounds, either not clipped at all, near clipped, or fully clipped.
-	idBounds projected;
-	if (r_useLightScissors.GetInteger() == 1) {
-		idRenderMatrix::ProjectedBounds(projected, invProjectMVPMatrix, bounds_zeroOneCube);
-	}
-	else if (r_useLightScissors.GetInteger() == 2) {
-		idRenderMatrix::ProjectedNearClippedBounds(projected, invProjectMVPMatrix, bounds_zeroOneCube);
-	}
-	else {
-		idRenderMatrix::ProjectedFullyClippedBounds(projected, invProjectMVPMatrix, bounds_zeroOneCube);
+	if (vLight->lightDef->parms.pointLight) {
+		idBounds bounds;
+		idRenderLightLocal* lightDef = vLight->lightDef;
+		tr.viewDef->viewFrustum.ProjectionBounds(idBox(lightDef->parms.origin, lightDef->parms.lightRadius, lightDef->parms.axis), bounds);
+		return R_ScreenRectFromViewFrustumBounds(bounds);
 	}
 
-	//if (projected[0][2] >= projected[1][2]) {
-	//	// the light was culled to the view frustum
-	//	idScreenRect noRect;
-	//	return noRect;
-	//}
-
-	float screenWidth = (float)tr.viewDef->viewport.x2 - (float)tr.viewDef->viewport.x1;
-	float screenHeight = (float)tr.viewDef->viewport.y2 - (float)tr.viewDef->viewport.y1;
-
-	idScreenRect lightScissorRect;
-	lightScissorRect.x1 = idMath::Ftoi(projected[0][0] * screenWidth);
-	lightScissorRect.x2 = idMath::Ftoi(projected[1][0] * screenWidth);
-	lightScissorRect.y1 = idMath::Ftoi(projected[0][1] * screenHeight);
-	lightScissorRect.y2 = idMath::Ftoi(projected[1][1] * screenHeight);
-	lightScissorRect.Expand();
-
-	//c_unclippedLight++;
-
-	return lightScissorRect;
+	common->FatalError("R_CalcLightScissorRectangle: Implement spotlight and parralel!");
 }
 
 /*

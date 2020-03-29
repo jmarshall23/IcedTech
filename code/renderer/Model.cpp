@@ -54,6 +54,7 @@ idRenderModelStatic::idRenderModelStatic() {
 	overlaysAdded = 0;
 	shadowHull = NULL;
 	isStaticWorldModel = false;
+	isWorldMesh = false;
 	defaulted = false;
 	purged = false;
 	fastLoad = false;
