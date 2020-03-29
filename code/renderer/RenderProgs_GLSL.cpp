@@ -219,7 +219,7 @@ static const int numPrefixes = sizeof( prefixes ) / sizeof( prefixes[0] );
 // For GLSL we need to have the names for the renderparms so we can look up their run time indices within the renderprograms
 static const char * GLSLParmNames[] = {
 	"rpScreenCorrectionFactor",
-	"rpWindowCoord",
+	"rpMaterialParms",
 	"rpDiffuseModifier",
 	"rpSpecularModifier",
 
@@ -1248,7 +1248,21 @@ void idRenderProgManager::LoadGLSLProgram( const int programIndex, const int ver
 	int linked = GL_FALSE;
 	glGetProgramiv( program, GL_LINK_STATUS, &linked );
 	if ( linked == GL_FALSE ) {
-		glDeleteProgram( program );
+		int infologLength = 0;
+
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infologLength);
+		if (infologLength > 1) {
+			char* infoLog = (char*)malloc(infologLength);
+			int charsWritten = 0;
+			glGetProgramInfoLog(program, infologLength, &charsWritten, infoLog);
+
+			common->Printf("LINK ERROR: %s\n", infoLog);
+
+			free(infoLog);
+		}
+
+		glDeleteProgram(program);
+
 		idLib::Error( "While linking GLSL program %d with vertexShader %s and fragmentShader %s\n", 
 			programIndex, 
 			( vertexShaderIndex >= 0 ) ? vertexShaders[vertexShaderIndex].out_name : "<Invalid>",

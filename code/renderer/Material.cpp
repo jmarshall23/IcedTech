@@ -1519,20 +1519,37 @@ void idMaterial::ParseStage( idLexer &src, const textureRepeat_t trpDefault ) {
 		}
 		if (!token.Icmp("program")) {
 			if (src.ReadTokenOnLine(&token)) {
-				newStage.vertexProgram = renderProgManager.FindVertexShader(token.c_str());
-				newStage.fragmentProgram = renderProgManager.FindFragmentShader(token.c_str());
+				idStr programName = token;
+				idStr programInstanceName = "";
+				idStr programInstanceMacros = "";
+
+				if (src.ReadTokenOnLine(&token)) {
+					programInstanceName = token;
+				}
+				if (src.ReadTokenOnLine(&token)) {
+					programInstanceMacros = token;
+				}
+
+				if (programInstanceName.Length() > 0) {
+					newStage.vertexProgram = renderProgManager.FindVertexShader(programName.c_str(), programInstanceName, programInstanceMacros);
+					newStage.fragmentProgram = renderProgManager.FindFragmentShader(programName.c_str(), programInstanceName, programInstanceMacros);
+				}
+				else {
+					newStage.vertexProgram = renderProgManager.FindVertexShader(programName.c_str(), NULL, NULL);
+					newStage.fragmentProgram = renderProgManager.FindFragmentShader(programName.c_str(), NULL, NULL);
+				}
 			}
 			continue;
 		}
 		if (!token.Icmp("fragmentProgram")) {
 			if (src.ReadTokenOnLine(&token)) {
-				newStage.fragmentProgram = renderProgManager.FindFragmentShader(token.c_str());
+				newStage.fragmentProgram = renderProgManager.FindFragmentShader(token.c_str(), NULL, NULL);
 			}
 			continue;
 		}
 		if (!token.Icmp("vertexProgram")) {
 			if (src.ReadTokenOnLine(&token)) {
-				newStage.vertexProgram = renderProgManager.FindVertexShader(token.c_str());
+				newStage.vertexProgram = renderProgManager.FindVertexShader(token.c_str(), NULL, NULL);
 			}
 			continue;
 		}
@@ -1546,8 +1563,8 @@ void idMaterial::ParseStage( idLexer &src, const textureRepeat_t trpDefault ) {
 				}
 				//newStage.vertexProgram = R_FindARBProgram( GL_VERTEX_PROGRAM_ARB, "megaTexture.vfp" );
 				//newStage.fragmentProgram = R_FindARBProgram( GL_FRAGMENT_PROGRAM_ARB, "megaTexture.vfp" );
-				newStage.vertexProgram = renderProgManager.FindVertexShader("megaTexture.vfp");
-				newStage.fragmentProgram = renderProgManager.FindFragmentShader("megaTexture.vfp");
+				newStage.vertexProgram = renderProgManager.FindVertexShader("megaTexture.vfp", NULL, NULL);
+				newStage.fragmentProgram = renderProgManager.FindFragmentShader("megaTexture.vfp", NULL, NULL);
 				hasMegaTexture = true;
 				continue;
 			}

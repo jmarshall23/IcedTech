@@ -42,7 +42,7 @@ static const int PC_ATTRIB_INDEX_TANGENT	= 9;
 enum renderParm_t {
 	// For backwards compatibility, do not change the order of the first 17 items
 	RENDERPARM_SCREENCORRECTIONFACTOR = 0,
-	RENDERPARM_WINDOWCOORD,
+	RENDERPARM_MATERIALPARMS,
 	RENDERPARM_DIFFUSEMODIFIER,
 	RENDERPARM_SPECULARMODIFIER,
 
@@ -157,8 +157,8 @@ public:
 	void	SetRenderParm( renderParm_t rp, const float * value );
 	void	SetRenderParms( renderParm_t rp, const float * values, int numValues );
 
-	int		FindVertexShader( const char * name );
-	int		FindFragmentShader( const char * name );
+	int		FindVertexShader( const char * name, const char *programInstanceOutName, const char *programInstanceMacros );
+	int		FindFragmentShader( const char * name, const char* programInstanceOutName, const char* programInstanceMacros );
 
 	void	BindShader( int vIndex, int fIndex );
 
@@ -285,19 +285,21 @@ protected:
 	static const GLuint INVALID_PROGID = 0xFFFFFFFF;
 
 	struct vertexShader_t {
-					vertexShader_t() : progId( INVALID_PROGID ), usesJoints( false ), optionalSkinning( false ), out_name(NULL), macros(NULL) {}
+					vertexShader_t() : progId( INVALID_PROGID ), usesJoints( false ), optionalSkinning( false ), out_name(NULL), macros(NULL), shaderName(NULL) {}
 		idStr		name;
 		GLuint		progId;
 		bool		usesJoints;
 		bool		optionalSkinning;
+		const char* shaderName;
 		const char* out_name;
 		const char* macros;
 		idList<int>	uniforms;
 	};
 	struct fragmentShader_t {
-					fragmentShader_t() : progId( INVALID_PROGID ), out_name(NULL), macros(NULL) {}
+					fragmentShader_t() : progId( INVALID_PROGID ), out_name(NULL), macros(NULL), shaderName(NULL) {}
 		idStr		name;
 		GLuint		progId;
+		const char* shaderName;
 		const char* out_name;
 		const char* macros;
 		idList<int>	uniforms;

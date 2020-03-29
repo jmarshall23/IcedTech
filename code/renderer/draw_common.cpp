@@ -1525,6 +1525,17 @@ void	RB_STD_DrawView( void ) {
 	// Render the shadow maps. 
 	RB_Draw_ShadowMaps();
 
+	// Update the global material parms.
+	{
+		idVec4 globalMaterialParms;
+		globalMaterialParms.x = backEnd.viewDef->floatTime;
+		globalMaterialParms.y = 0;
+		globalMaterialParms.z = 0;
+		globalMaterialParms.w = 0;
+
+		renderProgManager.SetUniformValue(RENDERPARM_MATERIALPARMS, globalMaterialParms.ToFloatPtr());
+	}
+
 	// If we have a feedback render pass, lets do that now.
 	if (backEnd.feedbackRenderTexture)
 	{

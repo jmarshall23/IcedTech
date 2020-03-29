@@ -46,5 +46,9 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	result.position.y = dot4( vertex.position, rpMVPmatrixY );
 	result.position.z = dot4( vertex.position, rpMVPmatrixZ );
 	result.position.w = dot4( vertex.position, rpMVPmatrixW );
-	result.texcoord0 =  vertex.texcoord;
+	float2 newcoords =  vertex.texcoord;
+#ifdef LAVA_FLOW_UP
+	newcoords.y += rpMaterialParms.x * 0.55;
+#endif
+	result.texcoord0 = newcoords;
 }

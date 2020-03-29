@@ -27,7 +27,7 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 uniform float4 rpScreenCorrectionFactor	:	register(c0);
-uniform float4 rpWindowCoord			:	register(c1);
+uniform float4 rpMaterialParms			:	register(c1);
 uniform float4 rpDiffuseModifier		:	register(c2);
 uniform float4 rpSpecularModifier		:	register(c3);
 
@@ -348,7 +348,7 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
 #define VPOS WPOS
 static float4 idtex2Dproj( sampler2D samp, float4 texCoords ) { return tex2Dproj( samp, texCoords.xyw ); }
 static float4 swizzleColor( float4 c ) { return c; }
-static float2 vposToScreenPosTexCoord( float2 vpos ) { return vpos.xy * rpWindowCoord.xy; }
+static float2 vposToScreenPosTexCoord( float2 vpos ) { return float2(0, 0); }
 
 
 #define BRANCH

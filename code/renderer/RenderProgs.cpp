@@ -214,15 +214,31 @@ void idRenderProgManager::Shutdown() {
 idRenderProgManager::FindVertexShader
 ================================================================================================
 */
-int idRenderProgManager::FindVertexShader( const char * name ) {
+int idRenderProgManager::FindVertexShader( const char * name, const char* programInstanceOutName, const char* programInstanceMacros) {
 	for ( int i = 0; i < vertexShaders.Num(); i++ ) {
-		if ( vertexShaders[i].name.Icmp( name ) == 0 ) {
-			LoadVertexShader( i );
-			return i;
+		idStr actualShaderName = name;
+		if(vertexShaders[i].out_name != NULL) {
+			actualShaderName = vertexShaders[i].out_name;
+		}
+
+		if (programInstanceOutName == NULL) {
+			if (actualShaderName.Icmp(name) == 0) {
+				LoadVertexShader(i);
+				return i;
+			}
+		}
+		else {
+			if (actualShaderName.Icmp(programInstanceOutName) == 0) {
+				LoadVertexShader(i);
+				return i;
+			}
 		}
 	}
 	vertexShader_t shader;
 	shader.name = name;
+	shader.out_name = programInstanceOutName;
+	shader.macros = programInstanceMacros;
+
 	int index = vertexShaders.Append( shader );
 	LoadVertexShader( index );
 	currentVertexShader = index;
@@ -244,15 +260,30 @@ int idRenderProgManager::FindVertexShader( const char * name ) {
 idRenderProgManager::FindFragmentShader
 ================================================================================================
 */
-int idRenderProgManager::FindFragmentShader( const char * name ) {
+int idRenderProgManager::FindFragmentShader( const char * name, const char* programInstanceOutName, const char* programInstanceMacros) {
 	for ( int i = 0; i < fragmentShaders.Num(); i++ ) {
-		if ( fragmentShaders[i].name.Icmp( name ) == 0 ) {
-			LoadFragmentShader( i );
-			return i;
+		idStr actualShaderName = name;
+		if (fragmentShaders[i].out_name != NULL) {
+			actualShaderName = fragmentShaders[i].out_name;
+		}
+
+		if (programInstanceOutName == NULL) {
+			if (actualShaderName.Icmp(name) == 0) {
+				LoadFragmentShader(i);
+				return i;
+			}
+		}
+		else {
+			if (actualShaderName.Icmp(programInstanceOutName) == 0) {
+				LoadFragmentShader(i);
+				return i;
+			}
 		}
 	}
 	fragmentShader_t shader;
 	shader.name = name;
+	shader.out_name = programInstanceOutName;
+	shader.macros = programInstanceMacros;
 	int index = fragmentShaders.Append( shader );
 	LoadFragmentShader( index );
 	currentFragmentShader = index;

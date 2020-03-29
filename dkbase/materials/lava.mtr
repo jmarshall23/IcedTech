@@ -8,3 +8,14 @@ textures/liquids/lavahell
 		fragmentMap 0 textures/liquids/lavahell.png
 	}
 }
+
+textures/liquids/lavahell_flowup
+{
+	qer_editorimage textures/liquids/lavahell.png
+	lava
+
+	{
+		program emissive.vfp lava.vfp "#define LAVA_FLOW_UP\n"
+		fragmentMap 0 textures/liquids/lavahell.png
+	}
+}
