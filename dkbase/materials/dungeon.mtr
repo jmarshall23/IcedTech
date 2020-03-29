@@ -1,0 +1,79 @@
+models/dungeon/jail01/jail01/material__1107
+{
+	qer_editorimage models/dungeon/jail01/Jail_D.png
+	diffusemap models/dungeon/jail01/Jail_D.png
+	bumpmap models/dungeon/jail01/Jail_N.png
+	specularmap models/dungeon/jail01/Jail_S.png
+}
+
+models/dungeon/arch02/arch02/03___default7
+{
+	qer_editorimage models/dungeon/arch02/Arch_D.png
+	diffusemap models/dungeon/arch02/Arch_D.png
+	bumpmap models/dungeon/arch02/Arch_N.png
+	specularmap models/dungeon/arch02/Arch_S.png
+}
+
+models/dungeon/arch02/arch02/default6
+{
+	qer_editorimage models/dungeon/shared/brick1_D.png
+	diffusemap models/dungeon/shared/brick1_D.png
+	bumpmap models/dungeon/shared/brick1_N.png
+	specularmap models/dungeon/shared/brick1_S.png
+}
+
+models/dungeon/column01/column01/phong23 
+{
+	qer_editorimage models/dungeon/shared/brick1_D.png
+	diffusemap models/dungeon/shared/brick1_D.png
+	bumpmap models/dungeon/shared/brick1_N.png
+	specularmap models/dungeon/shared/brick1_S.png
+}
+
+models/dungeon/column01/column01/phong22
+{
+	qer_editorimage models/dungeon/shared/brick1_D.png
+	diffusemap models/dungeon/shared/brick1_D.png
+	bumpmap models/dungeon/shared/brick1_N.png
+	specularmap models/dungeon/shared/brick1_S.png
+}
+
+models/dungeon/column01/column01/phong21
+{
+	qer_editorimage models/dungeon/shared/brick1_D.png
+	diffusemap models/dungeon/shared/brick1_D.png
+	bumpmap models/dungeon/shared/brick1_N.png
+	specularmap models/dungeon/shared/brick1_S.png
+}
+
+models/dungeon/column01/column01/phong20
+{
+	qer_editorimage models/dungeon/shared/brick1_D.png
+	diffusemap models/dungeon/shared/brick1_D.png
+	bumpmap models/dungeon/shared/brick1_N.png
+	specularmap models/dungeon/shared/brick1_S.png
+}
+
+models/dungeon/column01/column01/03___default31
+{
+	qer_editorimage models/dungeon/column01/Column_D.png
+	diffusemap models/dungeon/column01/Column_D.png
+	bumpmap mmodels/dungeon/column01/Column_N.png
+	specularmap models/dungeon/column01/Column_S.png
+}
+
+models/dungeon/stairs02/stairs02/04___default1
+{
+	qer_editorimage models/dungeon/stairs02/stairs02_D.png
+	diffusemap models/dungeon/stairs02/stairs02_D.png
+	bumpmap models/dungeon/stairs02/stairs02_N.png
+	specularmap models/dungeon/stairs02/stairs02_S.png
+}
+
+models/dungeon/stairs02/stairs02/material__1098
+{
+	qer_editorimage models/dungeon/stairs02/stairs02_D.png
+	diffusemap models/dungeon/stairs02/stairs02_D.png
+	bumpmap models/dungeon/stairs02/stairs02_N.png
+	specularmap models/dungeon/stairs02/stairs02_S.png
+}
