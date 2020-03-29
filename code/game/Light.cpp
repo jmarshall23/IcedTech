@@ -331,7 +331,8 @@ void idLight::Spawn( void ) {
 	baseColor.Set( renderLight.shaderParms[ SHADERPARM_RED ], renderLight.shaderParms[ SHADERPARM_GREEN ], renderLight.shaderParms[ SHADERPARM_BLUE ] );
 
 	// Set the unique light id for this light.
-	renderLight.name = va("%s_%d", spawnArgs.GetString("name"), gameLocal.uniqueLightCount++);
+	uniqueLightName = va("%s_%d", spawnArgs.GetString("name"), gameLocal.uniqueLightCount++);
+	renderLight.name = uniqueLightName.c_str();
 	renderLight.uniqueLightId = idStr::Hash(renderLight.name);
 
 	// Wether or not this light is going to cast dynamic shadows.

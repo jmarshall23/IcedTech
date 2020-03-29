@@ -111,7 +111,7 @@ private:
 	int				fadeStart;
 	int				fadeEnd;
 	bool			soundWasPlaying;
-
+	idStr			uniqueLightName;
 private:
 	void			PresentLightDefChange( void );
 	void			PresentModelDefChange( void );
