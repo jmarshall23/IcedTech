@@ -1420,11 +1420,11 @@ void R_AddModelSurfaces( void ) {
 		if (!r_skipSuppress.GetBool()) {
 			if (vEntity->entityDef->parms.suppressSurfaceInViewID
 				&& vEntity->entityDef->parms.suppressSurfaceInViewID == tr.viewDef->renderView.viewID) {
-				return;
+				continue;
 			}
 			if (vEntity->entityDef->parms.allowSurfaceInViewID
 				&& vEntity->entityDef->parms.allowSurfaceInViewID != tr.viewDef->renderView.viewID) {
-				return;
+				continue;
 			}
 		}
 
