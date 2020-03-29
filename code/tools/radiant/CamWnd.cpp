@@ -1705,6 +1705,9 @@ void CCamWnd::BuildRendererState() {
 	// the renderModel for the world holds all the geometry that isn't in an entity
 	worldModel = renderModelManager->AllocModel();
 	worldModel->InitEmpty( "EditorWorldModel" );
+// jmarshall
+	worldModel->MarkWorldMesh();
+// jmarshall end
 
 	for ( brush_t *brushList = &active_brushes ; brushList ; 
 		brushList = (brushList == &active_brushes) ? &selected_brushes : NULL ) {
