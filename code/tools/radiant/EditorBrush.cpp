@@ -2635,12 +2635,14 @@ face_t *Brush_Ray(idVec3 origin, idVec3 dir, brush_t *b, float *dist, bool testP
 				return NULL;
 			}
 		}
-		else if ( b->modelHandle != NULL && dynamic_cast<idRenderModelPrt*>( b->modelHandle ) == NULL && dynamic_cast< idRenderModelLiquid*> ( b->modelHandle ) == NULL ) {
-			if (!Brush_ModelIntersect(b, origin, dir, scale)) {
-				*dist = 0;
-				return NULL;
-			}
-		}
+// jmarshall - particle editor
+		//else if ( b->modelHandle != NULL && dynamic_cast<idRenderModelPrt*>( b->modelHandle ) == NULL && dynamic_cast< idRenderModelLiquid*> ( b->modelHandle ) == NULL ) {
+		//	if (!Brush_ModelIntersect(b, origin, dir, scale)) {
+		//		*dist = 0;
+		//		return NULL;
+		//	}
+		//}
+// jmarshall end
 	}
 
 	*dist = d1;
@@ -3978,9 +3980,10 @@ void Brush_DrawModel( brush_t *b, bool camera, bool bSelected ) {
 				if ( !anim || !anim[ 0 ] ) {
 					anim = "idle";
 				}
-				model2 = gameEdit->ANIM_CreateMeshForAnim( model, classname, anim, frame, false );
-			} else if ( dynamic_cast<idRenderModelPrt*>( model ) || dynamic_cast<idRenderModelLiquid*>( model ) ) {
-				fixedBounds = true;
+				model2 = gameEdit->ANIM_CreateMeshForAnim( model, classname, anim, frame, false );\
+// jmarshall - idRenderModelPRT
+			//} else if ( dynamic_cast<idRenderModelPrt*>( model ) || dynamic_cast<idRenderModelLiquid*>( model ) ) {
+			//	fixedBounds = true;
 			}
 // jmarshall - preview md5meshes without animations
 			if ( !model2 ) {

@@ -657,13 +657,14 @@ entity_t *Entity_PostParse(entity_t *ent, brush_t *pList) {
 			// model entity
 			idRenderModel *modelHandle = renderModelManager->FindModel( pModel );
 
-			if ( dynamic_cast<idRenderModelPrt*>( modelHandle ) || dynamic_cast<idRenderModelLiquid*>( modelHandle ) ) {
-				bo.Zero();
-				bo.ExpandSelf( 12.0f );
-			} else {
+// jmarshall
+			//if ( dynamic_cast<idRenderModelPrt*>( modelHandle ) || dynamic_cast<idRenderModelLiquid*>( modelHandle ) ) {
+			//	bo.Zero();
+			//	bo.ExpandSelf( 12.0f );
+			//} else {
 				bo = modelHandle->Bounds( NULL );
-			}
-
+			//}
+// jmarshall end
 			VectorCopy(bo[0], mins);
 			VectorCopy(bo[1], maxs);
 			for (int i = 0; i < 3; i++) {

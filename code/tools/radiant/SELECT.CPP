@@ -800,11 +800,11 @@ void Select_ApplyMatrix(bool bSnap, bool rotateOrigins) {
 				if (b->modelHandle) {
 					idBounds bo, bo2;
 					bo2.Zero();
-					if ( dynamic_cast<idRenderModelPrt*>( b->modelHandle ) || dynamic_cast<idRenderModelLiquid*>( b->modelHandle ) ) {
-						bo2.ExpandSelf( 12.0f );
-					} else {
+					//if ( dynamic_cast<idRenderModelPrt*>( b->modelHandle ) || dynamic_cast<idRenderModelLiquid*>( b->modelHandle ) ) {
+					//	bo2.ExpandSelf( 12.0f );
+					//} else {
 						bo2 = b->modelHandle->Bounds();
-					}
+					//}
 					bo.FromTransformedBounds(bo2, b->owner->origin, b->owner->rotation);
 					Brush_Resize(b, bo[0], bo[1]);
 					doBrush = false;

@@ -488,7 +488,7 @@ typedef struct damageEffect_s {
 	idVec3					localOrigin;
 	idVec3					localNormal;
 	int						time;
-	const idDeclParticle*	type;
+	//const idDeclParticle*	type;
 	struct damageEffect_s *	next;
 } damageEffect_t;
 

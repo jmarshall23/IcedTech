@@ -184,8 +184,6 @@ set(src_game
 	./game/Camera.h
 	./game/Entity.cpp
 	./game/Entity.h
-	./game/Fx.cpp
-	./game/Fx.h
 	./game/Game.def
 	./game/Game.h
 	./game/GameEdit.cpp
@@ -224,8 +222,6 @@ set(src_game
 	./game/script
 	./game/SecurityCamera.cpp
 	./game/SecurityCamera.h
-	./game/SmokeParticles.cpp
-	./game/SmokeParticles.h
 	./game/Sound.cpp
 	./game/Sound.h
 	./game/Target.cpp

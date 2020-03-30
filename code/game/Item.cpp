@@ -599,9 +599,7 @@ void idItem::Event_RespawnFx( void ) {
 		ServerSendEvent( EVENT_RESPAWNFX, NULL, false, -1 );
 	}
 	const char *sfx = spawnArgs.GetString( "fxRespawn" );
-	if ( sfx && *sfx ) {
-		idEntityFx::StartFx( sfx, NULL, NULL, this, true );
-	}
+
 }
 
 /*
@@ -934,7 +932,7 @@ void idMoveableItem::Save( idSaveGame *savefile ) const {
 
 	savefile->WriteClipModel( trigger );
 
-	savefile->WriteParticle( smoke );
+//	savefile->WriteParticle( smoke );
 	savefile->WriteInt( smokeTime );
 }
 
@@ -949,7 +947,7 @@ void idMoveableItem::Restore( idRestoreGame *savefile ) {
 
 	savefile->ReadClipModel( trigger );
 
-	savefile->ReadParticle( smoke );
+	//savefile->ReadParticle( smoke );
 	savefile->ReadInt( smokeTime );
 }
 
@@ -1022,7 +1020,7 @@ void idMoveableItem::Spawn( void ) {
 	smokeTime = 0;
 	const char *smokeName = spawnArgs.GetString( "smoke_trail" );
 	if ( *smokeName != '\0' ) {
-		smoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
+	//	smoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
 		smokeTime = gameLocal.time;
 		BecomeActive( TH_UPDATEPARTICLES );
 	}
@@ -1043,10 +1041,10 @@ void idMoveableItem::Think( void ) {
 	}
 	
 	if ( thinkFlags & TH_UPDATEPARTICLES ) {
-		if ( !gameLocal.smokeParticles->EmitSmoke( smoke, smokeTime, gameLocal.random.CRandomFloat(), GetPhysics()->GetOrigin(), GetPhysics()->GetAxis() ) ) {
-			smokeTime = 0;
-			BecomeInactive( TH_UPDATEPARTICLES );
-		}
+		//if ( !gameLocal.smokeParticles->EmitSmoke( smoke, smokeTime, gameLocal.random.CRandomFloat(), GetPhysics()->GetOrigin(), GetPhysics()->GetAxis() ) ) {
+		//	smokeTime = 0;
+		//	BecomeInactive( TH_UPDATEPARTICLES );
+		//}
 	}
 
 	Present();
@@ -1209,8 +1207,8 @@ void idMoveableItem::Gib( const idVec3 &dir, const char *damageDefName ) {
 	// spawn smoke puff
 	const char *smokeName = spawnArgs.GetString( "smoke_gib" );
 	if ( *smokeName != '\0' ) {
-		const idDeclParticle *smoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
-		gameLocal.smokeParticles->EmitSmoke( smoke, gameLocal.time, gameLocal.random.CRandomFloat(), renderEntity.origin, renderEntity.axis );
+	//	const idDeclParticle *smoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
+	//	gameLocal.smokeParticles->EmitSmoke( smoke, gameLocal.time, gameLocal.random.CRandomFloat(), renderEntity.origin, renderEntity.axis );
 	}
 	// remove the entity
 	PostEventMS( &EV_Remove, 0 );

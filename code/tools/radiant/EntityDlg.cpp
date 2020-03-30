@@ -633,12 +633,12 @@ void CEntityDlg::AddProp() {
 			idVec3	mins, maxs;
 
 			selected_brushes.next->modelHandle = renderModelManager->FindModel( Value );
-			if ( dynamic_cast<idRenderModelPrt*>( selected_brushes.next->modelHandle ) || dynamic_cast<idRenderModelLiquid*>( selected_brushes.next->modelHandle ) ) {
-				bo.Zero();
-				bo.ExpandSelf( 12.0f );
-			} else {
+			//if ( dynamic_cast<idRenderModelPrt*>( selected_brushes.next->modelHandle ) || dynamic_cast<idRenderModelLiquid*>( selected_brushes.next->modelHandle ) ) {
+			//	bo.Zero();
+			//	bo.ExpandSelf( 12.0f );
+			//} else {
 				bo = selected_brushes.next->modelHandle->Bounds( NULL );
-			}
+			//}
 
 			VectorCopy(bo[0], mins);
 			VectorCopy(bo[1], maxs);

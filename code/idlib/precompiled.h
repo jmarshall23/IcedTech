@@ -140,8 +140,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../framework/DeclTable.h"
 #include "../framework/DeclSkin.h"
 #include "../framework/DeclEntityDef.h"
-#include "../framework/DeclFX.h"
-#include "../framework/DeclParticle.h"
 #include "../framework/DeclAF.h"
 #include "../framework/DeclPDA.h"
 

@@ -525,7 +525,7 @@ void idSecurityCamera::Killed( idEntity *inflictor, idEntity *attacker, int dama
 	StopSound( SND_CHANNEL_ANY, false );
 	const char *fx = spawnArgs.GetString( "fx_destroyed" );
 	if ( fx[0] != '\0' ) {
-		idEntityFx::StartFx( fx, NULL, NULL, this, true );
+//		idEntityFx::StartFx( fx, NULL, NULL, this, true );
 	}
 
 	physicsObj.SetSelf( this );
@@ -550,7 +550,7 @@ idSecurityCamera::Pain
 bool idSecurityCamera::Pain( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location ) {
 	const char *fx = spawnArgs.GetString( "fx_damage" );
 	if ( fx[0] != '\0' ) {
-		idEntityFx::StartFx( fx, NULL, NULL, this, true );
+//		idEntityFx::StartFx( fx, NULL, NULL, this, true );
 	}
 	return true;
 }

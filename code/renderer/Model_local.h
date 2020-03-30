@@ -415,30 +415,6 @@ private:
 /*
 ===============================================================================
 
-	PRT model
-
-===============================================================================
-*/
-
-class idRenderModelPrt : public idRenderModelStatic {
-public:
-								idRenderModelPrt();
-
-	virtual void				InitFromFile( const char *fileName );
-	virtual void				TouchData();
-	virtual dynamicModel_t		IsDynamicModel() const;
-	virtual idRenderModel *		InstantiateDynamicModel( const struct renderEntity_t *ent, const struct viewDef_s *view, idRenderModel *cachedModel );
-	virtual idBounds			Bounds( const struct renderEntity_t *ent ) const;
-	virtual float				DepthHack() const;
-	virtual int					Memory() const;
-
-private:
-	const idDeclParticle *		particleSystem;
-};
-
-/*
-===============================================================================
-
 	Beam model
 
 ===============================================================================

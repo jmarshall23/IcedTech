@@ -468,9 +468,9 @@ const char *idAnim::AddFrameCommand( const idDeclModelDef *modelDef, idList<int>
 			return "Unexpected end of line";
 		}
 		fc.type = FC_FX;
-		if ( !declManager->FindType( DECL_FX, token.c_str() ) ) {
-			return va( "fx '%s' not found", token.c_str() );
-		}
+		//if ( !declManager->FindType( DECL_FX, token.c_str() ) ) {
+		//	return va( "fx '%s' not found", token.c_str() );
+		//}
 		fc.string = new idStr( token );
 	} else if ( token == "trigger" ) {
 		if( !src.ReadTokenOnLine( &token ) ) {
@@ -809,7 +809,7 @@ void idAnim::CallFrameCommands( idEntity *ent, int from, int to ) const {
 					break;
 				}
 				case FC_FX: {
-					idEntityFx::StartFx( command.string->c_str(), NULL, NULL, ent, true );
+//					idEntityFx::StartFx( command.string->c_str(), NULL, NULL, ent, true );
 					break;
 				}
 				case FC_SKIN: {

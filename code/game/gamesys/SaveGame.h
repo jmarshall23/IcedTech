@@ -69,8 +69,6 @@ public:
 	void					WriteDict( const idDict *dict );
 	void					WriteMaterial( const idMaterial *material );
 	void					WriteSkin( const idDeclSkin *skin );
-	void					WriteParticle( const idDeclParticle *particle );
-	void					WriteFX( const idDeclFX *fx );
 	void					WriteSoundShader( const idSoundShader *shader );
 	void					WriteModelDef( const class idDeclModelDef *modelDef );
 	void					WriteModel( const idRenderModel *model );
@@ -129,8 +127,6 @@ public:
 	void					ReadDict( idDict *dict );
 	void					ReadMaterial( const idMaterial *&material );
 	void					ReadSkin( const idDeclSkin *&skin );
-	void					ReadParticle( const idDeclParticle *&particle );
-	void					ReadFX( const idDeclFX *&fx );
 	void					ReadSoundShader( const idSoundShader *&shader );
 	void					ReadModelDef( const idDeclModelDef *&modelDef );
 	void					ReadModel( idRenderModel *&model );

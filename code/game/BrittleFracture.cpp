@@ -863,7 +863,7 @@ void idBrittleFracture::Shatter( const idVec3 &point, const idVec3 &impulse, con
 	}
 
 	if ( fxFracture.Length() ) {
-		idEntityFx::StartFx( fxFracture, &point, &GetPhysics()->GetAxis(), this, true );
+//		idEntityFx::StartFx( fxFracture, &point, &GetPhysics()->GetAxis(), this, true );
 	}
 
 	dir = impulse;

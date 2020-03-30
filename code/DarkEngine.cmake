@@ -37,12 +37,8 @@ set(src_engine
 	./framework/DeclAF.h
 	./framework/DeclEntityDef.cpp
 	./framework/DeclEntityDef.h
-	./framework/DeclFX.cpp
-	./framework/DeclFX.h
 	./framework/DeclManager.cpp
 	./framework/DeclManager.h
-	./framework/DeclParticle.cpp
-	./framework/DeclParticle.h
 	./framework/DeclPDA.cpp
 	./framework/DeclPDA.h
 	./framework/DeclSkin.cpp
@@ -165,7 +161,6 @@ set(src_engine
 	./renderer/Model_md3.h
 	./renderer/Model_md5.cpp
 	./renderer/Model_obj.cpp
-	./renderer/Model_prt.cpp
 	./renderer/Model_sprite.cpp
 	./renderer/Model_terrain.cpp
 	./renderer/qgllib

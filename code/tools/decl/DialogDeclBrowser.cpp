@@ -309,12 +309,6 @@ void DialogDeclBrowser::EditSelected( void ) const {
 			AFEditorInit( &spawnArgs );
 			break;
 		}
-		case DECL_PARTICLE: {
-			decl = declManager->DeclByIndex( type, index, false );
-			spawnArgs.Set( "model", decl->GetName() );
-			ParticleEditorInit( &spawnArgs );
-			break;
-		}
 		case DECL_PDA: {
 			decl = declManager->DeclByIndex( type, index, false );
 			spawnArgs.Set( "pda", decl->GetName() );

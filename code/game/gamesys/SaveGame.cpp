@@ -400,32 +400,6 @@ void idSaveGame::WriteSkin( const idDeclSkin *skin ) {
 
 /*
 ================
-idSaveGame::WriteParticle
-================
-*/
-void idSaveGame::WriteParticle( const idDeclParticle *particle ) {
-	if ( !particle ) {
-		WriteString( "" );
-	} else {
-		WriteString( particle->GetName() );
-	}
-}
-
-/*
-================
-idSaveGame::WriteFX
-================
-*/
-void idSaveGame::WriteFX( const idDeclFX *fx ) {
-	if ( !fx ) {
-		WriteString( "" );
-	} else {
-		WriteString( fx->GetName() );
-	}
-}
-
-/*
-================
 idSaveGame::WriteModelDef
 ================
 */
@@ -1148,38 +1122,6 @@ void idRestoreGame::ReadSkin( const idDeclSkin *&skin ) {
 		skin = NULL;
 	} else {
 		skin = declManager->FindSkin( name );
-	}
-}
-
-/*
-================
-idRestoreGame::ReadParticle
-================
-*/
-void idRestoreGame::ReadParticle( const idDeclParticle *&particle ) {
-	idStr name;
-
-	ReadString( name );
-	if ( !name.Length() ) {
-		particle = NULL;
-	} else {
-		particle = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, name ) );
-	}
-}
-
-/*
-================
-idRestoreGame::ReadFX
-================
-*/
-void idRestoreGame::ReadFX( const idDeclFX *&fx ) {
-	idStr name;
-
-	ReadString( name );
-	if ( !name.Length() ) {
-		fx = NULL;
-	} else {
-		fx = static_cast<const idDeclFX *>( declManager->FindType( DECL_FX, name ) );
 	}
 }
 

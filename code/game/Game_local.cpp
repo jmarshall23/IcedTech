@@ -201,7 +201,7 @@ void idGameLocal::Clear( void ) {
 	pvs.Shutdown();
 	sessionCommand.Clear();
 	locationEntities = NULL;
-	smokeParticles = NULL;
+//	smokeParticles = NULL;
 	editEntities = NULL;
 	clientSpawnCount = INITIAL_SPAWN_COUNT;
 	entityHash.Clear( 1024, MAX_GENTITIES );
@@ -290,8 +290,8 @@ void idGameLocal::Init( void ) {
 
 	// register game specific decl folders
 	declManager->RegisterDeclFolder( "def",				".def",				DECL_ENTITYDEF );
-	declManager->RegisterDeclFolder( "fx",				".fx",				DECL_FX );
-	declManager->RegisterDeclFolder( "particles",		".prt",				DECL_PARTICLE );
+//	declManager->RegisterDeclFolder( "fx",				".fx",				DECL_FX );
+//	declManager->RegisterDeclFolder( "particles",		".prt",				DECL_PARTICLE );
 	declManager->RegisterDeclFolder( "af",				".af",				DECL_AF );
 	declManager->RegisterDeclFolder( "newpdas",			".pda",				DECL_PDA );
 
@@ -309,8 +309,6 @@ void idGameLocal::Init( void ) {
 
 	// load default scripts
 	program.Startup( SCRIPT_DEFAULT );
-	
-	smokeParticles = new idSmokeParticles;
 
 	// init the game render system.
 	InitGameRenderSystem();
@@ -379,8 +377,8 @@ void idGameLocal::Shutdown( void ) {
 	delete[] locationEntities;
 	locationEntities = NULL;
 
-	delete smokeParticles;
-	smokeParticles = NULL;
+//	delete smokeParticles;
+//	smokeParticles = NULL;
 
 	idClass::Shutdown();
 
@@ -948,9 +946,6 @@ void idGameLocal::LoadMap( const char *mapName, int randseed ) {
 	playerPVS.i = -1;
 	playerConnectedAreas.i = -1;
 
-	// clear the smoke particle free list
-	smokeParticles->Init();
-
 	// cache miscellanious media references
 	FindEntityDef( "preCacheExtras", false );
 
@@ -981,9 +976,6 @@ void idGameLocal::LocalMapRestart( ) {
 	savedEventQueue.Shutdown();
 
 	MapClear( false );
-
-	// clear the smoke particle free list
-	smokeParticles->Init();
 
 	// clear the sound system
 	if ( gameSoundWorld ) {
@@ -1523,10 +1515,6 @@ void idGameLocal::MapShutdown( void ) {
 	// reset the script to the state it was before the map was started
 	program.Restart();
 
-	if ( smokeParticles ) {
-		smokeParticles->Shutdown();
-	}
-
 	pvs.Shutdown();
 
 	clip.Shutdown();
@@ -1771,14 +1759,14 @@ void idGameLocal::CacheDictionaryMedia( const idDict *dict ) {
 	if ( kv && kv->GetValue().Length() ) {
 		int teleportType = atoi( kv->GetValue() );
 		const char *p = ( teleportType ) ? va( "fx/teleporter%i.fx", teleportType ) : "fx/teleporter.fx";
-		declManager->FindType( DECL_FX, p );
+//		declManager->FindType( DECL_FX, p );
 	}
 
 	kv = dict->MatchPrefix( "fx", NULL );
 	while( kv ) {
 		if ( kv->GetValue().Length() ) {
 			declManager->MediaPrint( "Precaching fx %s\n", kv->GetValue().c_str() );
-			declManager->FindType( DECL_FX, kv->GetValue() );
+//			declManager->FindType( DECL_FX, kv->GetValue() );
 		}
 		kv = dict->MatchPrefix( "fx", kv );
 	}
@@ -1791,7 +1779,7 @@ void idGameLocal::CacheDictionaryMedia( const idDict *dict ) {
 			if ( dash > 0 ) {
 				prtName = prtName.Left( dash );
 			}
-			declManager->FindType( DECL_PARTICLE, prtName );
+//			declManager->FindType( DECL_PARTICLE, prtName );
 		}
 		kv = dict->MatchPrefix( "smoke", kv );
 	}
@@ -2291,9 +2279,6 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 
 		// set the user commands for this frame
 		memcpy( usercmds, clientCmds, numClients * sizeof( usercmds[ 0 ] ) );
-
-		// free old smoke particles
-		smokeParticles->FreeSmokes();
 
 		// process events on the server
 		ServerProcessEntityNetworkEventQueue();

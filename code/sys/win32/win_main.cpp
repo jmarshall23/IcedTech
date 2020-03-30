@@ -1212,7 +1212,7 @@ int WINAPI DoomMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				}
 				if ( com_editors & EDITOR_PARTICLE ) {
 					// in-game Particle Editor
-					ParticleEditorRun();
+					//ParticleEditorRun();
 				}
 				if ( com_editors & EDITOR_SCRIPT ) {
 					// in-game Script Editor

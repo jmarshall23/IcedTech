@@ -337,10 +337,10 @@ void idWeapon::Save( idSaveGame *savefile ) const {
 
 	savefile->WriteSoundShader( sndHum );
 
-	savefile->WriteParticle( weaponSmoke );
+//	savefile->WriteParticle( weaponSmoke );
 	savefile->WriteInt( weaponSmokeStartTime );
 	savefile->WriteBool( continuousSmoke );
-	savefile->WriteParticle( strikeSmoke );
+//	savefile->WriteParticle( strikeSmoke );
 	savefile->WriteInt( strikeSmokeStartTime );
 	savefile->WriteVec3( strikePos );
 	savefile->WriteMat3( strikeAxis );
@@ -486,10 +486,10 @@ void idWeapon::Restore( idRestoreGame *savefile ) {
 
 	savefile->ReadSoundShader( sndHum );
 
-	savefile->ReadParticle( weaponSmoke );
+//	savefile->ReadParticle( weaponSmoke );
 	savefile->ReadInt( weaponSmokeStartTime );
 	savefile->ReadBool( continuousSmoke );
-	savefile->ReadParticle( strikeSmoke );
+//	savefile->ReadParticle( strikeSmoke );
 	savefile->ReadInt( strikeSmokeStartTime );
 	savefile->ReadVec3( strikePos );
 	savefile->ReadMat3( strikeAxis );
@@ -803,7 +803,7 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 	// muzzle smoke
 	smokeName = weaponDef->dict.GetString( "smoke_muzzle" );
 	if ( *smokeName != '\0' ) {
-		weaponSmoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
+//		weaponSmoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
 	}
 	else {
 		weaponSmoke = NULL;
@@ -813,7 +813,7 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 
 	smokeName = weaponDef->dict.GetString( "smoke_strike" );
 	if ( *smokeName != '\0' ) {
-		strikeSmoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
+//		strikeSmoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
 	}
 	else {
 		strikeSmoke = NULL;
@@ -1871,16 +1871,16 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 			muzzleAxis = playerViewAxis;
 		}
 		// spit out a particle
-		if ( !gameLocal.smokeParticles->EmitSmoke( weaponSmoke, weaponSmokeStartTime, gameLocal.random.RandomFloat(), muzzleOrigin, muzzleAxis ) ) {
-			weaponSmokeStartTime = ( continuousSmoke ) ? gameLocal.time : 0;
-		}
+//		if ( !gameLocal.smokeParticles->EmitSmoke( weaponSmoke, weaponSmokeStartTime, gameLocal.random.RandomFloat(), muzzleOrigin, muzzleAxis ) ) {
+//			weaponSmokeStartTime = ( continuousSmoke ) ? gameLocal.time : 0;
+//		}
 	}
 
 	if ( showViewModel && strikeSmoke && strikeSmokeStartTime != 0 ) {
 		// spit out a particle
-		if ( !gameLocal.smokeParticles->EmitSmoke( strikeSmoke, strikeSmokeStartTime, gameLocal.random.RandomFloat(), strikePos, strikeAxis ) ) {
-			strikeSmokeStartTime = 0;
-		}
+		//if ( !gameLocal.smokeParticles->EmitSmoke( strikeSmoke, strikeSmokeStartTime, gameLocal.random.RandomFloat(), strikePos, strikeAxis ) ) {
+		//	strikeSmokeStartTime = 0;
+		//}
 	}
 
 	// remove the muzzle flash light when it's done

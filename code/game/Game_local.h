@@ -331,7 +331,6 @@ public:
 
 	idMultiplayerGame		mpGame;					// handles rules for standard dm
 
-	idSmokeParticles *		smokeParticles;			// global smoke trails
 	idEditEntities *		editEntities;			// in game editing
 
 	int						cinematicSkipTime;		// don't allow skipping cinemetics until this time has passed so player doesn't skip out accidently from a firefight
@@ -843,8 +842,6 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "physics/Physics_RigidBody.h"
 #include "physics/Physics_AF.h"
 
-#include "SmokeParticles.h"
-
 #include "Entity.h"
 
 #include "client/ClientEntity.h"
@@ -872,7 +869,6 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "Target.h"
 #include "Trigger.h"
 #include "Sound.h"
-#include "Fx.h"
 #include "SecurityCamera.h"
 #include "BrittleFracture.h"
 

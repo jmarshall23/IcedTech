@@ -184,12 +184,6 @@ void DialogDeclEditor::LoadDecl( idDecl *decl ) {
 		case DECL_SOUND:
 			declEdit.LoadKeyWordsFromFile( "editors/sound.def" );
 			break;
-		case DECL_FX:
-			declEdit.LoadKeyWordsFromFile( "editors/fx.def" );
-			break;
-		case DECL_PARTICLE:
-			declEdit.LoadKeyWordsFromFile( "editors/particle.def" );
-			break;
 		case DECL_AF:
 			declEdit.LoadKeyWordsFromFile( "editors/af.def" );
 			break;

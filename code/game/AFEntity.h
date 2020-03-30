@@ -331,7 +331,6 @@ protected:
 	float					wheelRadius;
 	float					steerAngle;
 	float					steerSpeed;
-	const idDeclParticle *	dustSmoke;
 
 	float					GetSteerAngle( void );
 };

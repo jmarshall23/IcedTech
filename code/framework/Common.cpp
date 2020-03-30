@@ -989,8 +989,6 @@ void idCommonLocal::InitTool( const toolFlag_t tool, const idDict *dict ) {
 		SoundEditorInit( dict );
 	} else if ( tool & EDITOR_LIGHT ) {
 		LightEditorInit( dict );
-	} else if ( tool & EDITOR_PARTICLE ) {
-		ParticleEditorInit( dict );
 	} else if ( tool & EDITOR_AF ) {
 		AFEditorInit( dict );
 	}
@@ -1260,15 +1258,6 @@ Com_EditAFs_f
 */
 static void Com_EditAFs_f( const idCmdArgs &args ) {
 	AFEditorInit( NULL );
-}
-
-/*
-==================
-Com_EditParticles_f
-==================
-*/
-static void Com_EditParticles_f( const idCmdArgs &args ) {
-	ParticleEditorInit( NULL );
 }
 
 /*
@@ -2355,7 +2344,6 @@ void idCommonLocal::InitCommands( void ) {
 	cmdSystem->AddCommand( "editSounds", Com_EditSounds_f, CMD_FL_TOOL, "launches the in-game Sound Editor" );
 	cmdSystem->AddCommand( "editDecls", Com_EditDecls_f, CMD_FL_TOOL, "launches the in-game Declaration Editor" );
 	cmdSystem->AddCommand( "editAFs", Com_EditAFs_f, CMD_FL_TOOL, "launches the in-game Articulated Figure Editor" );
-	cmdSystem->AddCommand( "editParticles", Com_EditParticles_f, CMD_FL_TOOL, "launches the in-game Particle Editor" );
 	cmdSystem->AddCommand( "editScripts", Com_EditScripts_f, CMD_FL_TOOL, "launches the in-game Script Editor" );
 	cmdSystem->AddCommand( "editGUIs", Com_EditGUIs_f, CMD_FL_TOOL, "launches the GUI Editor" );
 	cmdSystem->AddCommand( "editPDAs", Com_EditPDAs_f, CMD_FL_TOOL, "launches the in-game PDA Editor" );

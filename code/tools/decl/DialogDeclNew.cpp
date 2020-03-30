@@ -206,8 +206,6 @@ void DialogDeclNew::OnBnClickedFile() {
 		case DECL_SOUND:		folder = "sound";		ext = "(*.sndshd|*.sndshd|(*.*)|*.*||";				break;
 		case DECL_ENTITYDEF:	folder = "def";			ext = "(*.def)|*.def|(*.decl)|*.decl|(*.*)|*.*||";	break;
 		case DECL_MODELDEF:		folder = "def";			ext = "(*.def)|*.def|(*.*)|*.*||";					break;
-		case DECL_FX:			folder = "fx";			ext = "(*.fx)|*.fx|(*.*)|*.*||";					break;
-		case DECL_PARTICLE:		folder = "particles";	ext = "(*.prt)|*.prt|(*.*)|*.*||";					break;
 		case DECL_AF:			folder = "af";			ext = "(*.af)|*.af|(*.*)|*.*||";					break;
 		default:				folder = "def";			ext = "(*.decl)|*.decl|(*.*)|*.*||";				break;
 	}

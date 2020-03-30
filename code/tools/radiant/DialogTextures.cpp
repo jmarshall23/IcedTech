@@ -714,21 +714,21 @@ void CDialogTextures::addMaterials( bool rootItems ) {
  =======================================================================================================================
  */
 void CDialogTextures::addParticles( bool rootItems ) {
-	idStrList list(1024);
-	int count = declManager->GetNumDecls( DECL_PARTICLE );
-	if (count > 0) {
-		for (int i = 0; i < count; i++) {
-			const idDecl *ips = declManager->DeclByIndex( DECL_PARTICLE, i, false );
-			if (!rootItems) {
-				if (strchr(ips->GetName(), '/') == NULL && strchr(ips->GetName(), '\\') == NULL) {
-					continue;
-				}
-			}
-			list.Append(ips->GetName());
-		}
-		idStrListSortPaths( list );
-		addStrList( TypeNames[PARTICLES], list, PARTICLES );
-	}
+	//idStrList list(1024);
+	//int count = declManager->GetNumDecls( DECL_PARTICLE );
+	//if (count > 0) {
+	//	for (int i = 0; i < count; i++) {
+	//		const idDecl *ips = declManager->DeclByIndex( DECL_PARTICLE, i, false );
+	//		if (!rootItems) {
+	//			if (strchr(ips->GetName(), '/') == NULL && strchr(ips->GetName(), '\\') == NULL) {
+	//				continue;
+	//			}
+	//		}
+	//		list.Append(ips->GetName());
+	//	}
+	//	idStrListSortPaths( list );
+	//	addStrList( TypeNames[PARTICLES], list, PARTICLES );
+	//}
 }
 
 /*

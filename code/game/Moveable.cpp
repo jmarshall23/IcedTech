@@ -294,7 +294,7 @@ bool idMoveable::Collide( const trace_t &collision, const idVec3 &velocity ) {
 	}
 
 	if ( fxCollide.Length() && gameLocal.time > nextCollideFxTime ) {
-		idEntityFx::StartFx( fxCollide, &collision.c.point, NULL, this, false );
+//		idEntityFx::StartFx( fxCollide, &collision.c.point, NULL, this, false );
 		nextCollideFxTime = gameLocal.time + 3500;
 	}
 

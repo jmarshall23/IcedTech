@@ -4606,7 +4606,7 @@ idEntity::Event_StartFx
 ================
 */
 void idEntity::Event_StartFx( const char *fx ) {
-	idEntityFx::StartFx( fx, NULL, NULL, this, true );
+//	idEntityFx::StartFx( fx, NULL, NULL, this, true );
 }
 
 /*
@@ -5349,7 +5349,7 @@ void idAnimatedEntity::AddLocalDamageEffect( jointHandle_t jointNum, const idVec
 		de->jointNum = jointNum;
 		de->localOrigin = localOrigin;
 		de->localNormal = localNormal;
-		de->type = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, bleed ) );
+//		de->type = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, bleed ) );
 		de->time = gameLocal.time;
 	}
 }
@@ -5387,9 +5387,9 @@ void idAnimatedEntity::UpdateDamageEffects( void ) {
 		axis *= renderEntity.axis;
 		origin = renderEntity.origin + origin * renderEntity.axis;
 		start = origin + de->localOrigin * axis;
-		if ( !gameLocal.smokeParticles->EmitSmoke( de->type, de->time, gameLocal.random.CRandomFloat(), start, axis ) ) {
-			de->time = 0;
-		}
+//		if ( !gameLocal.smokeParticles->EmitSmoke( de->type, de->time, gameLocal.random.CRandomFloat(), start, axis ) ) {
+//			de->time = 0;
+//		}
 	}
 }
 

@@ -6140,7 +6140,7 @@ void idPlayer::StartFxOnBone( const char *fx, const char *bone ) {
 		axis = axis * GetPhysics()->GetAxis();
 	}
 
-	idEntityFx::StartFx( fx, &offset, &axis, this, true );
+//	idEntityFx::StartFx( fx, &offset, &axis, this, true );
 }
 
 /*

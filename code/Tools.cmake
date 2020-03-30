@@ -150,7 +150,6 @@ set(src_tools
 	./tools/materialeditor/MEOptions.cpp
 	./tools/materialeditor/StageView.cpp
 	./tools/materialeditor/ToggleListView.cpp
-	./tools/particle/DialogParticleEditor.cpp
 	./tools/pda/DialogPDAEditor.cpp
 	./tools/radiant/autocaulk.cpp
 	./tools/radiant/CameraTargetDlg.cpp
@@ -336,7 +335,6 @@ set(src_tools
 	./tools/materialeditor/MEOptions.h
 	./tools/materialeditor/StageView.h
 	./tools/materialeditor/ToggleListView.h
-	./tools/particle/DialogParticleEditor.h
 	./tools/pda/DialogPDAEditor.h
 	./tools/radiant/autocaulk.h
 	./tools/radiant/CameraTargetDlg.h

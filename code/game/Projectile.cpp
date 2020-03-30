@@ -124,7 +124,7 @@ void idProjectile::Save( idSaveGame *savefile ) const {
 	savefile->WriteInt( lightEndTime );
 	savefile->WriteVec3( lightColor );
 
-	savefile->WriteParticle( smokeFly );
+//	savefile->WriteParticle( smokeFly );
 	savefile->WriteInt( smokeFlyTime );
 
 	savefile->WriteInt( (int)state );
@@ -157,7 +157,7 @@ void idProjectile::Restore( idRestoreGame *savefile ) {
 	savefile->ReadInt( lightEndTime );
 	savefile->ReadVec3( lightColor );
 
-	savefile->ReadParticle( smokeFly );
+//	savefile->ReadParticle( smokeFly );
 	savefile->ReadInt( smokeFlyTime );
 
 	savefile->ReadInt( (int &)state );
@@ -174,7 +174,7 @@ void idProjectile::Restore( idRestoreGame *savefile ) {
 		idVec3 dir;
 		dir = physicsObj.GetLinearVelocity();
 		dir.NormalizeFast();
-		gameLocal.smokeParticles->EmitSmoke( smokeFly, gameLocal.time, gameLocal.random.RandomFloat(), GetPhysics()->GetOrigin(), GetPhysics()->GetAxis() );
+//		gameLocal.smokeParticles->EmitSmoke( smokeFly, gameLocal.time, gameLocal.random.RandomFloat(), GetPhysics()->GetOrigin(), GetPhysics()->GetAxis() );
 	}
 }
 
@@ -412,7 +412,7 @@ void idProjectile::Launch( const idVec3 &start, const idVec3 &dir, const idVec3 
 	smokeFlyTime = 0;
 	const char *smokeName = spawnArgs.GetString( "smoke_fly" );
 	if ( *smokeName != '\0' ) {
-		smokeFly = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
+//		smokeFly = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
 		smokeFlyTime = gameLocal.time;
 	}
 
@@ -452,9 +452,9 @@ void idProjectile::Think( void ) {
 	if ( smokeFly != NULL && smokeFlyTime && !IsHidden() ) {
 		idVec3 dir = -GetPhysics()->GetLinearVelocity();
 		dir.Normalize();
-		if ( !gameLocal.smokeParticles->EmitSmoke( smokeFly, smokeFlyTime, gameLocal.random.RandomFloat(), GetPhysics()->GetOrigin(), dir.ToMat3() ) ) {
-			smokeFlyTime = gameLocal.time;
-		}
+//		if ( !gameLocal.smokeParticles->EmitSmoke( smokeFly, smokeFlyTime, gameLocal.random.RandomFloat(), GetPhysics()->GetOrigin(), dir.ToMat3() ) ) {
+//			smokeFlyTime = gameLocal.time;
+//		}
 	}
 
 	// add the light
@@ -1455,7 +1455,7 @@ void idSoulCubeMissile::Save( idSaveGame *savefile ) const {
 	savefile->WriteInt( orbitTime );
 	savefile->WriteVec3( orbitOrg );
 	savefile->WriteInt( smokeKillTime );
-	savefile->WriteParticle( smokeKill );
+//	savefile->WriteParticle( smokeKill );
 }
 
 /*
@@ -1474,7 +1474,7 @@ void idSoulCubeMissile::Restore( idRestoreGame *savefile ) {
 	savefile->ReadInt( orbitTime );
 	savefile->ReadVec3( orbitOrg );
 	savefile->ReadInt( smokeKillTime );
-	savefile->ReadParticle( smokeKill );
+//	savefile->ReadParticle( smokeKill );
 }
 
 /*
@@ -1496,7 +1496,7 @@ void idSoulCubeMissile::KillTarget( const idVec3 &dir ) {
 		smokeKillTime = 0;
 		smokeName = spawnArgs.GetString( "smoke_kill" );
 		if ( *smokeName != '\0' ) {
-			smokeKill = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
+//			smokeKill = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
 			smokeKillTime = gameLocal.time;
 		}
 		ownerEnt = owner.GetEntity();
@@ -1523,9 +1523,9 @@ void idSoulCubeMissile::Think( void ) {
 		if ( killPhase ) {
 			// orbit the mob, cascading down
 			if ( gameLocal.time < orbitTime + 1500 ) {
-				if ( !gameLocal.smokeParticles->EmitSmoke( smokeKill, smokeKillTime, gameLocal.random.CRandomFloat(), orbitOrg, mat3_identity ) ) {
-					smokeKillTime = gameLocal.time;
-				}
+//				if ( !gameLocal.smokeParticles->EmitSmoke( smokeKill, smokeKillTime, gameLocal.random.CRandomFloat(), orbitOrg, mat3_identity ) ) {
+//					smokeKillTime = gameLocal.time;
+//				}
 			} 
 		} else  {
 			if ( accelTime && gameLocal.time < launchTime + accelTime * 1000 ) {

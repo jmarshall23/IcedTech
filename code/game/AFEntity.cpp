@@ -1606,7 +1606,7 @@ idAFEntity_Vehicle::idAFEntity_Vehicle( void ) {
 	wheelRadius			= 0.0f;
 	steerAngle			= 0.0f;
 	steerSpeed			= 0.0f;
-	dustSmoke			= NULL;
+//	dustSmoke			= NULL;
 }
 
 /*
@@ -1645,7 +1645,7 @@ void idAFEntity_Vehicle::Spawn( void ) {
 
 	const char *smokeName = spawnArgs.GetString( "smoke_vehicle_dust", "muzzlesmoke" );
 	if ( *smokeName != '\0' ) {
-		dustSmoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
+//		dustSmoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
 	}
 }
 
@@ -2061,7 +2061,7 @@ void idAFEntity_VehicleFourWheels::Think( void ) {
 			for ( i = 0; i < 4; i++ ) {
 				numContacts = af.GetPhysics()->GetBodyContactConstraints( wheels[i]->GetClipModel()->GetId(), contacts, 2 );
 				for ( int j = 0; j < numContacts; j++ ) {
-					gameLocal.smokeParticles->EmitSmoke( dustSmoke, gameLocal.time, gameLocal.random.RandomFloat(), contacts[j]->GetContact().point, contacts[j]->GetContact().normal.ToMat3() );
+//					gameLocal.smokeParticles->EmitSmoke( dustSmoke, gameLocal.time, gameLocal.random.RandomFloat(), contacts[j]->GetContact().point, contacts[j]->GetContact().normal.ToMat3() );
 				}
 			}
 		}
@@ -2253,7 +2253,7 @@ void idAFEntity_VehicleSixWheels::Think( void ) {
 			for ( i = 0; i < 6; i++ ) {
 				numContacts = af.GetPhysics()->GetBodyContactConstraints( wheels[i]->GetClipModel()->GetId(), contacts, 2 );
 				for ( int j = 0; j < numContacts; j++ ) {
-					gameLocal.smokeParticles->EmitSmoke( dustSmoke, gameLocal.time, gameLocal.random.RandomFloat(), contacts[j]->GetContact().point, contacts[j]->GetContact().normal.ToMat3() );
+//					gameLocal.smokeParticles->EmitSmoke( dustSmoke, gameLocal.time, gameLocal.random.RandomFloat(), contacts[j]->GetContact().point, contacts[j]->GetContact().normal.ToMat3() );
 				}
 			}
 		}

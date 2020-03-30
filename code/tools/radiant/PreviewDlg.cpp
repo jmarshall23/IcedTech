@@ -619,20 +619,20 @@ void CPreviewDlg::AddMaterials(bool rootItems) {
 
 void CPreviewDlg::AddParticles(bool rootItems) {
 	idStrList list(1024);
-	int count = declManager->GetNumDecls( DECL_PARTICLE );
-	if (count > 0) {
-		for (int i = 0; i < count; i++) {
-			const idDecl *ips = declManager->DeclByIndex( DECL_PARTICLE, i );
-			if (!rootItems) {
-				if (strchr(ips->GetName(), '/') == NULL && strchr(ips->GetName(), '\\') == NULL) {
-					continue;
-				}
-			}
-			list.Append(ips->GetName());
-		}
-		list.Sort();
-		AddStrList("Particles", list, PARTICLES);
-	}
+//	int count = declManager->GetNumDecls( DECL_PARTICLE );
+//	if (count > 0) {
+//		for (int i = 0; i < count; i++) {
+//			const idDecl *ips = declManager->DeclByIndex( DECL_PARTICLE, i );
+//			if (!rootItems) {
+//				if (strchr(ips->GetName(), '/') == NULL && strchr(ips->GetName(), '\\') == NULL) {
+//					continue;
+//				}
+//			}
+//			list.Append(ips->GetName());
+//		}
+//		list.Sort();
+//		AddStrList("Particles", list, PARTICLES);
+//	}
 }
 
 void CPreviewDlg::AddSkins( bool rootItems ) {
