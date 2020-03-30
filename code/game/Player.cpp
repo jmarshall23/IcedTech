@@ -2771,7 +2771,9 @@ void idPlayer::UpdateConditions( void ) {
 		AI_STRAFE_RIGHT	= false;
 	}
 
-	AI_RUN			= ( usercmd.buttons & BUTTON_RUN ) && ( ( !pm_stamina.GetFloat() ) || ( stamina > pm_staminathreshold.GetFloat() ) );
+// jmarshall - always run.
+	AI_RUN			= true; // (usercmd.buttons & BUTTON_RUN) && ((!pm_stamina.GetFloat()) || (stamina > pm_staminathreshold.GetFloat()));
+// jmarshall end
 	AI_DEAD			= ( health <= 0 );
 }
 
@@ -5741,7 +5743,8 @@ void idPlayer::AdjustSpeed( void ) {
 	} else if ( noclip ) {
 		speed = pm_noclipspeed.GetFloat();
 		bobFrac = 0.0f;
-	} else if ( !physicsObj.OnLadder() && ( usercmd.buttons & BUTTON_RUN ) && ( usercmd.forwardmove || usercmd.rightmove ) && ( usercmd.upmove >= 0 ) ) {
+// jmarshall: always run. 
+	} else if ( !physicsObj.OnLadder() /*&& ( usercmd.buttons & BUTTON_RUN )*/ && ( usercmd.forwardmove || usercmd.rightmove ) && ( usercmd.upmove >= 0 ) ) {
 		if ( !gameLocal.isMultiplayer && !physicsObj.IsCrouching() && !PowerUpActive( ADRENALINE ) ) {
 			stamina -= MS2SEC( gameLocal.msec );
 		}
