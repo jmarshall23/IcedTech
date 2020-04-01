@@ -116,8 +116,8 @@ SURFACES
 ==============================================================================
 */
 
-#include "ModelDecal.h"
-#include "ModelOverlay.h"
+#include "../model/ModelDecal.h"
+#include "../model/ModelOverlay.h"
 #include "Interaction.h"
 
 

@@ -33,7 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <GL/glu.h>
 
 #include "../../renderer/tr_local.h"
-#include "../../renderer/model_local.h"	// for idRenderModelMD5
+#include "../../model/model_local.h"	// for idRenderModelMD5
 
 void	Brush_UpdateLightPoints(brush_t *b, const idVec3 &offset);
 void Brush_DrawCurve( brush_t *b, bool bSelected, bool cam );

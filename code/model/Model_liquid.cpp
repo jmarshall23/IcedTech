@@ -29,7 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "engine_precompiled.h"
 #pragma hdrstop
 
-#include "tr_local.h"
+#include "../renderer/tr_local.h"
 #include "Model_local.h"
 
 #define LIQUID_MAX_SKIP_FRAMES	5

@@ -92,6 +92,36 @@ set(src_engine
 	./navigation/Nav_Manager.cpp
 	./navigation/Nav_local.h
 
+	#Model
+	./model/Model.cpp
+	./model/Model.h
+	./model/ModelDecal.cpp
+	./model/ModelDecal.h
+	./model/ModelManager.cpp
+	./model/ModelManager.h
+	./model/ModelOverlay.cpp
+	./model/ModelOverlay.h
+	./model/Model_ase.cpp
+	./model/Model_ase.h
+	./model/Model_mdr.cpp
+	./model/Model_mdr.h
+	./model/Model_beam.cpp
+	./model/Model_ColladaHelper.h
+	./model/Model_ColladaParser.cpp
+	./model/Model_ColladaParser.h
+	./model/Model_liquid.cpp
+	./model/Model_local.h
+	./model/Model_lwo.cpp
+	./model/Model_lwo.h
+	./model/Model_ma.cpp
+	./model/Model_ma.h
+	./model/Model_md3.cpp
+	./model/Model_md3.h
+	./model/Model_md5.cpp
+	./model/Model_obj.cpp
+	./model/Model_sprite.cpp
+	./model/Model_terrain.cpp
+
 	#Renderer
 	./renderer/BinaryImage.cpp
 	./renderer/BinaryImage.h
@@ -135,34 +165,6 @@ set(src_engine
 	./renderer/MegaTexture.h
 	./renderer/MegaTextureBuild.cpp
 	./renderer/MegaTextureFile.cpp
-	./renderer/Model.cpp
-	./renderer/Model.h
-	./renderer/ModelDecal.cpp
-	./renderer/ModelDecal.h
-	./renderer/ModelManager.cpp
-	./renderer/ModelManager.h
-	./renderer/ModelOverlay.cpp
-	./renderer/ModelOverlay.h
-	./renderer/Model_ase.cpp
-	./renderer/Model_ase.h
-	./renderer/Model_mdr.cpp
-	./renderer/Model_mdr.h
-	./renderer/Model_beam.cpp
-	./renderer/Model_ColladaHelper.h
-	./renderer/Model_ColladaParser.cpp
-	./renderer/Model_ColladaParser.h
-	./renderer/Model_liquid.cpp
-	./renderer/Model_local.h
-	./renderer/Model_lwo.cpp
-	./renderer/Model_lwo.h
-	./renderer/Model_ma.cpp
-	./renderer/Model_ma.h
-	./renderer/Model_md3.cpp
-	./renderer/Model_md3.h
-	./renderer/Model_md5.cpp
-	./renderer/Model_obj.cpp
-	./renderer/Model_sprite.cpp
-	./renderer/Model_terrain.cpp
 	./renderer/qgllib
 	./renderer/RenderEntity.cpp
 	./renderer/RenderMatrix.cpp

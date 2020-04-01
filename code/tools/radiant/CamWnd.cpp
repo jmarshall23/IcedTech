@@ -37,7 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <GL/glu.h>
 
 #include "../../renderer/tr_local.h"
-#include "../../renderer/model_local.h"	// for idRenderModelMD5
+#include "../../model/model_local.h"	// for idRenderModelMD5
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW

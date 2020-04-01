@@ -37,7 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "PreviewDlg.h"
 #include "CurveDlg.h"
 
-#include "../../renderer/model_local.h"		// for idRenderModelPrt
+#include "../../model/model_local.h"		// for idRenderModelPrt
 
 void	Select_Ungroup();
 

@@ -30,6 +30,8 @@ If you have questions concerning this license or the applicable additional terms
 #define __MODEL_LOCAL_H__
 
 class ColladaParser;
+struct rvmEffect_t;
+struct rvmEffectSimulation_t;
 
 /*
 ===============================================================================
@@ -492,6 +494,31 @@ public:
 	virtual	bool			IsLoaded() const;
 	virtual	idRenderModel *	InstantiateDynamicModel( const struct renderEntity_t *ent, const struct viewDef_s *view, idRenderModel *cachedModel );
 	virtual	idBounds		Bounds( const struct renderEntity_t *ent ) const;
+};
+
+
+/*
+===============================================================================
+
+	FX animated model
+
+===============================================================================
+*/
+class rvmRenderModelFX : public idRenderModelStatic {
+public:
+							rvmRenderModelFX();
+							~rvmRenderModelFX();
+
+	virtual void			InitFromFile(const char* fileName);
+	virtual	dynamicModel_t	IsDynamicModel() const;
+	virtual	bool			IsLoaded() const;
+	virtual	idRenderModel*  InstantiateDynamicModel(const struct renderEntity_t* ent, const struct viewDef_s* view, idRenderModel* cachedModel);
+	virtual	idBounds		Bounds(const struct renderEntity_t* ent) const;
+private:
+	void					ParseEffect(rvmEffect_t* effect, idParser* src);
+	void					ParseSimulation(const char* fileName, rvmEffectSimulation_t& simuation);
+private:
+	idList<rvmEffect_t*>	effects;
 };
 
 #endif /* !__MODEL_LOCAL_H__ */

@@ -35,7 +35,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "DialogInfo.h"
 #include "splines.h"
 #include "../../renderer/tr_local.h"
-#include "../../renderer/model_local.h"	// for idRenderModelLiquid
+#include "../../model/model_local.h"	// for idRenderModelLiquid
 
 #ifdef _DEBUG
 	#define new DEBUG_NEW
