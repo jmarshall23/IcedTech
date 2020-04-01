@@ -118,6 +118,7 @@ set(src_engine
 	./model/Model_md3.cpp
 	./model/Model_md3.h
 	./model/Model_md5.cpp
+	./model/Model_fx.cpp
 	./model/Model_obj.cpp
 	./model/Model_sprite.cpp
 	./model/Model_terrain.cpp

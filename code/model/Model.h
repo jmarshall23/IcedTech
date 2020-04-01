@@ -301,6 +301,9 @@ public:
 	// returns value != 0.0f if the model requires the depth hack
 	virtual float				DepthHack() const = 0;
 
+	// returns the number of frames in the mesh.
+	virtual int					NumFrames() const = 0;
+
 	// returns a static model based on the definition and view
 	// currently, this will be regenerated for every view, even though
 	// some models, like character meshes, could be used for multiple (mirror)

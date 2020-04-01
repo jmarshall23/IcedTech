@@ -545,6 +545,15 @@ int idRenderModelStatic::NumJoints( void ) const {
 
 /*
 ================
+idRenderModelStatic::NumFrames
+================
+*/
+int	idRenderModelStatic::NumFrames() const {
+	return 1;
+}
+
+/*
+================
 idRenderModelStatic::GetJoints
 ================
 */

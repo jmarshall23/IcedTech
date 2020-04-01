@@ -54,6 +54,7 @@ public:
 	virtual void				PurgeModel();
 	virtual void				Reset() {};
 	virtual void				LoadModel();
+	virtual int					NumFrames() const;
 	virtual bool				IsLoaded();
 	virtual void				SetLevelLoadReferenced( bool referenced );
 	virtual bool				IsLevelLoadReferenced();
@@ -514,11 +515,14 @@ public:
 	virtual	bool			IsLoaded() const;
 	virtual	idRenderModel*  InstantiateDynamicModel(const struct renderEntity_t* ent, const struct viewDef_s* view, idRenderModel* cachedModel);
 	virtual	idBounds		Bounds(const struct renderEntity_t* ent) const;
+	virtual int				NumFrames() const;
 private:
+	void					LoadModel(void);
 	void					ParseEffect(rvmEffect_t* effect, idParser* src);
 	void					ParseSimulation(const char* fileName, rvmEffectSimulation_t& simuation);
 private:
 	idList<rvmEffect_t*>	effects;
+	int						numFrames;
 };
 
 #endif /* !__MODEL_LOCAL_H__ */

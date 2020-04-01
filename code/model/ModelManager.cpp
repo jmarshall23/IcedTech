@@ -295,6 +295,9 @@ idRenderModel *idRenderModelManagerLocal::GetModel( const char *modelName, bool 
 	} else if(extension.Icmp("terrain") == 0) {
 		model = new rvmRenderModelTerrain;
 		model->InitFromFile(modelName);
+	} else if (extension.Icmp("fx") == 0) {
+		model = new rvmRenderModelFX;
+		model->InitFromFile(modelName);
 	} else if ( extension.Icmp( "ma" ) == 0 ) {
 		model = new idRenderModelStatic;
 		model->InitFromFile( modelName );

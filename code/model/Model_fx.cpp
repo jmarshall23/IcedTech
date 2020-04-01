@@ -4,6 +4,7 @@
 #include "engine_precompiled.h"
 #pragma hdrstop
 
+#include "../renderer/tr_local.h"
 #include "Model_fx.h"
 #include "Model_local.h"
 
@@ -13,7 +14,7 @@ rvmRenderModelFX::rvmRenderModelFX
 ========================
 */
 rvmRenderModelFX::rvmRenderModelFX() {
-
+	numFrames = 0;
 }
 
 /*
@@ -31,6 +32,15 @@ rvmRenderModelFX::~rvmRenderModelFX() {
 
 /*
 ========================
+rvmRenderModelFX::NumFrames
+========================
+*/
+int rvmRenderModelFX::NumFrames() const {
+	return numFrames;
+}
+
+/*
+========================
 rvmRenderModelFX::ParseSimulation
 ========================
 */
@@ -42,6 +52,8 @@ void rvmRenderModelFX::ParseSimulation(const char* fileName, rvmEffectSimulation
 		common->FatalError("ParseSimulation: Failed to load particle simulation %s\n", fileName);
 		return;
 	}
+
+	src.SetFlags(DECL_LEXER_FLAGS);
 
 	// Parse the ident and version
 	src.ExpectTokenString(PARTICLE_SIM_IDEN);
@@ -66,7 +78,7 @@ void rvmRenderModelFX::ParseSimulation(const char* fileName, rvmEffectSimulation
 		numParticles = src.ParseInt();
 
 		// Parse each particle.
-		for(int v = 0; v < numParticles; i++) {
+		for(int v = 0; v < numParticles; v++) {
 			idVec3 point;
 
 			point.x = src.ParseFloat();
@@ -106,6 +118,10 @@ void rvmRenderModelFX::ParseEffect(rvmEffect_t* effect, idParser* src) {
 
 			ParseSimulation(token, effect->simulation);
 		}		
+		else if(token == "material") {
+			src->ReadToken(&token);
+			effect->mtr = declManager->FindMaterial(token);
+		}
 		else {
 			src->Error("ParseEffect: Unexpected token %s\n", token.c_str());
 		}
@@ -114,19 +130,21 @@ void rvmRenderModelFX::ParseEffect(rvmEffect_t* effect, idParser* src) {
 
 /*
 ========================
-rvmRenderModelFX::InitFromFile
+rvmRenderModelFX::LoadModel
 ========================
 */
-void rvmRenderModelFX::InitFromFile(const char* fileName) {
+void rvmRenderModelFX::LoadModel(void) {
 	idParser src;
 	idToken token;
 
-	if(parser.LoadFile(fileName) <= 0) {
-		common->Warning("rvmRenderModelFX: Failed to load FX %s\n", fileName);
+	if (src.LoadFile(name) <= 0) {
+		common->Warning("rvmRenderModelFX: Failed to load FX %s\n", name.c_str());
 		return;
 	}
 
-	while (parser.ReadToken(&src)) {
+	src.SetFlags(DECL_LEXER_FLAGS);
+
+	while (src.ReadToken(&token)) {
 		if (token == "effect") {
 			rvmEffect_t* effect = new rvmEffect_t();
 
@@ -141,6 +159,23 @@ void rvmRenderModelFX::InitFromFile(const char* fileName) {
 			src.Error("Model FX unknown or unexpected keyword %s\n", token.c_str());
 		}
 	}
+
+	// Number of frames is based on the effect with the most simulation frames.
+	for(int i = 0; i < effects.Num(); i++) {
+		if(numFrames < effects[i]->simulation.frames.Num()) {
+			numFrames = effects[i]->simulation.frames.Num();
+		}
+	}
+}
+
+/*
+========================
+rvmRenderModelFX::InitFromFile
+========================
+*/
+void rvmRenderModelFX::InitFromFile(const char* fileName) {
+	name = fileName;
+	LoadModel();
 }
 
 /*
@@ -176,5 +211,5 @@ rvmRenderModelFX::Bounds
 ========================
 */
 idBounds rvmRenderModelFX::Bounds(const struct renderEntity_t* ent) const {
-	return idBounds(-128, -128, -128, 128, 128, 128);
+	return idBounds(idVec3(-128, -128, -128), idVec3(128, 128, 128));
 }
