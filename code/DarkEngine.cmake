@@ -132,14 +132,16 @@ set(src_engine
 	./renderer/Cinematic.cpp
 	./renderer/Cinematic.h
 	./renderer/Color
-	./renderer/draw_common.cpp
-	./renderer/draw_depthfill.cpp
-	./renderer/draw_feedback.cpp
-	./renderer/draw_interaction.cpp
-	./renderer/draw_occlusion.cpp
-	./renderer/draw_shadow.cpp
-	./renderer/draw_skin.cpp
-	./renderer/draw_sky.cpp
+	./renderer/render/render.cpp
+	./renderer/render/render_common.cpp
+	./renderer/render/render_depthfill.cpp
+	./renderer/render/render_feedback.cpp
+	./renderer/render/render_interaction.cpp
+	./renderer/render/render_occlusion.cpp
+	./renderer/render/render_particles.cpp
+	./renderer/render/render_shadow.cpp
+	./renderer/render/render_skin.cpp
+	./renderer/render/render_sky.cpp
 	./renderer/DXT
 	./renderer/GLMatrix.cpp
 	./renderer/GLMatrix.h
@@ -195,7 +197,6 @@ set(src_engine
 	./renderer/tr_main.cpp
 	./renderer/tr_orderIndexes.cpp
 	./renderer/tr_polytope.cpp
-	./renderer/tr_render.cpp
 	./renderer/tr_rendertools.cpp
 	./renderer/tr_subview.cpp
 	./renderer/tr_trace.cpp

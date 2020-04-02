@@ -1350,6 +1350,8 @@ void RB_CreateDrawInteractions(const idInteraction* lightInter, const surfaceInt
 
 const shaderStage_t *RB_SetLightTexture( const idRenderLightLocal *light );
 
+int RB_STD_DrawParticles(drawSurf_t** drawSurfs, int numDrawSurfs);
+
 void RB_DrawView( const void *data );
 
 void RB_DetermineLightScale( void );
@@ -1357,6 +1359,9 @@ void RB_STD_LightScale( void );
 void RB_BeginDrawingView (void);
 
 void RB_STD_DrawSky(void);
+
+void RB_SetProgramEnvironment(void);
+void RB_SetProgramEnvironmentSpace(void);
 
 /*
 ============================================================

@@ -81,6 +81,7 @@ void idMaterial::CommonInit() {
 	surfaceFlags = SURFTYPE_NONE;
 	materialFlags = 0;
 	inlineCollision = false;
+	isParticle = false;
 	hasReflections = false;
 	sort = SS_BAD;
 	coverage = MC_BAD;
@@ -2050,6 +2051,10 @@ void idMaterial::ParseMaterial( idLexer &src ) {
 			src.ReadTokenOnLine( &token );
 			editorImageName = token.c_str();
 			src.SkipRestOfLine();
+			continue;
+		}
+		else if( !token.Icmp("particle")) {
+			isParticle = true;
 			continue;
 		}
 		// description

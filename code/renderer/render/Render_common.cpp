@@ -28,7 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "engine_precompiled.h"
 #pragma hdrstop
 
-#include "tr_local.h"
+#include "../tr_local.h"
 
 /*
 =====================
@@ -478,6 +478,10 @@ void RB_STD_T_RenderShaderPasses( const drawSurf_t *surf ) {
 	}
 
 	if ( shader->IsPortalSky() ) {
+		return;
+	}
+
+	if(shader->IsParticle()) {
 		return;
 	}
 
@@ -1592,6 +1596,9 @@ void	RB_STD_DrawView( void ) {
 
 	// uplight the entire screen to crutch up not having better blending range
 	//RB_STD_LightScale();
+
+	// draw the particles.
+	RB_STD_DrawParticles(drawSurfs, numDrawSurfs);
 
 	// now draw any non-light dependent shading passes
 	int	processed = RB_STD_DrawShaderPasses( drawSurfs, numDrawSurfs );

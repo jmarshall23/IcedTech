@@ -2,7 +2,7 @@
 //
 
 #include "engine_precompiled.h"
-#include "tr_local.h"
+#include "../tr_local.h"
 
 /*
 ======================

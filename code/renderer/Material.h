@@ -643,6 +643,9 @@ public:
 
 	// Returns true if reflections are enabled on this material or not.
 	bool				HasReflections(void) const { return hasReflections; }
+
+	// Returns true if this material is marked as a particle.
+	bool				IsParticle(void) const { return isParticle; }
 private:
 	// parse the entire material
 	void				CommonInit();
@@ -768,6 +771,7 @@ private:
 	textureStage_t		defaultSpecularLitTextureStage;
 
 	bool				hasReflections;
+	bool				isParticle;
 
 	// This texture contains virtualPageOffsets.
 	idImage				*virtualPageOffsetsImage;

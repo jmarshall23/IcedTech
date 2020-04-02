@@ -119,6 +119,7 @@ void idRenderProgManager::Init() {
 		{ BUILTIN_SHADOW, "shadow.vfp", "shadow.vfp", ""},
 		{ BUILTIN_SHADOW_SKINNED, "shadow.vfp", "shadow_skinned.vfp", "#define ID_GPU_SKIN\n"},
 		{ BUILTIN_SKYCOLOR, "sky_color.vfp", "sky_color.vfp", ""},
+		{ BUILTIN_PARTICLE, "particle.vfp", "particle.vfp", ""}
 	};
 	int numBuiltins = sizeof( builtins ) / sizeof( builtins[0] );
 	vertexShaders.SetNum( numBuiltins );
