@@ -196,6 +196,16 @@ typedef struct {
 	int			dist;
 } spawnSpot_t;
 
+//
+// fxEmitterInstance_t
+//
+struct fxEmitterInstance_t {
+	idRenderModel*					fxModel;
+	renderEntity_t					renderEntity;
+	qhandle_t						worldHandle;
+	bool							loop;
+};
+
 //============================================================================
 
 class idEventQueue {
@@ -550,6 +560,8 @@ public:
 
 	const char*				GetMapFileName() { return mapFileName.c_str(); }
 
+	void					CreateEffect(const char* effectModel, idVec3 origin, idMat3 axis, bool loop);
+
 	void					Trace(trace_t& results, const idVec3& start, const idVec3& end, int contentMask, int passEntity);
 public:
 	int						 nextDebrisSpawnTime;
@@ -668,6 +680,8 @@ private:
 
 	void					ResizeRenderTextures(int width, int height);
 	void					InitGameRenderSystem(void);
+
+	void					RunFX(void);
 private:
 	void					InitJobSystem(void);
 	void					ShutdownJobSystem(void);
@@ -697,6 +711,7 @@ private:
 	idParallelJobList		*clientPhysicsJob;
 private:
 	const idDeclEntityDef* debrisEntityDef[DEBRIS_MODEL_COUNT];
+	idList<fxEmitterInstance_t> fxEmitters;
 };
 
 //============================================================================
@@ -844,6 +859,10 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 
 #include "Entity.h"
 
+// FX
+#include "Emitter.h"
+
+// Client Entities
 #include "client/ClientEntity.h"
 #include "client/ClientMoveable.h"
 #include "client/ClientModel.h"

@@ -98,6 +98,8 @@ struct renderEntity_t {
 	int						entityNum;
 	int						bodyId;
 
+	int						frameNum;
+
 	bool					hasDynamicShadows;
 
 	bool					skipEntityViewCulling;
@@ -186,6 +188,7 @@ ID_INLINE renderEntity_t::renderEntity_t()
 	SetLightChannel(0, true);
 	hModel = nullptr;
 	joints = nullptr;
+	frameNum = 0;
 	hasDynamicShadows = false;
 	skipEntityViewCulling = false;
 	forceVirtualTextureHighQuality = false;

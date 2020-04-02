@@ -797,11 +797,19 @@ Version 2
 }
 // entity 1
 {
+"classname" "emitter"
+"name" "emitter_1"
+"origin" "-544 -288 96"
+"angle" "90"
+"fx" "fx/lava_urpt.fx"
+}
+// entity 2
+{
 "classname" "weapon_plasmagun_mp"
 "name" "weapon_plasmagun_mp_2"
 "origin" "-848 -672 -112"
 }
-// entity 2
+// entity 3
 {
 "classname" "light"
 "name" "light_71"
@@ -813,32 +821,32 @@ Version 2
 "_color" "0.37 1 0.88"
 "light_radius" "600 600 600"
 }
-// entity 3
+// entity 4
 {
 "classname" "weapon_shotgun_mp"
 "name" "weapon_shotgun_mp_1"
 "origin" "-864 568 -128"
 }
-// entity 4
+// entity 5
 {
 "classname" "weapon_rocketlauncher_mp"
 "name" "weapon_rocketlauncher_mp_1"
 "origin" "-1320 256 32"
 }
-// entity 5
+// entity 6
 {
 "classname" "weapon_plasmagun_mp"
 "name" "weapon_plasmagun_mp_1"
 "origin" "2408 208 -88"
 }
-// entity 6
+// entity 7
 {
 "classname" "info_player_deathmatch"
 "name" "info_player_deathmatch_1"
 "origin" "-272 888 144"
 "angle" "270"
 }
-// entity 7
+// entity 8
 {
 "classname" "light"
 "name" "light_66"
@@ -851,7 +859,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "175 175 175"
 }
-// entity 8
+// entity 9
 {
 "classname" "light"
 "name" "light_41"
@@ -864,7 +872,7 @@ Version 2
 "_color" "0.6 0.23 0.09"
 "light_radius" "700 900 700"
 }
-// entity 9
+// entity 10
 {
 "classname" "light"
 "name" "light_63"
@@ -877,7 +885,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "175 175 175"
 }
-// entity 10
+// entity 11
 {
 "classname" "light"
 "name" "light_62"
@@ -890,7 +898,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "175 175 175"
 }
-// entity 11
+// entity 12
 {
 "classname" "light"
 "name" "light_32"
@@ -903,7 +911,7 @@ Version 2
 "light_radius" "700 700 700"
 "rotation" "-1 -3.57628e-07 0 3.57628e-07 -1 0 0 0 1"
 }
-// entity 12
+// entity 13
 {
 "classname" "func_static"
 "name" "func_static_108"
@@ -911,7 +919,7 @@ Version 2
 "model" "models/dungeon/jail01/Jail01.mdr"
 "rotation" "-4.17232e-07 1 0 -1 -4.17232e-07 0 0 0 1"
 }
-// entity 13
+// entity 14
 {
 "classname" "func_static"
 "name" "func_static_107"
@@ -919,7 +927,7 @@ Version 2
 "model" "models/dungeon/jail01/Jail01.mdr"
 "rotation" "-4.17232e-07 1 0 -1 -4.17232e-07 0 0 0 1"
 }
-// entity 14
+// entity 15
 {
 "classname" "func_static"
 "name" "func_static_106"
@@ -927,7 +935,7 @@ Version 2
 "model" "models/dungeon/jail01/Jail01.mdr"
 "rotation" "-1 -1.19209e-07 0 1.19209e-07 -1 0 0 0 1"
 }
-// entity 15
+// entity 16
 {
 "classname" "func_static"
 "name" "func_static_105"
@@ -935,7 +943,7 @@ Version 2
 "model" "models/dungeon/jail01/Jail01.mdr"
 "rotation" "-1 -1.19209e-07 0 1.19209e-07 -1 0 0 0 1"
 }
-// entity 16
+// entity 17
 {
 "classname" "light"
 "name" "light_31"
@@ -948,21 +956,21 @@ Version 2
 "light_radius" "700 700 700"
 "rotation" "5.96047e-08 -1 0 1 5.96047e-08 0 -0 0 1"
 }
-// entity 17
+// entity 18
 {
 "classname" "func_static"
 "name" "func_static_96"
 "origin" "778 416 262"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 18
+// entity 19
 {
 "classname" "func_static"
 "name" "func_static_95"
 "origin" "778 416 -24"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 19
+// entity 20
 {
 "classname" "light"
 "name" "light_24"
@@ -974,7 +982,7 @@ Version 2
 "_color" "1 0.49 0.27"
 "light_radius" "700 700 700"
 }
-// entity 20
+// entity 21
 {
 "classname" "func_static"
 "name" "func_static_46"
@@ -982,83 +990,83 @@ Version 2
 "model" "models/dungeon/jail01/Jail01.mdr"
 "rotation" "5.96047e-08 -1 0 1 5.96047e-08 0 -0 0 1"
 }
-// entity 21
+// entity 22
 {
 "classname" "info_player_start"
 "name" "info_player_start_1"
 "origin" "-1308 127 2"
 }
-// entity 22
+// entity 23
 {
 "classname" "func_static"
 "name" "func_static_2"
 "origin" "-196 856 -222"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 23
+// entity 24
 {
 "classname" "func_static"
 "name" "func_static_21"
 "origin" "149 604 -24"
 "model" "models/dungeon/arch02/arch02.mdr"
 }
-// entity 24
+// entity 25
 {
 "classname" "func_static"
 "name" "func_static_22"
 "origin" "149 444 -24"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 25
+// entity 26
 {
 "classname" "func_static"
 "name" "func_static_27"
 "origin" "152 126 -24"
 "model" "models/dungeon/arch02/arch02.mdr"
 }
-// entity 26
+// entity 27
 {
 "classname" "func_static"
 "name" "func_static_28"
 "origin" "152 278 -24"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 27
+// entity 28
 {
 "classname" "func_static"
 "name" "func_static_29"
 "origin" "160 -34 -24"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 28
+// entity 29
 {
 "classname" "func_static"
 "name" "func_static_30"
 "origin" "168 -360 -24"
 "model" "models/dungeon/arch02/arch02.mdr"
 }
-// entity 29
+// entity 30
 {
 "classname" "func_static"
 "name" "func_static_32"
 "origin" "176 -520 -24"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 30
+// entity 31
 {
 "classname" "func_static"
 "name" "func_static_39"
 "origin" "168 -202 -24"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 31
+// entity 32
 {
 "classname" "func_static"
 "name" "func_static_40"
 "origin" "152 766 -24"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 32
+// entity 33
 {
 "classname" "func_static"
 "name" "func_static_41"
@@ -1066,7 +1074,7 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "5.96047e-08 1 0 -1 5.96047e-08 0 0 -0 1"
 }
-// entity 33
+// entity 34
 {
 "classname" "light"
 "name" "light_13"
@@ -1078,7 +1086,7 @@ Version 2
 "_color" "0.42 0.45 0.67"
 "light_radius" "700 700 700"
 }
-// entity 34
+// entity 35
 {
 "classname" "light"
 "name" "light_14"
@@ -1090,7 +1098,7 @@ Version 2
 "_color" "0.42 0.45 0.67"
 "light_radius" "700 700 700"
 }
-// entity 35
+// entity 36
 {
 "classname" "light"
 "name" "light_15"
@@ -1102,7 +1110,7 @@ Version 2
 "_color" "0.89 0.35 0.13"
 "light_radius" "700 700 700"
 }
-// entity 36
+// entity 37
 {
 "classname" "func_static"
 "name" "func_static_44"
@@ -1110,7 +1118,7 @@ Version 2
 "model" "models/dungeon/jail01/Jail01.mdr"
 "rotation" "5.96047e-08 -1 0 1 5.96047e-08 0 -0 0 1"
 }
-// entity 37
+// entity 38
 {
 "classname" "light"
 "name" "light_23"
@@ -1122,7 +1130,7 @@ Version 2
 "_color" "0.52 0.2 0.07"
 "light_radius" "700 700 700"
 }
-// entity 38
+// entity 39
 {
 "classname" "func_static"
 "name" "func_static_45"
@@ -1130,7 +1138,7 @@ Version 2
 "model" "models/dungeon/jail01/Jail01.mdr"
 "rotation" "5.96047e-08 -1 0 1 5.96047e-08 0 -0 0 1"
 }
-// entity 39
+// entity 40
 {
 "classname" "func_static"
 "name" "func_static_47"
@@ -1138,7 +1146,7 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "5.96047e-08 1 0 -1 5.96047e-08 0 0 -0 1"
 }
-// entity 40
+// entity 41
 {
 "classname" "func_static"
 "name" "func_static_48"
@@ -1146,7 +1154,7 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "5.96047e-08 1 0 -1 5.96047e-08 0 0 -0 1"
 }
-// entity 41
+// entity 42
 {
 "classname" "func_static"
 "name" "func_static_49"
@@ -1154,7 +1162,7 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "5.96047e-08 1 0 -1 5.96047e-08 0 0 -0 1"
 }
-// entity 42
+// entity 43
 {
 "classname" "func_static"
 "name" "func_static_50"
@@ -1162,7 +1170,7 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "5.96047e-08 1 0 -1 5.96047e-08 0 0 -0 1"
 }
-// entity 43
+// entity 44
 {
 "classname" "func_static"
 "name" "func_static_51"
@@ -1170,7 +1178,7 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "5.96047e-08 1 0 -1 5.96047e-08 0 0 -0 1"
 }
-// entity 44
+// entity 45
 {
 "classname" "func_static"
 "name" "func_static_52"
@@ -1178,7 +1186,7 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "5.96046e-08 -1 0 1 5.96046e-08 0 -0 0 1"
 }
-// entity 45
+// entity 46
 {
 "classname" "func_static"
 "name" "func_static_53"
@@ -1186,7 +1194,7 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "5.96046e-08 -1 0 1 5.96046e-08 0 -0 0 1"
 }
-// entity 46
+// entity 47
 {
 "classname" "func_static"
 "name" "func_static_54"
@@ -1194,7 +1202,7 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "5.96047e-08 1 0 -1 5.96047e-08 0 0 -0 1"
 }
-// entity 47
+// entity 48
 {
 "classname" "func_static"
 "name" "func_static_55"
@@ -1202,14 +1210,14 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "5.96047e-08 1 0 -1 5.96047e-08 0 0 -0 1"
 }
-// entity 48
+// entity 49
 {
 "classname" "func_static"
 "name" "func_static_58"
 "origin" "-174 398 -222"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 49
+// entity 50
 {
 "classname" "func_static"
 "name" "func_static_60"
@@ -1217,7 +1225,7 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "-1 -1.19209e-07 0 1.19209e-07 -1 0 0 0 1"
 }
-// entity 50
+// entity 51
 {
 "classname" "func_static"
 "name" "func_static_61"
@@ -1225,14 +1233,14 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "1 2.38418e-07 0 -2.38418e-07 1 0 0 -0 1"
 }
-// entity 51
+// entity 52
 {
 "classname" "func_static"
 "name" "func_static_63"
 "origin" "-388 -8 -224"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 52
+// entity 53
 {
 "classname" "func_static"
 "name" "func_static_64"
@@ -1240,21 +1248,21 @@ Version 2
 "model" "models/dungeon/stairs02/Stairs02.mdr"
 "rotation" "-4.17232e-07 1 0 -1 -4.17232e-07 0 0 0 1"
 }
-// entity 53
+// entity 54
 {
 "classname" "func_static"
 "name" "func_static_67"
 "origin" "-954 -202 -252"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 54
+// entity 55
 {
 "classname" "func_static"
 "name" "func_static_69"
 "origin" "-838 962 -252"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 55
+// entity 56
 {
 "classname" "light"
 "name" "light_25"
@@ -1266,7 +1274,7 @@ Version 2
 "_color" "1 0.49 0.27"
 "light_radius" "700 700 700"
 }
-// entity 56
+// entity 57
 {
 "classname" "light"
 "name" "light_26"
@@ -1278,7 +1286,7 @@ Version 2
 "_color" "1 0.49 0.27"
 "light_radius" "700 700 700"
 }
-// entity 57
+// entity 58
 {
 "classname" "light"
 "name" "light_27"
@@ -1290,7 +1298,7 @@ Version 2
 "_color" "0.42 0.45 0.67"
 "light_radius" "700 700 700"
 }
-// entity 58
+// entity 59
 {
 "classname" "light"
 "name" "light_28"
@@ -1302,7 +1310,7 @@ Version 2
 "_color" "0.42 0.45 0.67"
 "light_radius" "700 700 700"
 }
-// entity 59
+// entity 60
 {
 "classname" "light"
 "name" "light_29"
@@ -1314,7 +1322,7 @@ Version 2
 "_color" "0.42 0.45 0.67"
 "light_radius" "700 700 700"
 }
-// entity 60
+// entity 61
 {
 "classname" "light"
 "name" "light_30"
@@ -1326,140 +1334,140 @@ Version 2
 "_color" "0.42 0.45 0.67"
 "light_radius" "700 700 700"
 }
-// entity 61
+// entity 62
 {
 "classname" "func_static"
 "name" "func_static_73"
 "origin" "-748 -200 -228"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 62
+// entity 63
 {
 "classname" "func_static"
 "name" "func_static_76"
 "origin" "-1368 -488 142"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 63
+// entity 64
 {
 "classname" "func_static"
 "name" "func_static_77"
 "origin" "-1366 -488 434"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 64
+// entity 65
 {
 "classname" "func_static"
 "name" "func_static_81"
 "origin" "-390 240 -224"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 65
+// entity 66
 {
 "classname" "func_static"
 "name" "func_static_82"
 "origin" "-1206 688 -224"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 66
+// entity 67
 {
 "classname" "func_static"
 "name" "func_static_83"
 "origin" "-942 698 -224"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 67
+// entity 68
 {
 "classname" "func_static"
 "name" "func_static_84"
 "origin" "-366 716 -224"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 68
+// entity 69
 {
 "classname" "func_static"
 "name" "func_static_85"
 "origin" "-366 716 60"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 69
+// entity 70
 {
 "classname" "func_static"
 "name" "func_static_86"
 "origin" "-388 -8 52"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 70
+// entity 71
 {
 "classname" "func_static"
 "name" "func_static_87"
 "origin" "782 -38 -24"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 71
+// entity 72
 {
 "classname" "func_static"
 "name" "func_static_88"
 "origin" "782 -38 262"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 72
+// entity 73
 {
 "classname" "func_static"
 "name" "func_static_97"
 "origin" "1918 724 -154"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 73
+// entity 74
 {
 "classname" "func_static"
 "name" "func_static_98"
 "origin" "1918 724 132"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 74
+// entity 75
 {
 "classname" "func_static"
 "name" "func_static_99"
 "origin" "1930 1034 -154"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 75
+// entity 76
 {
 "classname" "func_static"
 "name" "func_static_100"
 "origin" "1930 1034 132"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 76
+// entity 77
 {
 "classname" "func_static"
 "name" "func_static_101"
 "origin" "1906 -810 -154"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 77
+// entity 78
 {
 "classname" "func_static"
 "name" "func_static_102"
 "origin" "1906 -810 132"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 78
+// entity 79
 {
 "classname" "func_static"
 "name" "func_static_103"
 "origin" "1918 -500 -154"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 79
+// entity 80
 {
 "classname" "func_static"
 "name" "func_static_104"
 "origin" "1918 -500 132"
 "model" "models/dungeon/column01/Column01.mdr"
 }
-// entity 80
+// entity 81
 {
 "classname" "light"
 "name" "light_33"
@@ -1472,7 +1480,7 @@ Version 2
 "light_radius" "700 700 700"
 "rotation" "-4.17233e-07 1 0 -1 -4.17233e-07 0 0 0 1"
 }
-// entity 81
+// entity 82
 {
 "classname" "func_static"
 "name" "func_static_109"
@@ -1480,7 +1488,7 @@ Version 2
 "model" "models/dungeon/jail01/Jail01.mdr"
 "rotation" "1 4.76837e-07 0 -4.76837e-07 1 0 0 -0 1"
 }
-// entity 82
+// entity 83
 {
 "classname" "func_static"
 "name" "func_static_110"
@@ -1488,7 +1496,7 @@ Version 2
 "model" "models/dungeon/jail01/Jail01.mdr"
 "rotation" "1 4.76837e-07 0 -4.76837e-07 1 0 0 -0 1"
 }
-// entity 83
+// entity 84
 {
 "classname" "light"
 "name" "light_42"
@@ -1501,7 +1509,7 @@ Version 2
 "_color" "0.6 0.23 0.09"
 "light_radius" "800 900 700"
 }
-// entity 84
+// entity 85
 {
 "classname" "light"
 "name" "light_60"
@@ -1514,7 +1522,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "175 175 175"
 }
-// entity 85
+// entity 86
 {
 "classname" "light"
 "name" "light_61"
@@ -1527,7 +1535,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "175 175 175"
 }
-// entity 86
+// entity 87
 {
 "classname" "light"
 "name" "light_64"
@@ -1540,7 +1548,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "175 175 175"
 }
-// entity 87
+// entity 88
 {
 "classname" "light"
 "name" "light_65"
@@ -1553,7 +1561,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "175 175 175"
 }
-// entity 88
+// entity 89
 {
 "classname" "light"
 "name" "light_67"
@@ -1566,7 +1574,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "175 175 175"
 }
-// entity 89
+// entity 90
 {
 "classname" "light"
 "name" "light_68"
@@ -1579,7 +1587,7 @@ Version 2
 "_color" "2 1.86 1.36"
 "light_radius" "175 175 175"
 }
-// entity 90
+// entity 91
 {
 "classname" "light"
 "name" "light_69"
@@ -1591,7 +1599,7 @@ Version 2
 "_color" "0.42 0.45 0.67"
 "light_radius" "700 700 700"
 }
-// entity 91
+// entity 92
 {
 "classname" "light"
 "name" "light_70"
@@ -1603,24 +1611,32 @@ Version 2
 "_color" "0.42 0.45 0.67"
 "light_radius" "700 700 700"
 }
-// entity 92
+// entity 93
 {
 "classname" "info_player_deathmatch"
 "name" "info_player_deathmatch_2"
 "origin" "-240 -392 144"
 "angle" "90"
 }
-// entity 93
+// entity 94
 {
 "classname" "info_player_deathmatch"
 "name" "info_player_deathmatch_3"
 "origin" "1064 184 0"
 "angle" "180"
 }
-// entity 94
+// entity 95
 {
 "classname" "info_player_deathmatch"
 "name" "info_player_deathmatch_4"
 "origin" "2840 24 -120"
 "angle" "180"
+}
+// entity 96
+{
+"classname" "emitter"
+"name" "emitter_2"
+"origin" "-1112 -304 96"
+"angle" "90"
+"fx" "fx/lava_urpt.fx"
 }

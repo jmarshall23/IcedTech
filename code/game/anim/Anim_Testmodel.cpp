@@ -379,6 +379,13 @@ void idTestModel::Think( void ) {
 		}
 	}
 
+	renderEntity.frameNum++;
+	if (renderEntity.frameNum >= renderEntity.hModel->NumFrames()) {
+		renderEntity.frameNum = 0;
+	}
+
+	BecomeActive(TH_UPDATEVISUALS);
+
 	UpdateAnimation();
 	Present();
 

@@ -6461,6 +6461,8 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 		return;
 	}
 
+	gameLocal.CreateEffect("fx/gibs.fx", renderEntity.origin + idVec3(0, 0, 40), renderEntity.axis, false);
+
 	heartInfo.Init( 0, 0, 0, BASE_HEARTRATE );
 	AdjustHeartRate( DEAD_HEARTRATE, 10.0f, 0.0f, true );
 

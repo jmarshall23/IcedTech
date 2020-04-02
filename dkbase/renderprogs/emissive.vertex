@@ -50,5 +50,10 @@ void main( VS_IN vertex, out VS_OUT result ) {
 #ifdef LAVA_FLOW_UP
 	newcoords.y += rpMaterialParms.x * 0.55;
 #endif
+
+#ifdef LAVA_IDLE
+	newcoords.x += sin(rpMaterialParms.x + frac(newcoords.x)) * 0.1;
+	newcoords.y += cos(rpMaterialParms.x + frac(newcoords.y)) * 0.1;
+#endif
 	result.texcoord0 = newcoords;
 }

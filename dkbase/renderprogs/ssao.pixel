@@ -94,6 +94,7 @@ const float projScale = 250.0;
 // *INDENT-OFF*
 uniform sampler2D samp0 : register( s0 ); // view normal/roughness
 uniform sampler2D samp1 : register( s1 ); // view depth
+uniform sampler2D samp2 : register( s2 ); // bloom
  
 #define CS_Z_buffer		samp1
  
@@ -323,7 +324,13 @@ const float MIN_RADIUS = 3.0; // pixels
 void main( PS_IN fragment, out PS_OUT result )
 {
 	result.color = float4( 1.0, 0.0, 0.0, 1.0 );
-	
+
+	float4 bloom = texture2D(samp2, fragment.texcoord0);
+	if(bloom.r > 0) {
+		result.color = float4(1.0, 1.0, 1.0, 1.0);
+		return;
+	}
+
 #if 0
 	if( fragment.texcoord0.x < 0.5 )
 	{

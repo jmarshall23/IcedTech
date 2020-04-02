@@ -8,6 +8,8 @@
 #include "Model_fx.h"
 #include "Model_local.h"
 
+static const char* VFX_SnapshotName = "_VFX_Snapshot_";
+
 /*
 ========================
 rvmRenderModelFX::rvmRenderModelFX
@@ -15,6 +17,9 @@ rvmRenderModelFX::rvmRenderModelFX
 */
 rvmRenderModelFX::rvmRenderModelFX() {
 	numFrames = 0;
+	size = 1;
+	size_growth = 0;
+	modelBounds.Clear();
 }
 
 /*
@@ -85,6 +90,8 @@ void rvmRenderModelFX::ParseSimulation(const char* fileName, rvmEffectSimulation
 			point.y = src.ParseFloat();
 			point.z = src.ParseFloat();
 
+			modelBounds.AddPoint(point);
+
 			frame->points.Append(point);
 		}
 
@@ -120,7 +127,13 @@ void rvmRenderModelFX::ParseEffect(rvmEffect_t* effect, idParser* src) {
 		}		
 		else if(token == "material") {
 			src->ReadToken(&token);
-			effect->mtr = declManager->FindMaterial(token);
+			effect->mtr = declManager->FindMaterial(token, false);
+		}
+		else if(token == "size") {
+			size = src->ParseInt();
+		}
+		else if(token == "size_growth") {
+			size_growth = src->ParseFloat();
 		}
 		else {
 			src->Error("ParseEffect: Unexpected token %s\n", token.c_str());
@@ -163,7 +176,7 @@ void rvmRenderModelFX::LoadModel(void) {
 	// Number of frames is based on the effect with the most simulation frames.
 	for(int i = 0; i < effects.Num(); i++) {
 		if(numFrames < effects[i]->simulation.frames.Num()) {
-			numFrames = effects[i]->simulation.frames.Num();
+			numFrames = effects[i]->simulation.frames.Num() - 1;
 		}
 	}
 }
@@ -184,7 +197,7 @@ rvmRenderModelFX::IsDynamicModel
 ========================
 */
 dynamicModel_t	rvmRenderModelFX::IsDynamicModel() const {
-	return DM_CONTINUOUS;
+	return DM_CACHED;
 }
 
 /*
@@ -198,11 +211,187 @@ bool rvmRenderModelFX::IsLoaded() const {
 
 /*
 ========================
+rvmRenderModelFX::CreateParticle
+========================
+*/
+void rvmRenderModelFX::CreateParticle(idVec3 origin, idMat3 axis, int size, idDrawVert* verts) const {
+	idVec3	left, up;
+	idVec3	entityLeft, entityUp;
+	float	s, width;
+	float	t, height;
+
+	s = 0.0f;
+	width = 1.0f;
+	t = 0.0f;
+	height = 1.0f;
+
+	float	angle;
+	angle = 360 * idMath::FRand();
+
+	angle = angle / 180 * idMath::PI;
+	{
+		float c = idMath::Cos16(angle);
+		float s = idMath::Sin16(angle);
+
+		axis.ProjectVector(tr.viewDef->renderView.viewaxis[1], entityLeft);
+		axis.ProjectVector(tr.viewDef->renderView.viewaxis[2], entityUp);
+
+		left = entityLeft * c + entityUp * s;
+		up = entityUp * c - entityLeft * s;
+
+		left *= size;
+		up *= size;
+	}
+
+	// Assign the vertex coords.
+	verts[0].xyz = origin - left + up;
+	verts[1].xyz = origin + left + up;
+	verts[2].xyz = origin - left - up;
+	verts[3].xyz = origin + left - up;
+
+	// Assign the texture coords.
+	verts[0].st[0] = s;
+	verts[0].st[1] = t;
+
+	verts[1].st[0] = s + width;
+	verts[1].st[1] = t;
+
+	verts[2].st[0] = s;
+	verts[2].st[1] = t + height;
+
+	verts[3].st[0] = s + width;
+	verts[3].st[1] = t + height;
+}
+
+/*
+========================
+rvmRenderModelFX::ProcessEffectGeometry
+========================
+*/
+void rvmRenderModelFX::ProcessEffectGeometry(int frameNum, idMat3 axis, modelSurface_t* surf, rvmEffect_t* effect) {
+	int i, base;
+	srfTriangles_t* tri;
+	int numIndexes, numVertexes;
+	rvmEffectSimFrame_t* frame = &effect->simulation.frames[frameNum];
+
+	// Set how many vertexes and indexes we have for this effect.
+	numVertexes = frame->points.Num() * 4;
+	numIndexes = frame->points.Num() * 6;
+
+	surf->shader = effect->mtr;
+
+	if (surf->geometry) {
+		// if the number of verts and indexes are the same we can re-use the triangle surface
+		// the number of indexes must be the same to assure the correct amount of memory is allocated for the facePlanes
+		if (surf->geometry->numVerts == numVertexes && surf->geometry->numIndexes == numIndexes) {
+			R_FreeStaticTriSurfVertexCaches(surf->geometry);
+		}
+		else {
+			R_FreeStaticTriSurf(surf->geometry);
+			surf->geometry = R_AllocStaticTriSurf();
+			R_AllocStaticTriSurfVerts(surf->geometry, numVertexes);
+			R_AllocStaticTriSurfIndexes(surf->geometry, numIndexes);
+			R_AllocStaticTriSurfPlanes(surf->geometry, numIndexes);
+		}
+	}
+	else {
+		surf->geometry = R_AllocStaticTriSurf();
+		R_AllocStaticTriSurfVerts(surf->geometry, numVertexes);
+		R_AllocStaticTriSurfIndexes(surf->geometry, numIndexes);
+		R_AllocStaticTriSurfPlanes(surf->geometry, numIndexes);
+	}
+
+	surf->geometry->bounds.Clear();
+
+	// Create all of the particle vertexes.
+	for (int i = 0; i < frame->points.Num(); i++) {
+		float particle_size = size + (frameNum * size_growth);
+
+		CreateParticle(frame->points[i], axis, particle_size, &surf->geometry->verts[i * 4]);
+		surf->geometry->bounds.AddPoint(frame->points[i]);
+	}
+
+	// Create all of the particle indexes.
+	int	indexId = 0;
+	glIndex_t* indexes = surf->geometry->indexes;
+	for (int i = 0; i < numVertexes; i += 4) {
+		indexes[indexId + 0] = i;
+		indexes[indexId + 1] = i + 2;
+		indexes[indexId + 2] = i + 3;
+		indexes[indexId + 3] = i;
+		indexes[indexId + 4] = i + 3;
+		indexes[indexId + 5] = i + 1;
+		indexId += 6;
+	}
+
+	tri = surf->geometry;
+
+	// note that some of the data is references, and should not be freed
+	tri->deformedSurface = false;
+	tri->tangentsCalculated = true;
+	tri->facePlanesCalculated = false;
+
+	tri->numIndexes = indexId;
+	tri->silIndexes = 0;
+	tri->numMirroredVerts = 0;
+	tri->mirroredVerts = 0;
+	tri->numDupVerts = 0;
+	tri->dupVerts = 0;
+	tri->numSilEdges = 0;
+	tri->silEdges = 0;
+	tri->dominantTris = 0;
+	tri->numVerts = numVertexes;
+}
+
+/*
+========================
 rvmRenderModelFX::InstantiateDynamicModel
 ========================
 */
 idRenderModel*  rvmRenderModelFX::InstantiateDynamicModel(const struct renderEntity_t* ent, const struct viewDef_s* view, idRenderModel* cachedModel) {
-	return NULL;
+	idRenderModelStatic* staticModel;
+
+	if (cachedModel && !r_useCachedDynamicModels.GetBool()) {
+		delete cachedModel;
+		cachedModel = NULL;
+	}
+
+	if (purged) {
+		common->DWarning("model %s instantiated while purged", Name());
+		LoadModel();
+	}
+
+	if (cachedModel) {
+		assert(dynamic_cast<idRenderModelStatic*>(cachedModel) != NULL);
+		assert(idStr::Icmp(cachedModel->Name(), VFX_SnapshotName) == 0);
+		staticModel = static_cast<idRenderModelStatic*>(cachedModel);
+	}
+	else {
+		staticModel = new idRenderModelStatic;
+		staticModel->InitEmpty(VFX_SnapshotName);
+	}
+
+	for(int i = 0; i < effects.Num(); i++) {
+		modelSurface_t* surf;
+		int surfaceNum;
+
+		if (staticModel->FindSurfaceWithId(i, surfaceNum)) {
+			surf = &staticModel->surfaces[surfaceNum];
+		}
+		else {
+			surf = &staticModel->surfaces.Alloc();
+			surf->geometry = NULL;
+			surf->shader = NULL;
+			surf->id = i;
+		}
+
+		ProcessEffectGeometry(ent->frameNum, ent->axis, surf, effects[i]);
+
+		staticModel->bounds.AddPoint(surf->geometry->bounds[0]);
+		staticModel->bounds.AddPoint(surf->geometry->bounds[1]);
+	}
+
+	return staticModel;
 }
 
 /*
@@ -211,5 +400,5 @@ rvmRenderModelFX::Bounds
 ========================
 */
 idBounds rvmRenderModelFX::Bounds(const struct renderEntity_t* ent) const {
-	return idBounds(idVec3(-128, -128, -128), idVec3(128, 128, 128));
+	return modelBounds;
 }

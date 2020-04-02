@@ -2416,6 +2416,9 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 		skipCinematic = false;		
 	}
 
+	// Run all the FX
+	RunFX();
+
 	// Submit any work we are going to reap the next frame.
 	{
 		static rvmClientPhysicsJobParams_t clientPhysicsJob1Params;

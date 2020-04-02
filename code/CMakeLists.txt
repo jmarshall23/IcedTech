@@ -168,6 +168,9 @@ set(src_game
 	./game/ClientEffects.h
 	./game/ReflectionProbe.cpp
 	./game/ReflectionProbe.h
+	./game/Emitter.cpp
+	./game/Emitter.h
+	./game/game_fx.cpp
 	./game/game_navigation.cpp
 	./game/game_precompiled.cpp
 	./game/game_precompiled.h

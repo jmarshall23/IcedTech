@@ -14,5 +14,6 @@ postprocess/ssao
 		program ssao.vfp
 		fragmentMap 0 _forwardRenderResolvedNormal
 		fragmentMap 1 _forwardRenderResolvedDepth
+		fragmentMap 2 _forwardRenderResolvedEmissive
 	}	
 }

@@ -1,0 +1,11 @@
+
+entityDef emitter {
+	"editor_color"			"1 1 0"
+	"editor_mins"			"-16 -16 0"
+	"editor_maxs"			"16 16 32"
+	"editor_showangle"		"1"
+	"editor_usage"			"Used to create a FX"
+	
+	"spawnclass"			"rvmEmitter"
+
+}

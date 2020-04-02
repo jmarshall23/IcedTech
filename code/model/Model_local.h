@@ -517,12 +517,18 @@ public:
 	virtual	idBounds		Bounds(const struct renderEntity_t* ent) const;
 	virtual int				NumFrames() const;
 private:
+	void					CreateParticle(idVec3 origin, idMat3 axis, int size, idDrawVert* verts) const;
+
+	void					ProcessEffectGeometry(int frameNum, idMat3 axis, modelSurface_t* surf, rvmEffect_t* effect);
 	void					LoadModel(void);
 	void					ParseEffect(rvmEffect_t* effect, idParser* src);
 	void					ParseSimulation(const char* fileName, rvmEffectSimulation_t& simuation);
 private:
 	idList<rvmEffect_t*>	effects;
 	int						numFrames;
+	idBounds				modelBounds;
+	int						size;
+	float					size_growth;
 };
 
 #endif /* !__MODEL_LOCAL_H__ */

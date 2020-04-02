@@ -4,7 +4,7 @@ textures/liquids/lavahell
 	lava
 
 	{
-		program emissive.vfp
+		program emissive.vfp lava_idle.vfp "#define LAVA_IDLE\n"
 		fragmentMap 0 textures/liquids/lavahell.png
 	}
 }
