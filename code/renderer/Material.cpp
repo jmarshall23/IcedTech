@@ -82,6 +82,7 @@ void idMaterial::CommonInit() {
 	materialFlags = 0;
 	inlineCollision = false;
 	isParticle = false;
+	forceBloom = false;
 	hasReflections = false;
 	sort = SS_BAD;
 	coverage = MC_BAD;
@@ -2055,6 +2056,10 @@ void idMaterial::ParseMaterial( idLexer &src ) {
 		}
 		else if( !token.Icmp("particle")) {
 			isParticle = true;
+			continue;
+		}
+		else if(!token.Icmp("forceBloom")) {
+			forceBloom = true;
 			continue;
 		}
 		// description

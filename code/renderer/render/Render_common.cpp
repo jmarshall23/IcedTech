@@ -1597,11 +1597,11 @@ void	RB_STD_DrawView( void ) {
 	// uplight the entire screen to crutch up not having better blending range
 	//RB_STD_LightScale();
 
-	// draw the particles.
-	RB_STD_DrawParticles(drawSurfs, numDrawSurfs);
-
 	// now draw any non-light dependent shading passes
 	int	processed = RB_STD_DrawShaderPasses( drawSurfs, numDrawSurfs );
+
+	// draw the particles.
+	RB_STD_DrawParticles(drawSurfs, numDrawSurfs);
 
 	// fob and blend lights
 	RB_STD_FogAllLights();

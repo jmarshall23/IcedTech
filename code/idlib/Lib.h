@@ -226,6 +226,7 @@ template<class T> ID_INLINE T	Min( T x, T y ) { return ( x < y ) ? x : y; }
 #include "containers/HashTable.h"
 #include "containers/StaticList.h"
 #include "containers/LinkList.h"
+#include "containers/LinkedList.h"
 #include "containers/Hierarchy.h"
 #include "containers/Queue.h"
 #include "containers/Stack.h"

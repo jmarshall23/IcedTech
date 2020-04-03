@@ -200,6 +200,8 @@ typedef struct {
 // fxEmitterInstance_t
 //
 struct fxEmitterInstance_t {
+	idListNode<fxEmitterInstance_t> listNode;
+
 	idRenderModel*					fxModel;
 	renderEntity_t					renderEntity;
 	qhandle_t						worldHandle;
@@ -560,7 +562,8 @@ public:
 
 	const char*				GetMapFileName() { return mapFileName.c_str(); }
 
-	void					CreateEffect(const char* effectModel, idVec3 origin, idMat3 axis, bool loop);
+	fxEmitterInstance_t		*CreateEffect(const char* effectModel, idVec3 origin, idMat3 axis, bool loop);
+	void					RemoveEffect(fxEmitterInstance_t* fx);
 
 	void					Trace(trace_t& results, const idVec3& start, const idVec3& end, int contentMask, int passEntity);
 public:
@@ -711,7 +714,8 @@ private:
 	idParallelJobList		*clientPhysicsJob;
 private:
 	const idDeclEntityDef* debrisEntityDef[DEBRIS_MODEL_COUNT];
-	idList<fxEmitterInstance_t> fxEmitters;
+	
+	idLinkedList<fxEmitterInstance_t, &fxEmitterInstance_t::listNode> fxEmitters;
 };
 
 //============================================================================

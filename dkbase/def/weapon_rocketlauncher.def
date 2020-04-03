@@ -158,10 +158,14 @@ entityDef projectile_rocket {
 
 	"snd_fly"					"rocket_flight"					// sound effect while in the air
 	"snd_explode"				"rocket_impact"
+
+
+	"impact_fx"			"fx/explosion.fx"
+	"trail_fx"			"fx/rockettrail.fx"
 }
 
 entityDef damage_rocketDirect {
-	"damage"					"170"
+	"damage"					"35"
 	"push"						"1000"
 	"mtr_wound_flesh"			"textures/decals/hurt02"
 	"mtr_splat_flesh"			""
@@ -170,7 +174,7 @@ entityDef damage_rocketDirect {
 }
 
 entityDef damage_rocketSplash {
-	"damage"					"150"
+	"damage"					"20"
 	"radius"					"175" //changed by Tim 6-22-04 from 132
 	"knockback"					"80"
 	"push"						"10000"

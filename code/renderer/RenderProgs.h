@@ -162,6 +162,7 @@ public:
 
 	void	BindShader( int vIndex, int fIndex );
 
+	void	BindShader_ParticleBloom() { BindShader_Builtin(BUILTIN_PARTICLE_BLOOM); }
 	void	BindShader_Particle() { BindShader_Builtin(BUILTIN_PARTICLE); }
 	void	BindShader_SkyShader() { BindShader_Builtin(BUILTIN_SKYCOLOR); }
 	void	BindShader_TestImage() { BindShader_Builtin(BUILTIN_TESTIMAGE); }
@@ -273,6 +274,7 @@ protected:
 		BUILDIN_VIRTUALTEXTURE_FEEDBACK_SKINNING,
 
 		BUILTIN_PARTICLE,
+		BUILTIN_PARTICLE_BLOOM,
 
 		MAX_BUILTINS
 	};

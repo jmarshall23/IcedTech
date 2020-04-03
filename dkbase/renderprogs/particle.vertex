@@ -39,6 +39,7 @@ struct VS_IN {
 struct VS_OUT {
 	float4 position : POSITION;
 	float2 texcoord0 : TEXCOORD0;
+	float4 texcoord1 : TEXCOORD1;
 };
 
 void main( VS_IN vertex, out VS_OUT result ) {
@@ -48,4 +49,5 @@ void main( VS_IN vertex, out VS_OUT result ) {
 	result.position.w = dot4( vertex.position, rpMVPmatrixW );
 	float2 newcoords =  vertex.texcoord;
 	result.texcoord0 = newcoords;
+	result.texcoord1 = vertex.color;
 }

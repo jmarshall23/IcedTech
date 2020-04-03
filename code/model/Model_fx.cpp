@@ -18,7 +18,7 @@ rvmRenderModelFX::rvmRenderModelFX
 rvmRenderModelFX::rvmRenderModelFX() {
 	numFrames = 0;
 	size = 1;
-	size_growth = 0;
+	normalizedAlpha = false;
 	modelBounds.Clear();
 }
 
@@ -84,13 +84,31 @@ void rvmRenderModelFX::ParseSimulation(const char* fileName, rvmEffectSimulation
 
 		// Parse each particle.
 		for(int v = 0; v < numParticles; v++) {
-			idVec3 point;
+			rvmEffectPoint_t point;
 
-			point.x = src.ParseFloat();
-			point.y = src.ParseFloat();
-			point.z = src.ParseFloat();
+			point.xyz.x = src.ParseFloat();
+			point.xyz.y = src.ParseFloat();
+			point.xyz.z = src.ParseFloat();
 
-			modelBounds.AddPoint(point);
+			modelBounds.AddPoint(point.xyz);
+
+			src.ReadToken(&token);
+
+			if (token == "ALIVE") {
+				point.state = PARTICLE_STATE_ALIVE;
+			}
+			else if(token == "UNBORN") {
+				point.state = PARTICLE_STATE_UNBORN;
+			}
+			else if(token == "DEAD") {
+				point.state = PARTICLE_STATE_DEAD;
+			}
+			else {
+				src.Error("Unknown particle state %s\n", token.c_str());
+			}
+
+			point.normalized_time = src.ParseFloat() / (float)numFrames;
+			point.size = src.ParseFloat();
 
 			frame->points.Append(point);
 		}
@@ -132,8 +150,11 @@ void rvmRenderModelFX::ParseEffect(rvmEffect_t* effect, idParser* src) {
 		else if(token == "size") {
 			size = src->ParseInt();
 		}
-		else if(token == "size_growth") {
-			size_growth = src->ParseFloat();
+		else if (token == "sim_scale") {
+			effect->sim_scale = src->ParseFloat();
+		}
+		else if(token == "normalizedAlpha") {
+			normalizedAlpha = true;
 		}
 		else {
 			src->Error("ParseEffect: Unexpected token %s\n", token.c_str());
@@ -214,7 +235,7 @@ bool rvmRenderModelFX::IsLoaded() const {
 rvmRenderModelFX::CreateParticle
 ========================
 */
-void rvmRenderModelFX::CreateParticle(idVec3 origin, idMat3 axis, int size, idDrawVert* verts) const {
+void rvmRenderModelFX::CreateParticle(rvmEffectPoint_t &point, float simScale, idMat3 axis, int size, idDrawVert* verts) const {
 	idVec3	left, up;
 	idVec3	entityLeft, entityUp;
 	float	s, width;
@@ -229,6 +250,7 @@ void rvmRenderModelFX::CreateParticle(idVec3 origin, idMat3 axis, int size, idDr
 	angle = 360 * idMath::FRand();
 
 	angle = angle / 180 * idMath::PI;
+
 	{
 		float c = idMath::Cos16(angle);
 		float s = idMath::Sin16(angle);
@@ -239,28 +261,53 @@ void rvmRenderModelFX::CreateParticle(idVec3 origin, idMat3 axis, int size, idDr
 		left = entityLeft * c + entityUp * s;
 		up = entityUp * c - entityLeft * s;
 
-		left *= size;
-		up *= size;
+		left *= (point.size * size);
+		up *= (point.size * size);
 	}
 
 	// Assign the vertex coords.
-	verts[0].xyz = origin - left + up;
-	verts[1].xyz = origin + left + up;
-	verts[2].xyz = origin - left - up;
-	verts[3].xyz = origin + left - up;
+	verts[0].xyz = (point.xyz * simScale) - left + up;
+	verts[1].xyz = (point.xyz * simScale) + left + up;
+	verts[2].xyz = (point.xyz * simScale) - left - up;
+	verts[3].xyz = (point.xyz * simScale) + left - up;
 
 	// Assign the texture coords.
 	verts[0].st[0] = s;
 	verts[0].st[1] = t;
-
 	verts[1].st[0] = s + width;
 	verts[1].st[1] = t;
-
 	verts[2].st[0] = s;
 	verts[2].st[1] = t + height;
-
 	verts[3].st[0] = s + width;
 	verts[3].st[1] = t + height;
+
+	// Assign the vertex color.
+	if(point.state != PARTICLE_STATE_ALIVE) {
+		for (int i = 0; i < 4; i++) {
+			verts[i].color[0] = 0;
+			verts[i].color[1] = 0;
+			verts[i].color[2] = 0;
+			verts[i].color[3] = 0;
+		}
+	}
+	else {
+		if(normalizedAlpha) {
+			for (int i = 0; i < 4; i++) {
+				verts[i].color[0] = 0;
+				verts[i].color[1] = 0;
+				verts[i].color[2] = 0;
+				verts[i].color[3] = (byte)(point.normalized_time * 255.0f);
+			}
+		}
+		else {
+			for (int i = 0; i < 4; i++) {
+				verts[i].color[0] = 0;
+				verts[i].color[1] = 0;
+				verts[i].color[2] = 0;
+				verts[i].color[3] = 255;
+			}
+		}		
+	}
 }
 
 /*
@@ -305,10 +352,10 @@ void rvmRenderModelFX::ProcessEffectGeometry(int frameNum, idMat3 axis, modelSur
 
 	// Create all of the particle vertexes.
 	for (int i = 0; i < frame->points.Num(); i++) {
-		float particle_size = size + (frameNum * size_growth);
+		float particle_size = size;
 
-		CreateParticle(frame->points[i], axis, particle_size, &surf->geometry->verts[i * 4]);
-		surf->geometry->bounds.AddPoint(frame->points[i]);
+		CreateParticle(frame->points[i], effect->sim_scale, axis, particle_size, &surf->geometry->verts[i * 4]);
+		surf->geometry->bounds.AddPoint(frame->points[i].xyz);
 	}
 
 	// Create all of the particle indexes.

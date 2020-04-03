@@ -83,6 +83,8 @@ idProjectile::idProjectile( void ) {
 	fl.networkSync		= true;
 
 	netSyncPhysics		= false;
+
+	trailFX = NULL;
 }
 
 /*
@@ -99,6 +101,9 @@ void idProjectile::Spawn( void ) {
 	physicsObj.SetClipMask( 0 );
 	physicsObj.PutToRest();
 	SetPhysics( &physicsObj );
+
+	// Create the FX particle.
+	trailFX = gameLocal.CreateEffect(spawnArgs.GetString("trail_fx"), renderEntity.origin, renderEntity.axis, false);
 }
 
 /*
@@ -255,6 +260,11 @@ idProjectile::~idProjectile
 idProjectile::~idProjectile() {
 	StopSound( SND_CHANNEL_ANY, false );
 	FreeLightDef();
+
+	if(trailFX != NULL) {
+		gameLocal.RemoveEffect(trailFX);
+		trailFX = NULL;
+	}
 }
 
 /*
@@ -448,13 +458,13 @@ void idProjectile::Think( void ) {
 
 	Present();
 
-	// add the particles
-	if ( smokeFly != NULL && smokeFlyTime && !IsHidden() ) {
+	// If we have a rocket trail, update the position.
+	if (trailFX != NULL) {
 		idVec3 dir = -GetPhysics()->GetLinearVelocity();
 		dir.Normalize();
-//		if ( !gameLocal.smokeParticles->EmitSmoke( smokeFly, smokeFlyTime, gameLocal.random.RandomFloat(), GetPhysics()->GetOrigin(), dir.ToMat3() ) ) {
-//			smokeFlyTime = gameLocal.time;
-//		}
+
+		trailFX->renderEntity.origin = GetPhysics()->GetOrigin();
+		trailFX->renderEntity.axis = dir.ToMat3();
 	}
 
 	// add the light
@@ -790,6 +800,15 @@ void idProjectile::Explode( const trace_t &collision, idEntity *ignore ) {
 	if (collision.c.material != NULL && collision.c.entityNum == ENTITYNUM_WORLD) {
 		idVec3 reflectedDir = idMath::ReflectVector(dir, collision.c.normal);
 		gameLocal.SpawnDebris(collision.endpos, reflectedDir.ToMat3(), collision.c.material->GetName());
+	}
+
+	// Play the impact particle.
+	gameLocal.CreateEffect(spawnArgs.GetString("impact_fx"), collision.c.point, collision.c.normal.ToAngles().ToMat3(), false);
+
+	// Remove the trail FX.
+	if(trailFX) {
+		gameLocal.RemoveEffect(trailFX);
+		trailFX = NULL;
 	}
 
 	// stop sound

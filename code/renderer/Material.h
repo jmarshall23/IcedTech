@@ -646,6 +646,9 @@ public:
 
 	// Returns true if this material is marked as a particle.
 	bool				IsParticle(void) const { return isParticle; }
+
+	// Returns true if force bloom is enabled.
+	bool				ForceBloom(void) const { return forceBloom; }
 private:
 	// parse the entire material
 	void				CommonInit();
@@ -772,6 +775,7 @@ private:
 
 	bool				hasReflections;
 	bool				isParticle;
+	bool				forceBloom;
 
 	// This texture contains virtualPageOffsets.
 	idImage				*virtualPageOffsetsImage;

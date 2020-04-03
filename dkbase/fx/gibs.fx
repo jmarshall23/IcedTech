@@ -1,8 +1,7 @@
 effect gibs_1
 {
-	size 15
-	size_growth 0.0
-
+	size 400
+	normalizedAlpha
 
 	simuation fx/particles/gibs.prt
 	material materials/fx/blooddecals_1
@@ -10,7 +9,9 @@ effect gibs_1
 
 effect blood_splat
 {
-	size 10
+	size 300
+	normalizedAlpha
+
 	simuation fx/particles/blood_splat.prt
 	material materials/fx/blooddecals_1
 }

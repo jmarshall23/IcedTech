@@ -10,7 +10,7 @@ END_CLASS
 
 #define ROCKETLAUNCHER_LOWAMMO			1
 #define ROCKETLAUNCHER_NUMPROJECTILES	1
-#define ROCKETLAUNCHER_FIREDELAY		1		// was .75 changed again by Tim to 1
+#define ROCKETLAUNCHER_FIREDELAY		0.5		// was .75 changed again by Tim to 1
 
 // blend times
 #define ROCKETLAUNCHER_IDLE_TO_LOWER	4

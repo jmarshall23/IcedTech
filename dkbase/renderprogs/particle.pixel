@@ -33,6 +33,7 @@ uniform sampler2D samp0		: register(s0);
 struct PS_IN {
 	float4 position : VPOS;
 	float2 texcoord0 : TEXCOORD0_centroid;
+	float4 texcoord1 : TEXCOORD1_centroid;
 };
 
 struct PS_OUT {
@@ -42,6 +43,10 @@ struct PS_OUT {
 
 void main( PS_IN fragment, out PS_OUT result ) {
 	float2 tCoords = fragment.texcoord0;
-	result.color = tex2D( samp0, tCoords );
-	result.color1 = tex2D( samp0, tCoords );
+	result.color = tex2D( samp0, tCoords ) * (fragment.texcoord1.w);
+#ifdef ID_PARTICLE_BLOOM
+	result.color1 = tex2D( samp0, tCoords ) * (fragment.texcoord1.w);
+#else
+	result.color1 = float4(0, 0, 0, 0); 
+#endif
 }

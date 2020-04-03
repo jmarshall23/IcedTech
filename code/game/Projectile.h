@@ -100,6 +100,8 @@ protected:
 	int						lightEndTime;
 	idVec3					lightColor;
 
+	fxEmitterInstance_t*	trailFX;
+
 	idForce_Constant		thruster;
 	idPhysics_RigidBody		physicsObj;
 

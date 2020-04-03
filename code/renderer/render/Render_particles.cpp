@@ -110,11 +110,12 @@ void RB_STD_RenderParticleSurface(const drawSurf_t* surf) {
 		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_TANGENT);
 		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_VERTEX);
 		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_NORMAL);
+		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_COLOR);
 
-		//glColorPointer( 4, GL_UNSIGNED_BYTE, sizeof( idDrawVert ), (void *)&ac->color );
 		//glVertexAttribPointerARB( 9, 3, GL_FLOAT, false, sizeof( idDrawVert ), ac->tangents[0].ToFloatPtr() );
 		//glVertexAttribPointerARB( 10, 3, GL_FLOAT, false, sizeof( idDrawVert ), ac->tangents[1].ToFloatPtr() );
 		//glNormalPointer( GL_FLOAT, sizeof( idDrawVert ), ac->normal.ToFloatPtr() );
+		glVertexAttribPointerARB(PC_ATTRIB_INDEX_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void *)&ac->color);
 		glVertexAttribPointerARB(PC_ATTRIB_INDEX_NORMAL, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->normal.ToFloatPtr());
 		glVertexAttribPointerARB(PC_ATTRIB_INDEX_TANGENT, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->tangents[0].ToFloatPtr());
 		glVertexAttribPointerARB(PC_ATTRIB_INDEX_ST, 2, GL_FLOAT, false, sizeof(idDrawVert), ac->st.ToFloatPtr());
@@ -125,7 +126,12 @@ void RB_STD_RenderParticleSurface(const drawSurf_t* surf) {
 		RB_SetMVP(surf->space->mvp);
 
 		//renderProgManager.BindShader(newStage->glslProgram, newStage->glslProgram);
-		renderProgManager.BindShader_Particle();
+		if(shader->ForceBloom()) {
+			renderProgManager.BindShader_ParticleBloom();
+		}
+		else {
+			renderProgManager.BindShader_Particle();
+		}
 
 		GL_SelectTexture(0);
 		pStage->texture.image->Bind();
@@ -138,6 +144,7 @@ void RB_STD_RenderParticleSurface(const drawSurf_t* surf) {
 		// Fixme: Hack to get around an apparent bug in ATI drivers.  Should remove as soon as it gets fixed.
 		renderProgManager.Unbind();
 
+		glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_COLOR);
 		glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_ST);
 		glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_TANGENT);
 		glDisableVertexAttribArrayARB(PC_ATTRIB_INDEX_VERTEX);

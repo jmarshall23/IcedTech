@@ -10,10 +10,32 @@ materials/fx/blooddecals_1
 
 textures/decals/flame
 {
+	forceBloom
 	particle
 
 	{
 		blend GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 		map textures/decals/flame2.tga		
+	}
+}
+
+textures/fx/smoke
+{
+	particle
+
+	{
+		blend GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+		map textures/fx/smoke.png		
+	}
+}
+
+
+textures/fx/smoke_dark
+{
+	particle
+
+	{
+		blend GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+		map textures/fx/smoke_dark.png		
 	}
 }

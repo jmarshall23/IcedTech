@@ -32,6 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 class ColladaParser;
 struct rvmEffect_t;
 struct rvmEffectSimulation_t;
+struct rvmEffectPoint_t;
 
 /*
 ===============================================================================
@@ -517,7 +518,7 @@ public:
 	virtual	idBounds		Bounds(const struct renderEntity_t* ent) const;
 	virtual int				NumFrames() const;
 private:
-	void					CreateParticle(idVec3 origin, idMat3 axis, int size, idDrawVert* verts) const;
+	void					CreateParticle(rvmEffectPoint_t& point, float simScale, idMat3 axis, int size, idDrawVert* verts) const;
 
 	void					ProcessEffectGeometry(int frameNum, idMat3 axis, modelSurface_t* surf, rvmEffect_t* effect);
 	void					LoadModel(void);
@@ -528,7 +529,7 @@ private:
 	int						numFrames;
 	idBounds				modelBounds;
 	int						size;
-	float					size_growth;
+	bool					normalizedAlpha;
 };
 
 #endif /* !__MODEL_LOCAL_H__ */
