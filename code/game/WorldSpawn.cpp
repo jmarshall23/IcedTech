@@ -108,7 +108,7 @@ void idWorldspawn::Spawn( void ) {
 		kv = spawnArgs.MatchPrefix( "call", kv );
 	}
 	
-	//CreateAmbientLight();
+	CreateAmbientLight();
 }
 /*
 =================
