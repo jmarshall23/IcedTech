@@ -95,12 +95,6 @@
       <DependentUpon>CamWndDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor.cs" />
-    <Compile Include="Forms\EntityCreateDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\EntityCreateDialog.Designer.cs">
-      <DependentUpon>EntityCreateDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\EntitySelection.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,9 +126,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Forms\CamWndDialog.resx">
       <DependentUpon>CamWndDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EntityCreateDialog.resx">
-      <DependentUpon>EntityCreateDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EntitySelection.resx">
       <DependentUpon>EntitySelection.cs</DependentUpon>

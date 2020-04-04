@@ -19,8 +19,6 @@ namespace radiant.net
         static CamWndDialog camWndDialog;
         static XYWndDialog xyWndDialog;
 
-        public static EntityCreateDialog entityCreateDialog;
-
         static IntPtr _xyhdc = IntPtr.Zero;
         static IntPtr _camhdc = IntPtr.Zero;
         static IntPtr _texhdc = IntPtr.Zero;
@@ -34,7 +32,6 @@ namespace radiant.net
             progressDialog = new ProgressDialog();
             camWndDialog = new CamWndDialog();
             xyWndDialog = new XYWndDialog();
-            entityCreateDialog = new EntityCreateDialog();
 
             //  inspectorDialog = new InspectorDialog();
 

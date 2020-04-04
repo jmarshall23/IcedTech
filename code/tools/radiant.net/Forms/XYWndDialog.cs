@@ -20,15 +20,17 @@ namespace radiant.net.forms
 
             this.KeyDown += XYWndDialog_KeyDown;
             this.KeyUp += XYWndDialog_KeyUp;
-            RenderPanel.MouseDown += XYWndDialog_MouseDown;
-            RenderPanel.MouseUp += XYWndDialog_MouseUp;
-            RenderPanel.MouseMove += RenderPanel_MouseMove;
-            RenderPanel.Paint += RenderPanel_Paint;
+            splitContainer1.Panel1.MouseDown += XYWndDialog_MouseDown;
+            splitContainer1.Panel1.MouseUp += XYWndDialog_MouseUp;
+            splitContainer1.Panel1.MouseMove += RenderPanel_MouseMove;
+            splitContainer1.Panel1.Paint += RenderPanel_Paint;
 
             texWndPanel.MouseUp += TexWndPanel_MouseUp;
             texWndPanel.MouseDown += TexWndPanel_MouseDown;
             texWndPanel.Paint += TexWndPanel_Paint;
             this.StartPosition = FormStartPosition.Manual;
+
+            UpdateTreeView();
         }
 
         private void TexWndPanel_MouseUp(object sender, MouseEventArgs e)
@@ -70,11 +72,11 @@ namespace radiant.net.forms
             if (e.Button == MouseButtons.Right)
             {
                 //NativeAPI.RadiantAPI_XYMouseRight(true, e.X, e.Y);
-                Editor.entityCreateDialog.SetEntityCreationLocation(e.Location);
-                Editor.entityCreateDialog.StartPosition = FormStartPosition.Manual;
-                Editor.entityCreateDialog.Left = screenPosition.X;
-                Editor.entityCreateDialog.Top = screenPosition.Y;
-                Editor.entityCreateDialog.ShowDialog(Editor.nativeWindow);
+                //Editor.entityCreateDialog.SetEntityCreationLocation(e.Location);
+                //Editor.entityCreateDialog.StartPosition = FormStartPosition.Manual;
+                //Editor.entityCreateDialog.Left = screenPosition.X;
+                //Editor.entityCreateDialog.Top = screenPosition.Y;
+                //Editor.entityCreateDialog.ShowDialog(Editor.nativeWindow);
             }
             else if(e.Button == MouseButtons.Left)
             {
@@ -112,7 +114,7 @@ namespace radiant.net.forms
 
         public IntPtr GetHWND()
         {
-            return RenderPanel.Handle;
+            return splitContainer1.Panel1.Handle;
         }
 
         public IntPtr GetTexWndHWND()
@@ -128,6 +130,30 @@ namespace radiant.net.forms
         public void SetMapName(string mapName)
         {
             xyWndTab.Text = "World Edit: " + mapName;
+        }
+
+        private void XYWndDialog_Load(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void UpdateTreeView()
+        {
+            entityTreeView.Nodes.Clear();
+            string entityString = NativeAPI.RadiantAPI_GetEntityClassManaged();
+            string[] entityList = entityString.Split(';');
+            foreach (string entityName in entityList)
+            {
+                entityTreeView.Nodes.Add(entityName);
+            }
+        }
+        private void CreateEntityButton_Click(object sender, EventArgs e)
+        {
+            int x = splitContainer1.Panel1.Width / 2;
+            int y = splitContainer1.Panel1.Height / 2;
+
+            NativeAPI.RadiantAPI_CreateEntity(x, y, entityTreeView.SelectedNode.Text);
         }
     }
 }
