@@ -312,13 +312,16 @@ void RadaintAPI_KeyEvent(char key, bool down)
 	g_pParentWnd->HandleKey(key, 0, 0, down);
 }
 
-
-void RadiantShowEntitySelectionDialog(void) {
+void RadiantUpdateLevelEntities(void) {
 	idStr entityList;
 	for (entity_t* pEntity = entities.next; pEntity != &entities; pEntity = pEntity->next) {
+		if (pEntity->brushes.onext == &pEntity->brushes) {
+			continue;
+		}
+
 		entityList += va("%s;",pEntity->epairs.GetString("name"));
 	}
-	radiantNetInterface.ShowEntitySelection(entityList.c_str());
+	radiantNetInterface.UpdateLevelEntities(entityList.c_str());
 }
 
 void RadiantDotNetInit(void) {
@@ -335,7 +338,7 @@ void RadiantDotNetInit(void) {
 
 	// Get all the functions 
 	radiantNetInterface.InitRadiant = (void(__cdecl *)(void *))sys->DLL_GetProcAddress(g_radiant_net_dll, "InitRadiant");
-	radiantNetInterface.ShowEntitySelection = (void(__cdecl *)(const char *))sys->DLL_GetProcAddress(g_radiant_net_dll, "ShowEntitySelection");
+	radiantNetInterface.UpdateLevelEntities = (void(__cdecl*)(const char*))sys->DLL_GetProcAddress(g_radiant_net_dll, "UpdateLevelEntities");
 	radiantNetInterface.ToggleProgressDialog = (void(__cdecl *)(bool, const char *, const char *, float))sys->DLL_GetProcAddress(g_radiant_net_dll, "ToggleProgressDialog");
 	radiantNetInterface.ProgressBarUserCancaled = (bool(__cdecl *)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "ProgressBarUserCancaled");
 	radiantNetInterface.RedrawCameraWindow = (void(__cdecl *)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "RedrawCameraWindow");

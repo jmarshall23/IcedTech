@@ -476,7 +476,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_TOGGLEZ, OnTogglez)
 	ON_COMMAND(ID_TOGGLE_LOCK, OnToggleLock)
 	ON_COMMAND(ID_EDIT_MAPINFO, OnEditMapinfo)
-	ON_COMMAND(ID_EDIT_ENTITYINFO, OnEditEntityinfo)
+	//ON_COMMAND(ID_EDIT_ENTITYINFO, OnEditEntityinfo)
 	ON_COMMAND(ID_VIEW_NEXTVIEW, OnViewNextview)
 	ON_COMMAND(ID_HELP_COMMANDLIST, OnHelpCommandlist)
 	ON_COMMAND(ID_FILE_NEWPROJECT, OnFileNewproject)
@@ -3334,6 +3334,8 @@ void CMainFrame::OnSelectionDelete() {
 	Select_Delete();
 	Undo_EndBrushList(&selected_brushes);
 	Undo_End();
+
+	RadiantUpdateLevelEntities();
 }
 
 /*
@@ -3777,14 +3779,6 @@ void CMainFrame::OnToggleLock() {
 void CMainFrame::OnEditMapinfo() {
 	CMapInfo	dlg;
 	dlg.DoModal();
-}
-
-/*
- =======================================================================================================================
- =======================================================================================================================
- */
-void CMainFrame::OnEditEntityinfo() {
-	RadiantShowEntitySelectionDialog();
 }
 
 /*

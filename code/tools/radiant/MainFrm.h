@@ -311,7 +311,7 @@ public:
 	afx_msg void OnTogglez();
 	afx_msg void OnToggleLock();
 	afx_msg void OnEditMapinfo();
-	afx_msg void OnEditEntityinfo();
+	//afx_msg void OnEditEntityinfo();
 	afx_msg void OnViewNextview();
 	afx_msg void OnHelpCommandlist();
 	afx_msg void OnFileNewproject();

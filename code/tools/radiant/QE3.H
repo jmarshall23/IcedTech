@@ -79,7 +79,7 @@ const float	HUGE_DISTANCE = 100000;
 
 struct RadiantNetInterface_t {
 	void(__cdecl *InitRadiant)(void *hwnd);
-	void(__cdecl *ShowEntitySelection)(const char *list);
+	void(__cdecl *UpdateLevelEntities)(const char *list);
 	void(__cdecl* SetMapName)(const char* list);
 
 	void(__cdecl *ToggleProgressDialog)(bool showDialog, const char *mapName, const char * workString, float completedPercent);
@@ -448,7 +448,7 @@ void BPMatDump(float A[2][3]);
 //
 // Radiant.NET Editor Interface functions
 //
-void RadiantShowEntitySelectionDialog(void);
+void RadiantUpdateLevelEntities(void);
 
 //
 // eclass.cpp

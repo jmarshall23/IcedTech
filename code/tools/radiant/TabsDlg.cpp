@@ -257,20 +257,20 @@ void CTabsDlg::ShowAllWindows ( bool show )
 
 void CTabsDlg::FocusWindow ( int ID )
 {
-	DockedWindowInfo* info = NULL;
-	m_Windows.Lookup( (WORD)ID , (void*&)info);
-
-    ASSERT ( info );
-	ASSERT ( info->m_Window );
-	
-	if ( info->m_State == DockedWindowInfo::DOCKED )
-	{
-		TabCtrl_SetCurFocus ( m_Tabs.GetSafeHwnd() , info->m_TabControlIndex );
-	}
-	else
-	{
-		info->m_Container.SetFocus();
-	}
+	//DockedWindowInfo* info = NULL;
+	//m_Windows.Lookup( (WORD)ID , (void*&)info);
+	//
+    //ASSERT ( info );
+	//ASSERT ( info->m_Window );
+	//
+	//if ( info->m_State == DockedWindowInfo::DOCKED )
+	//{
+	//	TabCtrl_SetCurFocus ( m_Tabs.GetSafeHwnd() , info->m_TabControlIndex );
+	//}
+	//else
+	//{
+	//	info->m_Container.SetFocus();
+	//}
 }
 
 void CTabsDlg::UpdateTabControlIndices ()

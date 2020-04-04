@@ -547,6 +547,8 @@ void Map_LoadFile(const char *filename) {
 
 	Sys_EndWait();
 	Sys_UpdateWindows(W_ALL);
+
+	RadiantUpdateLevelEntities();
 }
 
 

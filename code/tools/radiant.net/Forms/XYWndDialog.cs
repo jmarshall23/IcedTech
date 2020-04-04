@@ -25,12 +25,24 @@ namespace radiant.net.forms
             splitContainer1.Panel1.MouseMove += RenderPanel_MouseMove;
             splitContainer1.Panel1.Paint += RenderPanel_Paint;
 
+            tabControl1.SelectedIndexChanged += TabControl1_SelectedIndexChanged;
+
             texWndPanel.MouseUp += TexWndPanel_MouseUp;
             texWndPanel.MouseDown += TexWndPanel_MouseDown;
             texWndPanel.Paint += TexWndPanel_Paint;
             this.StartPosition = FormStartPosition.Manual;
 
             UpdateTreeView();
+        }
+
+        private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int index = (sender as TabControl).SelectedIndex;
+
+            if(index == 1)
+            {
+                
+            }
         }
 
         private void TexWndPanel_MouseUp(object sender, MouseEventArgs e)
@@ -136,7 +148,19 @@ namespace radiant.net.forms
         {
 
         }
+        public void UpdateEntityList(string[] entities)
+        {
+            int index = 0;
+            EntityListBox.Items.Clear();
 
+            foreach (string name in entities)
+            {
+                EntityListBox.Items.Add(name);
+                index++;
+            }
+
+            EntityListBox.Sorted = true;
+        }
 
         private void UpdateTreeView()
         {
@@ -154,6 +178,16 @@ namespace radiant.net.forms
             int y = splitContainer1.Panel1.Height / 2;
 
             NativeAPI.RadiantAPI_CreateEntity(x, y, entityTreeView.SelectedNode.Text);
+        }
+
+        private void gotoEntityButton_Click(object sender, EventArgs e)
+        {
+            string selected_entity = (string)EntityListBox.SelectedItem;
+            if (selected_entity == "worldspawn")
+                return;
+
+            NativeAPI.RadiantAPI_GotoEntity(selected_entity);
+            NativeAPI.RadiantAPI_SelectObject(selected_entity);
         }
     }
 }

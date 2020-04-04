@@ -12,13 +12,13 @@ namespace radiant.net
 {
     public static class Editor
     {
-        static EntitySelection entiySelectionDialog;
         public static NativeWindow nativeWindow;
         static ProgressDialog progressDialog;
         //static InspectorDialog inspectorDialog;
         static CamWndDialog camWndDialog;
         static XYWndDialog xyWndDialog;
 
+        public static string[] entityList;
         static IntPtr _xyhdc = IntPtr.Zero;
         static IntPtr _camhdc = IntPtr.Zero;
         static IntPtr _texhdc = IntPtr.Zero;
@@ -28,7 +28,6 @@ namespace radiant.net
         {
             Application.EnableVisualStyles();
 
-            entiySelectionDialog = new EntitySelection();
             progressDialog = new ProgressDialog();
             camWndDialog = new CamWndDialog();
             xyWndDialog = new XYWndDialog();
@@ -102,11 +101,10 @@ namespace radiant.net
         }
 
         [DllExport(CallingConvention = CallingConvention.Cdecl)]
-        public static void ShowEntitySelection(string entities)
+        public static void UpdateLevelEntities(string entities)
         {
-            string[] entityList = entities.Split(';');
-            entiySelectionDialog.UpdateEntityList(entityList);
-            entiySelectionDialog.Show(nativeWindow);
+            entityList = entities.Split(';');
+            xyWndDialog.UpdateEntityList(entityList);
         }
 
         [DllExport(CallingConvention = CallingConvention.Cdecl)]

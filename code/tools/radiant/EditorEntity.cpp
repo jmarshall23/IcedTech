@@ -334,7 +334,6 @@ void Entity_RemoveFromList(entity_t *e) {
  =======================================================================================================================
  */
 void Entity_Free( entity_t *e ) {
-
 	while ( e->brushes.onext != &e->brushes ) {
 		Brush_Free(e->brushes.onext);
 	}
@@ -345,8 +344,9 @@ void Entity_Free( entity_t *e ) {
 	}
 
 	Entity_FreeEpairs( e );
-
 	delete e;
+
+	RadiantUpdateLevelEntities();
 }
 
 /*
@@ -1219,6 +1219,8 @@ entity_t *Entity_Create(eclass_t *c, bool forceFixed) {
 	sprintf(text, "%i %i %i", (int)origin[0], (int)origin[1], (int)origin[2]);
 	SetKeyValue(e, "origin", text);
 	VectorCopy(origin, e->origin);
+
+	RadiantUpdateLevelEntities();
 
 	Sys_UpdateWindows(W_ALL);
 	return e;
