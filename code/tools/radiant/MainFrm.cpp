@@ -1180,6 +1180,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 		g_qeglobals.d_savedinfo.exclude |= (EXCLUDE_PATHS | EXCLUDE_CLIP | EXCLUDE_CAULK | EXCLUDE_VISPORTALS | EXCLUDE_NODRAW | EXCLUDE_TRIGGERS);
 	}
 
+	SetWindowTheme(GetSafeHwnd(), L"EXPLORER", NULL);
+
 	Sys_UpdateWindows ( W_ALL );
 	return 0;
 }

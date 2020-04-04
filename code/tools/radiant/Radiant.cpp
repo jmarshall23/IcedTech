@@ -51,6 +51,12 @@ INT_PTR g_radiant_net_dll = 0;
 
 RadiantNetInterface_t radiantNetInterface;
 
+// jmarshall
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+// jmarshall end
+
 /////////////////////////////////////////////////////////////////////////////
 // CRadiantApp
 
