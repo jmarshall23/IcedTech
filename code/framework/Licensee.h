@@ -34,9 +34,9 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
-#define GAME_NAME						"Darklight"		// appears on window titles and errors
+#define GAME_NAME						"Darklight Arena"		// appears on window titles and errors
 
-#define ENGINE_VERSION					"Darklight 0.01"	// printed in console
+#define ENGINE_VERSION					"Darklight Arena 0.01"	// printed in console
 
 #define BUILD_TIME						__DATE__ " " __TIME__
 
