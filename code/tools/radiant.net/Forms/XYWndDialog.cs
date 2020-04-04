@@ -182,7 +182,7 @@ namespace radiant.net.forms
 
         private void XYWndDialog_Load(object sender, EventArgs e)
         {
-
+            NativeAPI.SetWindowTheme(Handle, "explorer", null);
         }
         public void UpdateEntityList(string[] entities)
         {
