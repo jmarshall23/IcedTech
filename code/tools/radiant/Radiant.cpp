@@ -152,11 +152,11 @@ void RadiantAPI_XYMouseRight(bool down, int x, int y)
 	isXYMouseDownRight = down;
 	if (down)
 	{
-		g_pParentWnd->GetXYWnd()->OnRButtonDown(0, pt);
+		g_pParentWnd->GetXYWnd()->OnRButtonDown(MK_RBUTTON, pt);
 	}
 	else
 	{
-		g_pParentWnd->GetXYWnd()->OnRButtonUp(0, pt);
+		g_pParentWnd->GetXYWnd()->OnRButtonUp(MK_RBUTTON, pt);
 	}
 }
 

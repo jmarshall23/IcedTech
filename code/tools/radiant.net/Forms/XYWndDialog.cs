@@ -13,6 +13,14 @@ namespace radiant.net.forms
 {
     public partial class XYWndDialog : Form
     {
+        Timer _leftMouseButtonTimer;
+        Timer _rightMouseButtonTimer;
+
+        MouseEventArgs _leftMouseButtonEventArgs;
+        Point _leftCursorPosition;
+
+        MouseEventArgs _rightMouseButtonEventArgs;
+
         public XYWndDialog()
         {
             InitializeComponent();
@@ -32,7 +40,35 @@ namespace radiant.net.forms
             texWndPanel.Paint += TexWndPanel_Paint;
             this.StartPosition = FormStartPosition.Manual;
 
+            _leftMouseButtonTimer = new Timer();
+            _leftMouseButtonTimer.Interval = 11;
+            _leftMouseButtonTimer.Enabled = false;
+            _leftMouseButtonTimer.Tick += LeftMouseButtonTimer_Tick;
+            _rightMouseButtonTimer = new Timer();
+            _rightMouseButtonTimer.Interval = 11;
+            _rightMouseButtonTimer.Enabled = false;
+            _rightMouseButtonTimer.Tick += RightMouseButtonTimer_Tick;
+
             UpdateTreeView();
+        }
+
+        private void LeftMouseButtonTimer_Tick(object sender, EventArgs e)
+        {
+            Point relativePoint = new Point();
+
+            relativePoint.X = _leftMouseButtonEventArgs.X + (Cursor.Position.X - _leftCursorPosition.X);
+            relativePoint.Y = _leftMouseButtonEventArgs.Y + (Cursor.Position.Y - _leftCursorPosition.Y);
+
+            NativeAPI.RadiantAPI_XYMouseLeft(true, relativePoint.X, relativePoint.Y);
+            NativeAPI.RadiantAPI_RedrawWindows();
+        }
+
+        private void RightMouseButtonTimer_Tick(object sender, EventArgs e)
+        {
+            Point relativePoint = this.PointToScreen(Cursor.Position);
+
+            NativeAPI.RadiantAPI_XYMouseRight(true, relativePoint.X, relativePoint.Y);
+            NativeAPI.RadiantAPI_RedrawWindows();
         }
 
         private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -70,10 +106,12 @@ namespace radiant.net.forms
             Point screenPosition = this.PointToScreen(e.Location);
             if (e.Button == MouseButtons.Right)
             {
-                // NativeAPI.RadiantAPI_XYMouseRight(false, e.X, e.Y);
+                _rightMouseButtonTimer.Enabled = false;                
+                NativeAPI.RadiantAPI_XYMouseRight(false, e.X, e.Y);                
             }
             else if(e.Button == MouseButtons.Left)
             {
+                _leftMouseButtonTimer.Enabled = false;
                 NativeAPI.RadiantAPI_XYMouseLeft(false, e.X, e.Y);
             }
         }
@@ -83,16 +121,14 @@ namespace radiant.net.forms
             Point screenPosition = this.PointToScreen(e.Location);
             if (e.Button == MouseButtons.Right)
             {
-                //NativeAPI.RadiantAPI_XYMouseRight(true, e.X, e.Y);
-                //Editor.entityCreateDialog.SetEntityCreationLocation(e.Location);
-                //Editor.entityCreateDialog.StartPosition = FormStartPosition.Manual;
-                //Editor.entityCreateDialog.Left = screenPosition.X;
-                //Editor.entityCreateDialog.Top = screenPosition.Y;
-                //Editor.entityCreateDialog.ShowDialog(Editor.nativeWindow);
+                _rightMouseButtonTimer.Enabled = true;                
+                _rightMouseButtonEventArgs = e;
             }
             else if(e.Button == MouseButtons.Left)
             {
-                NativeAPI.RadiantAPI_XYMouseLeft(true, e.X, e.Y);
+                _leftMouseButtonTimer.Enabled = true;
+                _leftCursorPosition = Cursor.Position;
+                _leftMouseButtonEventArgs = e;
             }
         }
 
