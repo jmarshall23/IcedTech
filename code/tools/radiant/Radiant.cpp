@@ -347,6 +347,7 @@ void RadiantDotNetInit(void) {
 	radiantNetInterface.GetXYDialogHandle = (HWND(__cdecl *)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "GetXYDialogHandle");
 
 	radiantNetInterface.GetTexWndHandle = (HDC(__cdecl *)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "GetTexWndHandle");
+	radiantNetInterface.SetMapName = (void(__cdecl*)(const char *))sys->DLL_GetProcAddress(g_radiant_net_dll, "SetMapName");
 
 	HWND hwnd = g_pParentWnd->GetSafeHwnd();
 	radiantNetInterface.InitRadiant((void *)hwnd);

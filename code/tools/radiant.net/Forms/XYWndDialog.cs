@@ -119,5 +119,15 @@ namespace radiant.net.forms
         {
             return texWndPanel.Handle;
         }
+
+        private void fileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        public void SetMapName(string mapName)
+        {
+            xyWndTab.Text = "World Edit: " + mapName;
+        }
     }
 }

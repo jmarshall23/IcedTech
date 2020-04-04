@@ -80,6 +80,8 @@ const float	HUGE_DISTANCE = 100000;
 struct RadiantNetInterface_t {
 	void(__cdecl *InitRadiant)(void *hwnd);
 	void(__cdecl *ShowEntitySelection)(const char *list);
+	void(__cdecl* SetMapName)(const char* list);
+
 	void(__cdecl *ToggleProgressDialog)(bool showDialog, const char *mapName, const char * workString, float completedPercent);
 	bool(__cdecl *ProgressBarUserCancaled)(void);
 	void(__cdecl *RedrawCameraWindow)();
@@ -90,6 +92,8 @@ struct RadiantNetInterface_t {
 	HWND(__cdecl *GetXYDialogHandle)();
 
 	HDC(__cdecl *GetTexWndHandle)();
+
+
 };
 
 extern RadiantNetInterface_t radiantNetInterface;

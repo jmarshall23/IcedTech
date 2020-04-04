@@ -61,7 +61,16 @@ void Sys_MarkMapModified(void) {
  =======================================================================================================================
  */
 void Sys_SetTitle(const char *text) {
-	g_pParentWnd->SetWindowText(va("%s: %s", EDITOR_WINDOWTEXT, text));
+	idStr mapName = text;
+
+	g_pParentWnd->SetWindowText(EDITOR_WINDOWTEXT);	
+
+	if(mapName == "unnamed.map") {
+		radiantNetInterface.SetMapName("unnamed.map");
+	}
+	else {
+		radiantNetInterface.SetMapName(fileSystem->OSPathToRelativePath(text));
+	}
 }
 
 /*

@@ -48,6 +48,12 @@ namespace radiant.net
         }
 
         [DllExport(CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static void SetMapName(string mapName)
+        {
+            xyWndDialog.SetMapName(mapName);
+        }
+
+        [DllExport(CallingConvention = CallingConvention.Cdecl)]
         public unsafe static IntPtr GetTexWndHandle()
         {
             // IntPtr hdc = NativeAPI.GetDC(xyWndDialog.GetTexWndHWND().ToPointer());
