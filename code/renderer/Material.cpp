@@ -3031,6 +3031,22 @@ idMaterial::SetVirtualPageOffset
 ===================
 */
 void idMaterial::SetVirtualPageOffset(int pageLOD, int pageX, int pageY, float virtualTextureX, float virtualTextureY) {
+	if(virtualPageOffsets[pageLOD] == NULL) {
+		common->Warning("SetVirtualPageOffsets: pageLOD exceeds VT LOD!\n");
+		int requestedPageLOD = pageLOD;
+		pageLOD = -1;
+		for(int i = requestedPageLOD; requestedPageLOD >= 0; requestedPageLOD--) {
+			if (virtualPageOffsets[i] != NULL) {
+				pageLOD = i;
+				break;
+			}
+		}
+
+		if(pageLOD == -1) {
+			common->FatalError("SetVirtualPageOffset: VT Page has bad data!\n");
+		}
+	}
+
 	rvmVirtualMaterialOffset_t &vtOffset = virtualPageOffsets[pageLOD][(pageY * virtualTextureWidthInPages[pageLOD]) + pageX];
 
 	vtOffset.x = virtualTextureX;

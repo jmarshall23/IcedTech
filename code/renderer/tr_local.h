@@ -142,6 +142,7 @@ struct drawSurf_t {
 	int						dsFlags;			// DSF_VIEW_INSIDE_SHADOW, etc
 	struct vertCache_s		*dynamicTexCoords;	// float * in vertex cache memory
 	rvmSkeletalSurf_t		skinning;			// skinning information for this surface.
+	renderClassWorldType_t  surfaceClassType;	// Class type for this surface.
 	bool					forceVirtualTextureHighQuality;
 	// specular directions for non vertex program cards, skybox texcoords, etc
 };
@@ -696,6 +697,7 @@ typedef struct {
 	const viewDef_t	*	viewDef;
 	backEndCounters_t	pc;
 
+	renderClassWorldType_t  currentClassDrawType;
 	rvmPerformanceMetrics_t perfMetrics;
 
 	const viewEntity_t *currentSpace;		// for detecting when a matrix must change
@@ -1358,8 +1360,6 @@ void RB_DetermineLightScale( void );
 void RB_STD_LightScale( void );
 void RB_BeginDrawingView (void);
 
-void RB_STD_DrawSky(void);
-
 void RB_SetProgramEnvironment(void);
 void RB_SetProgramEnvironmentSpace(void);
 
@@ -1383,7 +1383,6 @@ void RB_FinishStageTexture( const textureStage_t *texture, const drawSurf_t *sur
 void RB_STD_DrawView( void );
 void RB_STD_FogAllLights( void );
 void RB_BakeTextureMatrixIntoTexgen( idPlane lightProject[3], const float textureMatrix[16] );
-void RB_STD_FillDepthBuffer(drawSurf_t** drawSurfs, int numDrawSurfs);
 
 void RB_SetVertexParm(renderParm_t rp, const float * value);
 void RB_SetVertexParms(renderParm_t rp, const float * value, int num);

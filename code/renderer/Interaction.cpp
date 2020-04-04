@@ -271,6 +271,8 @@ idInteraction *idInteraction::AllocAndLink( idRenderEntityLocal *edef, idRenderL
 	interaction->lightDef = ldef;
 	interaction->entityDef = edef;
 
+	interaction->interactionClass = ldef->parms.classType;
+
 	interaction->lightChannel = edef->parms.lightChannel;
 
 	// World meshes are only on channel LIGHT_CHANNEL_WORLD.

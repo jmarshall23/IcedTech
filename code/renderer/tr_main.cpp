@@ -762,23 +762,6 @@ static void R_SortDrawSurfs( void ) {
 
 /*
 ================
-R_AddSkySurfaces
-================
-*/
-void R_AddSkySurfaces(void) {
-	idRenderModel* skyModel = tr.viewDef->renderView.skyModel;
-	if (skyModel == NULL)
-		return;
-
-	for (int i = 0; i < skyModel->NumSurfaces(); i++)
-	{
-		srfTriangles_t* tri = skyModel->Surface(i)->geometry;
-		R_CreateAmbientCache(tri, false);
-	}
-}
-
-/*
-================
 R_RenderView
 
 A view may be either the actual camera view,
@@ -853,9 +836,6 @@ void R_RenderView( viewDef_t *parms ) {
 	// adds ambient surfaces and create any necessary interaction surfaces to add to the light
 	// lists
 	R_AddModelSurfaces();
-
-	// adds the sky surfaces.
-	R_AddSkySurfaces();
 
 	// any viewLight that didn't have visible surfaces can have it's shadows removed
 	R_RemoveUnecessaryViewLights();

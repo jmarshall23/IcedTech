@@ -141,7 +141,6 @@ set(src_engine
 	./renderer/render/render_particles.cpp
 	./renderer/render/render_shadow.cpp
 	./renderer/render/render_skin.cpp
-	./renderer/render/render_sky.cpp
 	./renderer/DXT
 	./renderer/GLMatrix.cpp
 	./renderer/GLMatrix.h

@@ -4,6 +4,8 @@
 #include "engine_precompiled.h"
 #include "../tr_local.h"
 
+renderClassWorldType_t currentClassDrawType;
+
 /*
 ==================
 RB_T_FillFeedbackPass
@@ -218,7 +220,17 @@ void RB_STD_DrawFeedbackPass(drawSurf_t	 **drawSurfs, int numDrawSurfs) {
 	glDisable(GL_FRAGMENT_PROGRAM_ARB);
 
 	backEnd.ignoreScissorOptimization = true;
-	RB_RenderDrawSurfListWithFunction(drawSurfs, numDrawSurfs, RB_T_FillFeedbackPass);
+		
+		// Render the sky portal geometry.
+		backEnd.currentClassDrawType = RENDER_CLASS_SKYPORTAL;
+		RB_RenderDrawSurfListWithFunction(drawSurfs, numDrawSurfs, RB_T_FillFeedbackPass);
+		
+		// Nuke the depth buffer.
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		// Render the world.
+		backEnd.currentClassDrawType = RENDER_CLASS_WORLD;
+		RB_RenderDrawSurfListWithFunction(drawSurfs, numDrawSurfs, RB_T_FillFeedbackPass);
 	backEnd.ignoreScissorOptimization = false;
 
 	renderProgManager.Unbind();

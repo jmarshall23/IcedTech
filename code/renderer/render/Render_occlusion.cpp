@@ -131,9 +131,7 @@ void RB_Draw_LightOcclusion(void) {
 	glDepthMask(GL_FALSE);
 
 	for (vLight = backEnd.viewDef->viewLights; vLight; vLight = vLight->next) {
-		if (!backEnd.viewDef->renderView.isEditor) {
-			RB_Reap_Occlusion(vLight);
-		}
+		RB_Reap_Occlusion(vLight);
 
 		backEnd.perfMetrics.frustumCulledLights++;
 
@@ -144,14 +142,6 @@ void RB_Draw_LightOcclusion(void) {
 
 	glDepthMask(GL_TRUE);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-
-	// Test the occlusion queries(if in editor, reap immediately). 
-	if (backEnd.viewDef->renderView.isEditor)
-	{
-		for (vLight = backEnd.viewDef->viewLights; vLight; vLight = vLight->next) {
-			RB_Reap_Occlusion(vLight);
-		}
-	}
 
 	renderProgManager.Unbind();
 }

@@ -435,6 +435,11 @@ void idPlayerView::SingleView( idUserInterface *hud, const renderView_t *view ) 
 		return;
 	}
 
+	// don't render if the editor is running.
+	if(common->IsEditorRunning()) {
+		return;
+	}
+
 	// place the sound origin for the player
 	gameSoundWorld->PlaceListener( view->vieworg, view->viewaxis, player->entityNumber + 1);
 
@@ -453,9 +458,6 @@ void idPlayerView::SingleView( idUserInterface *hud, const renderView_t *view ) 
 	// hack the shake in at the very last moment, so it can't cause any consistency problems
 	renderView_t	hackedView = *view;
 	hackedView.viewaxis = hackedView.viewaxis * ShakeAxis();
-
-	hackedView.skyMaterial = gameLocal.world->GetSkyMaterial();
-	hackedView.skyModel = gameLocal.skyDomeMesh;
 
 	hackedView.forceScreenSize = true;
 	game->RenderScene(&hackedView, gameRenderWorld);

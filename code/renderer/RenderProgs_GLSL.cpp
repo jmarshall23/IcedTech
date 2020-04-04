@@ -1134,8 +1134,9 @@ idRenderProgManager::SetUniformValue
 ================================================================================================
 */
 void idRenderProgManager::SetUniformValue( const renderParm_t rp, const float * value ) {
+	float* glslUniformsPtr = glslUniforms[rp].ToFloatPtr();
 	for ( int i = 0; i < 4; i++ ) {
-		glslUniforms[rp][i] = value[i];
+		glslUniformsPtr[i] = value[i];
 	}
 }
 

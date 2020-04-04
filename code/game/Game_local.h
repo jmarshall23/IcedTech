@@ -360,7 +360,6 @@ public:
 	int						vacuumAreaNum;			// -1 if level doesn't have any outside areas
 
 	idStr					mapMusicPath;
-	idRenderModel*			skyDomeMesh;
 
 	gameType_t				gameType;
 	bool					isMultiplayer;			// set if the game is run in multiplayer mode
@@ -634,7 +633,6 @@ private:
 	void					SpawnMapEntities( void );
 							// commons used by init, shutdown, and restart
 	void					MapPopulate( void );
-	void					LoadSky(void);
 	void					MapClear( bool clearClients );
 
 	pvsHandle_t				GetClientPVS( idPlayer *player, pvsType_t type );
@@ -871,6 +869,9 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "client/ClientMoveable.h"
 #include "client/ClientModel.h"
 #include "ClientEffects.h"
+
+// Portal Sky
+#include "PortalSky.h"
 
 #include "GameEdit.h"
 #include "AF.h"

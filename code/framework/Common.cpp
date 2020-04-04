@@ -149,6 +149,8 @@ public:
 	virtual int					ButtonState( int key );
 	virtual int					KeyState( int key );
 
+	virtual bool				IsEditorRunning(void);
+
 	void						InitGame( void );
 	void						ShutdownGame( bool reloading );
 
@@ -869,7 +871,7 @@ bool idCommonLocal::SafeMode( void ) {
 ==================
 idCommonLocal::CheckToolMode
 
-Check for "renderbump", "dmap", or "editor" on the command line,
+Check for "renderbump", "dmap", or "icestudio" on the command line,
 and force fullscreen off in those cases
 ==================
 */
@@ -883,7 +885,7 @@ void idCommonLocal::CheckToolMode( void ) {
 		else if ( !idStr::Icmp( com_consoleLines[ i ].Argv(0), "debugger" ) ) {
 			com_editors |= EDITOR_DEBUGGER;
 		}
-		else if ( !idStr::Icmp( com_consoleLines[ i ].Argv(0), "editor" ) ) {
+		else if ( !idStr::Icmp( com_consoleLines[ i ].Argv(0), "icestudio" ) ) {
 			com_editors |= EDITOR_RADIANT;
 		}
 		// Nerve: Add support for the material editor
@@ -892,7 +894,7 @@ void idCommonLocal::CheckToolMode( void ) {
 		}
 		
 		if ( !idStr::Icmp( com_consoleLines[ i ].Argv(0), "renderbump" )
-			|| !idStr::Icmp( com_consoleLines[ i ].Argv(0), "editor" )
+			|| !idStr::Icmp( com_consoleLines[ i ].Argv(0), "icestudio" )
 			|| !idStr::Icmp( com_consoleLines[ i ].Argv(0), "guieditor" )
 			|| !idStr::Icmp( com_consoleLines[ i ].Argv(0), "debugger" )
 			|| !idStr::Icmp( com_consoleLines[ i ].Argv(0), "dmap" )
@@ -2339,7 +2341,7 @@ void idCommonLocal::InitCommands( void ) {
 
 #ifdef ID_ALLOW_TOOLS
 	// editors
-	cmdSystem->AddCommand( "editor", Com_Editor_f, CMD_FL_TOOL, "launches the level editor Radiant" );
+	cmdSystem->AddCommand( "icestudio", Com_Editor_f, CMD_FL_TOOL, "launches the level editor Radiant" );
 	cmdSystem->AddCommand( "editLights", Com_EditLights_f, CMD_FL_TOOL, "launches the in-game Light Editor" );
 	cmdSystem->AddCommand( "editSounds", Com_EditSounds_f, CMD_FL_TOOL, "launches the in-game Sound Editor" );
 	cmdSystem->AddCommand( "editDecls", Com_EditDecls_f, CMD_FL_TOOL, "launches the in-game Declaration Editor" );
@@ -2996,4 +2998,17 @@ void idCommonLocal::ShutdownGame( bool reloading ) {
 
 	// shut down the file system
 	fileSystem->Shutdown( reloading );
+}
+
+/*
+====================
+idCommonLocal::IsEditorRunning
+====================
+*/
+bool idCommonLocal::IsEditorRunning(void) {
+	if(com_editors != 0) {
+		return !Sys_IsWindowVisible();
+	}
+
+	return false;
 }

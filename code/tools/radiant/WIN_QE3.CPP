@@ -61,7 +61,7 @@ void Sys_MarkMapModified(void) {
  =======================================================================================================================
  */
 void Sys_SetTitle(const char *text) {
-	g_pParentWnd->SetWindowText(va("%s - %s",text, EDITOR_WINDOWTEXT));
+	g_pParentWnd->SetWindowText(va("%s: %s", EDITOR_WINDOWTEXT, text));
 }
 
 /*

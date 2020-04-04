@@ -83,6 +83,14 @@ const int MAX_RENDERENTITY_GUI		= 3;
 
 typedef bool(*deferredEntityCallback_t)( renderEntity_t *, const renderView_t* );
 
+//
+// renderClassWorldType_t
+//
+enum renderClassWorldType_t {
+	RENDER_CLASS_WORLD = 0,			// Entity/light that belongs to the main world.
+	RENDER_CLASS_SKYPORTAL,			// Entity/light that belongs to the portal sky.
+};
+
 // jmarshall - added constructor here.
 struct renderEntity_t {
 	renderEntity_t();
@@ -92,6 +100,8 @@ struct renderEntity_t {
 	bool HasLightChannel(int lightChannel);
 
 	idRenderModel *			hModel;				// this can only be null if callback is set
+
+	renderClassWorldType_t	classType;
 
 	int						lightChannel;
 
@@ -192,6 +202,7 @@ ID_INLINE renderEntity_t::renderEntity_t()
 	hasDynamicShadows = false;
 	skipEntityViewCulling = false;
 	forceVirtualTextureHighQuality = false;
+	classType = RENDER_CLASS_WORLD;
 }
 
 /*
@@ -235,6 +246,8 @@ struct renderLight_t {
 	bool HasLightChannel(int lightChannel);
 
 	const char				*name;				// for debugging.
+
+	renderClassWorldType_t	classType;
 
 	idMat3					axis;				// rotation vectors, must be unit length
 	idVec3					origin;
@@ -323,6 +336,7 @@ ID_INLINE renderLight_t::renderLight_t()
 	referenceSound = NULL;
 	dynamicShadows = false;
 	name = "";
+	classType = RENDER_CLASS_WORLD;
 
 	for (int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++)
 		shaderParms[i] = 0;
@@ -351,36 +365,9 @@ ID_INLINE bool renderLight_t::HasLightChannel(int lightChannel) {
 	return (!!((this->lightChannel) & (1ULL << (lightChannel))));
 }
 
-
 struct renderView_t {
 // jmarshall
-	renderView_t()
-	{
-		viewID = 0;
-		x = 0;
-		y = 0;
-		width = 0;
-		height = 0;
-		fov_x = 0;
-		fov_y = 0;
-		vieworg.Zero();
-		viewaxis.Zero();
-		cramZNear = false;
-		forceUpdate = false;
-		window_width = 0;
-		window_height = 0;
-		skipFrustumInteractionCheck = false;
-		forceScreenSize = false;
-		skipPostProcess = false;
-		isEditor = false;
-		isGuiEditor = false;
-		skyModel = NULL;
-		skyMaterial = NULL;
-		time = 0;
-		for (int i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++)
-			shaderParms[i] = 0;
-		globalMaterial = NULL;
-	}
+	renderView_t();
 // jmarshall end
 
 	// player views will set this to a non-zero integer for model suppress / allow
@@ -400,9 +387,6 @@ struct renderView_t {
 // jmarshall
 	bool					isEditor;
 	bool					isGuiEditor;
-
-	idRenderModel*			skyModel;
-	const idMaterial*		skyMaterial;
 // jmarshall end
 
 // jmarshall
@@ -420,6 +404,34 @@ struct renderView_t {
 	float					shaderParms[MAX_GLOBAL_SHADER_PARMS];		// can be used in any way by shader
 	const idMaterial		*globalMaterial;							// used to override everything draw
 };
+
+//
+// renderView_t::renderView_t
+//
+ID_INLINE renderView_t::renderView_t() {
+	viewID = 0;
+	x = 0;
+	y = 0;
+	width = 0;
+	height = 0;
+	fov_x = 0;
+	fov_y = 0;
+	vieworg.Zero();
+	viewaxis.Zero();
+	cramZNear = false;
+	forceUpdate = false;
+	window_width = 0;
+	window_height = 0;
+	skipFrustumInteractionCheck = false;
+	forceScreenSize = false;
+	skipPostProcess = false;
+	isEditor = false;
+	isGuiEditor = false;
+	time = 0;
+	for (int i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++)
+		shaderParms[i] = 0;
+	globalMaterial = NULL;
+}
 
 
 // exitPortal_t is returned by idRenderWorld::GetPortal()

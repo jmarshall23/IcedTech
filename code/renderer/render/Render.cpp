@@ -597,6 +597,8 @@ void RB_BeginDrawingView (void) {
 		glDisable( GL_STENCIL_TEST );
 	}
 
+	backEnd.currentClassDrawType = RENDER_CLASS_WORLD;
+
 	backEnd.glState.faceCulling = -1;		// force face culling to set next time
 	GL_Cull( CT_FRONT_SIDED );
 

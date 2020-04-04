@@ -124,7 +124,8 @@ SCommandInfo	g_Commands[] = {
 	{ "Edit_Paste",             'V', RAD_CONTROL, ID_EDIT_PASTEBRUSH },
 	{ "Edit_Undo",              'Z', RAD_CONTROL, ID_EDIT_UNDO },
 	{ "Edit_Redo",              'Y', RAD_CONTROL, ID_EDIT_REDO },
-
+// jmarshall
+/*
 	{ "Camera_Forward",          VK_UP, 0, ID_CAMERA_FORWARD },
 	{ "Camera_Back",             VK_DOWN, 0, ID_CAMERA_BACK },
 	{ "Camera_Left",             VK_LEFT, 0, ID_CAMERA_LEFT },
@@ -138,7 +139,8 @@ SCommandInfo	g_Commands[] = {
 	{ "Camera_UpFloor",          VK_PRIOR, 0, ID_VIEW_UPFLOOR },
 	{ "Camera_DownFloor",        VK_NEXT, 0, ID_VIEW_DOWNFLOOR },
 	{ "Camera_CenterView",       VK_END, 0, ID_VIEW_CENTER },
-
+*/
+// jmarshall end
 	{ "Grid_ZoomOut",            VK_INSERT, 0, ID_VIEW_ZOOMOUT },
 	{ "FileSaveCopy",            'C', RAD_CONTROL|RAD_ALT|RAD_SHIFT, D3XP_ID_FILE_SAVE_COPY },
 	{ "ShowHideModels",          'M', RAD_CONTROL, D3XP_ID_SHOW_MODELS },
@@ -455,6 +457,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_SIZING()
 	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
 	ON_COMMAND(ID_VIEW_CLIPPER, OnViewClipper)
+/*
 	ON_COMMAND(ID_CAMERA_ANGLEDOWN, OnCameraAngledown)
 	ON_COMMAND(ID_CAMERA_ANGLEUP, OnCameraAngleup)
 	ON_COMMAND(ID_CAMERA_BACK, OnCameraBack)
@@ -465,6 +468,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_CAMERA_STRAFELEFT, OnCameraStrafeleft)
 	ON_COMMAND(ID_CAMERA_STRAFERIGHT, OnCameraStraferight)
 	ON_COMMAND(ID_CAMERA_UP, OnCameraUp)
+*/
 	ON_COMMAND(ID_GRID_TOGGLE, OnGridToggle)
 	ON_COMMAND(ID_PREFS, OnPrefs)
 	ON_COMMAND(ID_TOGGLECAMERA, OnTogglecamera)

@@ -276,6 +276,39 @@ void RadiantAPI_SetRenderMode(bool render)
 
 void RadaintAPI_KeyEvent(char key, bool down)
 {
+	if (down) {
+		switch (key)
+		{
+			case VK_UP:
+				g_pParentWnd->OnCameraForward();
+				break;
+
+			case VK_DOWN:
+				g_pParentWnd->OnCameraBack();
+				break;
+
+			case VK_LEFT:
+				g_pParentWnd->OnCameraLeft();
+				break;
+
+			case VK_RIGHT:
+				g_pParentWnd->OnCameraRight();
+				break;
+
+			case 'D':
+				g_pParentWnd->OnCameraUp();
+				break;
+			case 'C':
+				g_pParentWnd->OnCameraDown();
+				break;
+			case 'A':
+				g_pParentWnd->OnCameraAngleup();
+				break;
+			case 'Z':
+				g_pParentWnd->OnCameraAngledown();
+				break;
+		}
+	}
 	g_pParentWnd->HandleKey(key, 0, 0, down);
 }
 

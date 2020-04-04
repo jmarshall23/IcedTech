@@ -211,6 +211,9 @@ public:
 
 								// Directly sample a keystate.
 	virtual int					KeyState( int key ) = 0;
+
+								// Returns true if a editor is running.
+	virtual bool				IsEditorRunning(void) = 0;
 };
 
 extern idCommon *		common;

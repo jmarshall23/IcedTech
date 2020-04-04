@@ -355,6 +355,10 @@ void RB_Interaction_DrawInteractions( void ) {
 			continue;
 		}
 
+		if(vLight->lightDef->parms.classType != backEnd.currentClassDrawType) {
+			continue;
+		}
+
 		// do fogging later
 		if ( vLight->lightShader->IsFogLight() ) {
 			continue;

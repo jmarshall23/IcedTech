@@ -1149,9 +1149,6 @@ void idGameLocal::MapPopulate( void ) {
 
 	uniqueLightCount = 0;
 
-	// load the sky
-	LoadSky();
-
 	// parse the key/value pairs and spawn entities
 	SpawnMapEntities();
 
@@ -1509,6 +1506,9 @@ void idGameLocal::MapShutdown( void ) {
 		camera = NULL;
 		inCinematic = false;
 	}
+
+	// Free the portal sky.
+	portalSky.FreePortalSky();
 
 	MapClear( true );
 
@@ -4439,16 +4439,6 @@ void idGameLocal::Trace(trace_t& results, const idVec3& start, const idVec3& end
 		clip.Translation(results, start, end, NULL, axis, CONTENTS_SOLID, entities[passEntity]);
 	}
 }
-
-/*
-===================
-idGameLocal::LoadSky
-===================
-*/
-void idGameLocal::LoadSky(void) {
-	skyDomeMesh = renderModelManager->FindModel("models/sky/sky.mdr");
-}
-
 
 /*
 ===================

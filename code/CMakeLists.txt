@@ -220,6 +220,8 @@ set(src_game
 	./game/PlayerView.h
 	./game/Projectile.cpp
 	./game/Projectile.h
+	./game/PortalSky.cpp
+	./game/PortalSky.h
 	./game/Pvs.cpp
 	./game/Pvs.h
 	./game/script

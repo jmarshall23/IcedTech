@@ -20,6 +20,10 @@ void RB_T_FillDepthBuffer(const drawSurf_t* surf) {
 	tri = surf->geo;
 	shader = surf->material;
 
+	if (surf->surfaceClassType != backEnd.currentClassDrawType) {
+		return;
+	}
+
 	// update the clip plane if needed
 	if (backEnd.viewDef->numClipPlanes && surf->space != backEnd.currentSpace) {
 		GL_SelectTexture(1);

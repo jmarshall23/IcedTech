@@ -72,6 +72,12 @@ void idWorldspawn::Spawn( void ) {
 		pm_stamina.SetFloat( 0.0f );
 	}
 
+	// Portal Sky map
+	idStr portalSkyMap = spawnArgs.GetString("portalsky", "");
+	if (portalSkyMap.Length() > 0) {
+		portalSky.LoadPortalSkyMap(portalSkyMap);
+	}
+
 	// Map Music
 	gameLocal.mapMusicPath = spawnArgs.GetString("music", "");
 

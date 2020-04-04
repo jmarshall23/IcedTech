@@ -626,6 +626,11 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 			}
 		}
 
+		// Only have light and entity interactions that have the same class type.
+		if(edef->parms.classType != ldef->parms.classType) {
+			continue;
+		}
+
 		bool hasLightChannel = false;
 
 		// Check to see if this interaction has at least one channel from this light.
@@ -1085,6 +1090,7 @@ void R_AddDrawSurf( const srfTriangles_t *tri, const viewEntity_t *space, const 
 	drawSurf->scissorRect = scissor;
 	drawSurf->sort = shader->GetSort() + tr.sortOffset;
 	drawSurf->dsFlags = 0;
+	drawSurf->surfaceClassType = renderEntity->classType;
 
 	// GPU skinning.
 	if(model && model->IsSkeletalMesh()) {

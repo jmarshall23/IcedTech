@@ -1578,18 +1578,29 @@ void	RB_STD_DrawView( void ) {
 	// decide how much overbrighting we are going to do
 	RB_DetermineLightScale();
 
-	// Draw the sky first without depth write.
-	RB_STD_DrawSky();
+	// Draw the sky portal
+	{
+		backEnd.currentClassDrawType = RENDER_CLASS_SKYPORTAL;
+		RB_STD_FillDepthBuffer(drawSurfs, numDrawSurfs);
+		RB_Interaction_DrawInteractions();
 
-	// fill the depth buffer and clear color buffer to black except on
-	// subviews
-	RB_STD_FillDepthBuffer( drawSurfs, numDrawSurfs );
+		// Clear the depth buffer.
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
 
-	// Run Occlusion Queries for the lights.
-	RB_Draw_LightOcclusion();
+	// Draw the world.
+	{
+		backEnd.currentClassDrawType = RENDER_CLASS_WORLD;
+		// fill the depth buffer and clear color buffer to black except on
+		// subviews
+		RB_STD_FillDepthBuffer(drawSurfs, numDrawSurfs);
 
-	// main light renderer
-	RB_Interaction_DrawInteractions();
+		// Run Occlusion Queries for the lights.
+		RB_Draw_LightOcclusion();
+
+		// main light renderer
+		RB_Interaction_DrawInteractions();
+	}
 
 	// disable stencil shadow test
 	glStencilFunc( GL_ALWAYS, 128, 255 );

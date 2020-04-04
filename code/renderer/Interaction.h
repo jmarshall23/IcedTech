@@ -109,6 +109,9 @@ public:
 	// What light channels affect this interaction.
 	int						lightChannel;
 
+	// Class interaction for this interaction.
+	renderClassWorldType_t	interactionClass;
+
 	// if there is a whole-entity optimized shadow hull, it will
 	// be present as a surfaceInteraction_t with a NULL ambientTris, but
 	// possibly having a shader to specify the shadow sorting order
