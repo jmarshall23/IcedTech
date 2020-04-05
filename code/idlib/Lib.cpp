@@ -49,6 +49,8 @@ idCVarSystem *	idLib::cvarSystem	= NULL;
 idFileSystem *	idLib::fileSystem	= NULL;
 int				idLib::frameNumber	= 0;
 
+static bool skipAllAsserts = false;
+
 /*
 ================
 idLib::Init
@@ -578,6 +580,10 @@ bool Swap_IsBigEndian( void ) {
 
 void AssertFailed( const char *file, int line, const char *expression ) {
 	idLib::sys->DebugPrintf( "\n\nASSERTION FAILED!\n%s(%d): '%s'\n", file, line, expression );
+
+	if (skipAllAsserts)
+		return;
+
 #ifdef _WIN32
 	__debugbreak();
 #elif defined( __linux__ )

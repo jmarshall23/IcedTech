@@ -91,7 +91,13 @@ struct RadiantNetInterface_t {
 	HDC(__cdecl *GetXYWindowHandle)();
 	HWND(__cdecl *GetXYDialogHandle)();
 
+	HWND(__cdecl* GetGameWindowHWND)();
+	HDC(__cdecl* GetGameWindowHandle)();
+
 	HDC(__cdecl *GetTexWndHandle)();
+
+	int(__cdecl* GetGameWindowWidth)();
+	int(__cdecl* GetGameWindowHeight)();
 
 
 };

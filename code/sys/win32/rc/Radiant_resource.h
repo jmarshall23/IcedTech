@@ -623,7 +623,7 @@
 #define ID_DROP_GROUP_ADDTO             30180
 #define ID_SHOW_LIGHTVOLUMES            30181
 #define ID_SHOW_LIGHTTEXTURES           30182
-#define ID_SHOW_DOOM                    30183
+//#define ID_SHOW_DOOM                    30183
 #define ID_SPLINES_MODE                 30184
 #define ID_SPLINES_LOAD                 30185
 #define ID_SPLINES_SAVE                 30186

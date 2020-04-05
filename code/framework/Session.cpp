@@ -2477,19 +2477,30 @@ idSessionLocal::UpdateScreen
 */
 void idSessionLocal::UpdateScreen( bool outOfSequence ) {
 
+	if (insideUpdateScreen) {
+		return;
+		//		common->FatalError( "idSessionLocal::UpdateScreen: recursively called" );
+	}
+
 #ifdef _WIN32
 
 	if ( com_editors ) {
-		if ( !Sys_IsWindowVisible() ) {
+		if ( common->IsEditorRunning() ) {
 			return;
 		}
+
+		RadiantSetGameContext();
+		int width, height;
+
+		common->GetEditorGameWindow(width, height);
+
+		renderSystem->BeginFrame(width, height);
 	}
 #endif
-
-	if ( insideUpdateScreen ) {
-		return;
-//		common->FatalError( "idSessionLocal::UpdateScreen: recursively called" );
+	{
+		renderSystem->BeginFrame(renderSystem->GetScreenWidth(), renderSystem->GetScreenHeight());
 	}
+
 
 	insideUpdateScreen = true;
 
@@ -2499,7 +2510,7 @@ void idSessionLocal::UpdateScreen( bool outOfSequence ) {
 		Sys_GrabMouseCursor( false );
 	}
 
-	renderSystem->BeginFrame( renderSystem->GetScreenWidth(), renderSystem->GetScreenHeight() );
+	
 
 	// draw everything
 	Draw();
@@ -2595,13 +2606,13 @@ idSessionLocal::Frame
 */
 void idSessionLocal::Frame() {
 	// Editors that completely take over the game
-	if ( com_editorActive && ( com_editors & ( EDITOR_RADIANT | EDITOR_GUI ) ) ) {
+	if (common->IsEditorRunning()) {
 		return;
 	}
 
 	// if the console is down, we don't need to hold
 	// the mouse cursor
-	if ( console->Active() || com_editorActive ) {
+	if ( console->Active() || common->IsEditorRunning()) {
 		Sys_GrabMouseCursor( false );
 	} else {
 		Sys_GrabMouseCursor( true );

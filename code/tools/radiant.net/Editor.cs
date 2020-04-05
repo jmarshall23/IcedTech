@@ -22,6 +22,7 @@ namespace radiant.net
         static IntPtr _xyhdc = IntPtr.Zero;
         static IntPtr _camhdc = IntPtr.Zero;
         static IntPtr _texhdc = IntPtr.Zero;
+        static IntPtr _gamehdc = IntPtr.Zero;
 
         [DllExport(CallingConvention = CallingConvention.Cdecl)]
         public static void InitRadiant(IntPtr ParentWindow)
@@ -47,6 +48,34 @@ namespace radiant.net
         public unsafe static void SetMapName(string mapName)
         {
             xyWndDialog.SetMapName(mapName);
+        }
+
+        [DllExport(CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static IntPtr GetGameWindowHandle()
+        {
+            if(_gamehdc == IntPtr.Zero)
+            {
+                _gamehdc = NativeAPI.GetDC(xyWndDialog.GetGameWndHWND().ToPointer());
+            }
+            return _gamehdc;
+        }
+
+        [DllExport(CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static IntPtr GetGameWindowHWND()
+        {
+            return xyWndDialog.GetGameWndHWND();
+        }
+
+        [DllExport(CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static int GetGameWindowWidth()
+        {
+            return xyWndDialog.GetGameWndWidth();
+        }
+
+        [DllExport(CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static int GetGameWindowHeight()
+        {
+            return xyWndDialog.GetGameWndHeight();
         }
 
         [DllExport(CallingConvention = CallingConvention.Cdecl)]

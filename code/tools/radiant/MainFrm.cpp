@@ -277,8 +277,6 @@ SCommandInfo	g_Commands[] = {
 	{ "Find_Entity",       VK_F3, RAD_CONTROL, ID_MISC_FINDORREPLACEENTITY},	
 	{ "Find_NextEntity",   VK_F3,RAD_SHIFT, ID_MISC_FINDNEXTENT},
 
-	{ "_ShowDOOM",               VK_F2, 0, ID_SHOW_DOOM },
-
 	{ "Rotate_MouseRotate",            'R', 0, ID_SELECT_MOUSEROTATE },
 	{ "Rotate_ToggleFlatRotation",     'R', RAD_CONTROL, ID_VIEW_CAMERAUPDATE },
 	{ "Rotate_CycleRotationAxis",      'R', RAD_SHIFT, ID_TOGGLE_ROTATELOCK },
@@ -663,7 +661,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_SELECT_BYBOUNDINGBRUSH, OnSelectByBoundingBrush)
 	ON_COMMAND(ID_SELECTION_COMBINE, OnSelectionCombine)
 	ON_COMMAND(ID_PATCH_COMBINE, OnPatchCombine)
-	ON_COMMAND(ID_SHOW_DOOM, OnShowDoom)
 	ON_COMMAND(ID_VIEW_RENDERMODE, OnViewRendermode)
 	ON_COMMAND(ID_VIEW_REBUILDRENDERDATA, OnViewRebuildrenderdata)
 	ON_COMMAND(ID_VIEW_REALTIMEREBUILD, OnViewRealtimerebuild)
@@ -6493,12 +6490,6 @@ void CMainFrame::OnPatchCombine() {
 			}
 		}
 	}
-}
-
-void CMainFrame::OnShowDoom() 
-{
-
-	::ShowWindow(win32.hWnd, SW_NORMAL);
 }
 
 void CMainFrame::OnViewRendermode() 

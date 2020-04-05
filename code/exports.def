@@ -12,3 +12,8 @@ EXPORTS
 	RadiantAPI_MouseMove @11
 	RadiantAPI_CameraMouseLeft @12
 	RadiantAPI_TexWndMouseLeft @13
+	RadiantAPI_ShowDoom @14
+	RadiantAPI_GameWindowMouseMovement @15
+	RadiantAPI_GameMouseFocus @16
+	RadiantAPI_GameWindowMouseKey @17
+	RadiantAPI_GameWindowKeyboard @18

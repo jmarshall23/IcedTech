@@ -280,6 +280,10 @@ DIRECT INPUT KEYBOARD CONTROL
 ============================================================
 */
 
+unsigned char Sys_ScanKeyConvert(char ch) {
+	return keyScanTable[ch];
+}
+
 bool IN_StartupKeyboard( void ) {
     HRESULT hr;
     bool    bExclusive;

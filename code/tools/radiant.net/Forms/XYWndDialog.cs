@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using radiant.net;
+using System.Windows.Input;
 
 namespace radiant.net.forms
 {
@@ -15,11 +16,14 @@ namespace radiant.net.forms
     {
         Timer _leftMouseButtonTimer;
         Timer _rightMouseButtonTimer;
+        Timer _gameMouseMoveTimer;
 
         MouseEventArgs _leftMouseButtonEventArgs;
         Point _leftCursorPosition;
 
         MouseEventArgs _rightMouseButtonEventArgs;
+
+        Point _lastScreenPosition = new Point(0, 0);
 
         public XYWndDialog()
         {
@@ -33,7 +37,11 @@ namespace radiant.net.forms
             splitContainer1.Panel1.MouseMove += RenderPanel_MouseMove;
             splitContainer1.Panel1.Paint += RenderPanel_Paint;
 
-            tabControl1.SelectedIndexChanged += TabControl1_SelectedIndexChanged;
+            GamePanel.MouseDown += GamePanel_MouseDown;
+            GamePanel.MouseUp += GamePanel_MouseUp;
+
+            tabControl.SelectedIndexChanged += TabControl_SelectedIndexChanged;
+            tabControl.KeyDown += TabControl_KeyDown;
 
             texWndPanel.MouseUp += TexWndPanel_MouseUp;
             texWndPanel.MouseDown += TexWndPanel_MouseDown;
@@ -49,7 +57,71 @@ namespace radiant.net.forms
             _rightMouseButtonTimer.Enabled = false;
             _rightMouseButtonTimer.Tick += RightMouseButtonTimer_Tick;
 
+            _gameMouseMoveTimer = new Timer();
+            _gameMouseMoveTimer.Interval = 3;
+            _gameMouseMoveTimer.Enabled = true;
+            _gameMouseMoveTimer.Tick += GameMouseMoveTimer_Tick;
+
             UpdateTreeView();
+        }
+
+        private void GamePanel_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                NativeAPI.RadiantAPI_GameWindowMouseKey(false, true, false);
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                NativeAPI.RadiantAPI_GameWindowMouseKey(true, false, false);
+            }
+        }
+
+        private void GamePanel_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Left)
+            {
+                NativeAPI.RadiantAPI_GameWindowMouseKey(false, true, true);
+            }
+            else if(e.Button == MouseButtons.Right)
+            {
+                NativeAPI.RadiantAPI_GameWindowMouseKey(true, false, true);
+            }
+        }
+
+        private void GameMouseMoveTimer_Tick(object sender, EventArgs e)
+        {
+            if (!NativeAPI.RadiantAPI_GameMouseFocus())
+            {
+                Cursor.Clip = Screen.PrimaryScreen.Bounds;
+                return;
+            }
+
+            if (tabControl.SelectedIndex != 2)
+            {
+                Cursor.Clip = Screen.PrimaryScreen.Bounds;
+                return;
+            }
+
+            Point screenGamePanelPosition = this.PointToScreen(GamePanel.Location);
+
+            int mouseX = Cursor.Position.X - (screenGamePanelPosition.X + 300);
+            int mouseY = Cursor.Position.Y - (screenGamePanelPosition.Y + 300);
+
+            NativeAPI.RadiantAPI_GameWindowMouseMovement(mouseX, mouseY);
+
+            Point newCursorPosition = screenGamePanelPosition;
+            newCursorPosition.X += 300;
+            newCursorPosition.Y += 300;
+            Cursor.Position = newCursorPosition;
+        }
+
+        private void TabControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
+            {
+                e.Handled = true;
+            }
         }
 
         private void LeftMouseButtonTimer_Tick(object sender, EventArgs e)
@@ -71,13 +143,17 @@ namespace radiant.net.forms
             NativeAPI.RadiantAPI_RedrawWindows();
         }
 
-        private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        private void TabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = (sender as TabControl).SelectedIndex;
 
-            if(index == 1)
+            if(index == 2)
             {
-                
+                NativeAPI.RadiantAPI_ShowDoom(true);
+            }
+            else
+            {
+                NativeAPI.RadiantAPI_ShowDoom(false);
             }
         }
 
@@ -139,11 +215,22 @@ namespace radiant.net.forms
 
         private void XYWndDialog_KeyUp(object sender, KeyEventArgs e)
         {
+            if (tabControl.SelectedIndex == 2)
+            {
+                NativeAPI.RadiantAPI_GameWindowKeyboard(RadiantHelpers.GetKeyAscii2(e), false);
+                return;
+            }
             NativeAPI.RadaintAPI_KeyEvent(RadiantHelpers.GetKeyAscii(e), false);
         }
 
         private void XYWndDialog_KeyDown(object sender, KeyEventArgs e)
         {
+            if (tabControl.SelectedIndex == 2)
+            {
+                NativeAPI.RadiantAPI_GameWindowKeyboard(RadiantHelpers.GetKeyAscii2(e), true);
+                return;
+            }
+
             NativeAPI.RadaintAPI_KeyEvent(RadiantHelpers.GetKeyAscii(e), true);
         }
 
@@ -168,6 +255,21 @@ namespace radiant.net.forms
         public IntPtr GetTexWndHWND()
         {
             return texWndPanel.Handle;
+        }
+
+        public IntPtr GetGameWndHWND()
+        {
+            return GamePanel.Handle;
+        }
+
+        public int GetGameWndWidth()
+        {
+            return GamePanel.Width;
+        }
+
+        public int GetGameWndHeight()
+        {
+            return GamePanel.Height;
         }
 
         private void fileToolStripMenuItem_Click(object sender, EventArgs e)

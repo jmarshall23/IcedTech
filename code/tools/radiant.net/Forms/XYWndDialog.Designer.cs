@@ -44,6 +44,8 @@
             this.texWndPanel = new System.Windows.Forms.Panel();
             this.EntityListBox = new System.Windows.Forms.ListBox();
             this.gotoEntityButton = new System.Windows.Forms.Button();
+            this.gameTab = new System.Windows.Forms.TabPage();
+            this.GamePanel = new System.Windows.Forms.Panel();
             this.tabControl.SuspendLayout();
             this.xyWndTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -54,12 +56,14 @@
             this.editEntityTab.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.texturesTab.SuspendLayout();
+            this.gameTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl
             // 
             this.tabControl.Controls.Add(this.xyWndTab);
             this.tabControl.Controls.Add(this.texturesTab);
+            this.tabControl.Controls.Add(this.gameTab);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
@@ -218,6 +222,26 @@
             this.gotoEntityButton.UseVisualStyleBackColor = true;
             this.gotoEntityButton.Click += new System.EventHandler(this.gotoEntityButton_Click);
             // 
+            // gameTab
+            // 
+            this.gameTab.Controls.Add(this.GamePanel);
+            this.gameTab.Location = new System.Drawing.Point(4, 28);
+            this.gameTab.Name = "gameTab";
+            this.gameTab.Size = new System.Drawing.Size(1392, 723);
+            this.gameTab.TabIndex = 2;
+            this.gameTab.Text = "Game";
+            this.gameTab.UseVisualStyleBackColor = true;
+            // 
+            // GamePanel
+            // 
+            this.GamePanel.AutoSize = true;
+            this.GamePanel.BackColor = System.Drawing.Color.Black;
+            this.GamePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.GamePanel.Location = new System.Drawing.Point(0, 0);
+            this.GamePanel.Name = "GamePanel";
+            this.GamePanel.Size = new System.Drawing.Size(1392, 723);
+            this.GamePanel.TabIndex = 0;
+            // 
             // XYWndDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -244,6 +268,8 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.texturesTab.ResumeLayout(false);
+            this.gameTab.ResumeLayout(false);
+            this.gameTab.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -265,5 +291,7 @@
         private System.Windows.Forms.TreeView entityTreeView;
         private System.Windows.Forms.Button gotoEntityButton;
         private System.Windows.Forms.ListBox EntityListBox;
+        private System.Windows.Forms.TabPage gameTab;
+        private System.Windows.Forms.Panel GamePanel;
     }
 }

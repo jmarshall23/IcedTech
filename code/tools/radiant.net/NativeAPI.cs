@@ -9,6 +9,21 @@ namespace radiant.net
     public unsafe static class NativeAPI
     {
         [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void RadiantAPI_GameWindowKeyboard(byte ch, bool down);
+
+        [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void RadiantAPI_GameWindowMouseKey(bool rightButton, bool leftButton, bool down);
+
+        [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool RadiantAPI_GameMouseFocus();
+
+        [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void RadiantAPI_GameWindowMouseMovement(int mouseX, int mouseY);
+
+        [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void RadiantAPI_ShowDoom(bool isDoomVisible);
+
+        [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern void RadiantAPI_SelectObject(string select_name);
 
         [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]

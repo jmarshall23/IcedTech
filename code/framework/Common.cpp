@@ -95,7 +95,6 @@ int				com_frameTime;			// time for the current frame in milliseconds
 int				com_frameNumber;		// variable frame number
 volatile int	com_ticNumber;			// 60 hz tics
 int				com_editors;			// currently opened editor(s)
-bool			com_editorActive;		//  true if an editor has focus
 
 #ifdef _WIN32
 HWND			com_hwndMsg = NULL;
@@ -150,6 +149,9 @@ public:
 	virtual int					KeyState( int key );
 
 	virtual bool				IsEditorRunning(void);
+	virtual void				SetEditorRunning(bool isRunning);
+	virtual bool				IsEditorGameRunning(void);
+	virtual void				GetEditorGameWindow(int& width, int& height);
 
 	void						InitGame( void );
 	void						ShutdownGame( bool reloading );
@@ -199,6 +201,8 @@ private:
 
 	idLangDict					languageDict;
 
+	bool						isEditorRunning;
+
 #ifdef ID_WRITE_VERSION
 	idCompressor *				config_compressor;
 #endif
@@ -218,6 +222,7 @@ idCommonLocal::idCommonLocal( void ) {
 	com_refreshOnPrint = false;
 	com_errorEntered = 0;
 	com_shuttingDown = false;
+	isEditorRunning = false;
 
 	logFile = NULL;
 
@@ -1005,7 +1010,6 @@ Activates or Deactivates a tool
 ==================
 */
 void idCommonLocal::ActivateTool( bool active ) {
-	com_editorActive = active;
 	Sys_GrabMouseCursor( !active );
 }
 
@@ -3007,8 +3011,44 @@ idCommonLocal::IsEditorRunning
 */
 bool idCommonLocal::IsEditorRunning(void) {
 	if(com_editors != 0) {
-		return !Sys_IsWindowVisible();
+		return isEditorRunning;
 	}
 
 	return false;
+}
+
+/*
+====================
+idCommonLocal::SetEditorRunning
+====================
+*/
+void idCommonLocal::SetEditorRunning(bool isEditorRunning) {
+	this->isEditorRunning = isEditorRunning;
+}
+
+/*
+====================
+idCommonLocal::IsEditorGameRunning
+====================
+*/
+bool idCommonLocal::IsEditorGameRunning(void) {
+	if(com_editors != 0) {
+		return !isEditorRunning;
+	}
+	return false;
+}
+
+/*
+====================
+idCommonLocal::GetEditorGameWindow
+====================
+*/
+void idCommonLocal::GetEditorGameWindow(int& width, int& height) {
+	if (!IsEditorGameRunning()) {
+		width = -1;
+		height = -1;
+		return;
+	}
+
+	RadiantGetGameWindowSize(width, height);
 }

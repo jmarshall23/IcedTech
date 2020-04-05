@@ -99,6 +99,7 @@ void Conbuf_AppendText( const char *msg );
 
 typedef struct {
 	HWND			hWnd;
+	HWND			gameEditorHWND;
 	HINSTANCE		hInstance;
 
 	bool			activeApp;			// changed with WM_ACTIVATE messages

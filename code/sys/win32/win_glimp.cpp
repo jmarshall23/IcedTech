@@ -993,7 +993,12 @@ void GLimp_SwapBuffers( void ) {
 		}
 	}
 
-	qwglSwapBuffers( win32.hDC );
+	if (com_editors) {
+		RadiantSwapBuffer();
+	}
+	else {
+		qwglSwapBuffers(win32.hDC);
+	}
 
 //Sys_DebugPrintf( "*** SwapBuffers() ***\n" );
 }

@@ -101,6 +101,7 @@
     <Compile Include="Forms\InspectorDialog.Designer.cs">
       <DependentUpon>InspectorDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="KeyEnum.cs" />
     <Compile Include="NativeAPI.cs" />
     <Compile Include="Forms\ProgressDialog.cs">
       <SubType>Form</SubType>

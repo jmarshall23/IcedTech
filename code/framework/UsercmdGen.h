@@ -163,6 +163,15 @@ public:
 
 	// Directly sample a usercmd.
 	virtual usercmd_t	GetDirectUsercmd( void ) = 0;
+
+	// Manually update the mouse delta x/y.
+	virtual void	    UpdateMouseDelta(int deltaX, int deltaY) = 0;
+
+	// Manually set the mouse left/right button states.
+	virtual void		SetMouseButtonState(bool leftButton, bool rightButton, bool down) = 0;
+
+	// Sets a current keystate.
+	virtual void		SetKeyState(unsigned char ch, bool down) = 0;
 };
 
 extern idUsercmdGen	*usercmdGen;

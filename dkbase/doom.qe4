@@ -1,0 +1,18 @@
+{
+"mapspath" "w:\doom\base\maps"
+"bsp" ""
+"bsp noflood" ""
+"bsp shadowOpt 2" ""
+"bsp noaas" ""
+"bspext" ""
+"bspext noflood" ""
+"autosave" "c:\autosave.map"
+"autosave1" "c:\autosave1.map"
+"autosave2" "c:\autosave2.map"
+"texturepath" "w:\doom\base\textures"
+"entitypath" "w:\doom\base\scripts\*.def"
+"remotebasepath" "w:\doom\base"
+"rshcmd" ""
+"basepath" "w:\doom\base"
+"brush_primit" "1"
+}

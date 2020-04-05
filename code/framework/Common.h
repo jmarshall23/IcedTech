@@ -79,7 +79,6 @@ extern int			time_gameDraw;			// game present time
 extern int			com_frameTime;			// time for the current frame in milliseconds
 extern volatile int	com_ticNumber;			// 60 hz tics, incremented by async function
 extern int			com_editors;			// current active editor(s)
-extern bool			com_editorActive;		// true if an editor has focus
 
 #ifdef _WIN32
 const char			DMAP_MSGID[] = "DMAPOutput";
@@ -214,6 +213,15 @@ public:
 
 								// Returns true if a editor is running.
 	virtual bool				IsEditorRunning(void) = 0;
+
+								// Returns true if the game is running in editor mode.
+	virtual bool				IsEditorGameRunning(void) = 0;
+
+								// Sets editor running.
+	virtual void				SetEditorRunning(bool isRunning) = 0;
+
+								// Gets the editor game window dinemsions.
+	virtual void				GetEditorGameWindow(int& width, int& height) = 0;
 };
 
 extern idCommon *		common;

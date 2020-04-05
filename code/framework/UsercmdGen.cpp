@@ -337,6 +337,11 @@ public:
 	int				ButtonState( int key );
 	int				KeyState( int key );
 
+	virtual void	UpdateMouseDelta(int deltaX, int deltaY);
+	virtual void	SetMouseButtonState(bool leftButton, bool rightButton, bool down);
+
+	virtual void	SetKeyState(unsigned char ch, bool down);
+
 	usercmd_t		GetDirectUsercmd( void );
 
 private:
@@ -1010,7 +1015,6 @@ idUsercmdGenLocal::Keyboard
 ===============
 */
 void idUsercmdGenLocal::Keyboard( void ) {
-
 	int numEvents = Sys_PollKeyboardInputEvents();
 
 	if ( numEvents ) {
@@ -1021,7 +1025,7 @@ void idUsercmdGenLocal::Keyboard( void ) {
 		bool state;
 		for( int i = 0; i < numEvents; i++ ) {
 			if (Sys_ReturnKeyboardInputEvent( i, key, state )) {
-				Key ( key, state );
+				Key(key, state);
 			}
 		}
 	}
@@ -1109,4 +1113,47 @@ usercmd_t idUsercmdGenLocal::GetDirectUsercmd( void ) {
 	cmd.duplicateCount = 0;
 
 	return cmd;
+}
+
+/*
+================
+idUsercmdGenLocal::UpdateMouseDelta
+================
+*/
+void idUsercmdGenLocal::UpdateMouseDelta(int deltaX, int deltaY) {
+	mouseDx += deltaX;
+	mouseDy += deltaY;
+}
+
+/*
+================
+idUsercmdGenLocal::SetMouseButtonState
+================
+*/
+void idUsercmdGenLocal::SetMouseButtonState(bool leftButton, bool rightButton, bool down) {
+	int mouseButton = -1;
+	if(leftButton)
+	{
+		mouseButton = K_MOUSE1;
+	}
+	else if(rightButton)
+	{
+		mouseButton = K_MOUSE2;
+	}
+	else
+	{
+		common->Warning("SetMouseButtonState: Unknown mouse state!\n");
+		return;
+	}
+
+	Key(mouseButton, down);
+}
+
+/*
+================
+idUsercmdGenLocal::SetKeyState
+================
+*/
+void idUsercmdGenLocal::SetKeyState(unsigned char ch, bool down) {
+	Key(ch, down);
 }

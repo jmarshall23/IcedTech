@@ -326,7 +326,7 @@ void CLightDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CLightDlg)
-	if ( com_editorActive ) {
+	if (common->IsEditorRunning()) {
 		DDX_Control(pDX, IDC_LIGHTPREVIEW, m_wndPreview);
 	}
 	DDX_Control(pDX, IDC_COMBO_TEXTURE, m_wndLights);
@@ -570,7 +570,7 @@ void CLightDlg::UpdateLightInfoFromDialog( void ) {
 
 void CLightDlg::SaveLightInfo( const idDict *differences ) {
 
-	if ( com_editorActive ) {
+	if (common->IsEditorRunning()) {
 
 		// used from Radiant
 		for ( brush_t *b = selected_brushes.next; b && b != &selected_brushes; b = b->next ) {
@@ -653,7 +653,7 @@ BOOL CLightDlg::OnInitDialog()
 
 	LoadLightTextures();
 
-	if ( com_editorActive ) {
+	if (common->IsEditorRunning()) {
 		m_wndPreview.setDrawable(m_drawMaterial);
 	}
 
@@ -728,7 +728,7 @@ void CLightDlg::UpdateDialog( bool updateChecks )
 	lightInfo.Defaults();
 	lightInfoOriginal.Defaults ();
 
-	if ( com_editorActive ) {
+	if (common->IsEditorRunning()) {
 		// used from Radiant
 		entity_t *e = SingleLightSelected();
 		if ( e ) {
@@ -901,7 +901,7 @@ void CLightDlg::OnSelchangeComboTexture()
 	if (sel >= 0) {
 		m_wndLights.GetLBText(sel, str);
 		m_drawMaterial->setMedia(str);
-		if ( com_editorActive ) {
+		if (common->IsEditorRunning()) {
 			m_wndPreview.RedrawWindow();
 		}
 	}

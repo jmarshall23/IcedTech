@@ -79,6 +79,21 @@ void Sys_GetExeLaunchMemoryStatus( sysMemoryStats_t &stats ) {
 	stats = exeLaunchMemoryStats;
 }
 
+/*
+================
+Sys_IsGameWindowFocused
+================
+*/
+bool Sys_IsGameWindowFocused(void) {
+	if (!IsWindowVisible(win32.hWnd))
+		return false;
+
+	if (GetForegroundWindow() != win32.hWnd)
+		return false;
+
+	return true;
+}
+
 #pragma optimize( "", on )
 
 #ifdef DEBUG

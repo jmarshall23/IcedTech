@@ -319,6 +319,7 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
 			// we should activate immediately.  If we are here because
 			// the mouse was clicked on a title bar or drag control,
 			// don't activate until the mouse button is released
+			if(com_editors == 0)
 			{
 				int	fActive, fMinimized;
 
@@ -328,7 +329,6 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
 				win32.activeApp = (fActive != WA_INACTIVE);
 				if ( win32.activeApp ) {
 					idKeyInput::ClearStates();
-					com_editorActive = false;
 					Sys_GrabMouseCursor( true );
 				}
 

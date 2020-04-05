@@ -68,6 +68,9 @@ public:
 	CMainFrame();
 	void HandleKey(UINT nChar, UINT nRepCnt, UINT nFlags, bool bDown = true) 
 	{
+		if (common->IsEditorGameRunning())
+			return;
+
 		if (bDown)
 			OnKeyDown(nChar, nRepCnt, nFlags);
 		else
@@ -512,7 +515,6 @@ public:
 	afx_msg void OnSelectBrushlight();
 	afx_msg void OnSelectionCombine();
 	afx_msg void OnPatchCombine();
-	afx_msg void OnShowDoom();
 	afx_msg void OnViewRendermode();
 	afx_msg void OnViewRebuildrenderdata();
 	afx_msg void OnViewRealtimerebuild();

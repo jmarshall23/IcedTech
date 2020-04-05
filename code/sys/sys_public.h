@@ -283,6 +283,10 @@ void			Sys_SetClipboardData( const char *string );
 // NOT thread safe - never use in the async paths
 void			Sys_Printf( const char *msg, ... )id_attribute((format(printf,1,2)));
 
+// returns true if the game window is focused.
+bool			Sys_IsGameWindowFocused(void);
+unsigned char   Sys_ScanKeyConvert(char ch);
+
 // guaranteed to be thread-safe
 void			Sys_DebugPrintf( const char *fmt, ... )id_attribute((format(printf,1,2)));
 void			Sys_DebugVPrintf( const char *fmt, va_list arg );

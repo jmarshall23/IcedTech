@@ -51,6 +51,8 @@ INT_PTR g_radiant_net_dll = 0;
 
 RadiantNetInterface_t radiantNetInterface;
 
+bool g_radiantNetInit = false;
+
 // jmarshall
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
@@ -264,6 +266,16 @@ void RadiantAPI_GotoEntity(const char *name)
 	}
 }
 
+void RadiantAPI_ShowDoom(bool doomVisible)  {
+	common->SetEditorRunning(!doomVisible);
+	Sys_GrabMouseCursor(doomVisible);
+	win32.activeApp = doomVisible;
+
+	//if(!qwglMakeCurrent(radiantNetInterface.GetGameWindowHandle(), win32.hGLRC)) {
+	//	common->FatalError("Failed to show doom, qwglMakeCurrent failed!\n");
+	//}
+}
+
 void RadiantAPI_SelectObject(const char *name)
 {
 	Select_Deselect();
@@ -278,6 +290,46 @@ void RadiantAPI_SetRenderMode(bool render)
 {
 	g_pParentWnd->GetCamera()->SetRenderMode(render);
 	g_pParentWnd->GetCamera()->RenderCamera();
+}
+
+void RadiantAPI_GameWindowMouseKey(bool rightButton, bool leftButton, bool down) {
+	int value = 0;
+	if(down) {
+		value = 1; 
+	}
+
+	if (leftButton) {
+		Sys_QueEvent(Sys_Milliseconds(), SE_KEY, K_MOUSE1, value, 0, NULL);
+		usercmdGen->SetMouseButtonState(true, false, down);
+	}
+	else {
+		Sys_QueEvent(Sys_Milliseconds(), SE_KEY, K_MOUSE2, value, 0, NULL);
+		usercmdGen->SetMouseButtonState(false, true, down);
+	}
+}
+
+// The input system isn't great, we have to send down three different events?
+void RadiantAPI_GameWindowKeyboard(unsigned char ch, bool down) {
+	if (ch == 192) {
+		ch = Sys_GetConsoleKey(false);
+	}
+
+	if (down) {
+		Sys_QueEvent(GetTickCount(), SE_CHAR, ch, down, 0, NULL);		
+	}
+
+	Sys_QueEvent(GetTickCount(), SE_KEY, ch, down, 0, NULL);
+	
+	usercmdGen->SetKeyState(ch, down);
+}
+
+void RadiantAPI_GameWindowMouseMovement(int mouseX, int mouseY) {
+	Sys_QueEvent(0, SE_MOUSE, mouseX, mouseY, 0, NULL);
+	usercmdGen->UpdateMouseDelta(mouseX, mouseY);
+}
+
+bool RadiantAPI_GameMouseFocus(void) {
+	return !win32.mouseReleased;
 }
 
 void RadaintAPI_KeyEvent(char key, bool down)
@@ -330,6 +382,11 @@ void RadiantUpdateLevelEntities(void) {
 	radiantNetInterface.UpdateLevelEntities(entityList.c_str());
 }
 
+void RadiantGetGameWindowSize(int &width, int &height) {
+	width = radiantNetInterface.GetGameWindowWidth();
+	height = radiantNetInterface.GetGameWindowHeight();
+}
+
 void RadiantDotNetInit(void) {
 
 	common->Printf("Initializing Radiant.NET...\n");
@@ -354,12 +411,24 @@ void RadiantDotNetInit(void) {
 
 	radiantNetInterface.GetXYWindowHandle = (HDC(__cdecl *)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "GetXYWindowHandle");
 	radiantNetInterface.GetXYDialogHandle = (HWND(__cdecl *)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "GetXYDialogHandle");
+	
+	radiantNetInterface.GetGameWindowHandle = (HDC(__cdecl*)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "GetGameWindowHandle");
 
 	radiantNetInterface.GetTexWndHandle = (HDC(__cdecl *)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "GetTexWndHandle");
 	radiantNetInterface.SetMapName = (void(__cdecl*)(const char *))sys->DLL_GetProcAddress(g_radiant_net_dll, "SetMapName");
 
+	radiantNetInterface.GetGameWindowWidth = (int(__cdecl*)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "GetGameWindowWidth");
+	radiantNetInterface.GetGameWindowHeight = (int(__cdecl*)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "GetGameWindowHeight");
+
+	radiantNetInterface.GetGameWindowHWND = (HWND(__cdecl*)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "GetGameWindowHWND");
+	
+
 	HWND hwnd = g_pParentWnd->GetSafeHwnd();
 	radiantNetInterface.InitRadiant((void *)hwnd);
+
+	win32.gameEditorHWND = radiantNetInterface.GetGameWindowHWND();
+
+	g_radiantNetInit = true;
 }
 // jmarshall end
 
@@ -409,9 +478,17 @@ void RadiantInit( void ) {
 
 		// Perform specific initializations
 		pThread->InitInstance();
+
+		// Setup the game proxy window.
+		{
+			HDC hDC = radiantNetInterface.GetGameWindowHandle();
+
+			QEW_SetupPixelFormat(hDC, true);
+		}
+
 		glFinish();
 		//qwglMakeCurrent(0, 0);
-		qwglMakeCurrent(win32.hDC, win32.hGLRC);
+		//qwglMakeCurrent(win32.hDC, win32.hGLRC);
 
 		// hide the doom window by default
 		::ShowWindow( win32.hWnd, SW_HIDE );
@@ -441,22 +518,40 @@ void RadiantSync( const char *mapName, const idVec3 &viewOrg, const idAngles &vi
 
 void RadiantRun( void ) {
 	static bool exceptionErr = false;
-	int show = ::IsWindowVisible(win32.hWnd);
+	//int show = common->IsEditorRunning();//::IsWindowVisible(win32.hWnd);
 
 	try {
-		if (!exceptionErr && !show) {
+		if (!exceptionErr && !common->IsEditorGameRunning()) {
 			glUseProgram(0);
 			//glPushAttrib(GL_ALL_ATTRIB_BITS);
 			glDepthMask(true);
 			theApp.Run();
 			//glPopAttrib();
 			//qwglMakeCurrent(0, 0);
-			qwglMakeCurrent(win32.hDC, win32.hGLRC);
+			//qwglMakeCurrent(win32.hDC, win32.hGLRC);
 		}
 	}
 	catch( idException &ex ) {
 		::MessageBox(NULL, ex.error, "Exception error", MB_OK);
 		RadiantShutdown();
+	}
+}
+
+void RadiantSetGameContext( void ) {
+	GetLastError();
+	HDC hdc = radiantNetInterface.GetGameWindowHandle();
+	if (!qwglMakeCurrent(hdc, win32.hGLRC)) {
+		common->Warning("Failed to update window context %d!", GetLastError());
+	}
+}
+
+void RadiantSwapBuffer(void) {
+	if(g_radiantNetInit == false) {
+		qwglSwapBuffers(win32.hDC);
+	}
+	else {
+		HDC hdc = radiantNetInterface.GetGameWindowHandle();
+		qwglSwapBuffers(hdc);
 	}
 }
 
