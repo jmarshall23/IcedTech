@@ -18,7 +18,7 @@ namespace radiant.net
         public static extern void RadiantAPI_GameWindowMouseKey(bool rightButton, bool leftButton, bool down);
 
         [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool RadiantAPI_GameMouseFocus();
+        public static extern int RadiantAPI_GameMouseFocus();
 
         [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern void RadiantAPI_GameWindowMouseMovement(int mouseX, int mouseY);

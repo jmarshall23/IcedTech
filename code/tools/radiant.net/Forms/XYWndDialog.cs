@@ -92,7 +92,7 @@ namespace radiant.net.forms
 
         private void GameMouseMoveTimer_Tick(object sender, EventArgs e)
         {
-            if (!NativeAPI.RadiantAPI_GameMouseFocus())
+            if (NativeAPI.RadiantAPI_GameMouseFocus() == 0)
             {
                 Cursor.Clip = Screen.PrimaryScreen.Bounds;
                 return;

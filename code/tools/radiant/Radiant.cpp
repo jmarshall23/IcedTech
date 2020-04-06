@@ -269,7 +269,6 @@ void RadiantAPI_GotoEntity(const char *name)
 
 void RadiantAPI_ShowDoom(bool doomVisible)  {
 	common->SetEditorRunning(!doomVisible);
-	Sys_GrabMouseCursor(doomVisible);
 	win32.activeApp = doomVisible;
 
 	//if(!qwglMakeCurrent(radiantNetInterface.GetGameWindowHandle(), win32.hGLRC)) {
@@ -329,7 +328,7 @@ void RadiantAPI_GameWindowMouseMovement(int mouseX, int mouseY) {
 	usercmdGen->UpdateMouseDelta(mouseX, mouseY);
 }
 
-bool RadiantAPI_GameMouseFocus(void) {
+int RadiantAPI_GameMouseFocus(void) {
 	return !win32.mouseReleased;
 }
 

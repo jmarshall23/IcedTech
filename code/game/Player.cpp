@@ -2383,7 +2383,7 @@ void idPlayer::UpdateSkinSetup( bool restart ) {
 		baseSkinName = "skins/characters/player/marine_mp";
 	}
 	skin = declManager->FindSkin( baseSkinName, false );
-	assert( skin );
+	//assert( skin );
 	// match the skin to a color band for scoreboard
 	if ( baseSkinName.Find( "red" ) != -1 ) {
 		colorBarIndex = 1;

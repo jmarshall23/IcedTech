@@ -627,19 +627,19 @@ int idParallelJobList_Threads::RunJobsInternal( unsigned int threadNum, threadJo
 			uint64_t jobEnd = Sys_Microseconds();
 			deferredThreadStats.threadExecTime[threadNum] += jobEnd - jobStart;
 
-#ifndef _DEBUG
-			if ( jobs_longJobMicroSec.GetInteger() > 0 ) {
-				if ( jobEnd - jobStart > jobs_longJobMicroSec.GetInteger()
-					&& GetId() != JOBLIST_UTILITY ) {
-					longJobTime = ( jobEnd - jobStart ) * ( 1.0f / 1000.0f );
-					longJobFunc = jobList[state.nextJobIndex].function;
-					longJobData = jobList[state.nextJobIndex].data;
-					const char * jobName = GetJobName( jobList[state.nextJobIndex].function );
-					const char * jobListName = GetJobListName( GetId() );
-					common->Printf( "%1.1f milliseconds for a single '%s' job from job list %s on thread %d\n", longJobTime, jobName, jobListName, threadNum );
-				}
-			}
-#endif
+//#ifndef _DEBUG
+//			if ( jobs_longJobMicroSec.GetInteger() > 0 ) {
+//				if ( jobEnd - jobStart > jobs_longJobMicroSec.GetInteger()
+//					&& GetId() != JOBLIST_UTILITY ) {
+//					longJobTime = ( jobEnd - jobStart ) * ( 1.0f / 1000.0f );
+//					longJobFunc = jobList[state.nextJobIndex].function;
+//					longJobData = jobList[state.nextJobIndex].data;
+//					const char * jobName = GetJobName( jobList[state.nextJobIndex].function );
+//					const char * jobListName = GetJobListName( GetId() );
+//					common->Printf( "%1.1f milliseconds for a single '%s' job from job list %s on thread %d\n", longJobTime, jobName, jobListName, threadNum );
+//				}
+//			}
+//#endif
 		}
 
 		result |= RUN_PROGRESS;
