@@ -897,13 +897,13 @@ void CMainFrame::SetButtonMenuStates() {
 				MF_BYCOMMAND | (g_PrefsDlg.m_bGLLighting) ? MF_CHECKED : MF_UNCHECKED
 			);
 		pMenu->CheckMenuItem(ID_SNAPTOGRID, MF_BYCOMMAND | (!g_PrefsDlg.m_bNoClamp) ? MF_CHECKED : MF_UNCHECKED);
-		if (m_wndToolBar.GetSafeHwnd()) {
-			m_wndToolBar.GetToolBarCtrl().CheckButton
-				(
-					ID_VIEW_CUBICCLIPPING,
-					(g_PrefsDlg.m_bCubicClipping) ? TRUE : FALSE
-				);
-		}
+		//if (m_wndToolBar.GetSafeHwnd()) {
+		//	m_wndToolBar.GetToolBarCtrl().CheckButton
+		//		(
+		//			ID_VIEW_CUBICCLIPPING,
+		//			(g_PrefsDlg.m_bCubicClipping) ? TRUE : FALSE
+		//		);
+		//}
 
 		int n = g_PrefsDlg.m_nTextureScale;
 		int id;
@@ -929,12 +929,12 @@ void CMainFrame::SetButtonMenuStates() {
 		CheckTextureScale(id);
 	}
 
-	if (g_qeglobals.d_project_entity) {
-		// FillTextureMenu(); // redundant but i'll clean it up later.. yeah right..
-		FillBSPMenu();
-		LoadMruInReg(g_qeglobals.d_lpMruMenu, "Software\\" EDITOR_REGISTRY_KEY "\\MRU" );
-		PlaceMenuMRUItem(g_qeglobals.d_lpMruMenu, ::GetSubMenu(::GetMenu(GetSafeHwnd()), 0), ID_FILE_EXIT);
-	}
+	//if (g_qeglobals.d_project_entity) {
+	//	// FillTextureMenu(); // redundant but i'll clean it up later.. yeah right..
+	//	FillBSPMenu();
+	//	LoadMruInReg(g_qeglobals.d_lpMruMenu, "Software\\" EDITOR_REGISTRY_KEY "\\MRU" );
+	//	PlaceMenuMRUItem(g_qeglobals.d_lpMruMenu, ::GetSubMenu(::GetMenu(GetSafeHwnd()), 0), ID_FILE_EXIT);
+	//}
 }
 
 /*
@@ -946,7 +946,8 @@ void CMainFrame::ShowMenuItemKeyBindings(CMenu *pMenu) {
 	char			key[1024], *ptr;
 	MENUITEMINFO	MenuItemInfo;
 
-	// return;
+	return;
+/*
 	for (i = 0; i < g_nCommandCount; i++) {
 		memset(&MenuItemInfo, 0, sizeof(MENUITEMINFO));
 		MenuItemInfo.cbSize = sizeof(MENUITEMINFO);
@@ -1000,6 +1001,7 @@ void CMainFrame::ShowMenuItemKeyBindings(CMenu *pMenu) {
 		MenuItemInfo.cch = strlen(key);
 		SetMenuItemInfo(pMenu->m_hMenu, g_Commands[i].m_nCommand, FALSE, &MenuItemInfo);
 	}
+*/
 }
 
 /*
@@ -1069,6 +1071,54 @@ void MFCCreate( HINSTANCE hInstance )
 	}
 }
 
+BOOL CMainFrame::LoadAccelTable(LPCTSTR lpszResourceName)
+{
+	//ASSERT(m_hAccelTable == NULL);  // only do once
+	//ASSERT(lpszResourceName != NULL);
+
+	//HINSTANCE hInst = AfxFindResourceHandle(lpszResourceName, ATL_RT_ACCELERATOR);
+	//m_hAccelTable = ::LoadAccelerators(hInst, lpszResourceName);
+	//return (m_hAccelTable != NULL);
+	return TRUE;
+}
+
+
+BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd* pParentWnd, CCreateContext* pContext)
+{
+	// only do this once
+	//ASSERT_VALID_IDR(nIDResource);
+	ASSERT(m_nIDHelp == 0 || m_nIDHelp == nIDResource);
+
+	m_nIDHelp = nIDResource;    // ID for help context (+HID_BASE_RESOURCE)
+
+	CString strFullString;
+	if (strFullString.LoadString(nIDResource))
+		AfxExtractSubString(m_strTitle, strFullString, 0);    // first sub-string
+
+	//VERIFY(AfxDeferRegisterClass(AFX_WNDFRAMEORVIEW_REG));
+
+	// attempt to create the window
+	LPCTSTR lpszClass = GetIconWndClass(dwDefaultStyle, nIDResource);
+	CString strTitle = m_strTitle;
+	if (!Create(lpszClass, strTitle, dwDefaultStyle, rectDefault,
+		pParentWnd, ATL_MAKEINTRESOURCE(nIDResource), 0L, pContext))
+	{
+		return FALSE;   // will self destruct on failure normally
+	}
+
+	// save the default menu handle
+	ASSERT(m_hWnd != NULL);
+	m_hMenuDefault = m_dwMenuBarState == AFX_MBS_VISIBLE ? ::GetMenu(m_hWnd) : m_hMenu;
+
+	// load accelerator resource
+	LoadAccelTable(ATL_MAKEINTRESOURCE(nIDResource));
+
+	//	if (pContext == NULL)   // send initial update
+//			SendMessageToDescendants(WM_INITIALUPDATE, 0, 0, TRUE, TRUE);
+
+	return TRUE;
+}
+
 /*
  =======================================================================================================================
  =======================================================================================================================
@@ -1091,14 +1141,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 		return -1;
 	}
 
-	UINT	nID = (g_PrefsDlg.m_bWideToolbar) ? IDR_TOOLBAR_ADVANCED : IDR_TOOLBAR1;
-
-	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
-		| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) || !m_wndToolBar.LoadToolBar(nID)) {
-		TRACE0("Failed to create toolbar\n");
-		return -1;	// fail to create
-	}
-
 	if (!m_wndStatusBar.Create(this) || !m_wndStatusBar.SetIndicators(indicators, sizeof(indicators) / sizeof(UINT))) {
 		TRACE0("Failed to create status bar\n");
 		return -1;	// fail to create
@@ -1106,23 +1148,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 
 	m_bCamPreview = true;
 
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKX, FALSE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKY, FALSE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKZ, FALSE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_BYBOUNDINGBRUSH, FALSE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_BRUSHESONLY, FALSE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_SHOWBOUNDINGBOX, FALSE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_WELD, TRUE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_DRILLDOWN, TRUE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SHOW_LIGHTVOLUMES, FALSE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SHOW_LIGHTTEXTURES, FALSE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECTION_MOVEONLY, FALSE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SOUND_SHOWSOUNDVOLUMES,g_qeglobals.d_savedinfo.showSoundAlways);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SOUND_SHOWSELECTEDSOUNDVOLUMES,g_qeglobals.d_savedinfo.showSoundWhenSelected);
-
-	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
 	EnableDocking(CBRS_ALIGN_ANY);
-	DockControlBar(&m_wndToolBar);
 
 	g_nScaleHow = 0;
 
@@ -1166,7 +1192,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 	SetGridStatus();
 	SetTexValStatus();
 	SetButtonMenuStates();
-	LoadBarState("RadiantToolBars2");
+	//LoadBarState("RadiantToolBars2");
 
 	SetActiveXY(m_pXYWnd);
 	m_pXYWnd->SetFocus();
@@ -1459,7 +1485,7 @@ void SaveWindowPlacement(HWND hwnd, const char *pName) {
 void CMainFrame::OnDestroy() {
 	KillTimer(QE_TIMER0);
 
-	SaveBarState("RadiantToolBars2");
+	//SaveBarState("RadiantToolBars2");
 
 	// FIXME original mru stuff needs replaced with mfc stuff
 	SaveMruInReg(g_qeglobals.d_lpMruMenu, "Software\\" EDITOR_REGISTRY_KEY "\\MRU");
@@ -3556,20 +3582,20 @@ void CMainFrame::OnHelpAbout() {
  =======================================================================================================================
  */
 void CMainFrame::OnViewClipper() {
-	if (ActiveXY()) {
-		if (ActiveXY()->ClipMode()) {
-			ActiveXY()->SetClipMode(false);
-			m_wndToolBar.GetToolBarCtrl().CheckButton(ID_VIEW_CLIPPER, FALSE);
-		}
-		else {
-			if (ActiveXY()->RotateMode()) {
-				OnSelectMouserotate();
-			}
-
-			ActiveXY()->SetClipMode(true);
-			m_wndToolBar.GetToolBarCtrl().CheckButton(ID_VIEW_CLIPPER);
-		}
-	}
+	//if (ActiveXY()) {
+	//	if (ActiveXY()->ClipMode()) {
+	//		ActiveXY()->SetClipMode(false);
+	//		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_VIEW_CLIPPER, FALSE);
+	//	}
+	//	else {
+	//		if (ActiveXY()->RotateMode()) {
+	//			OnSelectMouserotate();
+	//		}
+	//
+	//		ActiveXY()->SetClipMode(true);
+	//		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_VIEW_CLIPPER);
+	//	}
+	//}
 }
 
 /*
@@ -3996,7 +4022,7 @@ void CMainFrame::OnToggleviewYz() {
 
 void CMainFrame::OnToggleToolbar()
 {
-	ShowControlBar(&m_wndToolBar, !m_wndToolBar.IsWindowVisible(), false);
+//	ShowControlBar(&m_wndToolBar, !m_wndToolBar.IsWindowVisible(), false);
 }
 
 void CMainFrame::OnToggleTextureBar()
@@ -4316,7 +4342,7 @@ void CMainFrame::OnSelectMouserotate() {
 
 		if (ActiveXY()->RotateMode()) {
 			ActiveXY()->SetRotateMode(false);
-			m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSEROTATE, FALSE);
+//			m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSEROTATE, FALSE);
 			Map_BuildBrushData();
 		}
 		else {
@@ -4328,10 +4354,10 @@ void CMainFrame::OnSelectMouserotate() {
 				} else if (ActiveXY()->GetViewType() == XZ) {
 					g_qeglobals.rotateAxis = 1;
 				}
-				m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSEROTATE, TRUE);
+//				m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSEROTATE, TRUE);
 			}
 			else {	// if MFC called, we need to set back to FALSE ourselves
-				m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSEROTATE, FALSE);
+//				m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSEROTATE, FALSE);
 			}
 		}
 	}
@@ -4630,10 +4656,10 @@ void CMainFrame::OnTextureReplaceall() {
  */
 void CMainFrame::OnScalelockx() {
 	if (g_nScaleHow & SCALE_X) {
-		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKX, FALSE);
+//		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKX, FALSE);
 	}
 	else {
-		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKX);
+//		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKX);
 	}
 
 	g_nScaleHow ^= SCALE_X;
@@ -4645,10 +4671,10 @@ void CMainFrame::OnScalelockx() {
  */
 void CMainFrame::OnScalelocky() {
 	if (g_nScaleHow & SCALE_Y) {
-		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKY, FALSE);
+//		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKY, FALSE);
 	}
 	else {
-		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKY);
+//		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKY);
 	}
 
 	g_nScaleHow ^= SCALE_Y;
@@ -4660,10 +4686,10 @@ void CMainFrame::OnScalelocky() {
  */
 void CMainFrame::OnScalelockz() {
 	if (g_nScaleHow & SCALE_Z) {
-		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKZ, FALSE);
+//		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKZ, FALSE);
 	}
 	else {
-		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKZ);
+//		m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SCALELOCKZ);
 	}
 
 	g_nScaleHow ^= SCALE_Z;
@@ -4682,16 +4708,16 @@ void CMainFrame::OnSelectMousescale() {
 		if (ActiveXY()->RotateMode()) {
 			// SetRotateMode(false) always works
 			ActiveXY()->SetRotateMode(false);
-			m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSESCALE, FALSE);
+			//m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSESCALE, FALSE);
 		}
 
 		if (ActiveXY()->ScaleMode()) {
 			ActiveXY()->SetScaleMode(false);
-			m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSESCALE, FALSE);
+//			m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSESCALE, FALSE);
 		}
 		else {
 			ActiveXY()->SetScaleMode(true);
-			m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSESCALE);
+//			m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_MOUSESCALE);
 		}
 	}
 }
@@ -4765,7 +4791,7 @@ void CMainFrame::OnViewCubicclipping() {
 			);
 	}
 
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_VIEW_CUBICCLIPPING, (g_PrefsDlg.m_bCubicClipping) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_VIEW_CUBICCLIPPING, (g_PrefsDlg.m_bCubicClipping) ? TRUE : FALSE);
 	g_PrefsDlg.SavePrefs();
 	Map_BuildBrushData();
 	Sys_UpdateWindows(W_CAMERA);
@@ -5180,11 +5206,11 @@ void CMainFrame::OnTexturesLoadlist() {
  */
 void CMainFrame::OnSelectByBoundingBrush() {
 	g_PrefsDlg.m_selectByBoundingBrush ^= 1;
-	m_wndToolBar.GetToolBarCtrl().CheckButton
-		(
-			ID_SELECT_BYBOUNDINGBRUSH,
-			(g_PrefsDlg.m_selectByBoundingBrush) ? TRUE : FALSE
-		);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton
+//		(
+//			ID_SELECT_BYBOUNDINGBRUSH,
+//			(g_PrefsDlg.m_selectByBoundingBrush) ? TRUE : FALSE
+//		);
 }
 
 /*
@@ -5193,7 +5219,7 @@ void CMainFrame::OnSelectByBoundingBrush() {
  */
 void CMainFrame::OnSelectBrushesOnly() {
 	g_PrefsDlg.m_selectOnlyBrushes ^= 1;
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_BRUSHESONLY, (g_PrefsDlg.m_selectOnlyBrushes) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_BRUSHESONLY, (g_PrefsDlg.m_selectOnlyBrushes) ? TRUE : FALSE);
 }
 
 
@@ -5231,7 +5257,7 @@ void CMainFrame::OnCurveSimplepatchmesh() {
  */
 void CMainFrame::OnPatchToggleBox() {
 	g_bPatchShowBounds ^= 1;
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_SHOWBOUNDINGBOX, (g_bPatchShowBounds) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_SHOWBOUNDINGBOX, (g_bPatchShowBounds) ? TRUE : FALSE);
 	Sys_UpdateWindows(W_ALL);
 }
 
@@ -5241,7 +5267,7 @@ void CMainFrame::OnPatchToggleBox() {
  */
 void CMainFrame::OnPatchWireframe() {
 	g_bPatchWireFrame ^= 1;
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_WIREFRAME, (g_bPatchWireFrame) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_WIREFRAME, (g_bPatchWireFrame) ? TRUE : FALSE);
 	Sys_UpdateWindows(W_ALL);
 }
 
@@ -5277,7 +5303,7 @@ void CMainFrame::OnCurvePatchtube() {
  */
 void CMainFrame::OnPatchWeld() {
 	g_bPatchWeld ^= 1;
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_WELD, (g_bPatchWeld) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_WELD, (g_bPatchWeld) ? TRUE : FALSE);
 	Sys_UpdateWindows(W_ALL);
 }
 
@@ -5329,7 +5355,7 @@ void CMainFrame::OnCurvePatchinvertedendcap() {
  */
 void CMainFrame::OnPatchDrilldown() {
 	g_bPatchDrillDown ^= 1;
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_DRILLDOWN, (g_bPatchDrillDown) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_DRILLDOWN, (g_bPatchDrillDown) ? TRUE : FALSE);
 	Sys_UpdateWindows(W_ALL);
 }
 
@@ -5528,7 +5554,7 @@ void CMainFrame::OnCurveDeleteLastrow() {
  */
 void CMainFrame::OnPatchBend() {
 	Patch_BendToggle();
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_BEND, (g_bPatchBendMode) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_BEND, (g_bPatchBendMode) ? TRUE : FALSE);
 	Sys_UpdateWindows(W_ALL);
 }
 
@@ -5538,7 +5564,7 @@ void CMainFrame::OnPatchBend() {
  */
 void CMainFrame::OnPatchInsdel() {
 	Patch_InsDelToggle();
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_INSDEL, (g_bPatchInsertMode) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_INSDEL, (g_bPatchInsertMode) ? TRUE : FALSE);
 	Sys_UpdateWindows(W_ALL);
 }
 
@@ -5607,8 +5633,8 @@ void CMainFrame::OnPatchTab() {
  =======================================================================================================================
  */
 void CMainFrame::UpdatePatchToolbarButtons() {
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_BEND, (g_bPatchBendMode) ? TRUE : FALSE);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_INSDEL, (g_bPatchInsertMode) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_BEND, (g_bPatchBendMode) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_PATCH_INSDEL, (g_bPatchInsertMode) ? TRUE : FALSE);
 }
 
 /*
@@ -6210,7 +6236,7 @@ void CMainFrame::OnProjectedLight() {
  */
 void CMainFrame::OnShowLighttextures() {
 	g_bShowLightTextures ^= 1;
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SHOW_LIGHTTEXTURES, (g_bShowLightTextures) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SHOW_LIGHTTEXTURES, (g_bShowLightTextures) ? TRUE : FALSE);
 	Sys_UpdateWindows(W_ALL);
 }
 
@@ -6220,7 +6246,7 @@ void CMainFrame::OnShowLighttextures() {
  */
 void CMainFrame::OnShowLightvolumes() {
 	g_bShowLightVolumes ^= 1;
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SHOW_LIGHTVOLUMES, (g_bShowLightVolumes) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SHOW_LIGHTVOLUMES, (g_bShowLightVolumes) ? TRUE : FALSE);
 	Sys_UpdateWindows(W_ALL);
 }
 
@@ -6395,7 +6421,7 @@ void CMainFrame::OnCurveDecreaseHorz() {
  */
 void CMainFrame::OnSelectionMoveonly() {
 	g_moveOnly ^= 1;
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECTION_MOVEONLY, (g_moveOnly) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECTION_MOVEONLY, (g_moveOnly) ? TRUE : FALSE);
 }
 
 void CMainFrame::OnSelectBrushlight() 
@@ -6609,7 +6635,7 @@ void CMainFrame::OnViewRenderselection()
 void CMainFrame::OnSelectNomodels() 
 {
 	g_PrefsDlg.m_selectNoModels ^= 1;
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_NOMODELS, (g_PrefsDlg.m_selectNoModels) ? TRUE : FALSE);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SELECT_NOMODELS, (g_PrefsDlg.m_selectNoModels) ? TRUE : FALSE);
 }
 
 void CMainFrame::OnViewShowShowvisportals() 
@@ -6652,8 +6678,8 @@ void CMainFrame::OnSoundShowsoundvolumes()
 	if (g_qeglobals.d_savedinfo.showSoundAlways) {
 		g_qeglobals.d_savedinfo.showSoundWhenSelected = false;
 	}
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SOUND_SHOWSOUNDVOLUMES,g_qeglobals.d_savedinfo.showSoundAlways);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SOUND_SHOWSELECTEDSOUNDVOLUMES,g_qeglobals.d_savedinfo.showSoundWhenSelected);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SOUND_SHOWSOUNDVOLUMES,g_qeglobals.d_savedinfo.showSoundAlways);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SOUND_SHOWSELECTEDSOUNDVOLUMES,g_qeglobals.d_savedinfo.showSoundWhenSelected);
 	Sys_UpdateWindows(W_XY | W_CAMERA);
 }
 
@@ -6688,8 +6714,8 @@ void CMainFrame::OnSoundShowselectedsoundvolumes()
 	if (g_qeglobals.d_savedinfo.showSoundWhenSelected) {
 		g_qeglobals.d_savedinfo.showSoundAlways = false;
 	}
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SOUND_SHOWSOUNDVOLUMES,g_qeglobals.d_savedinfo.showSoundAlways);
-	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SOUND_SHOWSELECTEDSOUNDVOLUMES,g_qeglobals.d_savedinfo.showSoundWhenSelected);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SOUND_SHOWSOUNDVOLUMES,g_qeglobals.d_savedinfo.showSoundAlways);
+//	m_wndToolBar.GetToolBarCtrl().CheckButton(ID_SOUND_SHOWSELECTEDSOUNDVOLUMES,g_qeglobals.d_savedinfo.showSoundWhenSelected);
 	Sys_UpdateWindows(W_XY | W_CAMERA);
 }
 

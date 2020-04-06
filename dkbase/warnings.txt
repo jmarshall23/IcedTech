@@ -1,12 +1,11 @@
 ------------- Warnings ---------------
 
-during Darklight initialization...
-WARNING: file materials/base_light2.mtr, line 14: material 'textures/base_light/striplight3' previously defined at materials/base_light.mtr:81
+during Darklight Arena initialization...
 WARNING: file materials/gothic_light_built.mtr, line 21: material 'textures/gothic_light/border7_ceil39b' previously defined at materials/gothic_light_built.mtr:7
 WARNING: file materials/weapons.mtr, line 1504: material 'models/weapons/plasmagun/plasmagun' previously defined at materials/newweapons.mtr:17
 WARNING: file materials/weapons.mtr, line 1870: material 'models/weapons/machinegun/machinegun' previously defined at materials/newweapons.mtr:1
 
-4 warnings.
+3 warnings.
 
 
 -------------- Errors ---------------

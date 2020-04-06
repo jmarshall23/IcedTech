@@ -35,6 +35,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "lightdlg.h"
 
 #include "../../sys/win32/rc/doom_resource.h"
+#include "../radiant.net/Shared/MenuCommands.cs" // RadiantNetMenuCommands_t
 
 #include <process.h>    // for _beginthreadex and _endthreadex
 #include <ddeml.h>  // for MSGF_DDEMGR
@@ -330,6 +331,47 @@ void RadiantAPI_GameWindowMouseMovement(int mouseX, int mouseY) {
 
 bool RadiantAPI_GameMouseFocus(void) {
 	return !win32.mouseReleased;
+}
+
+void RadiantAPI_ProcessMenuCommands(int command) {
+	switch(command)
+	{
+		case RADIANT_NET_COMMAND_NEW:
+			g_pParentWnd->OnFileNew();
+			break;
+		case RADIANT_NET_COMMAND_OPEN:
+			g_pParentWnd->OnFileOpen();
+			break;
+		case RADIANT_NET_COMMAND_SAVE:
+			g_pParentWnd->OnFileSave();
+			break;
+		case RADIANT_NET_COMMAND_SAVEAS:
+			g_pParentWnd->OnFileSaveas();
+			break;
+		case RADIANT_NET_COMMAND_SAVESELECTION:
+			break;
+		case RADIANT_NET_COMMAND_SAVEREGION:
+			g_pParentWnd->OnFileSaveregion();
+			break;
+		case RADIANT_NET_COMMAND_NEWPROJECT:
+			g_pParentWnd->OnFileNewproject();
+			break;
+		case RADIANT_NET_COMMAND_LOADPROJECT:
+			g_pParentWnd->OnFileLoadproject();
+			break;
+		case RADIANT_NET_COMMAND_PROJECTSETTINGS:
+			g_pParentWnd->OnFileProjectsettings();
+			break;
+		case RADIANT_NET_COMMAND_POINTFILE:
+			g_pParentWnd->OnFilePointfile();
+			break;
+		case RADIANT_NET_COMMAND_EXIT:
+			g_pParentWnd->OnFileExit();
+			break;
+		default:
+			common->FatalError("RadiantAPI_ProcessMenuCommands: Unknown command %d\n", command);
+			break;
+	}
 }
 
 void RadaintAPI_KeyEvent(char key, bool down)
@@ -674,7 +716,7 @@ BOOL CRadiantApp::InitInstance()
 	}
 
 	CMainFrame* pMainFrame = new CMainFrame;
-	if (!pMainFrame->LoadFrame(IDR_MENU_QUAKE3)) {
+	if (!pMainFrame->LoadFrame(NULL, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL, NULL)) {
 		return FALSE;
 	}
 

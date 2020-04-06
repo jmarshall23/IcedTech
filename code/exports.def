@@ -17,3 +17,4 @@ EXPORTS
 	RadiantAPI_GameMouseFocus @16
 	RadiantAPI_GameWindowMouseKey @17
 	RadiantAPI_GameWindowKeyboard @18
+	RadiantAPI_ProcessMenuCommands @19

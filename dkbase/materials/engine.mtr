@@ -1,0 +1,12 @@
+// idCollisionMapLocal::SetupTrmModelStructure sets this on created triangle surfaces
+_tracemodel {
+	collision
+}
+
+// required for renderer startup
+_default {
+	{
+		map	_default
+	}
+}
+

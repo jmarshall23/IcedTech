@@ -9,6 +9,9 @@ namespace radiant.net
     public unsafe static class NativeAPI
     {
         [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void RadiantAPI_ProcessMenuCommands(int command);
+
+        [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern void RadiantAPI_GameWindowKeyboard(byte ch, bool down);
 
         [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]

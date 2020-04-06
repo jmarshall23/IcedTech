@@ -2198,37 +2198,39 @@ idMultiplayerGame::DrawChat
 */
 void idMultiplayerGame::DrawChat() {
 	int i, j;
-	if ( guiChat ) {
-		if ( gameLocal.time - lastChatLineTime > CHAT_FADE_TIME ) {
-			if ( chatHistorySize > 0 ) {
-				for ( i = chatHistoryIndex - chatHistorySize; i < chatHistoryIndex; i++ ) {
-					chatHistory[ i % NUM_CHAT_NOTIFY ].fade--;
-					if ( chatHistory[ i % NUM_CHAT_NOTIFY ].fade < 0 ) {
-						chatHistorySize--; // this assumes the removals are always at the beginning
-					}
-				}
-				chatDataUpdated = true;
-			}
-			lastChatLineTime = gameLocal.time;
-		}
-		if ( chatDataUpdated ) {
-			j = 0;
-			i = chatHistoryIndex - chatHistorySize;
-			while ( i < chatHistoryIndex ) {
-				guiChat->SetStateString( va( "chat%i", j ), chatHistory[ i % NUM_CHAT_NOTIFY ].line );
-				// don't set alpha above 4, the gui only knows that
-				guiChat->SetStateInt( va( "alpha%i", j ), Min( 4, (int)chatHistory[ i % NUM_CHAT_NOTIFY ].fade ) );
-				j++; i++;
-			}
-			while ( j < NUM_CHAT_NOTIFY ) {
-				guiChat->SetStateString( va( "chat%i", j ), "" );
-				j++;
-			}
-			guiChat->Activate( true, gameLocal.time );
-			chatDataUpdated = false;
-		}
-		guiChat->Redraw( gameLocal.time );
-	}
+// jmarshall
+	//if ( guiChat ) {
+	//	if ( gameLocal.time - lastChatLineTime > CHAT_FADE_TIME ) {
+	//		if ( chatHistorySize > 0 ) {
+	//			for ( i = chatHistoryIndex - chatHistorySize; i < chatHistoryIndex; i++ ) {
+	//				chatHistory[ i % NUM_CHAT_NOTIFY ].fade--;
+	//				if ( chatHistory[ i % NUM_CHAT_NOTIFY ].fade < 0 ) {
+	//					chatHistorySize--; // this assumes the removals are always at the beginning
+	//				}
+	//			}
+	//			chatDataUpdated = true;
+	//		}
+	//		lastChatLineTime = gameLocal.time;
+	//	}
+	//	if ( chatDataUpdated ) {
+	//		j = 0;
+	//		i = chatHistoryIndex - chatHistorySize;
+	//		while ( i < chatHistoryIndex ) {
+	//			guiChat->SetStateString( va( "chat%i", j ), chatHistory[ i % NUM_CHAT_NOTIFY ].line );
+	//			// don't set alpha above 4, the gui only knows that
+	//			guiChat->SetStateInt( va( "alpha%i", j ), Min( 4, (int)chatHistory[ i % NUM_CHAT_NOTIFY ].fade ) );
+	//			j++; i++;
+	//		}
+	//		while ( j < NUM_CHAT_NOTIFY ) {
+	//			guiChat->SetStateString( va( "chat%i", j ), "" );
+	//			j++;
+	//		}
+	//		guiChat->Activate( true, gameLocal.time );
+	//		chatDataUpdated = false;
+	//	}
+	//	guiChat->Redraw( gameLocal.time );
+	//}
+// jmarshall end
 }
 
 const int ASYNC_PLAYER_FRAG_BITS = -idMath::BitsForInteger( MP_PLAYER_MAXFRAGS - MP_PLAYER_MINFRAGS );	// player can have negative frags

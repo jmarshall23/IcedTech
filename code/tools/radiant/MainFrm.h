@@ -89,11 +89,15 @@ public:
 public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+
+	virtual BOOL LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd* pParentWnd, CCreateContext* pContext);
+	virtual BOOL LoadAccelTable(LPCTSTR lpszResourceName);
 protected:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
+	virtual LPCTSTR GetIconWndClass(DWORD dwDefaultStyle, UINT nIDResource) { return NULL; }	
 	//}}AFX_VIRTUAL
 
 	// Implementation
@@ -140,7 +144,6 @@ public:
 
 protected:  // control bar embedded members
 	CStatusBar  m_wndStatusBar;
-	CToolBar m_wndToolBar;
 	CTextureBar m_wndTextureBar;
 	CSplitterWnd m_wndSplit;
 	CSplitterWnd m_wndSplit2;
@@ -169,7 +172,6 @@ public:
 	void SetBusy(bool b) {
 		busy = b;
 	}
-
 
 	// these are public so i can easily reflect messages
 	// from child windows..

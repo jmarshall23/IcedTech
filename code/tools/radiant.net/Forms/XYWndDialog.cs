@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using radiant.net;
 using System.Windows.Input;
+using radiant.net.Shared;
 
 namespace radiant.net.forms
 {
@@ -326,6 +327,71 @@ namespace radiant.net.forms
 
             NativeAPI.RadiantAPI_GotoEntity(selected_entity);
             NativeAPI.RadiantAPI_SelectObject(selected_entity);
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_OPEN);
+        }
+
+        private void undotCtrlZToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolSaveStripButton_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_SAVE);
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_OPEN);
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_SAVEAS);
+        }
+
+        private void topToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_NEW);
+        }
+
+        private void saveSelectedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_SAVESELECTION);
+        }
+
+        private void saveRegionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_SAVEREGION);
+        }
+
+        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_NEWPROJECT);
+        }
+
+        private void loadprojectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_LOADPROJECT);
+        }
+
+        private void projectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_PROJECTSETTINGS);
+        }
+
+        private void pointfileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_POINTFILE);
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NativeAPI.RadiantAPI_ProcessMenuCommands((int)MenuCommands.RadiantNetMenuCommands_t.RADIANT_NET_COMMAND_EXIT);
         }
     }
 }
