@@ -18,3 +18,7 @@ EXPORTS
 	RadiantAPI_GameWindowMouseKey @17
 	RadiantAPI_GameWindowKeyboard @18
 	RadiantAPI_ProcessMenuCommands @19
+	RadiantAPI_GetSelectedEntityAttributes @20
+	RadiantAPI_UpdateSelectedEntityAttribute @21
+	RadiantAPI_GetMaterialDirectories @22
+	RadiantAPI_LoadTextureDirectory @23

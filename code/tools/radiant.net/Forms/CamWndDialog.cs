@@ -17,8 +17,6 @@ namespace radiant.net.forms
         {
             InitializeComponent();
 
-            this.KeyDown += CamWndDialog_KeyDown;
-            this.KeyUp += CamWndDialog_KeyUp;
             this.MouseDown += CamWndDialog_MouseDown;
             this.RenderPanel.Paint += RenderPanel_Paint;
             this.RenderPanel.MouseDown += RenderPanel_MouseDown;
@@ -52,17 +50,7 @@ namespace radiant.net.forms
 
         }
 
-        private void CamWndDialog_KeyUp(object sender, KeyEventArgs e)
-        {
-            NativeAPI.RadaintAPI_KeyEvent(RadiantHelpers.GetKeyAscii(e), false);
-        }
 
-        
-
-        private void CamWndDialog_KeyDown(object sender, KeyEventArgs e)
-        {
-            NativeAPI.RadaintAPI_KeyEvent(RadiantHelpers.GetKeyAscii(e), true);
-        }
 
         private const int CP_NOCLOSE_BUTTON = 0x200;
         protected override CreateParams CreateParams

@@ -95,11 +95,17 @@
       <DependentUpon>CamWndDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor.cs" />
-    <Compile Include="Forms\InspectorDialog.cs">
+    <Compile Include="Forms\InspecterDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\InspectorDialog.Designer.cs">
-      <DependentUpon>InspectorDialog.cs</DependentUpon>
+    <Compile Include="Forms\InspecterDialog.Designer.cs">
+      <DependentUpon>InspecterDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MainFrm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainFrm.Designer.cs">
+      <DependentUpon>MainFrm.cs</DependentUpon>
     </Compile>
     <Compile Include="KeyEnum.cs" />
     <Compile Include="NativeAPI.cs" />
@@ -123,13 +129,17 @@
       <DependentUpon>XYWndDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Shared\MenuCommands.cs" />
+    <Compile Include="Shared\PropertySheetHelp.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\CamWndDialog.resx">
       <DependentUpon>CamWndDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\InspectorDialog.resx">
-      <DependentUpon>InspectorDialog.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\InspecterDialog.resx">
+      <DependentUpon>InspecterDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainFrm.resx">
+      <DependentUpon>MainFrm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProgressDialog.resx">
       <DependentUpon>ProgressDialog.cs</DependentUpon>

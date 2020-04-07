@@ -405,13 +405,40 @@ void CEntityDlg::SetKeyValPairs( bool updateAnims ) {
 }
 
 void CEntityDlg::UpdateEntitySel(eclass_t *ent) {
-	assert ( ent );
-	assert ( ent->name );
-	int index = comboClass.FindString(-1, ent->name);
-	if (index != LB_ERR) {
-		comboClass.SetCurSel(index);
-		OnCbnSelchangeComboClass();
+	//assert ( ent );
+	//assert ( ent->name );
+	//int index = comboClass.FindString(-1, ent->name);
+	//if (index != LB_ERR) {
+	//	comboClass.SetCurSel(index);
+	//	OnCbnSelchangeComboClass();
+	//}
+	if (selected_brushes.next == &selected_brushes) {
+		editEntity = world_entity;
+		multipleEntities = false;
 	}
+	else {
+		editEntity = selected_brushes.next->owner;
+		for (brush_t* b = selected_brushes.next->next; b != &selected_brushes; b = b->next) {
+			if (b->owner != editEntity) {
+				multipleEntities = true;
+				break;
+			}
+		}
+	}
+
+	idStr classname = editEntity->epairs.FindKey("classname")->GetValue();
+	idStr name = "";
+	
+	if(classname == "worldspawn")
+	{
+		name = "worldspawn";
+	}
+	else
+	{
+		name = editEntity->epairs.FindKey("name")->GetValue();
+	}
+
+	radiantNetInterface.UpdateEntitySel(classname.c_str(), name);
 }
 
 void CEntityDlg::OnLbnSelchangeListkeyval()

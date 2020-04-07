@@ -91,11 +91,21 @@ HINSTANCE g_DoomInstance = NULL;
 bool g_editorAlive = false;
 
 void RadiantPrint( const char *text ) {
-	if ( g_editorAlive && g_Inspectors ) {
-		if (g_Inspectors->consoleWnd.GetSafeHwnd()) {
-			g_Inspectors->consoleWnd.AddText( text );
-		}
+	if(!g_radiantNetInit) {
+		return;
 	}
+
+	if(common->IsEditorGameRunning()) {
+		return;
+	}
+
+	//if ( g_editorAlive && g_Inspectors ) {
+	//	if (g_Inspectors->consoleWnd.GetSafeHwnd()) {
+	//		g_Inspectors->consoleWnd.AddText( text );
+	//	}
+	//}
+
+	radiantNetInterface.RadiantPrint(text);
 }
 
 void RadiantShutdown( void ) {
@@ -110,6 +120,169 @@ void RadiantAPI_CreateEntity(int x, int y, char *name)
 {
 	void CreateRightClickEntity(CXYWnd *pWnd, int x, int y, char *pName);
 	CreateRightClickEntity(g_pParentWnd->GetXYWnd(), x, y, name);
+}
+
+void RadiantAPI_UpdateSelectedEntityAttribute(const char *key, const char *value) {
+	entity_t* editEntity;
+	
+	if (selected_brushes.next == &selected_brushes) {
+		editEntity = world_entity;
+	}
+	else {
+		editEntity = selected_brushes.next->owner;
+		for (brush_t* b = selected_brushes.next->next; b != &selected_brushes; b = b->next) {
+			if (b->owner != editEntity) {
+				break;
+			}
+		}
+	}
+
+	editEntity->epairs.Set(key, value);
+
+	Sys_UpdateWindows(W_ALL);
+}
+
+void RadiantAPI_LoadTextureDirectory(const char *directory) {
+	idStr dir = va("textures/%s/", directory);
+	idList<const idMaterial*> materials;
+	idList<int> materialIndexes;
+	RadiantProgressDialog dialog;
+
+	Texture_HideAll();
+
+	int numMaterialsToLoad = 0;
+
+	int numMaterials = declManager->GetNumDecls(DECL_MATERIAL);
+	for (int i = 0; i < numMaterials; i++) {
+		const idDecl* decl = declManager->DeclByIndex(DECL_MATERIAL, i, false);
+
+		idStr declName = decl->GetName();
+		if (idStr::Icmpn(declName, dir, dir.Length()) != 0) {
+			continue;
+		}
+
+		materialIndexes.Append(i);
+
+		numMaterialsToLoad++;
+	}
+
+	for(int i = 0; i < materialIndexes.Num(); i++) {
+		const idDecl* decl = declManager->DeclByIndex(DECL_MATERIAL, materialIndexes[i], false);
+		idStr childName = decl->GetName();
+
+		float completed = (float)i / (float)numMaterialsToLoad;
+		dialog.UpdateDialog(va("Loading Material %s", childName.c_str()), completed);
+		Texture_ForName(childName);
+
+		if (dialog.HasUserCanceled())
+			break;
+	}
+
+	g_Inspectors->texWnd.OnRender();
+}
+
+const char *RadiantAPI_GetMaterialDirectories(void) {
+	static idStr materialDirectories;
+	idList<idStr> directories;
+
+	materialDirectories.Clear();
+
+
+	int numMaterials = declManager->GetNumDecls(DECL_MATERIAL);
+	for(int i = 0; i < numMaterials; i++) {
+		const idDecl* decl = declManager->DeclByIndex(DECL_MATERIAL, i, false);
+
+		idStr declName = decl->GetName();
+		if (idStr::Icmpn(declName, "textures/", 9) != 0) {
+			continue;
+		}
+
+		idStr dirName = declName.c_str() + 9;
+		idStr realDirName = "";
+		bool foundSlash = false;
+		for(int d = 0; d < dirName.Length(); d++)
+		{
+			if (dirName[d] == '/' || dirName[d] == '\\') {
+				foundSlash = true;
+				break;
+			}
+
+			realDirName += dirName[d];
+		}
+
+		if (!foundSlash)
+			continue;
+
+		if (directories.Find(realDirName))
+			continue;
+
+		directories.Append(realDirName);
+
+		materialDirectories += realDirName;
+		materialDirectories += ";";
+	}
+
+	return materialDirectories.c_str();
+}
+
+const char *RadiantAPI_GetSelectedEntityAttributes(void) {
+	static idStr selectedEntityAttributes;
+	entity_t* editEntity;
+
+	if (selected_brushes.next == &selected_brushes) {
+		editEntity = world_entity;
+	}
+	else {
+		editEntity = selected_brushes.next->owner;
+		for (brush_t* b = selected_brushes.next->next; b != &selected_brushes; b = b->next) {
+			if (b->owner != editEntity) {
+				break;
+			}
+		}
+	}
+
+	selectedEntityAttributes.Clear();
+
+	for (int i = 0; i < editEntity->epairs.GetNumKeyVals(); i++)
+	{
+		const idKeyValue* kv = editEntity->epairs.GetKeyVal(i);
+
+		if (kv->GetKey() == "classname")
+			continue;
+
+		if (kv->GetKey() == "name")
+			continue;
+
+		selectedEntityAttributes += kv->GetKey();
+		selectedEntityAttributes += ";";
+		selectedEntityAttributes += kv->GetValue();
+		selectedEntityAttributes += ";";
+	}
+
+	// Load the defaults.
+	for(int i = 0; i < editEntity->eclass->defArgs.GetNumKeyVals(); i++)
+	{
+		const idKeyValue* kv = editEntity->eclass->defArgs.GetKeyVal(i);
+
+		if (kv->GetKey() == "classname")
+			continue;
+
+		if (kv->GetKey() == "spawnclass")
+			continue;
+
+		if (strstr(kv->GetKey().c_str(), "editor_"))
+			continue;
+
+		if (editEntity->epairs.FindKey(kv->GetKey()))
+			continue;
+
+		selectedEntityAttributes += kv->GetKey();
+		selectedEntityAttributes += ";";
+		selectedEntityAttributes += kv->GetValue();
+		selectedEntityAttributes += ";";
+	}
+
+	return selectedEntityAttributes.c_str();
 }
 
 const char *RadiantAPI_GetEntityClassList(void) {
@@ -462,7 +635,9 @@ void RadiantDotNetInit(void) {
 	radiantNetInterface.GetGameWindowHeight = (int(__cdecl*)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "GetGameWindowHeight");
 
 	radiantNetInterface.GetGameWindowHWND = (HWND(__cdecl*)(void))sys->DLL_GetProcAddress(g_radiant_net_dll, "GetGameWindowHWND");
+	radiantNetInterface.RadiantPrint = (void(__cdecl*)(const char*))sys->DLL_GetProcAddress(g_radiant_net_dll, "RadiantPrint");
 	
+	radiantNetInterface.UpdateEntitySel = (void(__cdecl*)(const char*, const char *))sys->DLL_GetProcAddress(g_radiant_net_dll, "UpdateEntitySel");
 
 	HWND hwnd = g_pParentWnd->GetSafeHwnd();
 	radiantNetInterface.InitRadiant((void *)hwnd);
@@ -489,6 +664,7 @@ void RadiantInit( void ) {
 	}
 
 	g_editorAlive = true;
+	common->SetEditorRunning(true);
 
 	// allocate a renderWorld and a soundWorld
 	if ( g_qeglobals.rw == NULL ) {
@@ -729,7 +905,7 @@ BOOL CRadiantApp::InitInstance()
 
 	// The main window has been initialized, so show and update it.
 // jmarshall - editor will always start maximized
-	pMainFrame->ShowWindow(SW_MAXIMIZE);
+	pMainFrame->ShowWindow(SW_HIDE);
 	pMainFrame->SetIcon(LoadIcon(MAKEINTRESOURCE(IDI_ICON1)), false);
 // jmarshall end
 	pMainFrame->UpdateWindow();

@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using radiant.net;
-
 namespace radiant.net.forms
 {
     public partial class ProgressDialog : Form

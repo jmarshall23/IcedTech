@@ -14,15 +14,29 @@ namespace radiant.net
     {
         public static NativeWindow nativeWindow;
         static ProgressDialog progressDialog;
-        //static InspectorDialog inspectorDialog;
+        static InspecterDialog inspecterDialog;
         static CamWndDialog camWndDialog;
-        static XYWndDialog xyWndDialog;
+        public static XYWndDialog xyWndDialog;
+        static MainFrm mainFrm;
 
         public static string[] entityList;
         static IntPtr _xyhdc = IntPtr.Zero;
         static IntPtr _camhdc = IntPtr.Zero;
         static IntPtr _texhdc = IntPtr.Zero;
         static IntPtr _gamehdc = IntPtr.Zero;
+
+        [DllExport(CallingConvention = CallingConvention.Cdecl)]
+        public static void RadiantPrint(string txt)
+        {
+            txt = txt.Replace("\n", "\r\n"); // Windows text boxes need CRLF as line terminators, not just LF.
+            inspecterDialog.RadiantPrint(txt);
+        }
+
+        [DllExport(CallingConvention = CallingConvention.Cdecl)]
+        public static void UpdateEntitySel(string classname, string name)
+        {
+            inspecterDialog.UpdateEntitySel(classname, name);
+        }
 
         [DllExport(CallingConvention = CallingConvention.Cdecl)]
         public static void InitRadiant(IntPtr ParentWindow)
@@ -32,14 +46,38 @@ namespace radiant.net
             progressDialog = new ProgressDialog();
             camWndDialog = new CamWndDialog();
             xyWndDialog = new XYWndDialog();
+            mainFrm = new MainFrm();
 
-            //  inspectorDialog = new InspectorDialog();
+            inspecterDialog = new InspecterDialog();
 
             nativeWindow = new NativeWindow();
             nativeWindow.AssignHandle(ParentWindow);
 
-            camWndDialog.Show(nativeWindow);
-            xyWndDialog.Show(nativeWindow);
+            {
+                //camWndDialog.Parent = mainFrm;
+                inspecterDialog.TopLevel = false;
+                inspecterDialog.Dock = DockStyle.Fill;
+                inspecterDialog.Show();
+                mainFrm.GetLeftSplitContainer().Panel2.Controls.Add(inspecterDialog);
+            }
+
+            {
+                //camWndDialog.Parent = mainFrm;
+                camWndDialog.TopLevel = false;
+                camWndDialog.Dock = DockStyle.Fill;
+                camWndDialog.Show();
+                mainFrm.GetLeftSplitContainer().Panel1.Controls.Add(camWndDialog);
+            }
+
+            {
+              //  xyWndDialog.Parent = mainFrm;
+                xyWndDialog.TopLevel = false;
+                xyWndDialog.Dock = DockStyle.Fill;
+                xyWndDialog.Show();
+                mainFrm.GetMainSplitContainer().Panel2.Controls.Add(xyWndDialog);
+            }
+
+            mainFrm.Show(nativeWindow);
 
             //   inspectorDialog.Show(nativeWindow);
         }

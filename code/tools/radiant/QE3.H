@@ -99,7 +99,8 @@ struct RadiantNetInterface_t {
 	int(__cdecl* GetGameWindowWidth)();
 	int(__cdecl* GetGameWindowHeight)();
 
-
+	void(__cdecl* RadiantPrint)(const char* txt);
+	void(__cdecl* UpdateEntitySel)(const char* classname, const char* name);
 };
 
 extern RadiantNetInterface_t radiantNetInterface;

@@ -29,10 +29,7 @@ namespace radiant.net.forms
         public XYWndDialog()
         {
             InitializeComponent();
-            this.KeyPreview = true;
 
-            this.KeyDown += XYWndDialog_KeyDown;
-            this.KeyUp += XYWndDialog_KeyUp;
             splitContainer1.Panel1.MouseDown += XYWndDialog_MouseDown;
             splitContainer1.Panel1.MouseUp += XYWndDialog_MouseUp;
             splitContainer1.Panel1.MouseMove += RenderPanel_MouseMove;
@@ -64,6 +61,11 @@ namespace radiant.net.forms
             _gameMouseMoveTimer.Tick += GameMouseMoveTimer_Tick;
 
             UpdateTreeView();
+        }
+
+        public bool IsGamePreviewVisible()
+        {
+            return tabControl.SelectedIndex == 2;
         }
 
         private void GamePanel_MouseUp(object sender, MouseEventArgs e)
@@ -214,26 +216,6 @@ namespace radiant.net.forms
             NativeAPI.RadiantAPI_RedrawWindows();
         }
 
-        private void XYWndDialog_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (tabControl.SelectedIndex == 2)
-            {
-                NativeAPI.RadiantAPI_GameWindowKeyboard(RadiantHelpers.GetKeyAscii2(e), false);
-                return;
-            }
-            NativeAPI.RadaintAPI_KeyEvent(RadiantHelpers.GetKeyAscii(e), false);
-        }
-
-        private void XYWndDialog_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (tabControl.SelectedIndex == 2)
-            {
-                NativeAPI.RadiantAPI_GameWindowKeyboard(RadiantHelpers.GetKeyAscii2(e), true);
-                return;
-            }
-
-            NativeAPI.RadaintAPI_KeyEvent(RadiantHelpers.GetKeyAscii(e), true);
-        }
 
         private const int CP_NOCLOSE_BUTTON = 0x200;
         protected override CreateParams CreateParams

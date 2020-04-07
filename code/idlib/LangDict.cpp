@@ -162,7 +162,7 @@ const char *idLangDict::GetString( const char *str ) const {
 		}
 	}
 
-	idLib::common->Warning( "Unknown string id %s", str );
+	idLib::common->DWarning( "Unknown string id %s", str );
 	return str;
 }
 

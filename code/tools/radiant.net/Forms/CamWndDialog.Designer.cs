@@ -61,20 +61,20 @@
             // wireframeToolStripMenuItem
             // 
             this.wireframeToolStripMenuItem.Name = "wireframeToolStripMenuItem";
-            this.wireframeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.wireframeToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.wireframeToolStripMenuItem.Text = "&Wireframe";
             // 
             // unlitToolStripMenuItem
             // 
             this.unlitToolStripMenuItem.Name = "unlitToolStripMenuItem";
-            this.unlitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.unlitToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.unlitToolStripMenuItem.Text = "&Unlit";
             this.unlitToolStripMenuItem.Click += new System.EventHandler(this.unlitToolStripMenuItem_Click);
             // 
             // litRenderToolStripMenuItem
             // 
             this.litRenderToolStripMenuItem.Name = "litRenderToolStripMenuItem";
-            this.litRenderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.litRenderToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.litRenderToolStripMenuItem.Text = "&Lit Render";
             this.litRenderToolStripMenuItem.Click += new System.EventHandler(this.litRenderToolStripMenuItem_Click);
             // 
@@ -94,6 +94,7 @@
             this.ClientSize = new System.Drawing.Size(940, 624);
             this.Controls.Add(this.RenderPanel);
             this.Controls.Add(this.menuStrip1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
