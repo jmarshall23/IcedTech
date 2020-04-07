@@ -3021,6 +3021,9 @@ void idMaterial::UpdateVirtualMaterialOffsetImage(void) const {
 
 	for (int i = 0; i < virtualTexturePageOffsetNumMips; i++)
 	{
+		if (virtualPageOffsets[i] == NULL) // Why would this be null?
+			continue;
+
 		virtualPageOffsetsImage->SubImageUpload(i, 0, 0, 0, virtualTextureWidthInPages[i], virtualTextureHeightInPages[i], virtualPageOffsets[i]);
 	}
 }
@@ -3089,12 +3092,12 @@ void idMaterial::CreateVirtualPageOffsetsTexture(void) {
 	opts.colorFormat = CFM_DEFAULT;
 	opts.numLevels = virtualTexturePageOffsetNumMips;
 	opts.textureType = TT_2D;
-	opts.isPersistant = false;
+	opts.isPersistant = true;
 	opts.width = virtualTextureWidthInPages[0];
 	opts.height = virtualTextureHeightInPages[0];
 	opts.numMSAASamples = 0;
 
-	virtualPageOffsetsImage = globalImages->ScratchImage(va("%s_pageOffsets", GetName()), &opts, TF_DEFAULT, TR_REPEAT, TD_DEFAULT);
+	virtualPageOffsetsImage = globalImages->ScratchImage(va("_%s_pageOffsets", GetName()), &opts, TF_DEFAULT, TR_REPEAT, TD_DEFAULT);
 	// When the virtual offsets image gets purged by idImageManager, scratch image should deal with it,
 	// but for now so we don't modify the behaiver of the rest of the image, just deal with that case here.
 	if (!virtualPageOffsetsImage->IsLoaded())
