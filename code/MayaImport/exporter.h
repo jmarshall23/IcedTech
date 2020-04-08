@@ -110,6 +110,9 @@ public:
 	idStr					dest;
 	idStr					game;
 	idStr					prefix;
+// jmarshall
+	idStr					material_prefix;
+// jmarshall end
 	float					scale;
 	exportType_t			type;
 	bool					ignoreMeshes;

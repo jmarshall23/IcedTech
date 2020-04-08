@@ -524,7 +524,10 @@ idExportOptions::idExportOptions( const char *commandline, const char *ospath ) 
 
 		} else if ( token == "-prefix" ) {
 			prefix = tokens.NextToken( "Missing name for -prefix.  Usage: -prefix [joint prefix]" );
-
+// jmarshall
+		} else if(token == "-material_prefix") {
+			material_prefix = tokens.NextToken("Missing name for -material_prefix");
+// jmarshall end
 		} else if ( token == "-parent" ) {
 			// parse joint to reparent
 			joints.from = tokens.NextToken( "Missing joint name for -parent.  Usage: -parent [joint name] [new parent]" );
@@ -1893,6 +1896,13 @@ void idMayaExport::GetTextureForMesh( idExportMesh *mesh, MFnDagNode &dagNode ) 
         // If no texture file node was found, just continue.
         //
 		if ( dgIt.isDone() ) {
+// jmarshall
+			// If we don't have a material assigned to this mesh, set it as modelpath/mesh_name.
+			// This can happen with store bought assets and reassigning materials means rerigging,
+			// so this solves the problem for me.
+			idStr modelPath = options.material_prefix;
+			mesh->shader = va("%s/%s", modelPath.c_str(), mesh->name.c_str());
+// jmarshall end
 			continue;
 		}
 		  
@@ -1906,6 +1916,16 @@ void idMayaExport::GetTextureForMesh( idExportMesh *mesh, MFnDagNode &dagNode ) 
 		// remove the OS path and save it in the mesh
 		OSPathToRelativePath( textureName.asChar(), mesh->shader, options.game );
 		mesh->shader.StripFileExtension();
+
+// jmarshall
+		// If we don't have a material assigned to this mesh, set it as modelpath/mesh_name.
+		// This can happen with store bought assets and reassigning materials means rerigging,
+		// so this solves the problem for me.
+		if (mesh->shader.Length() <= 0) {
+			idStr modelPath = options.material_prefix;
+			mesh->shader = va("%s/%s", modelPath.c_str(), mesh->name.c_str());
+		}
+// jmarshall end
 
 		return;
 	}
@@ -2032,8 +2052,8 @@ idExportMesh *idMayaExport::CopyMesh( MFnSkinCluster &skinCluster, float scale )
 		int p;
 		
 		p = fnmesh.numPolygons( &status );
-		mesh->tris.SetNum( p );
-		mesh->uv.SetNum( p );
+		//mesh->tris.SetNum(p);
+		//mesh->uv.SetNum(p);
 
 		MString setName;
 		
@@ -2042,23 +2062,72 @@ idExportMesh *idMayaExport::CopyMesh( MFnSkinCluster &skinCluster, float scale )
 			MayaError( "CopyMesh: MFnMesh::getCurrentUVSetName failed (%s)", status.errorString().asChar() );
 		}
 
-		for( j = 0; j < p; j++ ) {
-			fnmesh.getPolygonVertices( j, vertexList );
-			if ( vertexList.length() != 3 ) {
-				MayaError( "CopyMesh: Too many vertices on a face (%d)\n", vertexList.length() );
-			}
+		for (j = 0; j < p; j++) {
+			fnmesh.getPolygonVertices(j, vertexList);
+ // jmarshall - support for quads
+			if ( vertexList.length() == 3 ) {
+				exportTriangle_t exportTri;
+				for (k = 0; k < 3; k++) {					
+					exportTri.indexes[k] = vertexList[k];					
 
-			for( k = 0; k < 3; k++ ) {
-				mesh->tris[ j ].indexes[ k ] = vertexList[ k ];
-			
-				status = fnmesh.getPolygonUV( j, k, uv_u, uv_v, &setName );
-				if ( !status ) {
-					MayaError( "CopyMesh: MFnMesh::getPolygonUV failed (%s)", status.errorString().asChar() );
+					status = fnmesh.getPolygonUV(j, k, uv_u, uv_v, &setName);
+					if (!status) {
+						MayaError("CopyMesh: MFnMesh::getPolygonUV failed (%s)", status.errorString().asChar());
+					}
+
+					exportUV_t exportUV;
+
+					exportUV.uv[k][0] = uv_u;
+					exportUV.uv[k][1] = uv_v;
+
+					mesh->uv.Append(exportUV);
 				}
-				
-				mesh->uv[ j ].uv[ k ][ 0 ] = uv_u;
-				mesh->uv[ j ].uv[ k ][ 1 ] = uv_v;
+
+				mesh->tris.Append(exportTri);
 			}
+			else if (vertexList.length() == 4)
+			{
+				int triangleIndexes[6] = { 0, 1, 2, 3, 0, 2 };
+				exportTriangle_t exportTri;
+				for (k = 0; k < 3; k++) {					
+					exportTri.indexes[k] = vertexList[triangleIndexes[k]];					
+
+					status = fnmesh.getPolygonUV(j, triangleIndexes[k], uv_u, uv_v, &setName);
+					if (!status) {
+						MayaError("CopyMesh: MFnMesh::getPolygonUV failed (%s)", status.errorString().asChar());
+					}
+
+					exportUV_t exportUV;
+
+					exportUV.uv[k][0] = uv_u;
+					exportUV.uv[k][1] = uv_v;
+
+					mesh->uv.Append(exportUV);
+				}
+				mesh->tris.Append(exportTri);
+
+				for (k = 0; k < 3; k++) {					
+					exportTri.indexes[k] = vertexList[triangleIndexes[k + 3]];					
+
+					status = fnmesh.getPolygonUV(j, triangleIndexes[k + 3], uv_u, uv_v, &setName);
+					if (!status) {
+						MayaError("CopyMesh: MFnMesh::getPolygonUV failed (%s)", status.errorString().asChar());
+					}
+
+					exportUV_t exportUV;
+
+					exportUV.uv[k][0] = uv_u;
+					exportUV.uv[k][1] = uv_v;
+					mesh->uv.Append(exportUV);
+				}
+
+				mesh->tris.Append(exportTri);
+			}
+			else
+			{
+				MayaError("CopyMesh: Too many vertices on a face (%d)\n", vertexList.length());
+			}
+// jmarshall end			
 		}
 
 		return mesh;
