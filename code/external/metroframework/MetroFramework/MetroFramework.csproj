@@ -1,0 +1,304 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BB41AC8B-CBED-4387-A7E0-4567EDB3F57F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MetroFramework</RootNamespace>
+    <AssemblyName>MetroFramework</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>../MetroFramework.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Animation\AnimationBase.cs" />
+    <Compile Include="Animation\ColorBlendAnimation.cs" />
+    <Compile Include="Animation\DelayedCall.cs" />
+    <Compile Include="Animation\ExpandAnimation.cs" />
+    <Compile Include="Animation\MoveAnimation.cs" />
+    <Compile Include="Animation\TransitionType.cs" />
+    <Compile Include="Components\MetroComponentBase.cs">
+      <DependentUpon>MetroComponentBase.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MetroStyles.cs" />
+    <Compile Include="Components\MetroStyleExtender.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\MetroStyleManager.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\MetroToolTip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Aspects\BorderStyle.cs">
+      <DependentUpon>BorderStyle.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Aspects\FontStyle.cs">
+      <DependentUpon>FontStyle.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Controls\Aspects\StyleColor.cs">
+      <DependentUpon>StyleColor.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Drawing\MetroBorderStyle.cs" />
+    <Compile Include="Controls\Aspects\Selectable.cs">
+      <DependentUpon>Selectable.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroSelectableLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroControlBase.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MetroControlBase.tt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroLink.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroProgressSpinner.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroRadioButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroScrollBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroTabControl.cs" />
+    <Compile Include="Controls\MetroTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroTile.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroTilePart.cs" />
+    <Compile Include="Controls\MetroToggle.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroTrackBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MetroUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MetroExtensions.cs" />
+    <Compile Include="Drawing\MetroPaint.cs" />
+    <Compile Include="Forms\MetroMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MetroForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MetroTaskWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interfaces\IMetroContainerControl.cs" />
+    <Compile Include="Interfaces\IMetroControl.cs" />
+    <Compile Include="Interfaces\IMetroForm.cs" />
+    <Compile Include="Interfaces\IMetroComponent.cs" />
+    <Compile Include="Interfaces\IMetroStyledComponent.cs" />
+    <Compile Include="Localization\MetroLocalize.cs" />
+    <Compile Include="Drawing\MetroBrushes.cs" />
+    <Compile Include="Drawing\MetroColors.cs" />
+    <Compile Include="MetroColorStyle.cs" />
+    <Compile Include="MetroDefaults.cs" />
+    <Compile Include="MetroFonts.cs" />
+    <Compile Include="Drawing\MetroFontSize.cs" />
+    <Compile Include="Drawing\MetroFontWeight.cs" />
+    <Compile Include="Drawing\MetroPens.cs" />
+    <Compile Include="MetroThemeStyle.cs" />
+    <Compile Include="Native\DwmApi.cs" />
+    <Compile Include="Native\RECT.cs" />
+    <Compile Include="Native\SubClass.cs" />
+    <Compile Include="Native\Taskbar.cs" />
+    <Compile Include="Native\WinApi.cs" />
+    <Compile Include="Native\WinCaret.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Aspects\Transparency.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Transparency.tt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="XML\themes-2_0.cs">
+      <DependentUpon>themes-2_0.xsd</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Components\MetroComponentBase.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MetroComponentBase.cs</LastGenOutput>
+    </None>
+    <None Include="Controls\Aspects\BorderStyle.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BorderStyle.cs</LastGenOutput>
+    </None>
+    <None Include="Controls\Aspects\FontStyle.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FontStyle.cs</LastGenOutput>
+    </None>
+    <None Include="Controls\Aspects\StyleColor.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StyleColor.cs</LastGenOutput>
+    </None>
+    <None Include="Controls\Aspects\Selectable.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Selectable.cs</LastGenOutput>
+    </None>
+    <None Include="Controls\MetroControlBase.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MetroControlBase.cs</LastGenOutput>
+    </None>
+    <None Include="MetroFramework.pfx" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Controls\Aspects\Transparency.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Transparency.cs</LastGenOutput>
+    </None>
+    <None Include="XML\themes-2_0.xsc">
+      <DependentUpon>themes-2_0.xsd</DependentUpon>
+    </None>
+    <None Include="XML\themes-2_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="XML\themes-2_0.xss">
+      <DependentUpon>themes-2_0.xsd</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\MetroTaskWindow.resx">
+      <DependentUpon>MetroTaskWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Localization\de\MetroToggle.xml" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\en\MetroToggle.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="themes.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

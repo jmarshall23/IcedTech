@@ -28,27 +28,30 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrm));
             this.MainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.leftSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.metroStyleManager1 = new MetroFramework.Components.MetroStyleManager(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
             this.MainSplitContainer.Panel1.SuspendLayout();
             this.MainSplitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.leftSplitContainer)).BeginInit();
             this.leftSplitContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.metroStyleManager1)).BeginInit();
             this.SuspendLayout();
             // 
             // MainSplitContainer
             // 
             this.MainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.MainSplitContainer.Location = new System.Drawing.Point(20, 60);
             this.MainSplitContainer.Name = "MainSplitContainer";
             // 
             // MainSplitContainer.Panel1
             // 
             this.MainSplitContainer.Panel1.Controls.Add(this.leftSplitContainer);
-            this.MainSplitContainer.Size = new System.Drawing.Size(1198, 758);
-            this.MainSplitContainer.SplitterDistance = 415;
+            this.MainSplitContainer.Size = new System.Drawing.Size(1158, 678);
+            this.MainSplitContainer.SplitterDistance = 401;
             this.MainSplitContainer.TabIndex = 0;
             // 
             // leftSplitContainer
@@ -57,9 +60,13 @@
             this.leftSplitContainer.Location = new System.Drawing.Point(0, 0);
             this.leftSplitContainer.Name = "leftSplitContainer";
             this.leftSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.leftSplitContainer.Size = new System.Drawing.Size(415, 758);
-            this.leftSplitContainer.SplitterDistance = 336;
+            this.leftSplitContainer.Size = new System.Drawing.Size(401, 678);
+            this.leftSplitContainer.SplitterDistance = 300;
             this.leftSplitContainer.TabIndex = 0;
+            // 
+            // metroStyleManager1
+            // 
+            this.metroStyleManager1.Owner = null;
             // 
             // MainFrm
             // 
@@ -71,11 +78,13 @@
             this.Name = "MainFrm";
             this.Text = "iceStudio64";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Load += new System.EventHandler(this.MainFrm_Load);
             this.MainSplitContainer.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).EndInit();
             this.MainSplitContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.leftSplitContainer)).EndInit();
             this.leftSplitContainer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.metroStyleManager1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -84,5 +93,6 @@
 
         private System.Windows.Forms.SplitContainer MainSplitContainer;
         private System.Windows.Forms.SplitContainer leftSplitContainer;
+        private MetroFramework.Components.MetroStyleManager metroStyleManager1;
     }
 }

@@ -8,10 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using radiant.net.Shared;
+using MetroFramework.Components;
+using MetroFramework.Forms;
 
 namespace radiant.net.forms
 {
-    public partial class InspecterDialog : Form
+    public partial class InspecterDialog : MetroForm
     {
         public InspecterDialog()
         {

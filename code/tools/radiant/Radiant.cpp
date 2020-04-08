@@ -181,6 +181,10 @@ void RadiantAPI_LoadTextureDirectory(const char *directory) {
 	g_Inspectors->texWnd.OnRender();
 }
 
+const char *RadiantAPI_GetGameName(void) {
+	return GAME_NAME;
+}
+
 const char *RadiantAPI_GetMaterialDirectories(void) {
 	static idStr materialDirectories;
 	idList<idStr> directories;

@@ -7,20 +7,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MetroFramework.Components;
+using MetroFramework.Forms;
 
 namespace radiant.net.forms
 {
-    public partial class MainFrm : Form
+    public partial class MainFrm : MetroForm
     {
         public MainFrm()
         {
             InitializeComponent();
             this.KeyPreview = true;
+            this.StyleManager = metroStyleManager1;
 
             this.KeyUp += MainFrm_KeyUp;
             this.KeyDown += MainFrm_KeyDown;
 
+            this.Load += MainFrm_Load1;
             this.FormClosed += MainFrm_FormClosed;
+        }
+
+        private void MainFrm_Load1(object sender, EventArgs e)
+        {
+            this.Text = "iceStudio64 - " + NativeAPI.RadiantAPI_GetGameNameManaged();
         }
 
         private void MainFrm_KeyDown(object sender, KeyEventArgs e)
@@ -57,6 +66,11 @@ namespace radiant.net.forms
         public System.Windows.Forms.SplitContainer GetLeftSplitContainer()
         {
             return leftSplitContainer;
+        }
+
+        private void MainFrm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

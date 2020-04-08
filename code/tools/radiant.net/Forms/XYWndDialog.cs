@@ -10,10 +10,12 @@ using System.Windows.Forms;
 using radiant.net;
 using System.Windows.Input;
 using radiant.net.Shared;
+using MetroFramework.Components;
+using MetroFramework.Forms;
 
 namespace radiant.net.forms
 {
-    public partial class XYWndDialog : Form
+    public partial class XYWndDialog : MetroForm
     {
         Timer _leftMouseButtonTimer;
         Timer _rightMouseButtonTimer;

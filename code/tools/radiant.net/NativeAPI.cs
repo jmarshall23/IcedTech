@@ -9,6 +9,14 @@ namespace radiant.net
     public unsafe static class NativeAPI
     {
         [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern System.IntPtr RadiantAPI_GetGameName();
+
+        public static string RadiantAPI_GetGameNameManaged()
+        {
+            return Marshal.PtrToStringAnsi(RadiantAPI_GetGameName());
+        }
+
+        [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern void RadiantAPI_LoadTextureDirectory(string directory);
 
         [DllImport("DoomDLL.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]

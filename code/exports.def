@@ -22,3 +22,4 @@ EXPORTS
 	RadiantAPI_UpdateSelectedEntityAttribute @21
 	RadiantAPI_GetMaterialDirectories @22
 	RadiantAPI_LoadTextureDirectory @23
+	RadiantAPI_GetGameName @24

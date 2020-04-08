@@ -8,10 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using radiant.net;
+using MetroFramework.Components;
+using MetroFramework.Forms;
 
 namespace radiant.net.forms
 {
-    public partial class CamWndDialog : Form
+    public partial class CamWndDialog : MetroForm
     {
         public CamWndDialog()
         {

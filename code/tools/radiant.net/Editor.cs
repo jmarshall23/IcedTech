@@ -56,6 +56,12 @@ namespace radiant.net
             {
                 //camWndDialog.Parent = mainFrm;
                 inspecterDialog.TopLevel = false;
+                inspecterDialog.Padding = new Padding(0, 0, 0, 0);
+                inspecterDialog.DisplayHeader = false;
+                inspecterDialog.BorderStyle = MetroFramework.Drawing.MetroBorderStyle.None;
+                inspecterDialog.FormBorderStyle = FormBorderStyle.None;
+                inspecterDialog.ShadowType = MetroFramework.Forms.MetroForm.MetroFormShadowType.None;
+                inspecterDialog.ControlBox = false;
                 inspecterDialog.Dock = DockStyle.Fill;
                 inspecterDialog.Show();
                 mainFrm.GetLeftSplitContainer().Panel2.Controls.Add(inspecterDialog);
@@ -64,6 +70,12 @@ namespace radiant.net
             {
                 //camWndDialog.Parent = mainFrm;
                 camWndDialog.TopLevel = false;
+                camWndDialog.Padding = new Padding(0, 0, 0, 0);
+                camWndDialog.DisplayHeader = false;
+                camWndDialog.BorderStyle = MetroFramework.Drawing.MetroBorderStyle.None;
+                camWndDialog.FormBorderStyle = FormBorderStyle.None;
+                camWndDialog.ShadowType = MetroFramework.Forms.MetroForm.MetroFormShadowType.None;
+                camWndDialog.ControlBox = false;
                 camWndDialog.Dock = DockStyle.Fill;
                 camWndDialog.Show();
                 mainFrm.GetLeftSplitContainer().Panel1.Controls.Add(camWndDialog);
@@ -72,6 +84,12 @@ namespace radiant.net
             {
               //  xyWndDialog.Parent = mainFrm;
                 xyWndDialog.TopLevel = false;
+                xyWndDialog.Padding = new Padding(0, 0, 0, 0);
+                xyWndDialog.DisplayHeader = false;
+                xyWndDialog.BorderStyle = MetroFramework.Drawing.MetroBorderStyle.None;
+                xyWndDialog.FormBorderStyle = FormBorderStyle.None;
+                xyWndDialog.ShadowType = MetroFramework.Forms.MetroForm.MetroFormShadowType.None;
+                xyWndDialog.ControlBox = false;
                 xyWndDialog.Dock = DockStyle.Fill;
                 xyWndDialog.Show();
                 mainFrm.GetMainSplitContainer().Panel2.Controls.Add(xyWndDialog);

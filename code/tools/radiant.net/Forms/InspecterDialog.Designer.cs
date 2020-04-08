@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabControl1 = new MetroFramework.Controls.MetroTabControl();
             this.consolePage = new System.Windows.Forms.TabPage();
             this.materialPage = new System.Windows.Forms.TabPage();
             this.entityTab = new System.Windows.Forms.TabPage();
@@ -238,7 +238,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabControl1;
+        private MetroFramework.Controls.MetroTabControl tabControl1;
         private System.Windows.Forms.TabPage consolePage;
         private System.Windows.Forms.TabPage materialPage;
         private System.Windows.Forms.TabPage entityTab;
