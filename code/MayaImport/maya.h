@@ -13,6 +13,7 @@ using namespace std;
 #include <maya/MStatus.h>
 #include <maya/MString.h> 
 #include <maya/MPointArray.h>
+#include <maya/MFn.h>
 #include <maya/MFileIO.h>
 #include <maya/MLibrary.h>
 #include <maya/MPoint.h>

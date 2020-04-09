@@ -1089,6 +1089,10 @@ bool idExportModel::WriteAnim( const char *filename, idExportOptions &options ) 
 	}
 
 	for( joint = exportHead.GetNext(); joint != NULL; joint = joint->exportNode.GetNext() ) {
+// jmarshall
+		if (joint->name.Length() <= 0)
+			continue;
+// jmarshall end
 		jointList.Append( joint );
 	}
 
@@ -1107,6 +1111,10 @@ bool idExportModel::WriteAnim( const char *filename, idExportOptions &options ) 
 
 	jointList.Clear();
 	for( joint = exportHead.GetNext(); joint != NULL; joint = joint->exportNode.GetNext() ) {
+// jmarshall
+		if (joint->name.Length() <= 0)
+			continue;
+// jmarshall end
 		joint->exportNum = jointList.Append( joint );
 	}
 
@@ -1618,6 +1626,11 @@ void idMayaExport::CreateJoints( float scale ) {
 			MayaError( "CreateJoints: MItDag::getPath failed (%s)", status.errorString().asChar() );
 			continue;
 		}
+// jmarshall - fixes no mesh animations pulling in the entire kitchen sink into the heirarchy.		
+		if (dagPath.apiType() != MFn::kJoint) {
+			continue;
+		}
+// jmarshall end
 
 		joint = &model.joints.Alloc();
 		joint->index	= model.joints.Num() - 1;
@@ -2815,6 +2828,10 @@ void idMayaExport::CreateAnimation( idMat3 &align ) {
 	for( frameNum = 0; frameNum < model.numFrames; frameNum++ ) {
 		frame = model.frames[ frameNum ];
 
+// jmarshall - bounds come from joints not vertexes.
+		// get bounds for this frame
+		bnds.Clear();
+// jmarshall end
 		// transform the hierarchy
 		for( joint = model.exportHead.GetNext(); joint != NULL; joint = joint->exportNode.GetNext() ) {
 			jointpos	= frame[ joint->index ].t;
@@ -2828,16 +2845,19 @@ void idMayaExport::CreateAnimation( idMat3 &align ) {
 				joint->idwm = jointaxis;
 				joint->idt = jointpos;
 			}
+// jmarshall - bounds come from joints not vertexes.
+			bnds.AddPoint(joint->idt);
+// jmarshall end
 		}
-
-		// get bounds for this frame
-		bnds.Clear();
-		for( i = 0; i < model.meshes.Num(); i++ ) {
-			if ( model.meshes[ i ]->keep ) {
-				model.meshes[ i ]->GetBounds( meshBounds );
-				bnds.AddBounds( meshBounds );
-			}
-		}
+		
+// jmarshall - bounds come from joints not vertexes.
+		//for( i = 0; i < model.meshes.Num(); i++ ) {
+		//	if ( model.meshes[ i ]->keep ) {
+		//		model.meshes[ i ]->GetBounds( meshBounds );
+		//		bnds.AddBounds( meshBounds );
+		//	}
+		//}
+// jmarshall end
 		model.bounds[ frameNum ][ 0 ] = bnds[ 0 ];
 		model.bounds[ frameNum ][ 1 ] = bnds[ 1 ];
 	}
