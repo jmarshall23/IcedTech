@@ -1130,35 +1130,6 @@ idPlayer::idPlayer() {
 
 /*
 ==============
-idPlayer::LinkScriptVariables
-
-set up conditions for animation
-==============
-*/
-void idPlayer::LinkScriptVariables( void ) {
-	AI_FORWARD.LinkTo(			scriptObject, "AI_FORWARD" );
-	AI_BACKWARD.LinkTo(			scriptObject, "AI_BACKWARD" );
-	AI_STRAFE_LEFT.LinkTo(		scriptObject, "AI_STRAFE_LEFT" );
-	AI_STRAFE_RIGHT.LinkTo(		scriptObject, "AI_STRAFE_RIGHT" );
-	AI_ATTACK_HELD.LinkTo(		scriptObject, "AI_ATTACK_HELD" );
-	AI_WEAPON_FIRED.LinkTo(		scriptObject, "AI_WEAPON_FIRED" );
-	AI_JUMP.LinkTo(				scriptObject, "AI_JUMP" );
-	AI_DEAD.LinkTo(				scriptObject, "AI_DEAD" );
-	AI_CROUCH.LinkTo(			scriptObject, "AI_CROUCH" );
-	AI_ONGROUND.LinkTo(			scriptObject, "AI_ONGROUND" );
-	AI_ONLADDER.LinkTo(			scriptObject, "AI_ONLADDER" );
-	AI_HARDLANDING.LinkTo(		scriptObject, "AI_HARDLANDING" );
-	AI_SOFTLANDING.LinkTo(		scriptObject, "AI_SOFTLANDING" );
-	AI_RUN.LinkTo(				scriptObject, "AI_RUN" );
-	AI_PAIN.LinkTo(				scriptObject, "AI_PAIN" );
-	AI_RELOAD.LinkTo(			scriptObject, "AI_RELOAD" );
-	AI_TELEPORT.LinkTo(			scriptObject, "AI_TELEPORT" );
-	AI_TURN_LEFT.LinkTo(		scriptObject, "AI_TURN_LEFT" );
-	AI_TURN_RIGHT.LinkTo(		scriptObject, "AI_TURN_RIGHT" );
-}
-
-/*
-==============
 idPlayer::SetupWeaponEntity
 ==============
 */
@@ -1346,25 +1317,17 @@ void idPlayer::Init( void ) {
 	}
 
 	// initialize the script variables
-	AI_FORWARD		= false;
-	AI_BACKWARD		= false;
-	AI_STRAFE_LEFT	= false;
-	AI_STRAFE_RIGHT	= false;
-	AI_ATTACK_HELD	= false;
-	AI_WEAPON_FIRED	= false;
-	AI_JUMP			= false;
-	AI_DEAD			= false;
-	AI_CROUCH		= false;
-	AI_ONGROUND		= true;
-	AI_ONLADDER		= false;
-	AI_HARDLANDING	= false;
-	AI_SOFTLANDING	= false;
-	AI_RUN			= false;
-	AI_PAIN			= false;
-	AI_RELOAD		= false;
-	AI_TELEPORT		= false;
-	AI_TURN_LEFT	= false;
-	AI_TURN_RIGHT	= false;
+	memset(&pfl, 0, sizeof(pfl));
+	pfl.onGround = true;
+	pfl.noFallingDamage = false;
+
+	// Start in idle
+	//SetAnimState(ANIMCHANNEL_TORSO, "Torso_Idle", 0, 0);
+	//SetAnimState(ANIMCHANNEL_LEGS, "Legs_Idle", 0, 0);	
+	anim_idle = animator.GetAnim("idle");
+	anim_walk = animator.GetAnim("walk");
+	anim_run = animator.GetAnim("run");
+	SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
 
 	// reset the script object
 	ConstructScriptObject();
@@ -1510,9 +1473,6 @@ void idPlayer::Spawn( void ) {
 
 	// load the teleport in sound effect.
 	teleportInSFX = declManager->FindSound(spawnArgs.GetString("snd_teleport_enter"));
-
-	// set up conditions for animation
-	LinkScriptVariables();
 
 	animator.RemoveOriginOffset( true );
 
@@ -1884,9 +1844,6 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	savefile->ReadInt( lastHitTime );
 	savefile->ReadInt( lastSndHitTime );
 	savefile->ReadInt( lastSavingThrowTime );
-
-	// Re-link idBoolFields to the scriptObject, values will be restored in scriptObject's restore
-	LinkScriptVariables();
 
 	inventory.Restore( savefile );
 	weapon.Restore( savefile );
@@ -2274,9 +2231,9 @@ void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_a
 				lastTeleFX = gameLocal.time;
 			}
 		}
-		AI_TELEPORT = true;
+		pfl.teleport = true;
 	} else {
-		AI_TELEPORT = false;
+		pfl.teleport = false;
 	}
 
 	// kill anything at the new position
@@ -2490,7 +2447,7 @@ bool idPlayer::UserInfoChanged( bool canModify ) {
 	UpdateSkinSetup( false );
 	
 	isChatting = userInfo->GetBool( "ui_chat", "0" );
-	if ( canModify && isChatting && AI_DEAD ) {
+	if ( canModify && isChatting && pfl.dead ) {
 		// if dead, always force chat icon off.
 		isChatting = false;
 		userInfo->SetBool( "ui_chat", false );
@@ -2694,26 +2651,10 @@ void idPlayer::EnterCinematic( void ) {
 		weapon.GetEntity()->EnterCinematic();
 	}
 
-	AI_FORWARD		= false;
-	AI_BACKWARD		= false;
-	AI_STRAFE_LEFT	= false;
-	AI_STRAFE_RIGHT	= false;
-	AI_RUN			= false;
-	AI_ATTACK_HELD	= false;
-	AI_WEAPON_FIRED	= false;
-	AI_JUMP			= false;
-	AI_CROUCH		= false;
-	AI_ONGROUND		= true;
-	AI_ONLADDER		= false;
-	AI_DEAD			= ( health <= 0 );
-	AI_RUN			= false;
-	AI_PAIN			= false;
-	AI_HARDLANDING	= false;
-	AI_SOFTLANDING	= false;
-	AI_RELOAD		= false;
-	AI_TELEPORT		= false;
-	AI_TURN_LEFT	= false;
-	AI_TURN_RIGHT	= false;
+	// Reset state flags   
+	memset(&pfl, 0, sizeof(pfl));
+	pfl.onGround = true;
+	pfl.dead = (health <= 0);
 }
 
 /*
@@ -2747,34 +2688,36 @@ void idPlayer::UpdateConditions( void ) {
 	velocity = physicsObj.GetLinearVelocity() - physicsObj.GetPushedLinearVelocity();
 	fallspeed = velocity * physicsObj.GetGravityNormal();
 
-	if ( influenceActive ) {
-		AI_FORWARD		= false;
-		AI_BACKWARD		= false;
-		AI_STRAFE_LEFT	= false;
-		AI_STRAFE_RIGHT	= false;
-	} else if ( gameLocal.time - lastDmgTime < 500 ) {
-		forwardspeed = velocity * viewAxis[ 0 ];
-		sidespeed = velocity * viewAxis[ 1 ];
-		AI_FORWARD		= AI_ONGROUND && ( forwardspeed > 20.01f );
-		AI_BACKWARD		= AI_ONGROUND && ( forwardspeed < -20.01f );
-		AI_STRAFE_LEFT	= AI_ONGROUND && ( sidespeed > 20.01f );
-		AI_STRAFE_RIGHT	= AI_ONGROUND && ( sidespeed < -20.01f );
-	} else if ( xyspeed > MIN_BOB_SPEED ) {
-		AI_FORWARD		= AI_ONGROUND && ( usercmd.forwardmove > 0 );
-		AI_BACKWARD		= AI_ONGROUND && ( usercmd.forwardmove < 0 );
-		AI_STRAFE_LEFT	= AI_ONGROUND && ( usercmd.rightmove < 0 );
-		AI_STRAFE_RIGHT	= AI_ONGROUND && ( usercmd.rightmove > 0 );
-	} else {
-		AI_FORWARD		= false;
-		AI_BACKWARD		= false;
-		AI_STRAFE_LEFT	= false;
-		AI_STRAFE_RIGHT	= false;
+	if (influenceActive) {
+		pfl.forward = false;
+		pfl.backward = false;
+		pfl.strafeLeft = false;
+		pfl.strafeRight = false;
 	}
-
-// jmarshall - always run.
-	AI_RUN			= true; // (usercmd.buttons & BUTTON_RUN) && ((!pm_stamina.GetFloat()) || (stamina > pm_staminathreshold.GetFloat()));
+	else if (gameLocal.time - lastDmgTime < 500) {
+		forwardspeed = velocity * viewAxis[0];
+		sidespeed = velocity * viewAxis[1];
+		pfl.forward = pfl.onGround && (forwardspeed > 20.01f);
+		pfl.backward = pfl.onGround && (forwardspeed < -20.01f);
+		pfl.strafeLeft = pfl.onGround && (sidespeed > 20.01f);
+		pfl.strafeRight = pfl.onGround && (sidespeed < -20.01f);
+	}
+	else if (xyspeed > MIN_BOB_SPEED) {
+		pfl.forward = pfl.onGround && (usercmd.forwardmove > 0);
+		pfl.backward = pfl.onGround && (usercmd.forwardmove < 0);
+		pfl.strafeLeft = pfl.onGround && (usercmd.rightmove < 0);
+		pfl.strafeRight = pfl.onGround && (usercmd.rightmove > 0);
+	}
+	else {
+		pfl.forward = false;
+		pfl.backward = false;
+		pfl.strafeLeft = false;
+		pfl.strafeRight = false;
+	}
+// jmarshall - always run
+	pfl.run = 1;
 // jmarshall end
-	AI_DEAD			= ( health <= 0 );
+	pfl.dead = (health <= 0);
 }
 
 /*
@@ -2789,7 +2732,7 @@ void idPlayer::WeaponFireFeedback( const idDict *weaponDef ) {
 	blink_time = 0;
 
 	// play the fire animation
-	AI_WEAPON_FIRED = true;
+	pfl.weaponFired = true;
 
 	// update view feedback
 	playerView.WeaponFireFeedback( weaponDef );
@@ -2801,9 +2744,9 @@ idPlayer::StopFiring
 ===============
 */
 void idPlayer::StopFiring( void ) {
-	AI_ATTACK_HELD	= false;
-	AI_WEAPON_FIRED = false;
-	AI_RELOAD		= false;
+	pfl.attackHeld = false;
+	pfl.weaponFired = false;
+	pfl.reload = false;
 	if ( weapon.GetEntity() ) {
 		weapon.GetEntity()->EndAttack();
 	}
@@ -2830,7 +2773,7 @@ void idPlayer::FireWeapon( void ) {
 	}
 
 	if (weapon.GetEntity()->AmmoInClip() || weapon.GetEntity()->AmmoAvailable()) {
-		AI_ATTACK_HELD = true;
+		pfl.attackHeld = true;
 		weapon.GetEntity()->BeginAttack();
 		if ((weapon_soulcube >= 0) && (currentWeapon == weapon_soulcube)) {
 			if (hud) {
@@ -2889,7 +2832,7 @@ idPlayer::Give
 bool idPlayer::Give( const char *statname, const char *value ) {
 	int amount;
 
-	if ( AI_DEAD ) {
+	if ( pfl.dead ) {
 		return false;
 	}
 
@@ -2947,7 +2890,7 @@ adds health to the player health pool
 */
 void idPlayer::GiveHealthPool( float amt ) {
 	
-	if ( AI_DEAD ) {
+	if ( pfl.dead ) {
 		return;
 	}
 
@@ -3197,7 +3140,7 @@ void idPlayer::UpdatePowerUps( void ) {
 		}
 	}
 
-	if ( healthPool && gameLocal.time > nextHealthPulse && !AI_DEAD && health > 0 ) {
+	if ( healthPool && gameLocal.time > nextHealthPulse && !pfl.dead && health > 0 ) {
 		assert( !gameLocal.isClient );	// healthPool never be set on client
 		int amt = ( healthPool > 5 ) ? 5 : healthPool;
 		health += amt;
@@ -3211,7 +3154,7 @@ void idPlayer::UpdatePowerUps( void ) {
 		healthPulse = true;
 	}
 #ifndef ID_DEMO_BUILD
-	if ( !gameLocal.inCinematic && influenceActive == 0 && g_skill.GetInteger() == 3 && gameLocal.time > nextHealthTake && !AI_DEAD && health > g_healthTakeLimit.GetInteger() ) {
+	if ( !gameLocal.inCinematic && influenceActive == 0 && g_skill.GetInteger() == 3 && gameLocal.time > nextHealthTake && !pfl.dead && health > g_healthTakeLimit.GetInteger() ) {
 		assert( !gameLocal.isClient );	// healthPool never be set on client
 		health -= g_healthTakeAmt.GetInteger();
 		if ( health < g_healthTakeLimit.GetInteger() ) {
@@ -3859,13 +3802,13 @@ void idPlayer::Weapon_Combat( void ) {
 
 	weapon.GetEntity()->RaiseWeapon();
 	if ( weapon.GetEntity()->IsReloading() ) {
-		if ( !AI_RELOAD ) {
-			AI_RELOAD = true;
+		if ( !pfl.reload) {
+			pfl.reload = true;
 			SetState( "ReloadWeapon" );
 			UpdateScript();
 		}
 	} else {
-		AI_RELOAD = false;
+		pfl.reload = false;
 	}
 
 	if ( idealWeapon == weapon_soulcube && soulCubeProjectile.GetEntity() != NULL ) {
@@ -3926,12 +3869,12 @@ void idPlayer::Weapon_Combat( void ) {
 	}
 
 	// check for attack
-	AI_WEAPON_FIRED = false;
+	pfl.weaponFired = false;
 	if ( !influenceActive ) {
 		if ( ( usercmd.buttons & BUTTON_ATTACK ) && !weaponGone ) {
 			FireWeapon();
 		} else if ( oldButtons & BUTTON_ATTACK ) {
-			AI_ATTACK_HELD = false;
+			pfl.attackHeld = false;
 			weapon.GetEntity()->EndAttack();
 		}
 	}
@@ -3991,7 +3934,7 @@ idPlayer::WeaponLoweringCallback
 ===============
 */
 void idPlayer::WeaponLoweringCallback( void ) {
-	SetState( "LowerWeapon" );
+//	SetState( "LowerWeapon" );
 	UpdateScript();
 }
 
@@ -4001,7 +3944,7 @@ idPlayer::WeaponRisingCallback
 ===============
 */
 void idPlayer::WeaponRisingCallback( void ) {
-	SetState( "RaiseWeapon" );
+//	SetState( "RaiseWeapon" );
 	UpdateScript();
 }
 
@@ -4643,8 +4586,8 @@ void idPlayer::CrashLand( const idVec3 &oldOrigin, const idVec3 &oldVelocity ) {
 	waterLevel_t waterLevel;
 	bool		noDamage;
 
-	AI_SOFTLANDING = false;
-	AI_HARDLANDING = false;
+	pfl.softLanding = false;
+	pfl.hardLanding = false;
 
 	// if the player is not on the ground
 	if ( !physicsObj.HasGroundContacts() ) {
@@ -5011,7 +4954,7 @@ void idPlayer::AdjustHeartRate( int target, float timeInSecs, float delay, bool 
 		return;
 	}
 
-	if ( AI_DEAD && !force ) {
+	if ( pfl.dead && !force ) {
 		return;
 	}
 
@@ -5839,15 +5782,16 @@ void idPlayer::AdjustBodyAngles( void ) {
 
 	oldViewYaw = viewAngles.yaw;
 
-	AI_TURN_LEFT = false;
-	AI_TURN_RIGHT = false;
-	if ( idealLegsYaw < -45.0f ) {
+	pfl.turnLeft = false;
+	pfl.turnRight = false;
+	if (idealLegsYaw < -45.0f) {
 		idealLegsYaw = 0;
-		AI_TURN_RIGHT = true;
+		pfl.turnRight = true;
 		blend = true;
-	} else if ( idealLegsYaw > 45.0f ) {
+	}
+	else if (idealLegsYaw > 45.0f) {
 		idealLegsYaw = 0;
-		AI_TURN_LEFT = true;
+		pfl.turnLeft = true;
 		blend = true;
 	}
 
@@ -5960,15 +5904,15 @@ void idPlayer::Move( void ) {
 	}
 
 	if ( noclip || gameLocal.inCinematic || ( influenceActive == INFLUENCE_LEVEL2 ) ) {
-		AI_CROUCH	= false;
-		AI_ONGROUND	= ( influenceActive == INFLUENCE_LEVEL2 );
-		AI_ONLADDER	= false;
-		AI_JUMP		= false;
+		pfl.crouch = false;
+		pfl.onGround = (influenceActive == INFLUENCE_LEVEL2);
+		pfl.onLadder = false;
+		pfl.jump = false;
 	} else {
-		AI_CROUCH	= physicsObj.IsCrouching();
-		AI_ONGROUND	= physicsObj.HasGroundContacts();
-		AI_ONLADDER	= physicsObj.OnLadder();
-		AI_JUMP		= physicsObj.HasJumped();
+		pfl.crouch = physicsObj.IsCrouching();
+		pfl.onGround = physicsObj.HasGroundContacts();
+		pfl.onLadder = physicsObj.OnLadder();
+		pfl.jump = physicsObj.HasJumped();
 
 		// check if we're standing on top of a monster and give a push if we are
 		idEntity *groundEnt = physicsObj.GetGroundEntity();
@@ -5986,7 +5930,7 @@ void idPlayer::Move( void ) {
 		//}
 	}
 
-	if ( AI_JUMP ) {
+	if ( pfl.jump ) {
 		// bounce the view weapon
  		loggedAccel_t	*acc = &loggedAccel[currentLoggedAccel&(NUM_LOGGED_ACCELS-1)];
 		currentLoggedAccel++;
@@ -5995,7 +5939,7 @@ void idPlayer::Move( void ) {
 		acc->dir[0] = acc->dir[1] = 0;
 	}
 
-	if ( AI_ONLADDER ) {
+	if ( pfl.onLadder ) {
 		int old_rung = oldOrigin.z / LADDER_RUNG_DISTANCE;
 		int new_rung = physicsObj.GetOrigin().z / LADDER_RUNG_DISTANCE;
 
@@ -6179,7 +6123,7 @@ void idPlayer::Think( void ) {
 
 
 	// clear the ik before we do anything else so the skeleton doesn't get updated twice
-	walkIK.ClearJointMods();
+//	walkIK.ClearJointMods();
 	
 	// if this is the very first frame of the map, set the delta view angles
 	// based on the usercmd angles
@@ -6190,7 +6134,7 @@ void idPlayer::Think( void ) {
 	}
 
 	if ( objectiveSystemOpen || gameLocal.inCinematic || influenceActive ) {
-		if ( objectiveSystemOpen && AI_PAIN ) {
+		if ( objectiveSystemOpen && pfl.pain ) {
 			TogglePDA();
 		}
 		usercmd.forwardmove = 0;
@@ -6287,7 +6231,7 @@ void idPlayer::Think( void ) {
 		}
 
 		// clear out our pain flag so we can tell if we recieve any damage between now and the next time we think
-		AI_PAIN = false;
+		pfl.pain = false;
 	}
 
 	// calculate the exact bobbed view position, which is used to
@@ -6456,8 +6400,8 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 		health = -999;
 	}
 
-	if ( AI_DEAD ) {
-		AI_PAIN = true;
+	if ( pfl.dead ) {
+		pfl.pain = true;
 		return;
 	}
 
@@ -6470,9 +6414,9 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 	//	playerView.Fade( colorBlack, 12000 );
 	//}
 
-	AI_DEAD = true;
-	SetAnimState( ANIMCHANNEL_LEGS, "Legs_Death", 4 );
-	SetAnimState( ANIMCHANNEL_TORSO, "Torso_Death", 4 );
+	pfl.dead = true;
+	SetAnimState( ANIMCHANNEL_LEGS, "Legs_Death", 4, 0);
+	SetAnimState( ANIMCHANNEL_TORSO, "Torso_Death", 4, 0);
 	SetWaitState( "" );
 
 	animator.ClearAllJoints();
@@ -6812,7 +6756,7 @@ void idPlayer::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &di
 			blink_time = 0;
 
 			// let the anim script know we took damage
-			AI_PAIN = Pain( inflictor, attacker, damage, dir, location );
+			pfl.pain = Pain( inflictor, attacker, damage, dir, location );
 			if ( !g_testDeath.GetBool() ) {
 				lastDmgTime = gameLocal.time;
 			}
@@ -6851,7 +6795,7 @@ void idPlayer::Teleport( const idVec3 &origin, const idAngles &angles, idEntity 
 	}
 
 	// clear the ik heights so model doesn't appear in the wrong place
-	walkIK.EnableAll();
+//	walkIK.EnableAll();
 
 	GetPhysics()->SetLinearVelocity( vec3_origin );
 
@@ -7749,7 +7693,7 @@ void idPlayer::Event_ExitTeleporter( void ) {
 	playerView.Flash( colorWhite, 120 );
 
 	// clear the ik heights so model doesn't appear in the wrong place
-	walkIK.EnableAll();
+//	walkIK.EnableAll();
 
 	UpdateVisuals();
 
@@ -7794,7 +7738,7 @@ void idPlayer::ClientPredictionThink( void ) {
 	}
 
 	// clear the ik before we do anything else so the skeleton doesn't get updated twice
-	walkIK.ClearJointMods();
+//	walkIK.ClearJointMods();
 
 	if ( gameLocal.isNewFrame ) {
 		if ( ( usercmd.flags & UCF_IMPULSE_SEQUENCE ) != ( oldFlags & UCF_IMPULSE_SEQUENCE ) ) {
@@ -7841,7 +7785,7 @@ void idPlayer::ClientPredictionThink( void ) {
 	}
 
 	// clear out our pain flag so we can tell if we recieve any damage between now and the next time we think
-	AI_PAIN = false;
+	pfl.pain = false;
 
 	// calculate the exact bobbed view position, which is used to
 	// position the view weapon, among other things
@@ -8069,10 +8013,10 @@ void idPlayer::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 			UpdateDeathSkin( true );
 		}
 		// die
-		AI_DEAD = true;
+		pfl.dead = true;
 		ClearPowerUps();
-		SetAnimState( ANIMCHANNEL_LEGS, "Legs_Death", 4 );
-		SetAnimState( ANIMCHANNEL_TORSO, "Torso_Death", 4 );
+		SetAnimState( ANIMCHANNEL_LEGS, "Legs_Death", 4, 0);
+		SetAnimState( ANIMCHANNEL_TORSO, "Torso_Death", 4, 0);
 		SetWaitState( "" );
 		animator.ClearAllJoints();
 		if ( entityNumber == gameLocal.localClientNum ) {
@@ -8101,7 +8045,7 @@ void idPlayer::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 			const idDeclEntityDef *def = static_cast<const idDeclEntityDef *>( declManager->DeclByIndex( DECL_ENTITYDEF, lastDamageDef, false ) );
 			if ( def ) {
 				playerView.DamageImpulse( lastDamageDir * viewAxis.Transpose(), &def->dict );
-				AI_PAIN = Pain( NULL, NULL, oldHealth - health, lastDamageDir, lastDamageLocation );
+				pfl.pain = Pain( NULL, NULL, oldHealth - health, lastDamageDir, lastDamageLocation );
 				lastDmgTime = gameLocal.time;
 			} else {
 				common->Warning( "NET: no damage def for damage feedback '%d'\n", lastDamageDef );
@@ -8515,7 +8459,7 @@ idPlayer::IsShooting
 ==============
 */
 bool idPlayer::IsShooting(void) {
-	return AI_ATTACK_HELD;
+	return pfl.attackHeld;
 }
 
 /*

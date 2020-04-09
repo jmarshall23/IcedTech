@@ -80,6 +80,7 @@ enum rvmPlayerJumpState_t {
 
 class idPhysics_Player : public idPhysics_Actor {
 
+	CLASS_STATES_PROTOTYPE(idPhysics_Player);
 public:
 	CLASS_PROTOTYPE( idPhysics_Player );
 

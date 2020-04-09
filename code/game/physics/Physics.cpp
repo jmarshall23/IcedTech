@@ -34,6 +34,9 @@ If you have questions concerning this license or the applicable additional terms
 ABSTRACT_DECLARATION( idClass, idPhysics )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idPhysics)
+END_CLASS_STATES
+
 
 /*
 ================

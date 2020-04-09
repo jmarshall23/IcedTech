@@ -34,6 +34,9 @@ If you have questions concerning this license or the applicable additional terms
 CLASS_DECLARATION( idPhysics, idPhysics_StaticMulti )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idPhysics_StaticMulti)
+END_CLASS_STATES
+
 staticPState_t defaultState;
 
 

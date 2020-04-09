@@ -37,6 +37,10 @@ CLASS_DECLARATION( idEntity, idBrittleFracture )
 	EVENT( EV_Touch, idBrittleFracture::Event_Touch )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idBrittleFracture)
+END_CLASS_STATES
+
+
 const int SHARD_ALIVE_TIME	= 5000;
 const int SHARD_FADE_START	= 2000;
 

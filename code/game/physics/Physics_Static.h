@@ -46,6 +46,7 @@ typedef struct staticPState_s {
 
 class idPhysics_Static : public idPhysics {
 
+	CLASS_STATES_PROTOTYPE(idPhysics_Static);
 public:
 	CLASS_PROTOTYPE( idPhysics_Static );
 

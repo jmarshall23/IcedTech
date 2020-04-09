@@ -43,6 +43,9 @@ If you have questions concerning this license or the applicable additional terms
 CLASS_DECLARATION( idEntity, idCursor3D )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idCursor3D)
+END_CLASS_STATES
+
 /*
 ===============
 idCursor3D::idCursor3D

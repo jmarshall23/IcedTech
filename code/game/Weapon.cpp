@@ -40,6 +40,9 @@ If you have questions concerning this license or the applicable additional terms
 CLASS_DECLARATION(idClass, rvmWeaponObject)
 END_CLASS
 
+CLASS_STATES_DECLARATION(rvmWeaponObject)
+END_CLASS_STATES
+
 /*
 ==================
 rvmWeaponObject::Init

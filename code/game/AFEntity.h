@@ -52,6 +52,7 @@ public:
 	virtual void			Think( void );
 	virtual void			Present( void );
 
+	CLASS_STATES_PROTOTYPE(idMultiModelAF);
 protected:
 	idPhysics_AF			physicsObj;
 
@@ -79,6 +80,7 @@ public:
 
 	void					Spawn( void );
 
+	CLASS_STATES_PROTOTYPE(idChain);
 protected:
 	void					BuildChain( const idStr &name, const idVec3 &origin, float linkLength, float linkWidth, float density, int numLinks, bool bindToWorld = true );
 };
@@ -127,6 +129,7 @@ public:
 	virtual void			LinkCombat( void );
 	virtual void			UnlinkCombat( void );
 
+	CLASS_STATES_PROTOTYPE(idAFAttachment);
 protected:
 	idEntity *				body;
 	idClipModel *			combatModel;	// render model for hit detection of head
@@ -188,6 +191,7 @@ public:
 
 	static void				DropAFs( idEntity *ent, const char *type, idList<idEntity *> *list );
 
+	CLASS_STATES_PROTOTYPE(idAFEntity_Base);
 protected:
 	idAF					af;				// articulated figure
 	idClipModel *			combatModel;	// render model for hit detection
@@ -224,6 +228,7 @@ public:
 	virtual	void			Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &dir, const char *damageDefName, const float damageScale, const int location );
 	virtual void			SpawnGibs( const idVec3 &dir, const char *damageDefName );
 
+	CLASS_STATES_PROTOTYPE(idAFEntity_Gibbable);
 protected:
 	idRenderModel *			skeletonModel;
 	int						skeletonModelDefHandle;
@@ -324,6 +329,7 @@ public:
 	void					Spawn( void );
 	void					Use( idPlayer *player );
 
+	CLASS_STATES_PROTOTYPE(idAFEntity_Vehicle);
 protected:
 	idPlayer *				player;
 	jointHandle_t			eyesJoint;
@@ -354,6 +360,7 @@ public:
 	void					Spawn( void );
 	virtual void			Think( void );
 
+	CLASS_STATES_PROTOTYPE(idAFEntity_VehicleSimple);
 protected:
 	idClipModel *			wheelModel;
 	idAFConstraint_Suspension *	suspension[4];
@@ -379,6 +386,8 @@ public:
 	void					Spawn( void );
 	virtual void			Think( void );
 
+
+	CLASS_STATES_PROTOTYPE(idAFEntity_VehicleFourWheels);
 protected:
 	idAFBody *				wheels[4];
 	idAFConstraint_Hinge *	steering[2];
@@ -404,6 +413,7 @@ public:
 	void					Spawn( void );
 	virtual void			Think( void );
 
+	CLASS_STATES_PROTOTYPE(idAFEntity_VehicleSixWheels);
 private:
 	idAFBody *				wheels[6];
 	idAFConstraint_Hinge *	steering[4];

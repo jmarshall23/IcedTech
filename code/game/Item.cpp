@@ -55,6 +55,9 @@ CLASS_DECLARATION( idEntity, idItem )
 	EVENT( EV_RespawnFx,		idItem::Event_RespawnFx )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idItem)
+END_CLASS_STATES
+
 
 /*
 ================
@@ -619,6 +622,9 @@ idItemPowerup
 CLASS_DECLARATION( idItem, idItemPowerup )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idItemPowerup)
+END_CLASS_STATES
+
 /*
 ================
 idItemPowerup::idItemPowerup
@@ -687,6 +693,9 @@ CLASS_DECLARATION( idItem, idObjective )
 	EVENT( EV_GetPlayerPos,		idObjective::Event_GetPlayerPos )
 	EVENT( EV_CamShot,			idObjective::Event_CamShot )
 END_CLASS
+
+CLASS_STATES_DECLARATION(idObjective)
+END_CLASS_STATES
 
 /*
 ================
@@ -840,6 +849,9 @@ void idObjective::Event_HideObjective(idEntity *e) {
 
 CLASS_DECLARATION( idItem, idVideoCDItem )
 END_CLASS
+
+CLASS_STATES_DECLARATION(idVideoCDItem)
+END_CLASS_STATES
 
 /*
 ================

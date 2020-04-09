@@ -60,7 +60,7 @@ typedef struct parametricPState_s {
 } parametricPState_t;
 
 class idPhysics_Parametric : public idPhysics_Base {
-
+	CLASS_STATES_PROTOTYPE(idPhysics_Parametric);
 public:
 	CLASS_PROTOTYPE( idPhysics_Parametric );
 

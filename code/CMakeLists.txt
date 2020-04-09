@@ -213,6 +213,7 @@ set(src_game
 	./game/MultiplayerGame.h
 	./game/physics
 	./game/Player.cpp
+	./game/Player_states.cpp
 	./game/Player.h
 	./game/PlayerIcon.cpp
 	./game/PlayerIcon.h
@@ -257,6 +258,8 @@ set(src_game
 	./game/gamesys/SysCmds.h
 	./game/gamesys/SysCvar.cpp
 	./game/gamesys/SysCvar.h
+	./game/gamesys/State.cpp
+	./game/gamesys/State.h
 	./game/physics/Clip.cpp
 	./game/physics/Clip.h
 	./game/physics/Force.cpp

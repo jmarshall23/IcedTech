@@ -44,6 +44,9 @@ If you have questions concerning this license or the applicable additional terms
 ABSTRACT_DECLARATION( idEntity, idCamera )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idCamera)
+END_CLASS_STATES
+
 /*
 =====================
 idCamera::Spawn
@@ -76,6 +79,8 @@ CLASS_DECLARATION( idCamera, idCameraView )
 	EVENT( EV_Camera_SetAttachments, idCameraView::Event_SetAttachments )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idCameraView)
+END_CLASS_STATES
 
 /*
 ===============
@@ -239,6 +244,9 @@ CLASS_DECLARATION( idCamera, idCameraAnim )
 	EVENT( EV_Camera_Start,			idCameraAnim::Event_Start )
 	EVENT( EV_Activate,				idCameraAnim::Event_Activate )
 END_CLASS
+
+CLASS_STATES_DECLARATION(idCameraAnim)
+END_CLASS_STATES
 
 
 /*

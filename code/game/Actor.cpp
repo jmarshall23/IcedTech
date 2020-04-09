@@ -46,7 +46,6 @@ idAnimState::idAnimState
 idAnimState::idAnimState() {
 	self			= NULL;
 	animator		= NULL;
-	thread			= NULL;
 	idleAnim		= true;
 	disabled		= true;
 	channel			= ANIMCHANNEL_ALL;
@@ -60,7 +59,6 @@ idAnimState::~idAnimState
 =====================
 */
 idAnimState::~idAnimState() {
-	delete thread;
 }
 
 /*
@@ -75,7 +73,7 @@ void idAnimState::Save( idSaveGame *savefile ) const {
 	// Save the entity owner of the animator
 	savefile->WriteObject( animator->GetEntity() );
 
-	savefile->WriteObject( thread );
+	stateThread.Save(savefile);
 
 	savefile->WriteString( state );
 
@@ -100,7 +98,7 @@ void idAnimState::Restore( idRestoreGame *savefile ) {
 		animator = animowner->GetAnimator();
 	}
 
-	savefile->ReadObject( reinterpret_cast<idClass *&>( thread ) );
+	stateThread.Restore(savefile, self);
 
 	savefile->ReadString( state );
 
@@ -123,12 +121,8 @@ void idAnimState::Init( idActor *owner, idAnimator *_animator, int animchannel )
 	animator = _animator;
 	channel = animchannel;
 
-	if ( !thread ) {
-		thread = new idThread();
-		thread->ManualDelete();
-	}
-	thread->EndThread();
-	thread->ManualControl();
+	stateThread.SetName(va("%s_anim_%d", owner->GetName(), animchannel));
+	stateThread.SetOwner(owner);
 }
 
 /*
@@ -137,8 +131,19 @@ idAnimState::Shutdown
 =====================
 */
 void idAnimState::Shutdown( void ) {
-	delete thread;
-	thread = NULL;
+	stateThread.Clear(true);
+}
+
+/*
+=====================
+idAnimState::PostState
+=====================
+*/
+void idAnimState::PostState(const char* statename, int blendFrames, int delay, int flags) {
+	if (SRESULT_OK != stateThread.PostState(statename, blendFrames, delay, flags)) {
+		gameLocal.Error("Could not find state function '%s' for entity '%s'", statename, self->GetName());
+	}
+	disabled = false;
 }
 
 /*
@@ -146,29 +151,15 @@ void idAnimState::Shutdown( void ) {
 idAnimState::SetState
 =====================
 */
-void idAnimState::SetState( const char *statename, int blendFrames ) {
-	const function_t *func;
-
-	func = self->scriptObject.GetFunction( statename );
-	if ( !func ) {
-		assert( 0 );
-		gameLocal.Error( "Can't find function '%s' in object '%s'", statename, self->scriptObject.GetTypeName() );
+void idAnimState::SetState(const char* statename, int blendFrames, int flags) {
+	if (SRESULT_OK != stateThread.SetState(statename, blendFrames, 0, flags)) {
+		gameLocal.Error("Could not find state function '%s' for entity '%s'", statename, self->GetName());
 	}
-
-	state = statename;
-	disabled = false;
-	animBlendFrames = blendFrames;
-	lastAnimBlendFrames = blendFrames;
-	thread->CallFunction( self, func, true );
 
 	animBlendFrames = blendFrames;
 	lastAnimBlendFrames = blendFrames;
 	disabled = false;
 	idleAnim = false;
-
-	if ( ai_debugScript.GetInteger() == self->entityNumber ) {
-		gameLocal.Printf( "%d: %s: Animstate: %s\n", gameLocal.time, self->name.c_str(), state.c_str() );
-	}
 }
 
 /*
@@ -278,7 +269,7 @@ void idAnimState::Enable( int blendFrames ) {
 		animBlendFrames = blendFrames;
 		lastAnimBlendFrames = blendFrames;
 		if ( state.Length() ) {
-			SetState( state.c_str(), blendFrames );
+			SetState( state.c_str(), blendFrames, 0 );
 		}
 	}
 }
@@ -303,13 +294,7 @@ bool idAnimState::UpdateState( void ) {
 		return false;
 	}
 
-	if ( ai_debugScript.GetInteger() == self->entityNumber ) {
-		thread->EnableDebugInfo();
-	} else {
-		thread->DisableDebugInfo();
-	}
-
-	thread->Execute();
+	stateThread.Execute();
 
 	return true;
 }
@@ -360,6 +345,9 @@ const idEventDef AI_SetNextState( "setNextState", "s" );
 const idEventDef AI_SetState( "setState", "s" );
 const idEventDef AI_GetState( "getState", NULL, 's' );
 const idEventDef AI_GetHead( "getHead", NULL, 'e' );
+
+CLASS_STATES_DECLARATION(idAFEntity_Gibbable)
+END_CLASS_STATES
 
 CLASS_DECLARATION( idAFEntity_Gibbable, idActor )
 	EVENT( AI_EnableEyeFocus,			idActor::Event_EnableEyeFocus )
@@ -523,7 +511,7 @@ void idActor::Spawn( void ) {
 
 	LoadAF();
 
-	walkIK.Init( this, IK_ANIM, modelOffset );
+//	walkIK.Init( this, IK_ANIM, modelOffset );
 
 	// the animation used to be set to the IK_ANIM at this point, but that was fixed, resulting in
 	// attachments not binding correctly, so we're stuck setting the IK_ANIM before attaching things.
@@ -807,7 +795,7 @@ void idActor::Save( idSaveGame *savefile ) const {
 	savefile->WriteJoint( rightEyeJoint );
 	savefile->WriteJoint( soundJoint );
 
-	walkIK.Save( savefile );
+//	walkIK.Save( savefile );
 
 	savefile->WriteString( animPrefix );
 	savefile->WriteString( painAnim );
@@ -931,7 +919,7 @@ void idActor::Restore( idRestoreGame *savefile ) {
 	savefile->ReadJoint( rightEyeJoint );
 	savefile->ReadJoint( soundJoint );
 
-	walkIK.Restore( savefile );
+//	walkIK.Restore( savefile );
 
 	savefile->ReadString( animPrefix );
 	savefile->ReadString( painAnim );
@@ -1678,10 +1666,10 @@ bool idActor::UpdateAnimationControllers( void ) {
 		animator.ClearAFPose();
 	}
 
-	if ( walkIK.IsInitialized() ) {
-		walkIK.Evaluate();
-		return true;
-	}
+//	if ( walkIK.IsInitialized() ) {
+//		walkIK.Evaluate();
+//		return true;
+//	}
 
 	return false;
 }
@@ -1862,30 +1850,22 @@ bool idActor::OnLadder( void ) const {
 idActor::SetAnimState
 =====================
 */
-void idActor::SetAnimState( int channel, const char *statename, int blendFrames ) {
-	const function_t *func;
-
-	func = scriptObject.GetFunction( statename );
-	if ( !func ) {
-		assert( 0 );
-		gameLocal.Error( "Can't find function '%s' in object '%s'", statename, scriptObject.GetTypeName() );
-	}
-
+void idActor::SetAnimState( int channel, const char *statename, int blendFrames, int flags) {
 	switch( channel ) {
 	case ANIMCHANNEL_HEAD :
-		headAnim.SetState( statename, blendFrames );
+		headAnim.SetState( statename, blendFrames, flags );
 		allowEyeFocus = true;
 		break;
 		
 	case ANIMCHANNEL_TORSO :
-		torsoAnim.SetState( statename, blendFrames );
+		torsoAnim.SetState( statename, blendFrames, flags);
 		legsAnim.Enable( blendFrames );
 		allowPain = true;
 		allowEyeFocus = true;
 		break;
 
 	case ANIMCHANNEL_LEGS :
-		legsAnim.SetState( statename, blendFrames );
+		legsAnim.SetState( statename, blendFrames, flags);
 		torsoAnim.Enable( blendFrames );
 		allowPain = true;
 		allowEyeFocus = true;
@@ -2433,7 +2413,7 @@ idActor::Event_EnableWalkIK
 =====================
 */
 void idActor::Event_EnableWalkIK( void ) {
-	walkIK.EnableAll();
+//	walkIK.EnableAll();
 }
 
 /*
@@ -2442,7 +2422,7 @@ idActor::Event_DisableWalkIK
 =====================
 */
 void idActor::Event_DisableWalkIK( void ) {
-	walkIK.DisableAll();
+//	walkIK.DisableAll();
 }
 
 /*
@@ -2451,7 +2431,7 @@ idActor::Event_EnableLegIK
 =====================
 */
 void idActor::Event_EnableLegIK( int num ) {
-	walkIK.EnableLeg( num );
+//	walkIK.EnableLeg( num );
 }
 
 /*
@@ -2460,7 +2440,7 @@ idActor::Event_DisableLegIK
 =====================
 */
 void idActor::Event_DisableLegIK( int num ) {
-	walkIK.DisableLeg( num );
+//	walkIK.DisableLeg( num );
 }
 
 /*
@@ -2966,7 +2946,7 @@ idActor::Event_AnimState
 ===============
 */
 void idActor::Event_AnimState( int channel, const char *statename, int blendFrames ) {
-	SetAnimState( channel, statename, blendFrames );
+	SetAnimState( channel, statename, blendFrames, 0 );
 }
 
 /*
@@ -2975,10 +2955,7 @@ idActor::Event_GetAnimState
 ===============
 */
 void idActor::Event_GetAnimState( int channel ) {
-	const char *state;
-
-	state = GetAnimState( channel );
-	idThread::ReturnString( state );
+	
 }
 
 /*
@@ -3246,4 +3223,108 @@ idActor::Event_GetHead
 */
 void idActor::Event_GetHead( void ) {
 	idThread::ReturnEntity( head.GetEntity() );
+}
+
+
+/*
+=====================
+idActor::PostAnimState
+=====================
+*/
+void idActor::PostAnimState(int channel, const char* statename, int blendFrames, int delay, int flags) {
+	GetAnimState(channel).PostState(statename, blendFrames, delay, flags);
+}
+
+/*
+==================
+idActor::GetAnimState
+==================
+*/
+idAnimState& idActor::GetAnimState(int channel) {
+	switch (channel) {
+	case ANIMCHANNEL_LEGS:		return legsAnim;
+	case ANIMCHANNEL_TORSO:		return torsoAnim;
+	case ANIMCHANNEL_HEAD:		return headAnim;
+	default:
+		gameLocal.Error("idActor::GetAnimState: Unknown anim channel");
+		return torsoAnim;
+	}
+}
+
+/*
+================
+idActor::PlayCycle
+================
+*/
+bool idActor::PlayCycle(int channel, const char* animname, int blendFrames) {
+	animFlags_t	flags;
+	int			anim;
+
+	if (blendFrames != -1) {
+		Event_SetBlendFrames(channel, blendFrames);
+	}
+
+	anim = GetAnim(channel, animname);
+	if (!anim) {
+		if ((channel == ANIMCHANNEL_HEAD) && head.GetEntity()) {
+			gameLocal.Warning("missing '%s' animation on '%s' (%s)", animname, name.c_str(), spawnArgs.GetString("def_head", ""));
+		}
+		else {
+			gameLocal.Warning("missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName());
+		}
+		return false;
+	}
+
+	switch (channel) {
+	case ANIMCHANNEL_HEAD:
+		headAnim.idleAnim = false;
+		headAnim.CycleAnim(anim);
+		flags = headAnim.GetAnimFlags();
+		if (!flags.prevent_idle_override) {
+			if (torsoAnim.IsIdle() && legsAnim.IsIdle()) {
+				torsoAnim.animBlendFrames = headAnim.lastAnimBlendFrames;
+				SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_HEAD, headAnim.lastAnimBlendFrames);
+				legsAnim.animBlendFrames = headAnim.lastAnimBlendFrames;
+				SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_HEAD, headAnim.lastAnimBlendFrames);
+			}
+		}
+		break;
+
+	case ANIMCHANNEL_TORSO:
+		torsoAnim.idleAnim = false;
+		torsoAnim.CycleAnim(anim);
+		flags = torsoAnim.GetAnimFlags();
+		if (!flags.prevent_idle_override) {
+			if (headAnim.IsIdle()) {
+				headAnim.animBlendFrames = torsoAnim.lastAnimBlendFrames;
+				SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_TORSO, torsoAnim.lastAnimBlendFrames);
+			}
+			if (legsAnim.IsIdle()) {
+				legsAnim.animBlendFrames = torsoAnim.lastAnimBlendFrames;
+				SyncAnimChannels(ANIMCHANNEL_LEGS, ANIMCHANNEL_TORSO, torsoAnim.lastAnimBlendFrames);
+			}
+		}
+		break;
+
+	case ANIMCHANNEL_LEGS:
+		legsAnim.idleAnim = false;
+		legsAnim.CycleAnim(anim);
+		flags = legsAnim.GetAnimFlags();
+		if (!flags.prevent_idle_override) {
+			if (torsoAnim.IsIdle()) {
+				torsoAnim.animBlendFrames = legsAnim.lastAnimBlendFrames;
+				SyncAnimChannels(ANIMCHANNEL_TORSO, ANIMCHANNEL_LEGS, legsAnim.lastAnimBlendFrames);
+				if (headAnim.IsIdle()) {
+					headAnim.animBlendFrames = legsAnim.lastAnimBlendFrames;
+					SyncAnimChannels(ANIMCHANNEL_HEAD, ANIMCHANNEL_LEGS, legsAnim.lastAnimBlendFrames);
+				}
+			}
+		}
+		break;
+
+	default:
+		gameLocal.Error("Unknown anim group");
+	}
+
+	return true;
 }

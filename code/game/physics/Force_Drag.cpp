@@ -34,6 +34,9 @@ If you have questions concerning this license or the applicable additional terms
 CLASS_DECLARATION( idForce, idForce_Drag )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idForce_Drag)
+END_CLASS_STATES
+
 /*
 ================
 idForce_Drag::idForce_Drag

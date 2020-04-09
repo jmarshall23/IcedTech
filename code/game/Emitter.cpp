@@ -17,6 +17,10 @@ we don't want to sync all the FX bits.
 CLASS_DECLARATION(idEntity, rvmEmitter)
 END_CLASS
 
+CLASS_STATES_DECLARATION(rvmEmitter)
+END_CLASS_STATES
+
+
 /*
 =====================
 rvmEmitter::Spawn

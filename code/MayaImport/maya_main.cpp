@@ -1901,7 +1901,9 @@ void idMayaExport::GetTextureForMesh( idExportMesh *mesh, MFnDagNode &dagNode ) 
 			// This can happen with store bought assets and reassigning materials means rerigging,
 			// so this solves the problem for me.
 			idStr modelPath = options.material_prefix;
-			mesh->shader = va("%s/%s", modelPath.c_str(), mesh->name.c_str());
+			const char *shader = va("%s/%s", modelPath.c_str(), mesh->name.c_str());
+			common->Printf("%s\n", shader);
+			mesh->shader = shader;
 // jmarshall end
 			continue;
 		}
@@ -1923,7 +1925,9 @@ void idMayaExport::GetTextureForMesh( idExportMesh *mesh, MFnDagNode &dagNode ) 
 		// so this solves the problem for me.
 		if (mesh->shader.Length() <= 0) {
 			idStr modelPath = options.material_prefix;
-			mesh->shader = va("%s/%s", modelPath.c_str(), mesh->name.c_str());
+			const char* shader = va("%s/%s", modelPath.c_str(), mesh->name.c_str());
+			common->Printf("%s\n", shader);
+			mesh->shader = shader;
 		}
 // jmarshall end
 

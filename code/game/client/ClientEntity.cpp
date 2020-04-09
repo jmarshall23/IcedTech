@@ -9,6 +9,9 @@
 ABSTRACT_DECLARATION( idClass, rvClientEntity )
 END_CLASS
 
+CLASS_STATES_DECLARATION(rvClientEntity)
+END_CLASS_STATES
+
 /*
 ================
 rvClientEntity::rvClientEntity
@@ -573,6 +576,10 @@ rvClientPhysics
 
 CLASS_DECLARATION( idEntity, rvClientPhysics )
 END_CLASS
+
+CLASS_STATES_DECLARATION(rvClientPhysics)
+END_CLASS_STATES
+
 
 /*
 =====================

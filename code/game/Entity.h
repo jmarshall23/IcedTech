@@ -151,6 +151,8 @@ public:
 		bool				networkSync			:1; // if true the entity is synchronized over the network
 	} fl;
 
+
+	CLASS_STATES_PROTOTYPE(idEntity);
 public:
 	ABSTRACT_PROTOTYPE( idEntity );
 
@@ -493,6 +495,7 @@ typedef struct damageEffect_s {
 } damageEffect_t;
 
 class idAnimatedEntity : public idEntity {
+	CLASS_STATES_PROTOTYPE(idAnimatedEntity);
 public:
 	CLASS_PROTOTYPE( idAnimatedEntity );
 

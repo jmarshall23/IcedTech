@@ -58,6 +58,7 @@ public: // common force interface
 						// removes any pointers to the physics object
 	virtual void		RemovePhysics( const idPhysics *phys );
 
+	CLASS_STATES_PROTOTYPE(idForce);
 private:
 
 	static idList<idForce*> forceList;

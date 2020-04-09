@@ -1,0 +1,10 @@
+object player {
+  void init();
+  void RaiseWeapon();
+};
+
+void player::init() {
+}
+
+void player::RaiseWeapon() {
+}

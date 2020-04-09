@@ -62,6 +62,7 @@ static const int LIGHTID_VIEW_MUZZLE_FLASH = 100;
 class idMoveableItem;
 
 class rvmWeaponObject : public idClass {
+	CLASS_STATES_PROTOTYPE(rvmWeaponObject);
 public:
 	CLASS_PROTOTYPE(rvmWeaponObject);
 

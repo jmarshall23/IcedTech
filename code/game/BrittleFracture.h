@@ -83,7 +83,7 @@ public:
 
 	virtual void				ClientPredictionThink( void );
 	virtual bool				ClientReceiveEvent( int event, int time, const idBitMsg &msg );
-
+	CLASS_STATES_PROTOTYPE(idBrittleFracture);
 private:
 	// setttings
 	const idMaterial *			material;

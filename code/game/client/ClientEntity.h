@@ -54,6 +54,7 @@ public:
 	void				InitDefaultPhysics	( const idVec3 &origin, const idMat3 &axis );
 
 	void				RunThreadedPhysics(int threadClient);
+	CLASS_STATES_PROTOTYPE(rvClientEntity);
 protected:
 
 	void				RunPhysics			( void );
@@ -217,6 +218,8 @@ public:
 	virtual void		ClientUnstale( void ) { assert( false ); }
 
 	int					currentEntityNumber;
+
+	CLASS_STATES_PROTOTYPE(rvClientPhysics);
 private:
 	idEntity*			pushedBindMaster;
 	jointHandle_t		pushedBindJoint;

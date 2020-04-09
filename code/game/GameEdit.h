@@ -51,6 +51,8 @@ public:
 
 	idForce_Drag			drag;
 	idVec3					draggedPosition;
+
+	CLASS_STATES_PROTOTYPE(idCursor3D);
 };
 
 

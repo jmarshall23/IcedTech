@@ -11,6 +11,7 @@ public:
 	virtual void Spawn(void);
 
 	void Capture(void);
+	CLASS_STATES_PROTOTYPE(rvmReflectionProbe);
 private:
 	int captureSize;
 };

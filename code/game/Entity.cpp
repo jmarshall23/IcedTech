@@ -106,6 +106,9 @@ const idEventDef EV_HasFunction( "hasFunction", "s", 'd' );
 const idEventDef EV_CallFunction( "callFunction", "s" );
 const idEventDef EV_SetNeverDormant( "setNeverDormant", "d" );
 
+CLASS_STATES_DECLARATION(idEntity)
+END_CLASS_STATES
+
 ABSTRACT_DECLARATION( idClass, idEntity )
 	EVENT( EV_GetName,				idEntity::Event_GetName )
 	EVENT( EV_SetName,				idEntity::Event_SetName )
@@ -5008,6 +5011,10 @@ CLASS_DECLARATION( idEntity, idAnimatedEntity )
 	EVENT( EV_GetJointPos,			idAnimatedEntity::Event_GetJointPos )
 	EVENT( EV_GetJointAngle,		idAnimatedEntity::Event_GetJointAngle )
 END_CLASS
+
+CLASS_STATES_DECLARATION(idAnimatedEntity)
+END_CLASS_STATES
+
 
 /*
 ================

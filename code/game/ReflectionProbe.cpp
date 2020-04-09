@@ -9,6 +9,9 @@ idCVar g_defaultCaptureSize("g_defaultCaptureSize", "256", CVAR_INTEGER, "defaul
 CLASS_DECLARATION(idEntity, rvmReflectionProbe)
 END_CLASS
 
+CLASS_STATES_DECLARATION(rvmReflectionProbe)
+END_CLASS_STATES
+
 /*
 ======================
 rvmReflectionProbe::Spawn

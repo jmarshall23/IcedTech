@@ -43,6 +43,9 @@ If you have questions concerning this license or the applicable additional terms
 CLASS_DECLARATION( idEntity, idMultiModelAF )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idMultiModelAF)
+END_CLASS_STATES
+
 /*
 ================
 idMultiModelAF::Spawn
@@ -135,6 +138,9 @@ void idMultiModelAF::Think( void ) {
 
 CLASS_DECLARATION( idMultiModelAF, idChain )
 END_CLASS
+
+CLASS_STATES_DECLARATION(idChain)
+END_CLASS_STATES
 
 /*
 ================
@@ -246,6 +252,9 @@ void idChain::Spawn( void ) {
 
 CLASS_DECLARATION( idAnimatedEntity, idAFAttachment )
 END_CLASS
+
+CLASS_STATES_DECLARATION(idAFAttachment)
+END_CLASS_STATES
 
 /*
 =====================
@@ -522,6 +531,10 @@ const idEventDef EV_SetConstraintPosition( "SetConstraintPosition", "sv" );
 CLASS_DECLARATION( idAnimatedEntity, idAFEntity_Base )
 	EVENT( EV_SetConstraintPosition,	idAFEntity_Base::Event_SetConstraintPosition )
 END_CLASS
+
+CLASS_STATES_DECLARATION(idAFEntity_Base)
+END_CLASS_STATES
+
 
 static const float BOUNCE_SOUND_MIN_VELOCITY	= 80.0f;
 static const float BOUNCE_SOUND_MAX_VELOCITY	= 200.0f;
@@ -1594,6 +1607,9 @@ void idAFEntity_WithAttachedHead::Event_Activate( idEntity *activator ) {
 CLASS_DECLARATION( idAFEntity_Base, idAFEntity_Vehicle )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idAFEntity_Vehicle)
+END_CLASS_STATES
+
 /*
 ================
 idAFEntity_Vehicle::idAFEntity_Vehicle
@@ -1711,6 +1727,9 @@ float idAFEntity_Vehicle::GetSteerAngle( void ) {
 
 CLASS_DECLARATION( idAFEntity_Vehicle, idAFEntity_VehicleSimple )
 END_CLASS
+
+CLASS_STATES_DECLARATION(idAFEntity_VehicleSimple)
+END_CLASS_STATES
 
 /*
 ================
@@ -1907,6 +1926,9 @@ void idAFEntity_VehicleSimple::Think( void ) {
 CLASS_DECLARATION( idAFEntity_Vehicle, idAFEntity_VehicleFourWheels )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idAFEntity_VehicleFourWheels)
+END_CLASS_STATES
+
 
 /*
 ================
@@ -2061,7 +2083,7 @@ void idAFEntity_VehicleFourWheels::Think( void ) {
 			for ( i = 0; i < 4; i++ ) {
 				numContacts = af.GetPhysics()->GetBodyContactConstraints( wheels[i]->GetClipModel()->GetId(), contacts, 2 );
 				for ( int j = 0; j < numContacts; j++ ) {
-//					gameLocal.smokeParticles->EmitSmoke( dustSmoke, gameLocal.time, gameLocal.random.RandomFloat(), contacts[j]->GetContact().point, contacts[j]->GetContact().normal.ToMat3() );
+ //					gameLocal.smokeParticles->EmitSmoke( dustSmoke, gameLocal.time, gameLocal.random.RandomFloat(), contacts[j]->GetContact().point, contacts[j]->GetContact().normal.ToMat3() );
 				}
 			}
 		}
@@ -2085,6 +2107,9 @@ void idAFEntity_VehicleFourWheels::Think( void ) {
 
 CLASS_DECLARATION( idAFEntity_Vehicle, idAFEntity_VehicleSixWheels )
 END_CLASS
+
+CLASS_STATES_DECLARATION(idAFEntity_VehicleSixWheels)
+END_CLASS_STATES
 
 	/*
 ================

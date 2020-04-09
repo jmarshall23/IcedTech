@@ -34,6 +34,9 @@ If you have questions concerning this license or the applicable additional terms
 CLASS_DECLARATION( idPhysics_Base, idPhysics_RigidBody )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idPhysics_RigidBody)
+END_CLASS_STATES
+
 const float STOP_SPEED		= 10.0f;
 
 

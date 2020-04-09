@@ -350,7 +350,7 @@ model model_mp_marine {
 
 entityDef player_doommarine_mp {
 	"inherit"							"player_base"
-	"model"								"model_mp_marine"
+	"model"								"model_mp_soldier1"
 	"bleed"								"1"
 	"gib"								"1"
 

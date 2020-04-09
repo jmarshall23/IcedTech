@@ -46,6 +46,8 @@ public:
 	virtual void			GetViewParms( renderView_t *view ) = 0;
 	virtual renderView_t *	GetRenderView();
 	virtual void			Stop( void ){} ;
+
+	CLASS_STATES_PROTOTYPE(idCamera);
 };
 
 /*
@@ -69,6 +71,7 @@ public:
 	virtual void			GetViewParms( renderView_t *view );
 	virtual void			Stop( void );
 
+	CLASS_STATES_PROTOTYPE(idCameraView);
 protected:
 	void					Event_Activate( idEntity *activator );
 	void					Event_SetAttachments();
@@ -108,6 +111,7 @@ public:
 	void					Spawn( void );
 	virtual void			GetViewParms( renderView_t *view );
 
+	CLASS_STATES_PROTOTYPE(idCameraAnim);
 private:
 	int						threadNum;
 	idVec3					offset;

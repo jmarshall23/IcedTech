@@ -194,7 +194,13 @@ typedef struct {
 	idVec3	pos;
 } aasLocation_t;
 
+enum rvmPlayerAnimState_t {
+	PLAYER_ANIMATION
+};
+
 class idPlayer : public idActor {
+
+	CLASS_STATES_PROTOTYPE(idPlayer);
 public:
 	enum {
 		EVENT_IMPULSE = idEntity::EVENT_MAXEVENTS,
@@ -224,26 +230,31 @@ public:
 	int						lastHitTime;			// last time projectile fired by player hit target
 	int						lastSndHitTime;			// MP hit sound - != lastHitTime because we throttle
 	int						lastSavingThrowTime;	// for the "free miss" effect
-
-	idScriptBool			AI_FORWARD;
-	idScriptBool			AI_BACKWARD;
-	idScriptBool			AI_STRAFE_LEFT;
-	idScriptBool			AI_STRAFE_RIGHT;
-	idScriptBool			AI_ATTACK_HELD;
-	idScriptBool			AI_WEAPON_FIRED;
-	idScriptBool			AI_JUMP;
-	idScriptBool			AI_CROUCH;
-	idScriptBool			AI_ONGROUND;
-	idScriptBool			AI_ONLADDER;
-	idScriptBool			AI_DEAD;
-	idScriptBool			AI_RUN;
-	idScriptBool			AI_PAIN;
-	idScriptBool			AI_HARDLANDING;
-	idScriptBool			AI_SOFTLANDING;
-	idScriptBool			AI_RELOAD;
-	idScriptBool			AI_TELEPORT;
-	idScriptBool			AI_TURN_LEFT;
-	idScriptBool			AI_TURN_RIGHT;
+	
+	struct playerFlags_s {
+		bool		forward : 1;
+		bool		backward : 1;
+		bool		strafeLeft : 1;
+		bool		strafeRight : 1;
+		bool		attackHeld : 1;
+		bool		weaponFired : 1;
+		bool		jump : 1;
+		bool		crouch : 1;
+		bool		onGround : 1;
+		bool		onLadder : 1;
+		bool		dead : 1;
+		bool		run : 1;
+		bool		pain : 1;
+		bool		hardLanding : 1;
+		bool		softLanding : 1;
+		bool		reload : 1;
+		bool		teleport : 1;
+		bool		turnLeft : 1;
+		bool		turnRight : 1;
+		bool		hearingLoss : 1;
+		bool		objectiveFailed : 1;
+		bool		noFallingDamage : 1;
+	} pfl;
 
 	// inventory
 	idInventory				inventory;
@@ -334,7 +345,6 @@ public:
 	void					Init( void );
 	void					PrepareForRestart( void );
 	virtual void			Restart( void );
-	void					LinkScriptVariables( void );
 	void					SetupWeaponEntity( void );
 	void					SelectInitialSpawnPoint( idVec3 &origin, idAngles &angles );
 	void					SpawnFromSpawnSpot( void );
@@ -692,8 +702,18 @@ public:
 	void					Event_LevelTrigger( void );
 	void					Event_Gibbed( void );
 	void					Event_GetIdealWeapon( void );
+public:
+	stateResult_t			State_All_IdleThink(const stateParms_t& parms);
+	stateResult_t			State_All_Idle(const stateParms_t& parms);
+
+	stateResult_t			State_All_Walk(const stateParms_t& parms);
+	stateResult_t			State_All_WalkThink(const stateParms_t& parms);
 private:
 	const idSoundShader*	teleportInSFX;
+
+	int						anim_idle;
+	int						anim_walk;
+	int						anim_run;
 };
 
 ID_INLINE bool idPlayer::IsReady( void ) {

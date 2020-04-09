@@ -63,7 +63,9 @@ are initialized before superclasses.
 ================
 */
 idTypeInfo::idTypeInfo( const char *classname, const char *superclass, idEventFunc<idClass> *eventCallbacks, idClass *( *CreateInstance )( void ), 
-	void ( idClass::*Spawn )( void ), void ( idClass::*Save )( idSaveGame *savefile ) const, void ( idClass::*Restore )( idRestoreGame *savefile ) ) {
+	void ( idClass::*Spawn )( void ), 
+	rvStateFunc<idClass>* stateCallbacks,
+	void ( idClass::*Save )( idSaveGame *savefile ) const, void ( idClass::*Restore )( idRestoreGame *savefile ) ) {
 
 	idTypeInfo *type;
 	idTypeInfo **insert;
@@ -80,6 +82,8 @@ idTypeInfo::idTypeInfo( const char *classname, const char *superclass, idEventFu
 	this->freeEventMap		= false;
 	typeNum					= 0;
 	lastChild				= 0;
+
+	this->stateCallbacks = stateCallbacks;
 
 	// Check if any subclasses were initialized before their superclass
 	for( type = typelist; type != NULL; type = type->next ) {
@@ -233,6 +237,10 @@ ABSTRACT_DECLARATION( NULL, idClass )
 	EVENT( EV_Remove,				idClass::Event_Remove )
 	EVENT( EV_SafeRemove,			idClass::Event_SafeRemove )
 END_CLASS
+
+CLASS_STATES_DECLARATION(idClass)
+END_CLASS_STATES
+
 
 // alphabetical order
 idList<idTypeInfo *>	idClass::types;
@@ -655,6 +663,52 @@ bool idClass::PostEventArgs( const idEventDef *ev, int time, int numargs, ... ) 
 
 	return true;
 }
+
+
+/*
+================
+idClass::ProcessState
+================
+*/
+stateResult_t idClass::ProcessState(const rvStateFunc<idClass>* state, const stateParms_t& parms) {
+	return (this->*(state->function)) (parms);
+}
+
+stateResult_t idClass::ProcessState(const char* name, const stateParms_t& parms) {
+	int				i;
+	idTypeInfo* cls;
+
+	for (cls = GetType(); cls; cls = cls->super) {
+		for (i = 0; cls->stateCallbacks[i].function; i++) {
+			if (!idStr::Icmp(cls->stateCallbacks[i].name, name)) {
+				return (this->*(cls->stateCallbacks[i].function)) (parms);
+			}
+		}
+	}
+
+	return SRESULT_ERROR;
+}
+
+/*
+================
+idClass::FindState
+================
+*/
+const rvStateFunc<idClass>* idClass::FindState(const char* name) const {
+	int				i;
+	idTypeInfo* cls;
+
+	for (cls = GetType(); cls; cls = cls->super) {
+		for (i = 0; cls->stateCallbacks[i].function; i++) {
+			if (!idStr::Icmp(cls->stateCallbacks[i].name, name)) {
+				return &cls->stateCallbacks[i];
+			}
+		}
+	}
+
+	return NULL;
+}
+
 
 /*
 ================

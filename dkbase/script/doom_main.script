@@ -11,13 +11,11 @@ This is the main script that is loaded before any level scripts load.
 #include "script/doom_events.script"
 #include "script/doom_util.script"
 #include "script/weapon_base.script"
-#include "script/ai_base.script"
 
 // for dimming flashlight during plasma discharges in alphalabs2
 float global_flashlight_intensity = 1.0;
 
-// ai
-#include "script/ai_player.script"
+#include "script/darklight_player.script"
 
 void doom_main() {
 	sys.print( "Entering doom_main()\n");

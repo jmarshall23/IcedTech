@@ -75,6 +75,7 @@ typedef struct impactInfo_s {
 
 class idPhysics : public idClass {
 
+	CLASS_STATES_PROTOTYPE(idPhysics);
 public:
 	ABSTRACT_PROTOTYPE( idPhysics );
 

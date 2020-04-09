@@ -64,7 +64,7 @@ typedef struct rigidBodyPState_s {
 } rigidBodyPState_t;
 
 class idPhysics_RigidBody : public idPhysics_Base {
-
+	CLASS_STATES_PROTOTYPE(idPhysics_RigidBody);
 public:
 
 	CLASS_PROTOTYPE( idPhysics_RigidBody );

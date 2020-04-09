@@ -71,7 +71,7 @@ public:
 // jmarshall
 	int						GetModelIndex() const { return modelindex; }
 // jmarshall end
-
+	CLASS_STATES_PROTOTYPE(idItem);
 private:
 	idVec3					orgOrigin;
 	bool					spin;
@@ -114,6 +114,7 @@ public:
 	void					Spawn();
 	virtual bool			GiveToPlayer( idPlayer *player );
 
+	CLASS_STATES_PROTOTYPE(idItemPowerup);
 private:
 	int						time;
 	int						type;
@@ -130,6 +131,7 @@ public:
 
 	void					Spawn();
 
+	CLASS_STATES_PROTOTYPE(idObjective);
 private:
 	idVec3					playerPos;
 
@@ -145,6 +147,8 @@ public:
 
 	void					Spawn();
 	virtual bool			GiveToPlayer( idPlayer *player );
+
+	CLASS_STATES_PROTOTYPE(idVideoCDItem);
 };
 
 class idPDAItem : public idItem {

@@ -34,6 +34,9 @@ If you have questions concerning this license or the applicable additional terms
 CLASS_DECLARATION( idPhysics_Actor, idPhysics_Player )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idPhysics_Player)
+END_CLASS_STATES
+
 // movement parameters
 const float PM_STOPSPEED		= 100.0f;
 const float PM_SWIMSCALE		= 0.5f;

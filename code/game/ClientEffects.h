@@ -24,6 +24,7 @@ class rvmClientEffect_debris : public rvmClientEffect {
 
 					~rvmClientEffect_debris();
 	CLASS_PROTOTYPE(rvmClientEffect_debris);
+	CLASS_STATES_PROTOTYPE(rvmClientEffect_debris);
 public:
 	virtual void	Spawn(void);
 	virtual void	Think(void);

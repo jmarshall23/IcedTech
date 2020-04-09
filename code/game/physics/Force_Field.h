@@ -79,6 +79,7 @@ public:
 public: // common force interface
 	virtual void		Evaluate( int time );
 
+	CLASS_STATES_PROTOTYPE(idForce_Field);
 private:
 	// force properties
 	forceFieldType		type;

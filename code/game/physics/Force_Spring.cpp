@@ -34,6 +34,9 @@ If you have questions concerning this license or the applicable additional terms
 CLASS_DECLARATION( idForce, idForce_Spring )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idForce_Spring)
+END_CLASS_STATES
+
 /*
 ================
 idForce_Spring::idForce_Spring

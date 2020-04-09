@@ -38,7 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 class idPhysics_StaticMulti : public idPhysics {
-
+	CLASS_STATES_PROTOTYPE(idPhysics_StaticMulti);
 public:
 	CLASS_PROTOTYPE( idPhysics_StaticMulti );
 

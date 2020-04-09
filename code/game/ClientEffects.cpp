@@ -82,6 +82,9 @@ void rvmClientEffect::Think(void) {
 CLASS_DECLARATION(idEntity, rvmClientEffect_debris)
 END_CLASS
 
+CLASS_STATES_DECLARATION(rvmClientEffect_debris)
+END_CLASS_STATES
+
 /*
 ====================
 rvmClientEffect_debris::~rvmClientEffect_debris

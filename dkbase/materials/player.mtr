@@ -1,0 +1,110 @@
+models/players/soldier1/ManneqMale9
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+models/players/soldier1/A9_InnerLeg
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Handles
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Helmet
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Body
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Sholder
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Arm
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Hand
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Hip
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Shin
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Boot
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Boot2
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Back1
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}
+
+models/players/soldier1/A9_Back2
+{
+	qer_editorimage	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	diffusemap	 models/players/soldier1/textures/armor9_painter_armor9_mat_BaseColor.png
+	bumpmap models/players/soldier1/textures/armor9_painter_armor9_mat_Normal.png
+	specularmap models/players/soldier1/textures/armor9_painter_armor9_mat_Metallic.png
+}

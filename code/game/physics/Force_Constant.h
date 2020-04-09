@@ -55,7 +55,7 @@ public:
 	void				SetPosition( idPhysics *physics, int id, const idVec3 &point );
 
 	void				SetPhysics( idPhysics *physics );
-
+	CLASS_STATES_PROTOTYPE(idForce_Constant);
 public: // common force interface
 	virtual void		Evaluate( int time );
 	virtual void		RemovePhysics( const idPhysics *phys );

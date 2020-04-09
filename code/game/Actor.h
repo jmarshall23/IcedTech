@@ -71,7 +71,8 @@ public:
 
 	void					Init( idActor *owner, idAnimator *_animator, int animchannel );
 	void					Shutdown( void );
-	void					SetState( const char *name, int blendFrames );
+	void					PostState(const char* statename, int blendFrames, int delay, int flags);
+	void					SetState(const char* statename, int blendFrames, int flags);
 	void					StopAnim( int frames );
 	void					PlayAnim( int anim );
 	void					CycleAnim( int anim );
@@ -83,14 +84,20 @@ public:
 	bool					AnimDone( int blendFrames ) const;
 	bool					IsIdle( void ) const;
 	animFlags_t				GetAnimFlags( void ) const;
-
+	rvStateThread&			GetStateThread(void);
 private:
 	idActor *				self;
 	idAnimator *			animator;
-	idThread *				thread;
 	int						channel;
 	bool					disabled;
+
+	rvStateThread			stateThread;
 };
+
+ID_INLINE rvStateThread& idAnimState::GetStateThread(void) {
+	return stateThread;
+}
+
 
 class idAttachInfo {
 public:
@@ -195,7 +202,7 @@ public:
 							// animation state control
 	int						GetAnim( int channel, const char *name );
 	void					UpdateAnimState( void );
-	void					SetAnimState( int channel, const char *name, int blendFrames );
+	void					SetAnimState( int channel, const char *name, int blendFrames, int flags );
 	const char *			GetAnimState( int channel ) const;
 	bool					InAnimState( int channel, const char *name ) const;
 	const char *			WaitState( void ) const;
@@ -232,7 +239,7 @@ protected:
 	jointHandle_t			rightEyeJoint;
 	jointHandle_t			soundJoint;
 
-	idIK_Walk				walkIK;
+	//idIK_Walk				walkIK;
 
 	idStr					animPrefix;
 	idStr					painAnim;
@@ -266,6 +273,9 @@ protected:
 							// copies animation from body to head joints
 	void					CopyJointsFromBodyToHead( void );
 
+	bool					PlayCycle(int channel, const char* animname, int blendFrames);
+	void					PostAnimState(int channel, const char* statename, int blendFrames, int delay, int flags);
+	idAnimState&			GetAnimState(int channel);
 private:
 	void					SyncAnimChannels( int channel, int syncToChannel, int blendFrames );
 	void					FinishSetup( void );

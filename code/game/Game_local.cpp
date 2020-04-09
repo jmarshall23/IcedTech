@@ -3895,7 +3895,7 @@ void idGameLocal::SetCamera( idCamera *cam ) {
 
 	// this should fix going into a cinematic when dead.. rare but happens
 	idPlayer *client = GetLocalPlayer();
-	if ( client->health <= 0 || client->AI_DEAD ) {
+	if ( client->health <= 0 || client->pfl.dead ) {
 		return;
 	}
 

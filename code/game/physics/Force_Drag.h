@@ -59,6 +59,7 @@ public: // common force interface
 	virtual void		Evaluate( int time );
 	virtual void		RemovePhysics( const idPhysics *phys );
 
+	CLASS_STATES_PROTOTYPE(idForce_Drag);
 private:
 
 	// properties

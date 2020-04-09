@@ -34,6 +34,9 @@ If you have questions concerning this license or the applicable additional terms
 CLASS_DECLARATION( idClass, idForce )
 END_CLASS
 
+CLASS_STATES_DECLARATION(idForce)
+END_CLASS_STATES
+
 idList<idForce*> idForce::forceList;
 
 /*
