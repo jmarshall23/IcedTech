@@ -8,9 +8,14 @@ export justin {
 	options -scale 0.47 -rotate 90 -material_prefix models/players/soldier1
 	mesh models/players/soldier1/solider1.mb -dest models/players/soldier1/solider1.md5mesh
 
-	anim models/players/soldier1/anims/Idle/idle.mb -dest models/players/soldier1/idle.md5anim
-	anim models/players/soldier1/anims/Walk/walk01.mb -dest models/players/soldier1/walk.md5anim
-	anim models/players/soldier1/anims/run/run.mb -dest models/players/soldier1/run.md5anim
+	anim models/players/soldier1/anims/rife8/idle_aiming.mb -nomesh -dest  models/players/soldier1/idle.md5anim
+	anim models/players/soldier1/anims/rife8/idle_crouch.mb -nomesh -dest  models/players/soldier1/idle_crouch.md5anim
+
+	anim models/players/soldier1/anims/Walk/walk01.mb -nomesh -dest models/players/soldier1/walk.md5anim
+	anim models/players/soldier1/anims/shooterpack/run_gun.mb -nomesh -dest models/players/soldier1/run.md5anim
+
+	anim models/players/soldier1/anims/shooterpack/fire.mb -nomesh -dest models/players/soldier1/fire.md5anim
+ 
 }
 
 model model_mp_soldier1 {
@@ -24,6 +29,8 @@ model model_mp_soldier1 {
 
 	anim walk						models/players/soldier1/walk.md5anim
 	anim run						models/players/soldier1/run.md5anim
+
+	anim fire						models/players/soldier1/fire.md5anim
 }
 
 /***********************************************************************
