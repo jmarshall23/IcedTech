@@ -31,6 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "maya.h"
 #include "exporter.h"
 #include "maya_main.h"
+#include <map>
 
 idStr	errorMessage;
 bool	initialized = false;
@@ -1945,9 +1946,7 @@ idExportMesh *idMayaExport::CopyMesh( MFnSkinCluster &skinCluster, float scale )
 	MObjectArray	objarray;
 	MObjectArray	outputarray;
 	int				nGeom;
-	int				i, j, k;
 	idExportMesh	*mesh;
-	float			uv_u, uv_v;
 	idStr			name, altname;
 	int				pos;
 
@@ -1958,7 +1957,7 @@ idExportMesh *idMayaExport::CopyMesh( MFnSkinCluster &skinCluster, float scale )
 	}
 
 	nGeom = objarray.length();
-	for( i = 0; i < nGeom; i++ ) {
+	for( int i = 0; i < nGeom; i++ ) {
 		MFnDagNode dagNode( objarray[ i ], &status );
 		if ( !status ) {
 			common->Printf( "CopyMesh: MFnDagNode Constructor failed (%s)", status.errorString().asChar() );
@@ -1968,6 +1967,12 @@ idExportMesh *idMayaExport::CopyMesh( MFnSkinCluster &skinCluster, float scale )
 		MFnMesh fnmesh( objarray[ i ], &status );
 		if ( !status ) {
 			// object isn't an MFnMesh
+			continue;
+		}
+
+		MItMeshPolygon mItMeshPolygon(objarray[i], &status);
+		if (!status) {
+			common->FatalError("MltMeshPolygon not a part of MFnMesh\n");
 			continue;
 		}
 
@@ -2047,7 +2052,7 @@ idExportMesh *idMayaExport::CopyMesh( MFnSkinCluster &skinCluster, float scale )
 
 		fnmesh.getPoints( vertexArray, MSpace::kPreTransform );
 
-		for( j = 0; j < v; j++ ) {
+		for( int j = 0; j < v; j++ ) {
 			memset( &mesh->verts[ j ], 0, sizeof( mesh->verts[ j ] ) );
 			mesh->verts[ j ].pos = ConvertToIdSpace( idVec( vertexArray[ j ] ) ) * scale;
 		}
@@ -2065,73 +2070,56 @@ idExportMesh *idMayaExport::CopyMesh( MFnSkinCluster &skinCluster, float scale )
 		if ( !status ) {
 			MayaError( "CopyMesh: MFnMesh::getCurrentUVSetName failed (%s)", status.errorString().asChar() );
 		}
+// jmarshall - arbitrary polygon points, grabbed from the Unreal ActorX source code under the BSD license
+// https://github.com/gildor2/ActorX/tree/master/ActorX_MAYA
+		// We iterate through each Polygon, which can be 3 to n Sided
+		// With the method mItMeshPolygon.getTriangles( mTrisPointArray , mTrisIndexArray )
+		// we get the internal Maya Triangle representation of the Polygon 
+		for (; !mItMeshPolygon.isDone(); mItMeshPolygon.next()) {	// Loop through each Polygon of the Mesh
+			// If Faces consist of more than 3 Points, get Indices and Points of Triangles that build the current Face
+			MIntArray		mTrisIndexArray;					// Global Vertex Indices of Triangles building the Current Face
+			MPointArray		mTrisPointArray;					// Points per Vertex per Triangle
+			MIntArray		mFaceIndexArray;					// Global Vertex Indices of the Current Face
 
-		for (j = 0; j < p; j++) {
-			fnmesh.getPolygonVertices(j, vertexList);
- // jmarshall - support for quads
-			if ( vertexList.length() == 3 ) {
+			//fnmesh.getPolygonVertices(j, vertexList);
+			status = mItMeshPolygon.getVertices(mFaceIndexArray);
+
+			// Get internal Maya Triangle Representation of current Polygon )
+			// Store Positions in mTrisPointArray, size n ( count of polygon Vertices )
+			// Store Global Indices in mTrisIndexArray, size n ( count of polygon Vertices )
+			status = mItMeshPolygon.getTriangles(mTrisPointArray, mTrisIndexArray, MSpace::Space::kWorld);
+			mItMeshPolygon.getVertices(vertexList);
+
+			std::map< int, int > mapVtxGlobalLocal;		// Maps from Master Vertex Index to Face Local Index
+
+			mapVtxGlobalLocal.clear();
+			for (unsigned int vi = 0; vi < mFaceIndexArray.length(); ++vi) {		// vi = VertexIndex
+				mapVtxGlobalLocal[mFaceIndexArray[vi]] = vi;
+			}
+
+			MFloatArray		mFaceUArray, mFaceVArray;	// U V Values per Vertex of the Current Face
+			status = mItMeshPolygon.getUVs(mFaceUArray, mFaceVArray, &setName);
+
+			uint	numTrisIndices = mTrisIndexArray.length();
+			// Every 3 Points in Index/PointArray build a Triangle, so for each three steps create custom triangle
+			// Per Vertex, grab all Maya Data and push into Vertex
+			for (int tc = 0; tc < numTrisIndices / 3; tc++) {	// tc = triangleCounter
 				exportTriangle_t exportTri;
-				for (k = 0; k < 3; k++) {					
-					exportTri.indexes[k] = vertexList[k];					
+				exportUV_t exportUV;
 
-					status = fnmesh.getPolygonUV(j, k, uv_u, uv_v, &setName);
-					if (!status) {
-						MayaError("CopyMesh: MFnMesh::getPolygonUV failed (%s)", status.errorString().asChar());
-					}
+				for (int tv = 0; tv < 3; ++tv) {						// tv = triangleVertex					
+					uint globalIndex = mTrisIndexArray[tc * 3 + tv];
+					uint localIndex = mapVtxGlobalLocal[globalIndex];			// Access the Local Index through the map
+					exportTri.indexes[tv] = globalIndex;					
 
-					exportUV_t exportUV;
-
-					exportUV.uv[k][0] = uv_u;
-					exportUV.uv[k][1] = uv_v;
-
-					mesh->uv.Append(exportUV);
+					exportUV.uv[tv][0] = mFaceUArray[localIndex];
+					exportUV.uv[tv][1] = 1.0 - mFaceVArray[localIndex];
 				}
 
+				mesh->uv.Append(exportUV);
 				mesh->tris.Append(exportTri);
 			}
-			else if (vertexList.length() == 4)
-			{
-				int triangleIndexes[6] = { 0, 1, 2, 3, 0, 2 };
-				exportTriangle_t exportTri;
-				for (k = 0; k < 3; k++) {					
-					exportTri.indexes[k] = vertexList[triangleIndexes[k]];					
-
-					status = fnmesh.getPolygonUV(j, triangleIndexes[k], uv_u, uv_v, &setName);
-					if (!status) {
-						MayaError("CopyMesh: MFnMesh::getPolygonUV failed (%s)", status.errorString().asChar());
-					}
-
-					exportUV_t exportUV;
-
-					exportUV.uv[k][0] = uv_u;
-					exportUV.uv[k][1] = uv_v;
-
-					mesh->uv.Append(exportUV);
-				}
-				mesh->tris.Append(exportTri);
-
-				for (k = 0; k < 3; k++) {					
-					exportTri.indexes[k] = vertexList[triangleIndexes[k + 3]];					
-
-					status = fnmesh.getPolygonUV(j, triangleIndexes[k + 3], uv_u, uv_v, &setName);
-					if (!status) {
-						MayaError("CopyMesh: MFnMesh::getPolygonUV failed (%s)", status.errorString().asChar());
-					}
-
-					exportUV_t exportUV;
-
-					exportUV.uv[k][0] = uv_u;
-					exportUV.uv[k][1] = uv_v;
-					mesh->uv.Append(exportUV);
-				}
-
-				mesh->tris.Append(exportTri);
-			}
-			else
-			{
-				MayaError("CopyMesh: Too many vertices on a face (%d)\n", vertexList.length());
-			}
-// jmarshall end			
+// jmarshall end	
 		}
 
 		return mesh;
