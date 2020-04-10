@@ -1325,7 +1325,13 @@ void idPlayer::Init( void ) {
 	//SetAnimState(ANIMCHANNEL_TORSO, "Torso_Idle", 0, 0);
 	//SetAnimState(ANIMCHANNEL_LEGS, "Legs_Idle", 0, 0);	
 	anim_idle = animator.GetAnim("idle");
+	anim_idle_crouch = animator.GetAnim("idle_crouch");
+
 	anim_walk = animator.GetAnim("walk");
+	anim_walk_crouch = animator.GetAnim("walk_crouch");
+
+	anim_fire = animator.GetAnim("fire");
+
 	anim_run = animator.GetAnim("run");
 	SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
 

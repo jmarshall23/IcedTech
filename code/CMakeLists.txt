@@ -214,6 +214,9 @@ set(src_game
 	./game/physics
 	./game/Player.cpp
 	./game/Player_states.cpp
+	./game/Player_states_idle.cpp
+	./game/Player_states_run.cpp
+	./game/Player_states_fire.cpp
 	./game/Player.h
 	./game/PlayerIcon.cpp
 	./game/PlayerIcon.h

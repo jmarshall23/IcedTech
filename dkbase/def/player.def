@@ -12,6 +12,8 @@ export justin {
 	anim models/players/soldier1/anims/rife8/idle_crouch.mb -nomesh -dest  models/players/soldier1/idle_crouch.md5anim
 
 	anim models/players/soldier1/anims/Walk/walk01.mb -nomesh -dest models/players/soldier1/walk.md5anim
+	anim models/players/soldier1/anims/rife8/walk_crouch.mb -nomesh -dest models/players/soldier1/walk_crouch.md5anim
+
 	anim models/players/soldier1/anims/shooterpack/run_gun.mb -nomesh -dest models/players/soldier1/run.md5anim
 
 	anim models/players/soldier1/anims/shooterpack/fire.mb -nomesh -dest models/players/soldier1/fire.md5anim
@@ -26,8 +28,11 @@ model model_mp_soldier1 {
 	anim initial						models/players/soldier1/idle.md5anim
 
 	anim idle						models/players/soldier1/idle.md5anim
+	anim idle_crouch					models/players/soldier1/idle_crouch.md5anim
 
 	anim walk						models/players/soldier1/walk.md5anim
+	anim walk_crouch					models/players/soldier1/walk_crouch.md5anim
+
 	anim run						models/players/soldier1/run.md5anim
 
 	anim fire						models/players/soldier1/fire.md5anim

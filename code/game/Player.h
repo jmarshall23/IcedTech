@@ -706,14 +706,27 @@ public:
 	stateResult_t			State_All_IdleThink(const stateParms_t& parms);
 	stateResult_t			State_All_Idle(const stateParms_t& parms);
 
-	stateResult_t			State_All_Walk(const stateParms_t& parms);
-	stateResult_t			State_All_WalkThink(const stateParms_t& parms);
+	stateResult_t			State_All_IdleCrouchThink(const stateParms_t& parms);
+	stateResult_t			State_All_IdleCrouch(const stateParms_t& parms);
+
+	stateResult_t			State_All_Run(const stateParms_t& parms);
+	stateResult_t			State_All_RunThink(const stateParms_t& parms);
+
+	stateResult_t			State_All_RunCrouch(const stateParms_t& parms);
+	stateResult_t			State_All_RunCrouchThink(const stateParms_t& parms);
+
 private:
 	const idSoundShader*	teleportInSFX;
 
 	int						anim_idle;
+	int						anim_idle_crouch;
+
 	int						anim_walk;
+	int						anim_walk_crouch;
+
 	int						anim_run;
+
+	int						anim_fire;
 };
 
 ID_INLINE bool idPlayer::IsReady( void ) {
