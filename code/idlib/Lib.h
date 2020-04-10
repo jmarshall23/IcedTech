@@ -61,6 +61,13 @@ public:
 	// wrapper to idCommon functions 
 	static void					Error( const char *fmt, ... );
 	static void					Warning( const char *fmt, ... );
+
+	// the extra check for mainThreadInitialized is necessary for this to be accurate
+	// when called by startup code that happens before idLib::Init
+	static bool					IsMainThread() { return (0 == mainThreadInitialized) || (1 == isMainThread); }
+private:
+	static ID_TLS				isMainThread;
+	static bool					mainThreadInitialized;
 };
 
 

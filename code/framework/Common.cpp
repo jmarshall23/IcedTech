@@ -368,6 +368,11 @@ void idCommonLocal::VPrintf( const char *fmt, va_list args ) {
 		return;
 	}
 
+	if(!idLib::IsMainThread()) {
+		OutputDebugString(msg);
+		return;
+	}
+
 	// echo to console buffer
 	console->Print( msg );
 

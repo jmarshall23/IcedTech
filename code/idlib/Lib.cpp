@@ -48,6 +48,8 @@ idCommon *		idLib::common		= NULL;
 idCVarSystem *	idLib::cvarSystem	= NULL;
 idFileSystem *	idLib::fileSystem	= NULL;
 int				idLib::frameNumber	= 0;
+bool			idLib::mainThreadInitialized = 0;
+ID_TLS			idLib::isMainThread = 0;
 
 static bool skipAllAsserts = false;
 
@@ -59,6 +61,9 @@ idLib::Init
 void idLib::Init( void ) {
 
 	assert( sizeof( bool ) == 1 );
+
+	isMainThread = 1;
+	mainThreadInitialized = 1;
 
 	// initialize little/big endian conversion
 	Swap_Init();
