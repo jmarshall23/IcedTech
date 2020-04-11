@@ -26,7 +26,7 @@ void rvmToolShowFrameRate::Render( void ) {
 	static int	previousTimes[FPS_FRAMES];
 	static int	index;
 	int		i, total;
-	int		fps;
+	int		fps = 0;
 	static	int	previous;
 	int		t, frameTime;
 	rvmPerformanceMetrics_t* metrics;
