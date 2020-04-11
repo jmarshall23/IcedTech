@@ -130,6 +130,11 @@ void rvmClientEffect_debris::LaunchEffect(const idDeclEntityDef **debrisArray, i
 		AddClientModel(dict, origin + (forward * idMath::FRandRange(1, 5)), axis, velocity, shaderName);
 	}
 
+	// Ensure we don't let the debris cause collision with other meshes, but it can collide with the world.
+	for(int i = 0; i < clientEntityDebris.Num(); i++) {
+		clientEntityDebris[i]->GetPhysics()->GetClipModel()->SetRecievesCollision(false);
+	}
+
 	BecomeActive(TH_THINK);
 }
 

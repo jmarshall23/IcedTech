@@ -100,6 +100,11 @@ public:
 	idCollisionModel*		Handle( void ) const;				// returns handle used to collide vs this model
 	const idTraceModel *	GetTraceModel( void ) const;
 	void					GetMassProperties( const float density, float &mass, idVec3 &centerOfMass, idMat3 &inertiaTensor ) const;
+// jmarshall
+	bool					RecievesCollision(void) const;
+	void					SetRecievesCollision(bool traceRecievesCollision);
+// jmarshall end
+
 
 	static void				ClearTraceModelCache( void );
 	static int				TraceModelCacheSize( void );
@@ -108,6 +113,9 @@ public:
 	static void				RestoreTraceModels( idRestoreGame *savefile );
 
 private:
+// jmarshall
+	bool					traceRecievesCollision;	// true if this clip model recieves collision.
+// jmarshall end
 	bool					enabled;				// true if this clip model is used for clipping
 	idEntity *				entity;					// entity using this clip model
 	int						id;						// id for entities that use multiple clip models

@@ -285,6 +285,9 @@ void idClipModel::Init( void ) {
 	traceModelIndex = -1;
 	clipLinks = NULL;
 	touchCount = -1;
+// jmarshall
+	traceRecievesCollision = true;
+// jmarshall end
 }
 
 /*
@@ -365,6 +368,26 @@ idClipModel::~idClipModel( void ) {
 		FreeTraceModel( traceModelIndex );
 	}
 }
+
+// jmarshall
+/*
+================
+idClipModel::RecievesCollision
+================
+*/
+bool idClipModel::RecievesCollision(void) const {
+	return traceRecievesCollision;
+}
+
+/*
+================
+idClipModel::SetRecievesCollision
+================
+*/
+void idClipModel::SetRecievesCollision(bool traceRecievesCollision) {
+	this->traceRecievesCollision = traceRecievesCollision;
+}
+// jmarshall end
 
 /*
 ================
@@ -756,6 +779,12 @@ void idClip::ClipModelsTouchingBounds_r( const struct clipSector_s *node, listPa
 		if ( !check->enabled ) {
 			continue;
 		}
+
+// jmarshall
+		if(!check->RecievesCollision()) {
+			continue;
+		}
+// jmarshall end
 
 		// avoid duplicates in the list
 		if ( check->touchCount == touchCount ) {
