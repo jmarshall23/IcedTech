@@ -818,6 +818,7 @@ void idCollisionModelManagerLocal::Translation( trace_t *results, const idVec3 &
 	tw.trace.fraction = 1.0f;
 	tw.trace.c.contents = 0;
 	tw.trace.c.type = CONTACT_NONE;
+	tw.trace.c.id = 0; // jmarshall: fix so we don't get garbage values.
 	tw.contents = contentMask;
 	tw.isConvex = true;
 	tw.rotation = false;
