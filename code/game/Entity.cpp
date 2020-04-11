@@ -2500,9 +2500,15 @@ void idEntity::InitDefaultPhysics( const idVec3 &origin, const idMat3 &axis ) {
 
 	// check if a clipmodel key/value pair is set
 	if ( spawnArgs.GetString( "clipmodel", "", &temp ) ) {
-		if ( idClipModel::CheckModel( temp ) ) {
-			clipModel = new idClipModel( temp );
+// jmarshall
+		//if ( idClipModel::CheckModel( temp ) ) {
+		//	clipModel = new idClipModel( temp );
+		//}
+		idCollisionModel* cm = collisionModelManager->LoadModel(temp, false);
+		if (cm && cm != gameLocal.clip.GetWorldCollisionModel()) {
+			clipModel = new idClipModel(temp);
 		}
+// jmarshall end
 	}
 
 	if ( !spawnArgs.GetBool( "noclipmodel", "0" ) ) {
@@ -2547,9 +2553,12 @@ void idEntity::InitDefaultPhysics( const idVec3 &origin, const idMat3 &axis ) {
 		if ( !clipModel ) {
 			temp = spawnArgs.GetString( "model" );
 			if ( ( temp != NULL ) && ( *temp != 0 ) ) {
-				if ( idClipModel::CheckModel( temp ) ) {
-					clipModel = new idClipModel( temp );
+// jmarshall
+				idCollisionModel* cm = collisionModelManager->LoadModel(temp, false);
+				if (cm && cm != gameLocal.clip.GetWorldCollisionModel()) {
+					clipModel = new idClipModel(temp);
 				}
+// jmarshall end
 			}
 		}
 	}

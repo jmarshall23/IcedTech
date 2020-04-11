@@ -448,7 +448,7 @@ void idLight::Spawn( void ) {
 		GetPhysics()->SetContents( spawnArgs.GetBool( "nonsolid" ) ? 0 : CONTENTS_SOLID );
 	
 		// make sure the collision model gets cached
-		idClipModel::CheckModel( brokenModel );
+		collisionModelManager->LoadModel( brokenModel, false );
 	}
 
 	PostEventMS( &EV_PostSpawn, 0 );

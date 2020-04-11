@@ -1318,9 +1318,9 @@ static void Cmd_CollisionModelInfo_f( const idCmdArgs &args ) {
 
 	value = args.Argv( 1 );
 	if ( !idStr::Icmp( value, "all" ) ) {
-		collisionModelManager->ModelInfo( -1 );
+	//	collisionModelManager->ModelInfo( -1 );
 	} else {
-		collisionModelManager->ModelInfo( atoi(value) );
+//		collisionModelManager->ModelInfo( atoi(value) );
 	}
 }
 

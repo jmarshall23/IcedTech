@@ -2803,7 +2803,8 @@ void idGameLocal::RunDebugInfo( void ) {
 	}
 
 	if ( g_showCollisionWorld.GetBool() ) {
-		collisionModelManager->DrawModel( 0, vec3_origin, mat3_identity, origin, 128.0f );
+		idCollisionModel* worldCM = collisionModelManager->GetCollisionModel(0);
+		worldCM->DrawModel( vec3_origin, mat3_identity, origin, 128.0f );
 	}
 
 	if ( g_showCollisionModels.GetBool() ) {

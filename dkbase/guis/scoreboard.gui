@@ -1,0 +1,528 @@
+windowDef Desktop {
+	rect		0 ,0 ,640 ,480
+	menugui		0
+	nocursor	1
+
+	onActivate {
+		resetTime "boxbg" "0" ;
+	}
+	onDeactivate {
+			set "BorderTL::rect" "7 67 -8 8" ;
+			set "BorderTM::rect" "15 67 498 8" ;
+			set "BorderTR::rect" "513 67 8 8" ;
+			set "BorderBL::rect" "7 340 -8 -8" ;
+			set "BorderBM::rect" "15 340 498 -8" ;
+			set "BorderBR::rect" "503 340 8 -8" ;
+			set "BorderL::rect" "7 75 -8 265" ;
+			set "BorderR::rect" "513 75 8 265";
+	}
+
+
+windowDef Bump {
+	rect		50 ,-59 ,640 ,480
+
+	windowDef BorderTL {
+		rect		17, 77, -8, 8
+		matcolor	0.2, 0.45, 0.4, pdflick2 [ time * .0025 ] / 2.5
+		background	"guis/assets/hud/mp/score_corner"
+	}
+	windowDef BorderTM {
+		rect		25, 77, 478, 8
+		matcolor	0.2, 0.45, 0.4, pdflick2 [ time * .0025 ] / 2.5
+		background	"guis/assets/hud/mp/score_horiz"
+	}
+	windowDef BorderTR {
+		rect		503, 77, 8, 8
+		matcolor	0.2, 0.45, 0.4, pdflick2 [ time * .0025 ] / 2.5
+		background	"guis/assets/hud/mp/score_corner"
+	}
+
+	windowDef BorderL {
+		rect		17, 85, -8, 245
+		matcolor	0.2, 0.45, 0.4, pdflick2 [ time * .0025 ] / 2.5
+		background	"guis/assets/hud/mp/score_vert"
+	}
+	windowDef BorderR {
+		rect		503, 85, 8, 245
+		matcolor	0.2, 0.45, 0.4, pdflick2 [ time * .0025 ] / 2.5
+		background	"guis/assets/hud/mp/score_vert"
+	}
+
+	windowDef BorderBL {
+		rect		17, 330, -8, -8
+		matcolor	0.2, 0.45, 0.4, pdflick2 [ time * .0025 ] / 2.5
+		background	"guis/assets/hud/mp/score_corner"
+	}
+	windowDef BorderBM {
+		rect		25, 330, 478, -8
+		matcolor	0.2, 0.45, 0.4, pdflick2 [ time * .0025 ] / 2.5
+		background	"guis/assets/hud/mp/score_horiz"
+	}
+	windowDef BorderBR {
+		rect		503, 330, 8, -8
+		matcolor	0.2, 0.45, 0.4, pdflick2 [ time * .0025 ] / 2.5
+		background	"guis/assets/hud/mp/score_corner"
+	}
+
+	windowDef Scanlines {
+	//scrolling raster lines
+		rect	27 ,87 ,473 ,241
+		matcolor	0.25,0.25,0.25,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	3.39
+	}
+	windowDef boxbg {
+		rect		25, 85, 477, 245
+		backcolor 	0.2, 0.3, 0.3, 0.2
+		bordercolor 	0.1, 0.25, 0.25, 1
+		bordersize 	1
+		noTime 1
+
+		onTime 0 {
+			transition "BorderTL::rect" "7 67 -8 8" "17 77 -8 8" "400" "0" "0.8" ;
+			transition "BorderTM::rect" "15 67 498 8" "25 77 478 8" "400" "0" "0.8" ;
+			transition "BorderTR::rect" "513 67 8 8" "503 77 8 8" "400" "0" "0.8" ;
+
+			transition "BorderBL::rect" "7 340 -8 -8" "17 330 -8 -8" "400" "0" "0.8" ;
+			transition "BorderBM::rect" "15 340 498 -8" "25 330 478 -8" "400" "0" "0.8" ;
+			transition "BorderBR::rect" "513 340 8 -8" "503 330 8 -8" "400" "0" "0.8" ;
+
+			transition "BorderL::rect" "7 75 -8 265" "17 85 -8 245" "400" "0" "0.8" ;
+			transition "BorderR::rect" "513 75 8 265" "503 85 8 245" "400" "0" "0.8" ;
+
+
+			transition "BoxBG::backcolor" "1 1 1 0.2" "0.25 0.35 0.35 0.4" "70" ;
+		}
+		onTime 70 {
+			transition "BoxBG::backcolor" "1 1 1 0.2" "0.1 0.2 0.2 0.5" "300" ;
+		}
+		onTime 100 {
+			transition "BlackBox1::bordercolor" "1 1 1 0.2" "0 0 0 1" "300" ;
+		}
+		onTime 150 {
+			transition "BlackBox2::bordercolor" "1 1 1 0.2" "0 0 0 1" "300" ;
+			transition "BlackBox1a::bordercolor" "1 1 1 0.2" "0 0 0 1" "300" ;
+		}
+		onTime 200 {
+			transition "BlackBox3::bordercolor" "1 1 1 0.2" "0 0 0 1" "300" ;
+			transition "BlackBox2a::bordercolor" "1 1 1 0.2" "0 0 0 1" "300" ;
+		}
+		onTime 250 {
+			transition "BlackBox4::bordercolor" "1 1 1 0.2" "0 0 0 1" "300" ;
+			transition "BlackBox3a::bordercolor" "1 1 1 0.2" "0 0 0 1" "300" ;
+		}
+		onTime 300 {
+			transition "BlackBox4a::bordercolor" "1 1 1 0.2" "0 0 0 1" "300" ;
+		}
+	}
+	windowDef Static {
+	//static overlay
+		rect	27 ,87 ,473 ,247 
+		visible	1
+		background "gui/staticalt"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 7
+		matscalex	4
+		matscaley	3
+	}
+
+	windowDef BlackBox1 {
+		rect		32, 112, 186, 19
+		backcolor 	0, 0, 0, 0.35
+		bordercolor 	0, 0, 0, 1
+		bordersize 	1
+	}
+
+	windowDef BlackBox2 {
+		rect		219, 112, 91, 19
+		backcolor 	0, 0, 0, 0.35
+		bordercolor 	0, 0, 0, 1
+		bordersize 	1
+	}
+
+	windowDef BlackBox3 {
+		rect		311, 112, 91, 19
+		backcolor 	0, 0, 0, 0.35
+		bordercolor 	0, 0, 0, 1
+		bordersize 	1
+	}
+
+	windowDef BlackBox4 {
+		rect		403, 112, 91, 19
+		backcolor 	0, 0, 0, 0.35
+		bordercolor 	0, 0, 0, 1
+		bordersize 	1
+	}
+//
+	windowDef BlackBox1a {
+		rect		32, 132, 186, 157
+		backcolor 	0, 0, 0, 0.35
+		bordercolor 	0, 0, 0, 1
+		bordersize 	1
+	}
+
+	windowDef BlackBox2a {
+		rect		219, 132, 91, 157
+		backcolor 	0, 0, 0, 0.35
+		bordercolor 	0, 0, 0, 1
+		bordersize 	1
+	}
+
+	windowDef BlackBox3a {
+		rect		311, 132, 91, 157
+		backcolor 	0, 0, 0, 0.35
+		bordercolor 	0, 0, 0, 1
+		bordersize 	1
+	}
+
+	windowDef BlackBox4a {
+		rect		403, 132, 91, 157
+		backcolor 	0, 0, 0, 0.35
+		bordercolor 	0, 0, 0, 1
+		bordersize 	1
+	}
+
+///////////////
+
+	windowDef Bar1 {
+		rect		40, 143, 445, 16
+		backcolor	"gui::rank1_color1", "gui::rank1_color2", "gui::rank1_color3", 0.25
+		visible		("gui::rank1" != 0 )
+	}
+	
+	windowDef Bar2 {
+		rect		40, 183, 445, 16
+		backcolor	"gui::rank2_color1", "gui::rank2_color2", "gui::rank2_color3", 0.25
+		visible		("gui::rank2" != 0)
+	}
+
+	windowDef Bar3 {
+		rect		40, 223, 445, 16
+		backcolor	"gui::rank3_color1", "gui::rank3_color2", "gui::rank3_color3", 0.25
+		visible		("gui::rank3" != 0)
+	}
+
+	windowDef Bar4 {
+		rect		40, 263, 445, 16
+		backcolor	"gui::rank4_color1", "gui::rank4_color2", "gui::rank4_color3", 0.25
+		visible		("gui::rank4" != 0)
+	}
+	
+	windowDef BarSelf {
+		rect		38, ( 141 + ( "gui::rank_self" - 1 ) * 40 ), 449, 20
+		bordercolor 	0.5, 0.6, 0.6, 1
+		bordersize	1
+	}
+
+///////////////
+
+//
+	windowDef BoxBg2 {
+		rect		32, 295, 462, 28
+		backcolor 	0.4, 0.6, 0.6, 0.1
+		bordercolor 	0.3, 0.4, 0.4, 1
+		bordersize 	1
+	}
+//
+
+	windowDef Scoreboard {
+		rect		70, 82, 385, 35
+		text		"#str_02618"
+		shadow		1
+		font		"fonts/bank"
+		textscale	0.4
+		textalign	1
+		forecolor	0.4, 0.7, 0.7, 1
+	}
+
+	windowDef StatusInfoName {
+		rect	50, 109, 186, 19
+		text	"#str_02181"
+		font		"fonts/bank"
+		shadow		1
+		textscale 0.25
+		forecolor 0.6, 0.8, 0.8, 1
+	}
+
+	windowDef StatusInfoScore {
+		rect	219, 109, 91, 19
+		text	"gui::scoretext"
+		font		"fonts/bank"
+		shadow		1
+		textscale 0.25
+		textalign 1
+		forecolor 0.6, 0.8, 0.8, 1
+	}
+
+	windowDef StatusInfoWins {
+		rect	311, 109, 91, 19
+		text	"#str_02619"
+		font		"fonts/bank"
+		shadow		1
+		textscale 0.25
+		textalign 1
+		forecolor 0.6, 0.8, 0.8, 1
+	}
+
+	windowDef StatusInfoStatus {
+		rect	403, 109, 91, 19
+		text	"#str_02048"
+		font		"fonts/bank"
+		shadow		1
+		textscale 0.25
+		textalign 1
+		forecolor 0.6, 0.8, 0.8, 1
+	}
+
+	windowDef player1name {  
+		text    	"gui::player1"
+		font		"fonts/bank"
+		shadow		1  
+		rect 		50, 138, 186, 19  
+		textalign	0
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player1score {  
+		text    	"gui::player1_score" 
+		font		"fonts/bank"
+		shadow		1 
+		rect 		217, 138, 91, 19 
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+	
+	windowDef player1tdmscore {
+		text    	"gui::player1_tdm_score" 
+		font		"fonts/bank"
+		shadow		1 
+		rect 		220, 141, 35, 19 
+		textalign	2
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.2
+	}
+
+	windowDef player1tdmtscore {
+		text    	"gui::player1_tdm_tscore" 
+		font		"fonts/bank"
+		shadow		1 
+		rect 		258, 138, 35, 19 
+		textalign	0
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+	
+	windowDef player1wins {  
+		text    	"gui::player1_wins" 
+		font		"fonts/bank"
+		shadow		1 
+		rect 		311, 138, 91, 19  
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player1ping {  
+		text    	"gui::player1_ping"  
+		font		"fonts/bank"
+		shadow		1
+		rect 		403, 138, 91, 19
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+		
+	windowDef player2name {  
+		text    	"gui::player2" 
+		font		"fonts/bank"
+		shadow		1
+		rect 		50, 178, 186, 19
+		textalign	0
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player2score {  
+		text    	"gui::player2_score"  
+		font		"fonts/bank"
+		shadow		1
+		rect 		217, 178, 91, 19 
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player2tdmscore {
+		text    	"gui::player2_tdm_score" 
+		font		"fonts/bank"
+		shadow		1 
+		rect 		220, 181, 35, 19 
+		textalign	2
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.2
+	}
+
+	windowDef player2tdmtscore {
+		text    	"gui::player2_tdm_tscore" 
+		font		"fonts/bank"
+		shadow		1 
+		rect 		258, 178, 35, 19 
+		textalign	0
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+	
+	windowDef player2wins {  
+		text    	"gui::player2_wins"
+		font		"fonts/bank"
+		shadow		1
+		rect 		311, 178, 91, 19 
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player2ping {  
+		text    	"gui::player2_ping"  
+		font		"fonts/bank"
+		shadow		1
+		rect 		403, 178, 91, 19  
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player3name {  
+		text    	"gui::player3"  
+		font		"fonts/bank"
+		shadow		1
+		rect 		50, 218, 186, 19  
+		textalign	0
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player3score {  
+		text    	"gui::player3_score"  
+		font		"fonts/bank"
+		shadow		1
+		rect 		217, 218, 91, 19  
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player3tdmscore {
+		text    	"gui::player3_tdm_score" 
+		font		"fonts/bank"
+		shadow		1 
+		rect 		220, 221, 35, 19 
+		textalign	2
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.2
+	}
+
+	windowDef player3tdmtscore {
+		text    	"gui::player3_tdm_tscore" 
+		font		"fonts/bank"
+		shadow		1 
+		rect 		258, 218, 35, 19 
+		textalign	0
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+	
+	windowDef player3wins {  
+		text    	"gui::player3_wins"  
+		font		"fonts/bank"
+		shadow		1
+		rect 		311, 218, 91, 19
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player3ping {  
+		text    	"gui::player3_ping"  
+		font		"fonts/bank"
+		shadow		1
+		rect 		403, 218, 91, 19 
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player4name {  
+		text    	"gui::player4"  
+		font		"fonts/bank"
+		shadow		1
+		rect 		50, 258, 186, 19  
+		textalign	0
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player4score {  
+		text    	"gui::player4_score"  
+		font		"fonts/bank"
+		shadow		1
+		rect 		217, 258, 91, 19  
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player4tdmscore {
+		text    	"gui::player4_tdm_score" 
+		font		"fonts/bank"
+		shadow		1 
+		rect 		220, 261, 35, 19 
+		textalign	2
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.2
+	}
+
+	windowDef player4tdmtscore {
+		text    	"gui::player4_tdm_tscore" 
+		font		"fonts/bank"
+		shadow		1 
+		rect 		258, 258, 35, 19 
+		textalign	0
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+	
+	windowDef player4wins {  
+		text    	"gui::player4_wins"  
+		font		"fonts/bank"
+		shadow		1
+		rect 		311, 258, 91, 19  
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef player4ping {  
+		text    	"gui::player4_ping"  
+		font		"fonts/bank"
+		shadow		1
+		rect 		403, 258, 91, 19 
+		textalign	1
+		forecolor	1, 1, 1, 0.8
+		textscale 	0.25
+	}
+
+	windowDef GameType {
+		rect	40, 296, 435, 35
+		text	"gui::gameinfo"
+		font		"fonts/bank"
+		shadow		1
+		textscale	0.25
+		textalign 1
+		forecolor 0.6, 0.8, 0.8, 1
+	}
+
+}
+}

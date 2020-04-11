@@ -409,7 +409,7 @@ idPhysics_RigidBody::DebugDraw
 void idPhysics_RigidBody::DebugDraw( void ) {
 
 	if ( rb_showBodies.GetBool() || ( rb_showActive.GetBool() && current.atRest < 0 ) ) {
-		collisionModelManager->DrawModel( clipModel->Handle(), clipModel->GetOrigin(), clipModel->GetAxis(), vec3_origin, 0.0f );
+		clipModel->Handle()->DrawModel( clipModel->GetOrigin(), clipModel->GetAxis(), vec3_origin, 0.0f );
 	}
 
 	if ( rb_showMass.GetBool() ) {

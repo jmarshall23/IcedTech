@@ -6468,13 +6468,13 @@ void idPhysics_AF::DebugDraw( void ) {
 				cvarSystem->SetCVarString( "cm_drawColor", colorCyan.ToString( 0 ) );
 				constrainedBody1 = constraint->body1;
 				if ( constrainedBody1 ) {
-					collisionModelManager->DrawModel( constrainedBody1->clipModel->Handle(), constrainedBody1->clipModel->GetOrigin(),
+					constrainedBody1->clipModel->Handle()->DrawModel( constrainedBody1->clipModel->GetOrigin(),
 											constrainedBody1->clipModel->GetAxis(), vec3_origin, 0.0f );
 				}
 				cvarSystem->SetCVarString( "cm_drawColor", colorBlue.ToString( 0 ) );
 				constrainedBody2 = constraint->body2;
 				if ( constrainedBody2 ) {
-					collisionModelManager->DrawModel( constrainedBody2->clipModel->Handle(), constrainedBody2->clipModel->GetOrigin(),
+					constrainedBody2->clipModel->Handle()->DrawModel( constrainedBody2->clipModel->GetOrigin(),
 											constrainedBody2->clipModel->GetAxis(), vec3_origin, 0.0f );
 				}
 				cvarSystem->SetCVarString( "cm_drawColor", colorRed.ToString( 0 ) );
@@ -6486,7 +6486,7 @@ void idPhysics_AF::DebugDraw( void ) {
 		highlightBody = GetBody( af_highlightBody.GetString() );
 		if ( highlightBody ) {
 			cvarSystem->SetCVarString( "cm_drawColor", colorYellow.ToString( 0 ) );
-			collisionModelManager->DrawModel( highlightBody->clipModel->Handle(), highlightBody->clipModel->GetOrigin(),
+			highlightBody->clipModel->Handle()->DrawModel( highlightBody->clipModel->GetOrigin(),
 									highlightBody->clipModel->GetAxis(), vec3_origin, 0.0f );
 			cvarSystem->SetCVarString( "cm_drawColor", colorRed.ToString( 0 ) );
 		}
@@ -6501,7 +6501,7 @@ void idPhysics_AF::DebugDraw( void ) {
 			if ( body == highlightBody ) {
 				continue;
 			}
-			collisionModelManager->DrawModel( body->clipModel->Handle(), body->clipModel->GetOrigin(),
+			body->clipModel->Handle()->DrawModel( body->clipModel->GetOrigin(),
 										body->clipModel->GetAxis(), vec3_origin, 0.0f );
 			//DrawTraceModelSilhouette( gameLocal.GetLocalPlayer()->GetEyePosition(), body->clipModel );
 		}

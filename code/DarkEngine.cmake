@@ -6,6 +6,7 @@ set(src_engine
 	./framework/Engine_precompiled.cpp
 
 	# Collision System
+	./cm/CollisionModel.cpp
 	./cm/CollisionModel_trace.cpp
 	./cm/CollisionModel.h
 	./cm/CollisionModel_rotate.cpp

@@ -715,6 +715,8 @@ public:
 	stateResult_t			State_All_RunCrouch(const stateParms_t& parms);
 	stateResult_t			State_All_RunCrouchThink(const stateParms_t& parms);
 
+	stateResult_t			State_All_Dead(const stateParms_t& parms);
+	stateResult_t			State_All_Die(const stateParms_t& parms);
 private:
 	const idSoundShader*	teleportInSFX;
 
@@ -725,6 +727,7 @@ private:
 	int						anim_walk_crouch;
 
 	int						anim_run;
+	int						anim_death;
 
 	int						anim_fire;
 };

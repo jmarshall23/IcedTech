@@ -82,11 +82,33 @@ typedef struct trace_s {
 	contactInfo_t			c;				// contact information, only valid if fraction < 1.0
 } trace_t;
 
-typedef int cmHandle_t;
-
 #define CM_CLIP_EPSILON		0.25f			// always stay this distance away from any model
 #define CM_BOX_EPSILON		1.0f			// should always be larger than clip epsilon
 #define CM_MAX_TRACE_DIST	4096.0f			// maximum distance a trace model may be traced, point traces are unlimited
+
+// collision model
+class idCollisionModel {
+public:
+	virtual						~idCollisionModel() { }
+	// Returns the name of the model.
+	virtual const char* GetName(void) const = 0;
+	// Gets the bounds of the model.
+	virtual bool				GetBounds(idBounds& bounds) const = 0;
+	// Gets all contents flags of brushes and polygons of the model ored together.
+	virtual bool				GetContents(int& contents) const = 0;
+	// Gets a vertex of the model.
+	virtual bool				GetVertex(int vertexNum, idVec3& vertex) const = 0;
+	// Gets an edge of the model.
+	virtual bool				GetEdge(int edgeNum, idVec3& start, idVec3& end) const = 0;
+	// Gets a polygon of the model.
+	virtual bool				GetPolygon(int polygonNum, idFixedWinding& winding) const = 0;
+
+	// Draws a model.
+	virtual void			DrawModel(const idVec3& modelOrigin, const idMat3& modelAxis, const idVec3& viewOrigin, const float radius) = 0;
+	
+	// Prints model information, use -1 handle for accumulated model info.
+	virtual void			ModelInfo(void) = 0;
+};
 
 #define PROC_CLIPMODEL_INDEX_START		1
 #define PROC_CLIPMODEL_STRING_PRFX		"inlined_proc_clip_"
@@ -101,49 +123,37 @@ public:
 	virtual void			FreeMap( void ) = 0;
 
 	// Gets the clip handle for a model.
-	virtual cmHandle_t		LoadModel( const char *modelName, const bool precache ) = 0;
+	virtual idCollisionModel *LoadModel( const char *modelName, const bool precache ) = 0;
+
+	// Free the given model.
+	virtual void				FreeModel(idCollisionModel* model) = 0;
+	
 	// Sets up a trace model for collision with other trace models.
-	virtual cmHandle_t		SetupTrmModel( const idTraceModel &trm, const idMaterial *material ) = 0;
+	virtual idCollisionModel *SetupTrmModel( const idTraceModel &trm, const idMaterial *material ) = 0;
+
 	// Creates a trace model from a collision model, returns true if succesfull.
 	virtual bool			TrmFromModel( const char *modelName, idTraceModel &trm ) = 0;
-
-	// Gets the name of a model.
-	virtual const char *	GetModelName( cmHandle_t model ) const = 0;
-	// Gets the bounds of a model.
-	virtual bool			GetModelBounds( cmHandle_t model, idBounds &bounds ) const = 0;
-	// Gets all contents flags of brushes and polygons of a model ored together.
-	virtual bool			GetModelContents( cmHandle_t model, int &contents ) const = 0;
-	// Gets a vertex of a model.
-	virtual bool			GetModelVertex( cmHandle_t model, int vertexNum, idVec3 &vertex ) const = 0;
-	// Gets an edge of a model.
-	virtual bool			GetModelEdge( cmHandle_t model, int edgeNum, idVec3 &start, idVec3 &end ) const = 0;
-	// Gets a polygon of a model.
-	virtual bool			GetModelPolygon( cmHandle_t model, int polygonNum, idFixedWinding &winding ) const = 0;
 
 	// Translates a trace model and reports the first collision if any.
 	virtual void			Translation( trace_t *results, const idVec3 &start, const idVec3 &end,
 								const idTraceModel *trm, const idMat3 &trmAxis, int contentMask,
-								cmHandle_t model, const idVec3 &modelOrigin, const idMat3 &modelAxis ) = 0;
+							idCollisionModel *model, const idVec3 &modelOrigin, const idMat3 &modelAxis ) = 0;
 	// Rotates a trace model and reports the first collision if any.
 	virtual void			Rotation( trace_t *results, const idVec3 &start, const idRotation &rotation,
-								const idTraceModel *trm, const idMat3 &trmAxis, int contentMask,
-								cmHandle_t model, const idVec3 &modelOrigin, const idMat3 &modelAxis ) = 0;
+									const idTraceModel *trm, const idMat3 &trmAxis, int contentMask,
+									idCollisionModel *model, const idVec3 &modelOrigin, const idMat3 &modelAxis ) = 0;
 	// Returns the contents touched by the trace model or 0 if the trace model is in free space.
 	virtual int				Contents( const idVec3 &start,
-								const idTraceModel *trm, const idMat3 &trmAxis, int contentMask,
-								cmHandle_t model, const idVec3 &modelOrigin, const idMat3 &modelAxis ) = 0;
+									const idTraceModel *trm, const idMat3 &trmAxis, int contentMask,
+									idCollisionModel *model, const idVec3 &modelOrigin, const idMat3 &modelAxis ) = 0;
 	// Stores all contact points of the trace model with the model, returns the number of contacts.
 	virtual int				Contacts( contactInfo_t *contacts, const int maxContacts, const idVec3 &start, const idVec6 &dir, const float depth,
-								const idTraceModel *trm, const idMat3 &trmAxis, int contentMask,
-								cmHandle_t model, const idVec3 &modelOrigin, const idMat3 &modelAxis ) = 0;
+									const idTraceModel *trm, const idMat3 &trmAxis, int contentMask,
+									idCollisionModel *model, const idVec3 &modelOrigin, const idMat3 &modelAxis ) = 0;
 
 	// Tests collision detection.
 	virtual void			DebugOutput( const idVec3 &origin ) = 0;
-	// Draws a model.
-	virtual void			DrawModel( cmHandle_t model, const idVec3 &modelOrigin, const idMat3 &modelAxis,
-												const idVec3 &viewOrigin, const float radius ) = 0;
-	// Prints model information, use -1 handle for accumulated model info.
-	virtual void			ModelInfo( cmHandle_t model ) = 0;
+
 	// Lists all loaded models.
 	virtual void			ListModels( void ) = 0;
 	// Writes a collision model file for the given map entity.
@@ -152,7 +162,9 @@ public:
 // jmarshall
 	virtual int				GetNumInlinedProcClipModels(void) = 0;
 
-	virtual int				PointContents(const idVec3 p, cmHandle_t model) = 0;
+	virtual idCollisionModel* GetCollisionModel(int index) = 0;
+
+	virtual int				PointContents(const idVec3 p, idCollisionModel *model) = 0;
 // jmarshall end
 };
 

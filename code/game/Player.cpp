@@ -1333,7 +1333,11 @@ void idPlayer::Init( void ) {
 	anim_fire = animator.GetAnim("fire");
 
 	anim_run = animator.GetAnim("run");
+	anim_death = animator.GetAnim("death");
+
 	SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
+
+
 
 	// reset the script object
 	ConstructScriptObject();
@@ -2259,6 +2263,8 @@ void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_a
 	}
 
 	privateCameraView = NULL;
+
+	SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
 
 	CreateLightRigs();
 
@@ -6411,7 +6417,9 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 		return;
 	}
 
-	gameLocal.CreateEffect("fx/gibs.fx", renderEntity.origin + idVec3(0, 0, 40), renderEntity.axis, false);
+	if (health < -20) {
+		gameLocal.CreateEffect("fx/gibs.fx", renderEntity.origin + idVec3(0, 0, 40), renderEntity.axis, false);
+	}
 
 	heartInfo.Init( 0, 0, 0, BASE_HEARTRATE );
 	AdjustHeartRate( DEAD_HEARTRATE, 10.0f, 0.0f, true );
@@ -6421,8 +6429,10 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 	//}
 
 	pfl.dead = true;
-	SetAnimState( ANIMCHANNEL_LEGS, "Legs_Death", 4, 0);
-	SetAnimState( ANIMCHANNEL_TORSO, "Torso_Death", 4, 0);
+	//SetAnimState( ANIMCHANNEL_LEGS, "Legs_Death", 4, 0);
+	//SetAnimState( ANIMCHANNEL_TORSO, "Torso_Death", 4, 0);
+	SetAnimState(ANIMCHANNEL_TORSO, "All_Die", 4, 0);
+
 	SetWaitState( "" );
 
 	animator.ClearAllJoints();

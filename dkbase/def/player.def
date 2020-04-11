@@ -18,6 +18,7 @@ export justin {
 
 	anim models/players/soldier1/anims/shooterpack/fire.mb -nomesh -dest models/players/soldier1/fire.md5anim
  
+	anim models/players/soldier1/anims/Dying/died.mb -nomesh -dest models/players/soldier1/death.md5anim
 }
 
 model model_mp_soldier1 {
@@ -36,6 +37,8 @@ model model_mp_soldier1 {
 	anim run						models/players/soldier1/run.md5anim
 
 	anim fire						models/players/soldier1/fire.md5anim
+
+	anim death						models/players/soldier1/death.md5anim
 }
 
 /***********************************************************************

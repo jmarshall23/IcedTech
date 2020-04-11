@@ -217,6 +217,7 @@ set(src_game
 	./game/Player_states_idle.cpp
 	./game/Player_states_run.cpp
 	./game/Player_states_fire.cpp
+	./game/Player_states_death.cpp
 	./game/Player.h
 	./game/PlayerIcon.cpp
 	./game/PlayerIcon.h

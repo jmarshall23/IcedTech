@@ -765,7 +765,7 @@ static int entered = 0;
 
 void idCollisionModelManagerLocal::Translation( trace_t *results, const idVec3 &start, const idVec3 &end,
 										const idTraceModel *trm, const idMat3 &trmAxis, int contentMask,
-										cmHandle_t model, const idVec3 &modelOrigin, const idMat3 &modelAxis ) {
+										idCollisionModel *model, const idVec3 &modelOrigin, const idMat3 &modelAxis ) {
 
 	int i, j;
 	float dist;
@@ -783,18 +783,13 @@ void idCollisionModelManagerLocal::Translation( trace_t *results, const idVec3 &
 
 	memset( results, 0, sizeof( *results ) );
 
-	if ( model < 0 || model > MAX_SUBMODELS || model > idCollisionModelManagerLocal::maxModels ) {
-		common->Printf("idCollisionModelManagerLocal::Translation: invalid model handle\n");
-		return;
-	}
-	if ( !idCollisionModelManagerLocal::models[model] ) {
-		common->Printf("idCollisionModelManagerLocal::Translation: invalid model\n");
-		return;
+	if (model == NULL) {
+		common->FatalError("%s model passed was nullptr", __FUNCTION__);
 	}
 
 	// if case special position test
 	if ( start[0] == end[0] && start[1] == end[1] && start[2] == end[2] ) {
-		idCollisionModelManagerLocal::ContentsTrm( results, start, trm, trmAxis, contentMask, model, modelOrigin, modelAxis );
+		idCollisionModelManagerLocal::ContentsTrm( results, start, trm, trmAxis, contentMask, (idCollisionModelLocal *)model, modelOrigin, modelAxis );
 		return;
 	}
 
@@ -805,7 +800,7 @@ void idCollisionModelManagerLocal::Translation( trace_t *results, const idVec3 &
 		if ( !entered && !idCollisionModelManagerLocal::getContacts ) {
 			entered = 1;
 			// if already messed up to begin with
-			if ( idCollisionModelManagerLocal::Contents( start, trm, trmAxis, -1, model, modelOrigin, modelAxis ) & contentMask ) {
+			if ( idCollisionModelManagerLocal::Contents( start, trm, trmAxis, -1, (idCollisionModelLocal*)model, modelOrigin, modelAxis ) & contentMask ) {
 				startsolid = true;
 			}
 			entered = 0;
@@ -828,7 +823,7 @@ void idCollisionModelManagerLocal::Translation( trace_t *results, const idVec3 &
 	tw.contacts = idCollisionModelManagerLocal::contacts;
 	tw.maxContacts = idCollisionModelManagerLocal::maxContacts;
 	tw.numContacts = 0;
-	tw.model = idCollisionModelManagerLocal::models[model];
+	tw.model = (idCollisionModelLocal *)model;
 	tw.start = start - modelOrigin;
 	tw.end = end - modelOrigin;
 	tw.dir = end - start;

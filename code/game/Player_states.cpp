@@ -19,5 +19,8 @@ CLASS_STATES_DECLARATION(idPlayer)
 
 	STATE("All_RunCrouch", idPlayer::State_All_RunCrouch)
 	STATE("All_RunCrouchThink", idPlayer::State_All_RunCrouchThink)
+
+	STATE("All_Die", idPlayer::State_All_Die)
+	STATE("All_Dead", idPlayer::State_All_Dead)
 END_CLASS_STATES
 
