@@ -505,6 +505,7 @@ typedef enum {
 	RC_SET_RENDERTEXTURE,
 	RC_RESOLVE_MSAA,
 	RC_CLEAR_RENDERTARGET,
+	RC_RENDER_TOOLGUI,
 	RC_SWAP_BUFFERS		// can't just assume swap at end of list because
 						// of forced list submission before syncs
 } renderCommand_t;
@@ -523,6 +524,11 @@ typedef struct {
 	renderCommand_t		commandId, *next;
 	viewDef_t	*viewDef;
 } drawSurfsCommand_t;
+
+typedef struct {
+	renderCommand_t		commandId, * next;
+	rvmToolGui* toolGui;
+} drawToolGuiCommand_t;
 
 typedef struct {
 	renderCommand_t		commandId, *next;
@@ -814,6 +820,8 @@ public:
 	virtual void			RunFeedbackJob(idRenderTexture *feedbackRT);
 	virtual void			ReadRenderTexture(idRenderTexture* renderTexture, byte* buffer);
 	virtual void			WriteTGA(const char* filename, const byte* data, int width, int height, bool flipVertical, const char* basePath);
+
+	virtual void			RenderToolGui(rvmToolGui* toolGui);
 public:
 	// internal functions
 							idRenderSystemLocal( void );

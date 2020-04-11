@@ -525,6 +525,19 @@ set(src_external
 	./external/irrxml/src/irrXML.cpp
 	./external/irrxml/src/irrXML.h
 
+	./external/imgui/imconfig.h
+	./external/imgui/imgui.cpp
+	./external/imgui/imgui.h
+	./external/imgui/imgui_draw.cpp
+	./external/imgui/imgui_internal.h
+	./external/imgui/imgui_widgets.cpp
+	./external/imgui/imstb_rectpack.h
+	./external/imgui/imstb_textedit.h
+	./external/imgui/imstb_truetype.h
+	./external/imgui/examples/imgui_impl_opengl3.cpp
+	./external/imgui/examples/imgui_impl_opengl3.h
+	./external/imgui/examples/imgui_impl_win32.cpp
+	./external/imgui/examples/imgui_impl_win32.h
 )
 
 # Engine Directories

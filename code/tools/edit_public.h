@@ -116,4 +116,6 @@ void	MaterialEditorRun( void );
 void	MaterialEditorShutdown( void );
 void	MaterialEditorPrintConsole( const char *msg );
 
+#include "edit_guis.h"
+
 #endif /* !__EDIT_PUBLIC_H__ */

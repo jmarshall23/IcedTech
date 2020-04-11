@@ -684,6 +684,19 @@ static void RB_ClearRenderTarget(const void *data) {
 }
 
 /*
+============
+RB_DrawToolGui
+============
+*/
+static void RB_DrawToolGui(const void* data) {
+	const drawToolGuiCommand_t* cmd;
+
+	cmd = (drawToolGuiCommand_t*)data;
+
+	cmd->toolGui->Render();
+}
+
+/*
 ====================
 RB_ExecuteBackEndCommands
 
@@ -711,6 +724,14 @@ void RB_ExecuteBackEndCommands( const emptyCommand_t *cmds ) {
 	// needed for editor rendering
 	RB_SetDefaultGLState();
 
+#ifdef ID_ALLOW_TOOLS
+	ImGuiIO& io = ImGui::GetIO();
+
+	io.DisplaySize = ImVec2(renderSystem->GetScreenWidth(), renderSystem->GetScreenHeight());
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui::NewFrame();
+#endif
+
 	for ( ; cmds ; cmds = (const emptyCommand_t *)cmds->next ) {
 		switch ( cmds->commandId ) {
 		case RC_NOP:
@@ -723,6 +744,9 @@ void RB_ExecuteBackEndCommands( const emptyCommand_t *cmds ) {
 			else {
 				c_draw2d++;
 			}
+			break;
+		case RC_RENDER_TOOLGUI:
+			RB_DrawToolGui(cmds);
 			break;
 		case RC_SET_RENDERTEXTURE:
 			RB_SetRenderTexture(cmds);
@@ -738,6 +762,10 @@ void RB_ExecuteBackEndCommands( const emptyCommand_t *cmds ) {
 			c_setBuffers++;
 			break;
 		case RC_SWAP_BUFFERS:
+#ifdef ID_ALLOW_TOOLS
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
 			RB_SwapBuffers( cmds );
 			c_swapBuffers++;
 			break;

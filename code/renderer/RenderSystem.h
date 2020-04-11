@@ -185,6 +185,11 @@ struct rvmPerformanceMetrics_t {
 	int gpuTime;
 };
 
+class rvmToolGui {
+public:
+	virtual const char*				Name(void) = 0;
+	virtual void					Render(void) = 0;
+};
 
 class idRenderSystem {
 public:
@@ -323,6 +328,9 @@ public:
 	// texture filter / mipmapping / repeat won't be modified by the upload
 	// returns false if the image wasn't found
 	virtual bool			UploadImage( const char *imageName, const byte *data, int width, int height ) = 0;
+
+	// renders a tool gui to the screen.
+	virtual void			RenderToolGui(rvmToolGui* toolGui) = 0;
 };
 
 extern idRenderSystem *			renderSystem;

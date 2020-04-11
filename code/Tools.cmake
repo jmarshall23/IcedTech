@@ -396,6 +396,8 @@ set(src_tools
 	./tools/script/DialogScriptEditor.h
 	./tools/sound/DialogSound.h
 	./tools/sound/DialogSoundGroup.h
+
+	./tools/guis/FrameRateGui.cpp
 )
 
 # Add radiant.net

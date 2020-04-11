@@ -180,6 +180,12 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 
 //-----------------------------------------------------
 
+// externals that need to be shared across all modules.
+#include "../external/imgui/imgui.h"
+#include "../external/imgui/examples/imgui_impl_opengl3.h"
+#include "../external/imgui/examples/imgui_impl_win32.h"
+//-----------------------------------------------------
+
 #ifndef _D3SDK
 
 #ifdef GAME_DLL

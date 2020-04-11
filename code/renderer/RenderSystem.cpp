@@ -865,6 +865,17 @@ void idRenderSystemLocal::UnCrop() {
 
 /*
 ================
+idRenderSystemLocal::RenderToolGui
+================
+*/
+void idRenderSystemLocal::RenderToolGui(rvmToolGui* toolGui) {
+	drawToolGuiCommand_t* cmd = (drawToolGuiCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	cmd->commandId = RC_RENDER_TOOLGUI;
+	cmd->toolGui = toolGui;
+}
+
+/*
+================
 CaptureRenderToImage
 ================
 */
