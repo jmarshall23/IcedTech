@@ -65,7 +65,7 @@ void rvmToolShowFrameRate::Render( void ) {
 #else
 	ImGui::Text("Frame Metrics(Release Build)");
 #endif
-		ImGui::LabelText(va("%d fps", time_gameFrame), "FPS");
+		ImGui::LabelText(va("%d fps", fps), "FPS");
 		ImGui::LabelText(va("%d ms", time_gameFrame), "Game");
 		ImGui::LabelText(va("%d ms", metrics->gpuTime), "GPU");
 		
