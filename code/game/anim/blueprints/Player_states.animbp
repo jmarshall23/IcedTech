@@ -5,6 +5,16 @@ animbp Player_All_Idle
 	code_block EnterState
 	{
 		<FUNCTION_START>
+
+#ifdef FIRE_STATE
+		if (pfl.weaponFired)
+		{
+			animator.CycleAnim(ANIMCHANNEL_ALL, anim_fire, gameLocal.time, 0);
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleFireThink", 0, 0);
+			return SRESULT_DONE;
+		}
+#endif
+
 #ifndef CROUCH_STATE
 		if (pfl.crouch) {
 #else
@@ -47,6 +57,14 @@ animbp Player_All_Idle
 	code_block ThinkState
 	{
 		<FUNCTION_START>
+
+#ifdef FIRE_STATE
+		if (pfl.weaponFired)
+		{
+			return SRESULT_WAIT;
+		}
+#endif
+
 		// Check to see if we need to switch from crouching to non crouching or vice versa
 #ifndef CROUCH_STATE
 		if (pfl.crouch) {
@@ -82,8 +100,18 @@ animbp Player_All_Idle
 
 		}
 
+#ifdef FIRE_STATE
+		SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0); // Return to the idle state.
+		<FUNCTION_END>
+		return SRESULT_DONE;
+#else
+		if (pfl.weaponFired)
+		{
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleFire", 0, 0);
+		}
 		<FUNCTION_END>
 		return SRESULT_WAIT;
+#endif
 	}
 	end_code_block
 	
@@ -92,20 +120,32 @@ animbp Player_All_Idle
 		code EnterState
 	}
 	
-	event "All_IdleCrouch"
-	{
-		macro CROUCH_STATE
-		code EnterState
-	}
-	
 	event "All_IdleThink"
 	{
 		code ThinkState
+	}
+
+	event "All_IdleCrouch"
+	{
+		macro CROUCH_STATE
+			code EnterState
 	}
 	
 	event "All_IdleCrouchThink"
 	{
 		macro CROUCH_STATE
+		code ThinkState
+	}
+
+	event "All_IdleFire"
+	{
+		macro FIRE_STATE
+		code EnterState
+	}
+
+	event "All_IdleFireThink"
+	{
+		macro FIRE_STATE
 		code ThinkState
 	}
 }

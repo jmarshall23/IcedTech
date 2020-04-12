@@ -8,9 +8,11 @@
 
 CLASS_STATES_DECLARATION(idPlayer)
 	STATE("All_Idle", idPlayer::State_All_Idle)
-	STATE("All_IdleCrouch", idPlayer::State_All_IdleCrouch)
 	STATE("All_IdleThink", idPlayer::State_All_IdleThink)
+	STATE("All_IdleCrouch", idPlayer::State_All_IdleCrouch)
 	STATE("All_IdleCrouchThink", idPlayer::State_All_IdleCrouchThink)
+	STATE("All_IdleFire", idPlayer::State_All_IdleFire)
+	STATE("All_IdleFireThink", idPlayer::State_All_IdleFireThink)
 	STATE("All_Run", idPlayer::State_All_Run)
 	STATE("All_RunCrouch", idPlayer::State_All_RunCrouch)
 	STATE("All_RunThink", idPlayer::State_All_RunThink)
@@ -23,6 +25,16 @@ stateResult_t idPlayer::State_All_Idle(const stateParms_t&parms)
 
 	{
 		
+
+#ifdef FIRE_STATE
+		if (pfl.weaponFired)
+		{
+			animator.CycleAnim(ANIMCHANNEL_ALL, anim_fire, gameLocal.time, 0);
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleFireThink", 0, 0);
+			return SRESULT_DONE;
+		}
+#endif
+
 #ifndef CROUCH_STATE
 		if (pfl.crouch) {
 #else
@@ -58,55 +70,20 @@ stateResult_t idPlayer::State_All_Idle(const stateParms_t&parms)
 #endif	
 		
 		
-		return SRESULT_DONE;
-	}
-	stateResult_t idPlayer::State_All_IdleCrouch(const stateParms_t&parms)
-
-	{
-		#define  CROUCH_STATE
-
-#ifndef CROUCH_STATE
-		if (pfl.crouch) {
-#else
-		if (!pfl.crouch) {
-#endif
-			if (pfl.forward || pfl.backward) {
-#ifndef CROUCH_STATE
-				SetAnimState(ANIMCHANNEL_TORSO, "All_RunCrouch", 0, 0);
-#else
-				SetAnimState(ANIMCHANNEL_TORSO, "All_Run", 0, 0);
-#endif	
-			}
-			else {
-#ifndef CROUCH_STATE
-				SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouch", 0, 0);
-#else
-				SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
-#endif	
-			}
-			return SRESULT_DONE;
-		}
-		
-#ifndef CROUCH_STATE
-		if (SRESULT_WAIT == State_All_IdleThink(parms)) {			
-			animator.CycleAnim(ANIMCHANNEL_ALL, anim_idle, gameLocal.time, 0);
-			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleThink", 0, 0);
-		}
-#else
-		if (SRESULT_WAIT == State_All_IdleCrouchThink(parms)) {			
-			animator.CycleAnim(ANIMCHANNEL_ALL, anim_idle_crouch, gameLocal.time, 0);
-			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouchThink", 0, 0);
-		}
-#endif	
-		
-		#undef  CROUCH_STATE
-
 		return SRESULT_DONE;
 	}
 	stateResult_t idPlayer::State_All_IdleThink(const stateParms_t&parms)
 
 	{
 		
+
+#ifdef FIRE_STATE
+		if (pfl.weaponFired)
+		{
+			return SRESULT_WAIT;
+		}
+#endif
+
 		// Check to see if we need to switch from crouching to non crouching or vice versa
 #ifndef CROUCH_STATE
 		if (pfl.crouch) {
@@ -142,14 +119,85 @@ stateResult_t idPlayer::State_All_Idle(const stateParms_t&parms)
 
 		}
 
+#ifdef FIRE_STATE
+		SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0); // Return to the idle state.
+		
+		return SRESULT_DONE;
+#else
+		if (pfl.weaponFired)
+		{
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleFire", 0, 0);
+		}
 		
 		return SRESULT_WAIT;
+#endif
+	}
+	stateResult_t idPlayer::State_All_IdleCrouch(const stateParms_t&parms)
+
+	{
+		#define  CROUCH_STATE
+
+
+#ifdef FIRE_STATE
+		if (pfl.weaponFired)
+		{
+			animator.CycleAnim(ANIMCHANNEL_ALL, anim_fire, gameLocal.time, 0);
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleFireThink", 0, 0);
+			return SRESULT_DONE;
+		}
+#endif
+
+#ifndef CROUCH_STATE
+		if (pfl.crouch) {
+#else
+		if (!pfl.crouch) {
+#endif
+			if (pfl.forward || pfl.backward) {
+#ifndef CROUCH_STATE
+				SetAnimState(ANIMCHANNEL_TORSO, "All_RunCrouch", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Run", 0, 0);
+#endif	
+			}
+			else {
+#ifndef CROUCH_STATE
+				SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouch", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
+#endif	
+			}
+			return SRESULT_DONE;
+		}
+		
+#ifndef CROUCH_STATE
+		if (SRESULT_WAIT == State_All_IdleThink(parms)) {			
+			animator.CycleAnim(ANIMCHANNEL_ALL, anim_idle, gameLocal.time, 0);
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleThink", 0, 0);
+		}
+#else
+		if (SRESULT_WAIT == State_All_IdleCrouchThink(parms)) {			
+			animator.CycleAnim(ANIMCHANNEL_ALL, anim_idle_crouch, gameLocal.time, 0);
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouchThink", 0, 0);
+		}
+#endif	
+		
+		#undef  CROUCH_STATE
+
+		return SRESULT_DONE;
 	}
 	stateResult_t idPlayer::State_All_IdleCrouchThink(const stateParms_t&parms)
 
 	{
 		#define  CROUCH_STATE
 
+
+#ifdef FIRE_STATE
+		if (pfl.weaponFired)
+		{
+			return SRESULT_WAIT;
+		}
+#endif
+
 		// Check to see if we need to switch from crouching to non crouching or vice versa
 #ifndef CROUCH_STATE
 		if (pfl.crouch) {
@@ -185,9 +233,136 @@ stateResult_t idPlayer::State_All_Idle(const stateParms_t&parms)
 
 		}
 
+#ifdef FIRE_STATE
+		SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0); // Return to the idle state.
+		#undef  CROUCH_STATE
+
+		return SRESULT_DONE;
+#else
+		if (pfl.weaponFired)
+		{
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleFire", 0, 0);
+		}
 		#undef  CROUCH_STATE
 
 		return SRESULT_WAIT;
+#endif
+	}
+	stateResult_t idPlayer::State_All_IdleFire(const stateParms_t&parms)
+
+	{
+		#define  FIRE_STATE
+
+
+#ifdef FIRE_STATE
+		if (pfl.weaponFired)
+		{
+			animator.CycleAnim(ANIMCHANNEL_ALL, anim_fire, gameLocal.time, 0);
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleFireThink", 0, 0);
+			return SRESULT_DONE;
+		}
+#endif
+
+#ifndef CROUCH_STATE
+		if (pfl.crouch) {
+#else
+		if (!pfl.crouch) {
+#endif
+			if (pfl.forward || pfl.backward) {
+#ifndef CROUCH_STATE
+				SetAnimState(ANIMCHANNEL_TORSO, "All_RunCrouch", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Run", 0, 0);
+#endif	
+			}
+			else {
+#ifndef CROUCH_STATE
+				SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouch", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
+#endif	
+			}
+			return SRESULT_DONE;
+		}
+		
+#ifndef CROUCH_STATE
+		if (SRESULT_WAIT == State_All_IdleThink(parms)) {			
+			animator.CycleAnim(ANIMCHANNEL_ALL, anim_idle, gameLocal.time, 0);
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleThink", 0, 0);
+		}
+#else
+		if (SRESULT_WAIT == State_All_IdleCrouchThink(parms)) {			
+			animator.CycleAnim(ANIMCHANNEL_ALL, anim_idle_crouch, gameLocal.time, 0);
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouchThink", 0, 0);
+		}
+#endif	
+		
+		#undef  FIRE_STATE
+
+		return SRESULT_DONE;
+	}
+	stateResult_t idPlayer::State_All_IdleFireThink(const stateParms_t&parms)
+
+	{
+		#define  FIRE_STATE
+
+
+#ifdef FIRE_STATE
+		if (pfl.weaponFired)
+		{
+			return SRESULT_WAIT;
+		}
+#endif
+
+		// Check to see if we need to switch from crouching to non crouching or vice versa
+#ifndef CROUCH_STATE
+		if (pfl.crouch) {
+#else
+		if (!pfl.crouch) {
+#endif
+			if (pfl.forward || pfl.backward)
+			{
+#ifndef CROUCH_STATE				
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Run", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_RunCrouch", 0, 0);
+#endif			
+			}
+			else
+			{
+#ifndef CROUCH_STATE				
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
+#else				
+				SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouch", 0, 0);
+#endif
+			}
+			return SRESULT_DONE;
+		}
+
+		if (pfl.forward || pfl.backward) {
+#ifndef CROUCH_STATE				
+			SetAnimState(ANIMCHANNEL_TORSO, "All_Run", 0, 0);
+#else
+			SetAnimState(ANIMCHANNEL_TORSO, "All_RunCrouch", 0, 0);
+#endif	
+			return SRESULT_DONE;
+
+		}
+
+#ifdef FIRE_STATE
+		SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0); // Return to the idle state.
+		#undef  FIRE_STATE
+
+		return SRESULT_DONE;
+#else
+		if (pfl.weaponFired)
+		{
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleFire", 0, 0);
+		}
+		#undef  FIRE_STATE
+
+		return SRESULT_WAIT;
+#endif
 	}
 	stateResult_t idPlayer::State_All_Run(const stateParms_t&parms)
 

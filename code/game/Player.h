@@ -706,6 +706,9 @@ public:
 	stateResult_t			State_All_IdleThink(const stateParms_t& parms);
 	stateResult_t			State_All_Idle(const stateParms_t& parms);
 
+	stateResult_t			State_All_IdleFireThink(const stateParms_t& parms);
+	stateResult_t			State_All_IdleFire(const stateParms_t& parms);
+
 	stateResult_t			State_All_IdleCrouchThink(const stateParms_t& parms);
 	stateResult_t			State_All_IdleCrouch(const stateParms_t& parms);
 
