@@ -1,0 +1,258 @@
+classname idPlayer
+
+animbp Player_All_Idle
+{
+	code_block EnterState
+	{
+		<FUNCTION_START>
+#ifndef CROUCH_STATE
+		if (pfl.crouch) {
+#else
+		if (!pfl.crouch) {
+#endif
+			if (pfl.forward || pfl.backward) {
+#ifndef CROUCH_STATE
+				SetAnimState(ANIMCHANNEL_TORSO, "All_RunCrouch", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Run", 0, 0);
+#endif	
+			}
+			else {
+#ifndef CROUCH_STATE
+				SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouch", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
+#endif	
+			}
+			return SRESULT_DONE;
+		}
+		
+#ifndef CROUCH_STATE
+		if (SRESULT_WAIT == State_All_IdleThink(parms)) {			
+			animator.CycleAnim(ANIMCHANNEL_ALL, anim_idle, gameLocal.time, 0);
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleThink", 0, 0);
+		}
+#else
+		if (SRESULT_WAIT == State_All_IdleCrouchThink(parms)) {			
+			animator.CycleAnim(ANIMCHANNEL_ALL, anim_idle_crouch, gameLocal.time, 0);
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouchThink", 0, 0);
+		}
+#endif	
+		
+		<FUNCTION_END>
+		return SRESULT_DONE;
+	}
+	end_code_block
+	
+	code_block ThinkState
+	{
+		<FUNCTION_START>
+		// Check to see if we need to switch from crouching to non crouching or vice versa
+#ifndef CROUCH_STATE
+		if (pfl.crouch) {
+#else
+		if (!pfl.crouch) {
+#endif
+			if (pfl.forward || pfl.backward)
+			{
+#ifndef CROUCH_STATE				
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Run", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_RunCrouch", 0, 0);
+#endif			
+			}
+			else
+			{
+#ifndef CROUCH_STATE				
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
+#else				
+				SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouch", 0, 0);
+#endif
+			}
+			return SRESULT_DONE;
+		}
+
+		if (pfl.forward || pfl.backward) {
+#ifndef CROUCH_STATE				
+			SetAnimState(ANIMCHANNEL_TORSO, "All_Run", 0, 0);
+#else
+			SetAnimState(ANIMCHANNEL_TORSO, "All_RunCrouch", 0, 0);
+#endif	
+			return SRESULT_DONE;
+
+		}
+
+		<FUNCTION_END>
+		return SRESULT_WAIT;
+	}
+	end_code_block
+	
+	event "All_Idle"
+	{
+		code EnterState
+	}
+	
+	event "All_IdleCrouch"
+	{
+		macro CROUCH_STATE
+		code EnterState
+	}
+	
+	event "All_IdleThink"
+	{
+		code ThinkState
+	}
+	
+	event "All_IdleCrouchThink"
+	{
+		macro CROUCH_STATE
+		code ThinkState
+	}
+}
+
+animbp Player_All_Run
+{
+	code_block EnterState
+	{
+		<FUNCTION_START>
+#ifndef CROUCH_STATE
+		if (pfl.crouch) {
+#else
+		if (!pfl.crouch) {
+#endif
+			if (pfl.forward || pfl.backward)
+			{
+#ifndef CROUCH_STATE				
+				SetAnimState(ANIMCHANNEL_TORSO, "All_RunCrouch", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Run", 0, 0);	
+#endif
+			}
+			else
+			{
+#ifndef CROUCH_STATE				
+				SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouch", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
+#endif
+			}
+			
+			return SRESULT_DONE;
+		}
+
+		if (!(pfl.forward || pfl.backward)) {
+#ifndef CROUCH_STATE			
+			SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
+#else
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouch", 0, 0);	
+#endif
+			return SRESULT_DONE;
+		}		
+#ifndef CROUCH_STATE		
+		animator.CycleAnim(ANIMCHANNEL_ALL, anim_run, gameLocal.time, 0);
+		SetAnimState(ANIMCHANNEL_TORSO, "All_RunThink", 0, 0);
+#else
+		animator.CycleAnim(ANIMCHANNEL_ALL, anim_walk_crouch, gameLocal.time, 0);
+		SetAnimState(ANIMCHANNEL_TORSO, "All_RunCrouchThink", 0, 0);	
+#endif
+
+		<FUNCTION_END>
+		return SRESULT_WAIT;
+	}
+	end_code_block
+	
+	code_block ThinkState
+	{
+		<FUNCTION_START>
+#ifndef CROUCH_STATE
+		if (pfl.crouch) {
+#else
+		if (!pfl.crouch) {
+#endif
+			if (pfl.forward || pfl.backward)
+			{
+#ifndef CROUCH_STATE				
+				SetAnimState(ANIMCHANNEL_TORSO, "All_RunCrouch", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Run", 0, 0);	
+#endif
+			}
+			else
+			{
+#ifndef CROUCH_STATE				
+				SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouch", 0, 0);
+#else
+				SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);	
+#endif
+			}
+			return SRESULT_DONE;
+		}
+
+		if (!(pfl.forward || pfl.backward)) {
+#ifndef CROUCH_STATE			
+			SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
+#else
+			SetAnimState(ANIMCHANNEL_TORSO, "All_IdleCrouch", 0, 0);	
+#endif
+			return SRESULT_DONE;
+
+		}
+		
+		<FUNCTION_END>
+		return SRESULT_WAIT;
+	}
+	end_code_block
+	
+	event "All_Run"
+	{
+		code EnterState
+	}
+	
+	event "All_RunCrouch"
+	{
+		macro CROUCH_STATE
+		code EnterState
+	}
+	
+	event "All_RunThink"
+	{
+		code ThinkState
+	}
+	
+	event "All_RunCrouchThink"
+	{
+		macro CROUCH_STATE
+		code ThinkState
+	}
+}
+
+animbp Player_All_Death
+{
+	code_block EnterState
+	{
+		<FUNCTION_START>
+		animator.PlayAnim(ANIMCHANNEL_ALL, anim_death, gameLocal.time, 0);
+		SetAnimState(ANIMCHANNEL_TORSO, "All_Dead", 0, 0);
+		<FUNCTION_END>
+		return SRESULT_DONE;
+	}
+	end_code_block
+	
+	code_block ThinkState
+	{
+		<FUNCTION_START>
+		<FUNCTION_END>
+		return SRESULT_WAIT;
+	}
+	end_code_block
+	
+	event "All_Die"
+	{
+		code EnterState
+	}
+
+	event "All_Dead"
+	{
+		code ThinkState
+	}
+}

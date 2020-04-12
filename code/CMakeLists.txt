@@ -214,10 +214,6 @@ set(src_game
 	./game/physics
 	./game/Player.cpp
 	./game/Player_states.cpp
-	./game/Player_states_idle.cpp
-	./game/Player_states_run.cpp
-	./game/Player_states_fire.cpp
-	./game/Player_states_death.cpp
 	./game/Player.h
 	./game/PlayerIcon.cpp
 	./game/PlayerIcon.h
@@ -342,6 +338,14 @@ target_compile_definitions(game PRIVATE GAME_DLL=1)
 target_link_libraries(game idLib)
 add_precompiled_header( game game_precompiled.h  SOURCE_CXX ./game/game_precompiled.cpp )
 set_target_properties(game PROPERTIES OUTPUT_NAME "gamex64" LINK_FLAGS "/PDB:\"Game.pdb\"")
+
+get_filename_component(DIR_ONE_ABOVE ../ ABSOLUTE)
+
+add_custom_target(
+    GameCustomTarget
+    COMMAND ${DIR_ONE_ABOVE}/editor/BuildTool.exe
+)
+add_dependencies(game GameCustomTarget)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/full_sdk_license.txt") 	
 	Message("Including Tools...")
