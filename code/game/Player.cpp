@@ -1335,6 +1335,9 @@ void idPlayer::Init( void ) {
 	anim_run = animator.GetAnim("run");
 	anim_death = animator.GetAnim("death");
 
+	anim_jump_start = animator.GetAnim("jump_start");
+	anim_jump_end = animator.GetAnim("jump_end");
+
 	SetAnimState(ANIMCHANNEL_TORSO, "All_Idle", 0, 0);
 
 

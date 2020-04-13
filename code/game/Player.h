@@ -720,6 +720,9 @@ public:
 
 	stateResult_t			State_All_Dead(const stateParms_t& parms);
 	stateResult_t			State_All_Die(const stateParms_t& parms);
+
+	stateResult_t			State_All_JumpStart(const stateParms_t& parms);
+	stateResult_t			State_All_JumpThink(const stateParms_t& parms);
 private:
 	const idSoundShader*	teleportInSFX;
 
@@ -733,6 +736,9 @@ private:
 	int						anim_death;
 
 	int						anim_fire;
+
+	int						anim_jump_start;
+	int						anim_jump_end;
 };
 
 ID_INLINE bool idPlayer::IsReady( void ) {
