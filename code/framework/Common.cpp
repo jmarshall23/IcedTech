@@ -2241,7 +2241,6 @@ void idCommonLocal::InitCommands( void ) {
 	cmdSystem->AddCommand( "dmap", Dmap_f, CMD_FL_TOOL, "compiles a map", idCmdSystem::ArgCompletion_MapName );
 	cmdSystem->AddCommand( "renderbump", RenderBump_f, CMD_FL_TOOL, "renders a bump map", idCmdSystem::ArgCompletion_ModelName );
 	cmdSystem->AddCommand( "renderbumpFlat", RenderBumpFlat_f, CMD_FL_TOOL, "renders a flat bump map", idCmdSystem::ArgCompletion_ModelName );
-	cmdSystem->AddCommand( "roq", RoQFileEncode_f, CMD_FL_TOOL, "encodes a roq file" );
 	cmdSystem->AddCommand( "megalight", MegaLight_f, CMD_FL_TOOL, "builds lightmaps for a megatexture.");
 	cmdSystem->AddCommand( "megagen", RunMegaGen_f, CMD_FL_TOOL, "builds a source megatexture(giant tga) for a mega project.");
 	cmdSystem->AddCommand("navbuild", NavMesh_f, CMD_FL_TOOL, "builds a navmesh file", idCmdSystem::ArgCompletion_MapName);
@@ -2955,6 +2954,7 @@ idCommonLocal::GetEditorGameWindow
 ====================
 */
 void idCommonLocal::GetEditorGameWindow(int& width, int& height) {
+#ifdef ID_ALLOW_TOOLS
 	if (!IsEditorGameRunning()) {
 		width = -1;
 		height = -1;
@@ -2962,6 +2962,9 @@ void idCommonLocal::GetEditorGameWindow(int& width, int& height) {
 	}
 
 	RadiantGetGameWindowSize(width, height);
+#else
+	common->Warning("idCommonLocal::GetEditorGameWindow: Not allowed in this build!\n");
+#endif
 }
 
 // jmarshall

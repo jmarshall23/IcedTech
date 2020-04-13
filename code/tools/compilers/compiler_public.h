@@ -44,9 +44,6 @@ void Dmap_f( const idCmdArgs &args );
 void RenderBump_f( const idCmdArgs &args );
 void RenderBumpFlat_f( const idCmdArgs &args );
 
-// video file encoding
-void RoQFileEncode_f( const idCmdArgs &args );
-
 // MegaGen compiler
 void RunMegaGen_f(const idCmdArgs &args);
 

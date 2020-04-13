@@ -2482,7 +2482,7 @@ void idSessionLocal::UpdateScreen( bool outOfSequence ) {
 		//		common->FatalError( "idSessionLocal::UpdateScreen: recursively called" );
 	}
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(ID_ALLOW_TOOLS)
 
 	if ( com_editors ) {
 		if ( common->IsEditorRunning() ) {

@@ -22,6 +22,9 @@ idGameLocal::InitGameRenderSystem
 ========================
 */
 void idGameLocal::InitGameRenderSystem(void) {
+	if (common->IsDedicatedServer() || !renderSystem->IsOpenGLRunning())
+		return;
+
 	{
 		idImageOpts opts;
 		opts.format = FMT_RGBA8;
@@ -137,6 +140,9 @@ idGameLocal::RenderScene
 ====================
 */
 void idGameLocal::RenderScene(const renderView_t *view, idRenderWorld *renderWorld) {
+	if (common->IsDedicatedServer() || !renderSystem->IsOpenGLRunning())
+		return;
+
 	// Run the feedback job on last frames data.
 	renderSystem->RunFeedbackJob(gameRender.feedbackRenderPassRT[!gameRender.feedbackBufferId]);
 

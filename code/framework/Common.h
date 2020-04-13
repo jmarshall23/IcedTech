@@ -222,6 +222,10 @@ public:
 
 								// Gets the editor game window dinemsions.
 	virtual void				GetEditorGameWindow(int& width, int& height) = 0;
+
+								// Returns true if we are running as a dedicated server.
+								// This means we are headless.
+	virtual bool				IsDedicatedServer(void) = 0;
 };
 
 extern idCommon *		common;

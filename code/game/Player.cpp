@@ -3841,11 +3841,11 @@ void idPlayer::Weapon_Combat( void ) {
 			animPrefix.Strip( "weapon_" );
 
 			weapon.GetEntity()->NetCatchup();
-			const function_t *newstate = GetScriptFunction( "NetCatchup" );
-			if ( newstate ) {
-				SetState( newstate );
-				UpdateScript();
-			}
+			//const function_t *newstate = GetScriptFunction( "NetCatchup" );
+			//if ( newstate ) {
+			//	SetState( newstate );
+			//	UpdateScript();
+			//}
 			weaponCatchup = false;			
 		} else {
 			weapon.GetEntity()->PutAway();

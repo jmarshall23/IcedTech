@@ -1,1 +1,1 @@
-Darklight.exe +set vt_transcodeShowPages 0 +set r_debugContext 0 +set r_fullscreen 0 +set r_mode 0 +set fs_game dkbase
+Darklight.exe +set vt_transcodeShowPages 0 +set r_debugContext 0 +set r_fullscreen 0 +set r_mode 0 +set fs_game dkbase +set si_pure 0

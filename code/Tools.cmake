@@ -98,10 +98,6 @@ set(src_tools
 	./tools/compilers/megalight/MegaLight.cpp
 	./tools/compilers/renderbump/renderbump.cpp
 	./tools/compilers/renderprobes/renderprobes.cpp
-	./tools/compilers/roqvq/codec.cpp
-	./tools/compilers/roqvq/NSBitmapImageRep.cpp
-	./tools/compilers/roqvq/roq.cpp
-	./tools/compilers/roqvq/roqParam.cpp
 	./tools/decl/DialogDeclBrowser.cpp
 	./tools/decl/DialogDeclEditor.cpp
 	./tools/decl/DialogDeclNew.cpp
@@ -264,11 +260,6 @@ set(src_tools
 	./tools/compilers/dmap/dmap.h
 	./tools/compilers/megagen/MegaGen.h
 	./tools/compilers/megalight/MegaLight_file.h
-	./tools/compilers/roqvq/codec.h
-	./tools/compilers/roqvq/gdefs.h
-	./tools/compilers/roqvq/quaddefs.h
-	./tools/compilers/roqvq/roq.h
-	./tools/compilers/roqvq/roqParam.h
 	./tools/compilers/navmesh/navmeshbuild.cpp
 	./tools/debugger/DebuggerApp.h
 	./tools/debugger/DebuggerBreakpoint.h

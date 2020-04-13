@@ -2,9 +2,6 @@
 #
 
 set(src_engine
-	# Precompiled Header
-	./framework/Engine_precompiled.cpp
-
 	# Collision System
 	./cm/CollisionModel.cpp
 	./cm/CollisionModel_trace.cpp
@@ -161,14 +158,12 @@ set(src_engine
 	./renderer/Image_program.cpp
 	./renderer/Interaction.cpp
 	./renderer/Interaction.h
-	./renderer/jpeg-6
 	./renderer/Material.cpp
 	./renderer/Material.h
 	./renderer/MegaTexture.cpp
 	./renderer/MegaTexture.h
 	./renderer/MegaTextureBuild.cpp
 	./renderer/MegaTextureFile.cpp
-	./renderer/qgllib
 	./renderer/RenderEntity.cpp
 	./renderer/RenderMatrix.cpp
 	./renderer/RenderMatrix.h
@@ -212,67 +207,6 @@ set(src_engine
 	./renderer/DXT/DXTCodec.h
 	./renderer/DXT/DXTDecoder.cpp
 	./renderer/DXT/DXTEncoder.cpp
-	./renderer/jpeg-6/jcapimin.c
-	./renderer/jpeg-6/jcapistd.c
-	./renderer/jpeg-6/jccoefct.c
-	./renderer/jpeg-6/jccolor.c
-	./renderer/jpeg-6/jcdctmgr.c
-	./renderer/jpeg-6/jchuff.c
-	./renderer/jpeg-6/jchuff.h
-	./renderer/jpeg-6/jcinit.c
-	./renderer/jpeg-6/jcmainct.c
-	./renderer/jpeg-6/jcmarker.c
-	./renderer/jpeg-6/jcmaster.c
-	./renderer/jpeg-6/jcomapi.c
-	./renderer/jpeg-6/jconfig.h
-	./renderer/jpeg-6/jcparam.c
-	./renderer/jpeg-6/jcphuff.c
-	./renderer/jpeg-6/jcprepct.c
-	./renderer/jpeg-6/jcsample.c
-	./renderer/jpeg-6/jctrans.c
-	./renderer/jpeg-6/jdapimin.c
-	./renderer/jpeg-6/jdapistd.c
-	./renderer/jpeg-6/jdatadst.c
-	./renderer/jpeg-6/jdatasrc.c
-	./renderer/jpeg-6/jdcoefct.c
-	./renderer/jpeg-6/jdcolor.c
-	./renderer/jpeg-6/jdct.h
-	./renderer/jpeg-6/jddctmgr.c
-	./renderer/jpeg-6/jdhuff.c
-	./renderer/jpeg-6/jdhuff.h
-	./renderer/jpeg-6/jdinput.c
-	./renderer/jpeg-6/jdmainct.c
-	./renderer/jpeg-6/jdmarker.c
-	./renderer/jpeg-6/jdmaster.c
-	./renderer/jpeg-6/jdmerge.c
-	./renderer/jpeg-6/jdphuff.c
-	./renderer/jpeg-6/jdpostct.c
-	./renderer/jpeg-6/jdsample.c
-	./renderer/jpeg-6/jdtrans.c
-	./renderer/jpeg-6/jerror.c
-	./renderer/jpeg-6/jerror.h
-	./renderer/jpeg-6/jfdctflt.c
-	./renderer/jpeg-6/jfdctfst.c
-	./renderer/jpeg-6/jfdctint.c
-	./renderer/jpeg-6/jidctflt.c
-	./renderer/jpeg-6/jidctfst.c
-	./renderer/jpeg-6/jidctint.c
-	./renderer/jpeg-6/jidctred.c
-	./renderer/jpeg-6/jinclude.h
-	./renderer/jpeg-6/jmemmgr.c
-	./renderer/jpeg-6/jmemnobs.c
-	./renderer/jpeg-6/jmemsys.h
-	./renderer/jpeg-6/jmorecfg.h
-	./renderer/jpeg-6/jpegint.h
-	./renderer/jpeg-6/jpeglib.h
-	./renderer/jpeg-6/jquant1.c
-	./renderer/jpeg-6/jquant2.c
-	./renderer/jpeg-6/jutils.c
-	./renderer/jpeg-6/jversion.h
-	./renderer/qgllib/glew.c
-	./renderer/qgllib/glew.h
-	./renderer/qgllib/qgllib.h
-	./renderer/qgllib/wglew.h
 
 	# Sound System
 	./sound/snd_emitter.cpp
@@ -461,6 +395,11 @@ set(src_external
 	./external/zlib/minizip/unzip.h
 	./external/zlib/minizip/zip.h
 
+	./external/glew/glew.c
+	./external/glew/glew.h
+	./external/glew/qgllib.h
+	./external/glew/wglew.h
+
 	./external/png/png.c
 	./external/png/pngerror.c
 	./external/png/pnggccrd.c
@@ -553,7 +492,7 @@ target_include_directories(External PRIVATE ./external/Recast/include ./external
 
 # DoomDLL Project
 add_definitions(-D__DOOM_DLL__)
-add_library(DoomDLL SHARED  ${src_engine} )
+add_library(DoomDLL SHARED  ${src_engine} ./framework/Engine_precompiled.cpp )
 target_link_libraries(DoomDLL idLib External Tools "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib" "${CMAKE_SOURCE_DIR}/external/openal/out/build/x64-Release/OpenAL32.lib")
 add_precompiled_header( DoomDLL Engine_precompiled.h  SOURCE_CXX ./framework/Engine_precompiled.cpp )
 set_target_properties(DoomDLL PROPERTIES OUTPUT_NAME "DoomDLL" LINK_FLAGS "/STACK:16777216,16777216 /PDB:\"DoomDLL.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/exports.def")
@@ -563,3 +502,12 @@ target_include_directories(DoomDLL PRIVATE ./external/Recast/include ./external/
 add_executable(Launcher ${src_launcher})
 target_link_libraries(Launcher DoomDLL)
 set_target_properties(Launcher PROPERTIES OUTPUT_NAME "Darklight" LINK_FLAGS "/STACK:16777216,16777216 /SUBSYSTEM:WINDOWS /PDB:\"Darklight.pdb\"")
+
+# Dedicated Server
+add_executable(DoomDedicatedServer ${src_engine} ./framework/Dedicated_precompiled.cpp)
+target_compile_definitions(DoomDedicatedServer PRIVATE ID_DEDICATED ID_ENGINE_EXECUTABLE)
+add_precompiled_header( DoomDedicatedServer Engine_precompiled.h  SOURCE_CXX ./framework/Dedicated_precompiled.cpp )
+target_link_libraries(DoomDedicatedServer idLib External "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib" "${CMAKE_SOURCE_DIR}/external/openal/out/build/x64-Release/OpenAL32.lib")
+target_include_directories(DoomDedicatedServer PRIVATE ./external/Recast/include ./external/detour/Include ./external/openal/include)
+set_target_properties(DoomDedicatedServer PROPERTIES OUTPUT_NAME "DarklightDedicated" LINK_FLAGS "/STACK:16777216,16777216 /SUBSYSTEM:WINDOWS /PDB:\"DarklightDedicated.pdb\"")
+add_dependencies(DoomDedicatedServer DoomDLL )
