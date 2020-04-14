@@ -1836,6 +1836,9 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 	renderEntity.weaponDepthHack = true;
 	renderEntity.skipEntityViewCulling = true;
 
+	renderEntity.SetLightChannel(LIGHT_CHANNEL_WORLD, true);
+	renderEntity.SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_PLAYER, true);
+
 	// present the model
 	if ( showViewModel ) {
 		Present();
