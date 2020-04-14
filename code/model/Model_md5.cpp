@@ -708,10 +708,11 @@ void idRenderModelMD5::LoadModel() {
 		meshes[i].ParseMesh(parser, defaultPose.Num(), poseMat3);
 // jmarshall end
 	}
-
+#ifndef ID_DEDICATED
 	// Upload the bind pose to the GPU.
 	jointBuffer = new idJointBuffer();
 	jointBuffer->AllocBufferObject((float *)invertedDefaultPose.Ptr(), invertedDefaultPose.Num());
+#endif
 
 	//
 	// calculate the bounds of the model

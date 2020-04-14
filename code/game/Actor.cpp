@@ -403,7 +403,7 @@ idActor::idActor( void ) {
 
 	scriptThread		= NULL;		// initialized by ConstructScriptObject, which is called by idEntity::Spawn
 
-	use_combat_bbox		= false;
+	use_combat_bbox		= true;
 	head				= NULL;
 
 	team				= 0;
@@ -497,7 +497,8 @@ void idActor::Spawn( void ) {
 	spawnArgs.GetInt( "team", "0", team );
 	spawnArgs.GetVector( "offsetModel", "0 0 0", modelOffset );
 
-	spawnArgs.GetBool( "use_combat_bbox", "0", use_combat_bbox );	
+//	spawnArgs.GetBool( "use_combat_bbox", "0", use_combat_bbox );	
+	use_combat_bbox = true;
 
 	viewAxis = GetPhysics()->GetAxis();
 
@@ -1524,12 +1525,12 @@ void idActor::SetCombatModel( void ) {
 	idAFAttachment *headEnt;
 
 	if ( !use_combat_bbox ) {
-		if ( combatModel ) {
-			combatModel->Unlink();
-			combatModel->LoadModel( modelDefHandle );
-		} else {
-			combatModel = new idClipModel( modelDefHandle );
-		}
+		//if ( combatModel ) {
+		//	combatModel->Unlink();
+		//	combatModel->LoadModel( modelDefHandle );
+		//} else {
+		//	combatModel = new idClipModel( modelDefHandle );
+		//}
 
 		headEnt = head.GetEntity();
 		if ( headEnt ) {

@@ -59,13 +59,15 @@ public:
 							idClipModel( void );
 							explicit idClipModel( const char *name );
 							explicit idClipModel( const idTraceModel &trm );
-							explicit idClipModel( const int renderModelHandle );
+//							explicit idClipModel( const int renderModelHandle );
 							explicit idClipModel( const idClipModel *model );
 							~idClipModel( void );
 
 	bool					LoadModel( const char *name );
 	void					LoadModel( const idTraceModel &trm );
-	void					LoadModel( const int renderModelHandle );
+// jmarshall
+//	void					LoadModel( const int renderModelHandle );
+// jmarshall end
 
 	void					Save( idSaveGame *savefile ) const;
 	void					Restore( idRestoreGame *savefile );

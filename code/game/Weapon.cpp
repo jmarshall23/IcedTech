@@ -1927,6 +1927,10 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 	}
 
 	UpdateSound();
+
+	if(gameLocal.isClient) {
+		gameRenderWorld->DebugBox(idVec4(255, 255, 255, 255), idBox(renderEntity.origin, idVec3(10, 10, 10), mat3_identity));
+	}
 }
 
 /*

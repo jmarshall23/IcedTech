@@ -1857,6 +1857,8 @@ void idAsyncClient::RunFrame( void ) {
 		lastFrameDelta = 0;
 	}
 
+	game->RunClientFrame();
+
 	// generate user commands for the predicted time
 	while ( gameTimeResidual + clientPredictTime >= USERCMD_MSEC ) {
 

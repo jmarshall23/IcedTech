@@ -1450,6 +1450,10 @@ void idGameLocal::ClientProcessReliableMessage( int clientNum, const idBitMsg &m
 			mpGame.ClientReadWarmupTime( msg );
 			break;
 		}
+		case GAME_RELIABLE_MESSAGE_WARMUPTIMELEFT: {
+			mpGame.ClientReadWarmupTimeLeft(msg);
+			break;
+		}
 		default: {
 			Error( "Unknown server->client reliable message: %d", id );
 			break;
@@ -1772,4 +1776,13 @@ void idGameLocal::RunBotFrame(void) {
 	{
 		registeredBots[i]->BotInputFrame();
 	}
+}
+
+/*
+================
+idGameLocal::RunClientFrame
+================
+*/
+void idGameLocal::RunClientFrame(void) {
+
 }

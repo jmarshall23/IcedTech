@@ -2270,6 +2270,11 @@ Cmd_AddBot_f
 void Cmd_AddBot_f(const idCmdArgs &args) {
 	int clientNum;
 
+	if(!gameLocal.isServer) {
+		common->Warning("You can't add a bot, your not the server admin\n");
+		return;
+	}
+
 	clientNum = networkSystem->AllocateClientSlotForBot(8);
 	if (clientNum == -1) {
 		return;

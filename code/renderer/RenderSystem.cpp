@@ -1154,6 +1154,7 @@ idRenderSystemLocal::RunFeedbackJob
 ===============
 */
 void idRenderSystemLocal::RunFeedbackJob(idRenderTexture *feedbackRT) {
+#ifndef ID_DEDICATED
 	if (virtualTextureSystem.IsFeedbackJobRunning())
 		return;
 
@@ -1163,6 +1164,7 @@ void idRenderSystemLocal::RunFeedbackJob(idRenderTexture *feedbackRT) {
 
 	vtFeedbackJobList->AddJob((jobRun_t)R_FeedbackJobThread, NULL);
 	vtFeedbackJobList->Submit();
+#endif
 }
 
 /*

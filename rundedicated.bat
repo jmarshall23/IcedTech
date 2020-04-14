@@ -1,0 +1,1 @@
+DarklightDedicated.exe +set si_pure 0

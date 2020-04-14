@@ -2198,9 +2198,9 @@ void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_a
 	physicsObj.SetClipModelAxis();
 	physicsObj.EnableClip();
 
-	if ( !spectating ) {
-		SetCombatContents( true );
-	}
+	//if ( !spectating ) {
+	//	SetCombatContents( true );
+	//}
 
 	physicsObj.SetLinearVelocity( vec3_origin );
 
@@ -4058,6 +4058,10 @@ void idPlayer::UpdateWeapon( void ) {
 	
 	if ( hiddenWeapon ) {
 		weapon.GetEntity()->LowerWeapon();
+	}
+
+	if (gameLocal.GetLocalPlayer() == this) {
+		renderEntity.suppressShadowInViewID = entityNumber + 1;
 	}
 
 	// update weapon state, particles, dlights, etc
@@ -7812,6 +7816,12 @@ void idPlayer::ClientPredictionThink( void ) {
 
 	// this may use firstPersonView, or a thirdPerson / camera view
 	CalculateRenderView();
+
+	if(gameLocal.isMultiplayer && !spectating) {
+		if(weapon.IsValid()) {
+			weapon->Think();
+		}
+	}
 
 	if ( !gameLocal.inCinematic && weapon.GetEntity() && ( health > 0 ) && !( gameLocal.isMultiplayer && spectating ) ) {
 		UpdateWeapon();

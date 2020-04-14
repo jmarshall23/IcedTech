@@ -1,0 +1,503 @@
+windowDef Desktop
+{
+	rect	0, 0, 640, 480
+	backcolor	0, 0, 0, 0.7
+	selected	0
+	menugui	1
+	font	"fonts/bank"
+	
+	onNamedEvent CDKey {
+		setFocus "CDKeyEntryBox" ;
+	}
+	
+	onNamedEvent Prompt {
+		setFocus "PromtEntryBox" ;
+	}
+	
+	windowDef MsgBox
+	{
+		rect	0,0,640,480
+		visible	"gui::visible_msgbox"
+		windowDef RDGBgMain1
+		{
+			rect	140, 130, -32, -32
+			background	"gui/mainmenu/content_smallcorner"
+			matcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef RDGBgMain2
+		{
+			rect	172, 130, 300, 32
+			backcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef RDGBgMain3
+		{
+			rect	472, 130, 32, -32
+			background	"gui/mainmenu/content_smallcorner"
+			matcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef RDGBgMain4
+		{
+			rect	140, 162, 364, 80
+			backcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef RDGBgMain5
+		{
+			rect	140, 242, -32, 32
+			background	"gui/mainmenu/content_smallcorner"
+			matcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef RDGBgMain6
+		{
+			rect	172, 242, 300, 32
+			backcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef RDGBgMain7
+		{
+			rect	472, 242, 32, 32
+			background	"gui/mainmenu/content_smallcorner"
+			matcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef RDGBgMain8
+		{
+			rect	143, 133, 340, 279
+			background	"gui/mainmenu/content_glow2"
+			matcolor	1, 1, 1, 0.18
+			noevents	1
+			visible	1
+		}
+		windowDef RDGBgMain81
+		{
+			rect	161,-7,-340,-279
+			background	"gui/mainmenu/content_glow2"
+			matcolor	0, 0.08, 0.1, 0.3
+			noevents	1
+			visible	1
+		}
+		windowDef RDG
+		{
+			rect	142, 132, 360, 140
+			visible	1
+			windowDef RDGTitleText
+			{
+				rect	20, 5, 305, 20
+				text	"gui::title"//"TEST TITLE"
+				textscale	0.32
+				textaligny	-3
+				forecolor	1, 1, 1, 1
+			}
+			windowDef RDGTitleBar
+			{
+				rect	5, 23, 345, 2
+				backcolor	0.6 ,0.8 ,1 ,0.2
+				noevents	1
+			}
+			windowDef RDGText
+			{
+				rect	30, 30, 300, 100
+				text	"gui::message"
+				forecolor	1, 1, 1, 1
+				textscale	0.25
+				font "fonts/bank"
+			}
+			windowDef RDGBtn1
+			{
+				rect	60, 110, 133, 32
+				visible	"gui::visible_left"
+				windowDef RDGBtn1Border
+				{
+					rect	4, 6, 76, 19
+					backcolor	0.45 ,0.55 ,0.7 ,0.3
+					noevents	1
+				}
+				windowDef RDGBtn1Corner
+				{
+					rect	80, 0, 16, 32
+					background	"gui/mainmenu/button_cornerangle"
+					matcolor	0.45 ,0.55 ,0.7 ,0.3
+					noevents	1
+				}
+				windowDef RDGBtn1EdgeG
+				{
+					rect	0, 0, 16, 32
+					background	"gui/mainmenu/buttong_cornersquare"
+					matcolor	0.55 ,0.65 ,0.75 ,0.5
+					noevents	1
+				}
+				windowDef RDGBtn1BorderG
+				{
+					rect	16, 0, 64, 32
+					background	"gui/mainmenu/buttong_middlesm"
+					matcolor	0.55 ,0.65 ,0.75 ,0.5
+					noevents	1
+				}
+				windowDef RDGBtn1CornerG
+				{
+					rect	80, 0, 16, 32
+					background	"gui/mainmenu/buttong_cornerangle"
+					matcolor	0.55 ,0.65 ,0.75 ,0.5
+					noevents	1
+				}
+			}
+			windowDef RDGBtn2
+			{
+				rect	210, 110, 133, 32
+				visible	"gui::visible_right"
+				windowDef RDGBtn2Border
+				{
+					rect	4, 6, 76, 19
+					backcolor	0.45 ,0.55 ,0.7 ,0.3
+					noevents	1
+				}
+				windowDef RDGBtn2Corner
+				{
+					rect	80, 0, 16, 32
+					background	"gui/mainmenu/button_cornerangle"
+					matcolor	0.45 ,0.55 ,0.7 ,0.3
+					noevents	1
+				}
+				windowDef RDGBtn2EdgeG
+				{
+					rect	0, 0, 16, 32
+					background	"gui/mainmenu/buttong_cornersquare"
+					matcolor	0.55 ,0.65 ,0.75 ,0.5
+					noevents	1
+				}
+				windowDef RDGBtn2BorderG
+				{
+					rect	16, 0, 64, 32
+					background	"gui/mainmenu/buttong_middlesm"
+					matcolor	0.55 ,0.65 ,0.75 ,0.5
+					noevents	1
+				}
+				windowDef RDGBtn2CornerG
+				{
+					rect	80, 0, 16, 32
+					background	"gui/mainmenu/buttong_cornerangle"
+					matcolor	0.55 ,0.65 ,0.75 ,0.5
+					noevents	1
+				}
+			}
+			windowDef RDGBtn3
+			{
+				rect	135, 110, 133, 32
+				visible	"gui::visible_mid"
+				windowDef RDGBtn3Border
+				{
+					rect	4, 6, 76, 19
+					backcolor	0.45 ,0.55 ,0.7 ,0.3
+					noevents	1
+				}
+				windowDef RDGBtn3Corner
+				{
+					rect	80, 0, 16, 32
+					background	"gui/mainmenu/button_cornerangle"
+					matcolor	0.45 ,0.55 ,0.7 ,0.3
+					noevents	1
+				}
+				windowDef RDGBtn3EdgeG
+				{
+					rect	0, 0, 16, 32
+					background	"gui/mainmenu/buttong_cornersquare"
+					matcolor	0.55 ,0.65 ,0.75 ,0.5
+					noevents	1
+				}
+				windowDef RDGBtn3BorderG
+				{
+					rect	16, 0, 64, 32
+					background	"gui/mainmenu/buttong_middlesm"
+					matcolor	0.55 ,0.65 ,0.75 ,0.5
+					noevents	1
+				}
+				windowDef RDGBtn3CornerG
+				{
+					rect	80, 0, 16, 32
+					background	"gui/mainmenu/buttong_cornerangle"
+					matcolor	0.55 ,0.65 ,0.75 ,0.5
+					noevents	1
+				}
+			}
+			windowDef MiddleBtnText
+			{
+				rect	140, 116, 80, 19
+				text	"gui::mid"
+				textscale	0.25
+				textalign	1
+				textaligny	-1
+				forecolor	0.6, 1, 1, 1
+				visible	"gui::visible_mid"
+
+				onMouseEnter {
+					transition "forecolor" "0.6 1 1 1" "1 1 1 1" "250" ;
+					transition "RDGBtn3EdgeG::matcolor" "0.8 0.9 1 1" "0.55 0.65 0.75 1" "250" ;
+					transition "RDGBtn3BorderG::matcolor" "0.8 0.9 1 1" "0.55 0.65 0.75 1" "250" ;
+					transition "RDGBtn3CornerG::matcolor" "0.8 0.9 1 1" "0.55 0.65 0.75 1" "250" ;
+					transition "RDGBtn3Border::backcolor" "0.45 0.55 0.7 0.3" "0.55 0.65 0.75 0.5" "200" ;
+					transition "RDGBtn3Corner::matcolor" "0.45 0.55 0.7 0.3" "0.55 0.65 0.75 0.5" "200" ;
+				}
+
+				onMouseExit {
+					set "forecolor" "1 1 1 1" "0.6 1 1 1" ;
+					set "RDGBtn3EdgeG::matcolor" "0.55 0.65 0.75 0.5" ;
+					set "RDGBtn3BorderG::matcolor" "0.55 0.65 0.75 0.5" ;
+					set "RDGBtn3CornerG::matcolor" "0.55 0.65 0.75 0.5" ;
+					set "RDGBtn3Border::backcolor" "0.45 0.55 0.7 0.3" ;
+					set "RDGBtn3Corner::matcolor" "0.45 0.55 0.7 0.3" ;
+				}
+
+				onActionRelease {
+					set	"cmd"	"mid" ; 
+
+					transition "forecolor" "1 1 1 1" "0.6 1 1 1" "250" ;
+					transition "RDGBtn3EdgeG::matcolor" "0.55 0.65 0.75 1" "0.55 0.65 0.75 0.5" "400" ;
+					transition "RDGBtn3BorderG::matcolor" "0.55 0.65 0.75 1" "0.55 0.65 0.75 0.5" "400" ;
+					transition "RDGBtn3CornerG::matcolor" "0.55 0.65 0.75 1" "0.55 0.65 0.75 0.5" "400" ;
+					transition "RDGBtn3Border::backcolor" "0.55 0.65 0.75 0.5" "0.45 0.55 0.7 0.3" "400" ;
+					transition "RDGBtn3Corner::matcolor" "0.55 0.65 0.75 0.5" "0.45 0.55 0.7 0.3" "400" ;
+				}
+
+			}
+			windowDef LeftBtnText
+			{
+				rect	65, 116, 80, 19
+				text	"gui::left"
+				textscale	0.25
+				textalign	1
+				textaligny	-1
+				forecolor	0.6, 1, 1, 1
+				visible	"gui::visible_left"
+
+				onMouseEnter {
+					transition "forecolor" "0.6 1 1 1" "1 1 1 1" "250" ;
+					transition "RDGBtn1EdgeG::matcolor" "0.8 0.9 1 1" "0.55 0.65 0.75 1" "250" ;
+					transition "RDGBtn1BorderG::matcolor" "0.8 0.9 1 1" "0.55 0.65 0.75 1" "250" ;
+					transition "RDGBtn1CornerG::matcolor" "0.8 0.9 1 1" "0.55 0.65 0.75 1" "250" ;
+					transition "RDGBtn1Border::backcolor" "0.45 0.55 0.7 0.3" "0.55 0.65 0.75 0.5" "200" ;
+					transition "RDGBtn1Corner::matcolor" "0.45 0.55 0.7 0.3" "0.55 0.65 0.75 0.5" "200" ;
+				}
+
+				onMouseExit {
+					set "forecolor" "1 1 1 1" "0.6 1 1 1" ;
+					set "RDGBtn1EdgeG::matcolor" "0.55 0.65 0.75 0.5" ;
+					set "RDGBtn1BorderG::matcolor" "0.55 0.65 0.75 0.5" ;
+					set "RDGBtn1CornerG::matcolor" "0.55 0.65 0.75 0.5" ;
+					set "RDGBtn1Border::backcolor" "0.45 0.55 0.7 0.3" ;
+					set "RDGBtn1Corner::matcolor" "0.45 0.55 0.7 0.3" ;
+				}
+
+				onActionRelease {
+					set	"cmd"	"left" ; 
+
+					transition "forecolor" "1 1 1 1" "0.6 1 1 1" "250" ;
+					transition "RDGBtn1EdgeG::matcolor" "0.55 0.65 0.75 1" "0.55 0.65 0.75 0.5" "400" ;
+					transition "RDGBtn1BorderG::matcolor" "0.55 0.65 0.75 1" "0.55 0.65 0.75 0.5" "400" ;
+					transition "RDGBtn1CornerG::matcolor" "0.55 0.65 0.75 1" "0.55 0.65 0.75 0.5" "400" ;
+					transition "RDGBtn1Border::backcolor" "0.55 0.65 0.75 0.5" "0.45 0.55 0.7 0.3" "400" ;
+					transition "RDGBtn1Corner::matcolor" "0.55 0.65 0.75 0.5" "0.45 0.55 0.7 0.3" "400" ;
+				}
+
+			}
+			windowDef RightBtnText
+			{
+				rect	215, 116, 80, 19
+				text	"gui::right"
+				textscale	0.25
+				textalign	1
+				textaligny	-1
+				forecolor	0.6, 1, 1, 1
+				visible	"gui::visible_right"
+
+				onMouseEnter {
+					transition "forecolor" "0.6 1 1 1" "1 1 1 1" "250" ;
+					transition "RDGBtn2EdgeG::matcolor" "0.8 0.9 1 1" "0.55 0.65 0.75 1" "250" ;
+					transition "RDGBtn2BorderG::matcolor" "0.8 0.9 1 1" "0.55 0.65 0.75 1" "250" ;
+					transition "RDGBtn2CornerG::matcolor" "0.8 0.9 1 1" "0.55 0.65 0.75 1" "250" ;
+					transition "RDGBtn2Border::backcolor" "0.45 0.55 0.7 0.3" "0.55 0.65 0.75 0.5" "200" ;
+					transition "RDGBtn2Corner::matcolor" "0.45 0.55 0.7 0.3" "0.55 0.65 0.75 0.5" "200" ;
+				}
+
+				onMouseExit {
+					set "forecolor" "1 1 1 1" "0.6 1 1 1" ;
+					set "RDGBtn2EdgeG::matcolor" "0.55 0.65 0.75 0.5" ;
+					set "RDGBtn2BorderG::matcolor" "0.55 0.65 0.75 0.5" ;
+					set "RDGBtn2CornerG::matcolor" "0.55 0.65 0.75 0.5" ;
+					set "RDGBtn2Border::backcolor" "0.45 0.55 0.7 0.3" ;
+					set "RDGBtn2Corner::matcolor" "0.45 0.55 0.7 0.3" ;
+				}
+
+				onActionRelease {
+					set	"cmd"	"right" ; 
+
+					transition "forecolor" "1 1 1 1" "0.6 1 1 1" "250" ;
+					transition "RDGBtn2EdgeG::matcolor" "0.55 0.65 0.75 1" "0.55 0.65 0.75 0.5" "400" ;
+					transition "RDGBtn2BorderG::matcolor" "0.55 0.65 0.75 1" "0.55 0.65 0.75 0.5" "400" ;
+					transition "RDGBtn2CornerG::matcolor" "0.55 0.65 0.75 1" "0.55 0.65 0.75 0.5" "400" ;
+					transition "RDGBtn2Border::backcolor" "0.55 0.65 0.75 0.5" "0.45 0.55 0.7 0.3" "400" ;
+					transition "RDGBtn2Corner::matcolor" "0.55 0.65 0.75 0.5" "0.45 0.55 0.7 0.3" "400" ;
+				}
+
+			}
+			windowDef EntryBox2
+			{
+				rect	50, 75, 258, 31
+				textscale	0.25
+				bordersize	1
+				bordercolor	0.7, 1, 1, 0.1
+				visible	"gui::visible_entry"
+				editDef PromtEntryBox
+				{
+					rect	5, 5, 245, 20
+					textscale	0.25
+					maxchars	16
+					bordersize	1
+					bordercolor	0,0,0,1
+					backcolor	0,0,0,0.5
+					text	"gui::str_entry"
+				}
+			}
+			windowDef CDKey
+			{
+				rect	50, 75, 258, 31
+				textscale	0.25
+				bordersize	1
+				bordercolor	0.7, 1, 1, 0.1
+				visible	"gui::visible_cdkey"
+				editDef CDKeyEntryBox
+				{
+					rect	5, 5, 195, 20
+					textscale	0.25
+					maxchars	16
+					bordersize	1
+					bordercolor	0,0,0,1
+					backcolor	0,0,0,0.5
+					text	"gui::str_cdkey"
+				}
+				editDef CDKeyChkBox
+				{
+					rect	210, 5, 40, 20
+					textscale	0.25
+					maxchars	2
+					bordersize	1
+					bordercolor	0,0,0,1
+					backcolor	0,0,0,0.5
+					text	"gui::str_cdchk"
+				}
+			}
+		}
+	}
+	windowDef WaitBox
+	{
+		rect	0,0,640,480
+		visible	"gui::visible_waitbox"
+		windowDef BgMain1
+		{
+			rect	140, 130, -32, -32
+			background	"gui/mainmenu/content_smallcorner"
+			matcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef BgMain2
+		{
+			rect	172, 130, 300, 32
+			backcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef BgMain3
+		{
+			rect	472, 130, 32, -32
+			background	"gui/mainmenu/content_smallcorner"
+			matcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef BgMain4
+		{
+			rect	140, 162, 364, 80
+			backcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef BgMain5
+		{
+			rect	140, 242, -32, 32
+			background	"gui/mainmenu/content_smallcorner"
+			matcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef BgMain6
+		{
+			rect	172, 242, 300, 32
+			backcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef BgMain7
+		{
+			rect	472, 242, 32, 32
+			background	"gui/mainmenu/content_smallcorner"
+			matcolor	0.18 ,0.25 ,0.3 ,1
+			noevents	1
+		}
+		windowDef BgMain8
+		{
+			rect	143, 133, 340, 279
+			background	"gui/mainmenu/content_glow2"
+			matcolor	1, 1, 1, 0.18
+			noevents	1
+		}
+		windowDef BgMain81
+		{
+			rect	161,-7,-340,-279
+			background	"gui/mainmenu/content_glow2"
+			matcolor	0, 0.08, 0.1, 0.3
+			noevents	1
+			visible	1
+		}
+		windowDef Msg
+		{
+			rect	142, 132, 360, 140
+			visible	1
+			windowDef TitleText
+			{
+				rect	20, 5, 305, 20
+				text	"#str_02509"
+				textscale	0.32
+				textaligny	-3
+				forecolor	1, 1, 1, 1
+			}
+			windowDef TitleBar
+			{
+				rect	5, 23, 345, 2
+				backcolor	0.6 ,0.8 ,1 ,0.2
+				noevents	1
+			}
+			windowDef Text
+			"{"
+				rect	30, 30, 300, 100
+				text	"gui::message"
+				forecolor	1, 1, 1, 1
+				textscale	0.25
+				font "fonts/bank"
+			}
+		}
+	}
+	windowDef GlowLeft
+	{
+		rect	66,74,256,256
+		background	"guis/assets/mainmenu/boxframe"
+		matcolor	1,1,1,1
+		noevents	1
+		visible	1
+	}
+	windowDef GlowRight
+	{
+		rect	322,74,-256,256
+		background	"guis/assets/mainmenu/boxframe"
+		matcolor	1,1,1,1
+		noevents	1
+		visible	1
+	}
+}

@@ -181,7 +181,8 @@ enum {
 	GAME_RELIABLE_MESSAGE_STARTSTATE,
 	GAME_RELIABLE_MESSAGE_MENU,
 	GAME_RELIABLE_MESSAGE_WARMUPTIME,
-	GAME_RELIABLE_MESSAGE_EVENT
+	GAME_RELIABLE_MESSAGE_EVENT,
+	GAME_RELIABLE_MESSAGE_WARMUPTIMELEFT
 };
 
 typedef enum {
@@ -402,6 +403,7 @@ public:
 	virtual void			CacheDictionaryMedia( const idDict *dict );
 	virtual void			SpawnPlayer( int clientNum, bool isBot, const char * botName);
 	virtual gameReturn_t	RunFrame( const usercmd_t *clientCmds );
+	virtual void			RunClientFrame(void);
 	virtual bool			Draw( int clientNum );
 	virtual escReply_t		HandleESC( idUserInterface **gui );
 	virtual idUserInterface	*StartMenu( void );

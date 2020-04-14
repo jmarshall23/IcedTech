@@ -1531,7 +1531,7 @@ void idMaterial::ParseStage( idLexer &src, const textureRepeat_t trpDefault ) {
 				if (src.ReadTokenOnLine(&token)) {
 					programInstanceMacros = token;
 				}
-
+#ifndef ID_DEDICATED
 				if (programInstanceName.Length() > 0) {
 					newStage.vertexProgram = renderProgManager.FindVertexShader(programName.c_str(), programInstanceName, programInstanceMacros);
 					newStage.fragmentProgram = renderProgManager.FindFragmentShader(programName.c_str(), programInstanceName, programInstanceMacros);
@@ -1540,6 +1540,7 @@ void idMaterial::ParseStage( idLexer &src, const textureRepeat_t trpDefault ) {
 					newStage.vertexProgram = renderProgManager.FindVertexShader(programName.c_str(), NULL, NULL);
 					newStage.fragmentProgram = renderProgManager.FindFragmentShader(programName.c_str(), NULL, NULL);
 				}
+#endif
 			}
 			continue;
 		}
@@ -2321,8 +2322,10 @@ void idMaterial::ParseMaterial( idLexer &src ) {
 	// add _flat or _white stages if needed
 	AddImplicitStages();
 
+#ifndef ID_DEDICATED
 	// Setup our virtual texture stages.
 	SetupVirtualTextureStages();
+#endif
 
 	// order the diffuse / bump / specular stages properly
 	SortInteractionStages();

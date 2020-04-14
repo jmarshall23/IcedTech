@@ -473,13 +473,13 @@ idAFAttachment::SetCombatModel
 ================
 */
 void idAFAttachment::SetCombatModel( void ) {
-	if ( combatModel ) {
-		combatModel->Unlink();
-		combatModel->LoadModel( modelDefHandle );
-	} else {
-		combatModel = new idClipModel( modelDefHandle );
-	}
-	combatModel->SetOwner( body );
+	//if ( combatModel ) {
+	//	combatModel->Unlink();
+	//	combatModel->LoadModel( modelDefHandle );
+	//} else {
+	//	combatModel = new idClipModel( modelDefHandle );
+	//}
+	//combatModel->SetOwner( body );
 }
 
 /*
@@ -816,12 +816,12 @@ idAFEntity_Base::SetCombatModel
 ================
 */
 void idAFEntity_Base::SetCombatModel( void ) {
-	if ( combatModel ) {
-		combatModel->Unlink();
-		combatModel->LoadModel( modelDefHandle );
-	} else {
-		combatModel = new idClipModel( modelDefHandle );
-	}
+	//if ( combatModel ) {
+	//	combatModel->Unlink();
+	//	combatModel->LoadModel( modelDefHandle );
+	//} else {
+	//	combatModel = new idClipModel( modelDefHandle );
+	//}
 }
 
 /*

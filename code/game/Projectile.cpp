@@ -797,7 +797,7 @@ void idProjectile::Explode( const trace_t &collision, idEntity *ignore ) {
 	gameLocal.AlertBots(owner->Cast<idPlayer>(), collision.endpos);
 
 	// Spawn Debris
-	if (collision.c.material != NULL && collision.c.entityNum == ENTITYNUM_WORLD) {
+	if (gameLocal.isServer && collision.c.material != NULL && collision.c.entityNum == ENTITYNUM_WORLD) {
 		idVec3 reflectedDir = idMath::ReflectVector(dir, collision.c.normal);
 		gameLocal.SpawnDebris(collision.endpos, reflectedDir.ToMat3(), collision.c.material->GetName());
 	}

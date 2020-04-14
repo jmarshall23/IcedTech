@@ -1507,9 +1507,15 @@ void idMultiplayerGame::Run() {
 				PlayGlobalSound( -1, SND_ONE );
 				one = true;
 			}
-			warmupTimeLeft = timeLeft;
+			warmupTimeLeft = timeLeft;		
 
-			warmupText = va( "Match starts in %i", timeLeft );
+			idBitMsg	outMsg;
+			byte		msgBuf[128];
+
+			outMsg.Init(msgBuf, sizeof(msgBuf));
+			outMsg.WriteByte(GAME_RELIABLE_MESSAGE_WARMUPTIMELEFT);
+			outMsg.WriteLong(warmupTimeLeft);
+			networkSystem->ServerSendReliableMessage(-1, outMsg);
 			break;
 		}
 		case GAMEON: {
@@ -2089,6 +2095,8 @@ void idMultiplayerGame::UpdateHud( idPlayer *player, idUserInterface *hud ) {
 
 	if(gameState == COUNTDOWN) {
 		ShowWarmupScreen(hud, true, warmupTimeLeft);
+
+		warmupText = va("Match starts in %i", warmupTimeLeft);
 	}
 	else {
 		ShowWarmupScreen(hud, false, -1);
@@ -3551,3 +3559,11 @@ void idMultiplayerGame::ClientReadWarmupTime( const idBitMsg &msg ) {
 	warmupEndTime = msg.ReadLong();
 }
 
+/*
+================
+idMultiplayerGame::ClientReadWarmupTime
+================
+*/
+void idMultiplayerGame::ClientReadWarmupTimeLeft(const idBitMsg& msg) {
+	warmupTimeLeft = msg.ReadLong();
+}

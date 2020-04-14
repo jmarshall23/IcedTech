@@ -987,9 +987,9 @@ void idAnimated::Spawn( void ) {
 	LoadAF();
 
 	// allow bullets to collide with a combat model
-	if ( spawnArgs.GetBool( "combatModel", "0" ) ) {
-		combatModel = new idClipModel( modelDefHandle );
-	}
+	//if ( spawnArgs.GetBool( "combatModel", "0" ) ) {
+	//	combatModel = new idClipModel( modelDefHandle );
+	//}
 
 	// allow the entity to take damage
 	if ( spawnArgs.GetBool( "takeDamage", "0" ) ) {

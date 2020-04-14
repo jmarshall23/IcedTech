@@ -255,6 +255,7 @@ public:
 	void			ServerWriteInitialReliableMessages( int clientNum );
 	void			ClientReadStartState( const idBitMsg &msg );
 	void			ClientReadWarmupTime( const idBitMsg &msg );
+	void			ClientReadWarmupTimeLeft(const idBitMsg& msg);
 
 	void			ServerClientConnect( int clientNum );
 

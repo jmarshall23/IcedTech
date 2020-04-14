@@ -249,20 +249,20 @@ void idClipModel::LoadModel( const idTraceModel &trm ) {
 idClipModel::LoadModel
 ================
 */
-void idClipModel::LoadModel( const int renderModelHandle ) {
-	collisionModelHandle = 0;
-	this->renderModelHandle = renderModelHandle;
-	if ( renderModelHandle != -1 ) {
-		const renderEntity_t *renderEntity = gameRenderWorld->GetRenderEntity( renderModelHandle );
-		if ( renderEntity ) {
-			bounds = renderEntity->bounds;
-		}
-	}
-	if ( traceModelIndex != -1 ) {
-		FreeTraceModel( traceModelIndex );
-		traceModelIndex = -1;
-	}
-}
+//void idClipModel::LoadModel( const int renderModelHandle ) {
+//	collisionModelHandle = 0;
+//	this->renderModelHandle = renderModelHandle;
+//	if ( renderModelHandle != -1 ) {
+//		const renderEntity_t *renderEntity = gameRenderWorld->GetRenderEntity( renderModelHandle );
+//		if ( renderEntity ) {
+//			bounds = renderEntity->bounds;
+//		}
+//	}
+//	if ( traceModelIndex != -1 ) {
+//		FreeTraceModel( traceModelIndex );
+//		traceModelIndex = -1;
+//	}
+//}
 
 /*
 ================
@@ -324,11 +324,11 @@ idClipModel::idClipModel( const idTraceModel &trm ) {
 idClipModel::idClipModel
 ================
 */
-idClipModel::idClipModel( const int renderModelHandle ) {
-	Init();
-	contents = CONTENTS_RENDERMODEL;
-	LoadModel( renderModelHandle );
-}
+//idClipModel::idClipModel( const int renderModelHandle ) {
+//	Init();
+//	contents = CONTENTS_RENDERMODEL;
+//	LoadModel( renderModelHandle );
+//}
 
 /*
 ================
@@ -1134,8 +1134,7 @@ bool idClip::Translation( trace_t &results, const idVec3 &start, const idVec3 &e
 			TraceRenderModel( trace, start, end, radius, trmAxis, touch );
 		} else {
 			idClip::numTranslations++;
-			collisionModelManager->Translation( &trace, start, end, trm, trmAxis, contentMask,
-									touch->Handle(), touch->origin, touch->axis );
+			collisionModelManager->Translation( &trace, start, end, trm, trmAxis, contentMask, touch->Handle(), touch->origin, touch->axis );
 		}
 
 		if ( trace.fraction < results.fraction ) {
