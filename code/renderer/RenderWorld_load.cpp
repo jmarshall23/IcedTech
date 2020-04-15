@@ -289,7 +289,7 @@ void idRenderWorldLocal::FreeDefs() {
 
 		mod = entityDefs[i];
 		if ( mod && mod->world == this ) {
-			FreeEntityDef( i );
+			FreeRenderEntity(mod);
 			entityDefs[i] = NULL;
 		}
 	}

@@ -213,14 +213,12 @@ this is the canonical renderEntity parm parsing,
 which should be used by dmap and the editor
 ================
 */
-void idGameEdit::ParseSpawnArgsToRenderEntity( const idDict *args, renderEntity_t *renderEntity ) {
+void idGameEdit::ParseSpawnArgsToRenderEntity( const idDict *args, idRenderEntity*renderEntity ) {
 	int			i;
 	const char	*temp;
 	idVec3		color;
 	float		angle;
 	const idDeclModelDef *modelDef;
-
-	memset( renderEntity, 0, sizeof( *renderEntity ) );
 
 	temp = args->GetString( "model" );
 
@@ -228,16 +226,18 @@ void idGameEdit::ParseSpawnArgsToRenderEntity( const idDict *args, renderEntity_
 	if ( temp[0] != '\0' ) {
 		modelDef = static_cast<const idDeclModelDef *>( declManager->FindType( DECL_MODELDEF, temp, false ) );
 		if ( modelDef ) {
-			renderEntity->hModel = modelDef->ModelHandle();
+			renderEntity->SetRenderModel(modelDef->ModelHandle());
 		}
-		if ( !renderEntity->hModel ) {
-			renderEntity->hModel = renderModelManager->FindModel( temp );
+		if ( !renderEntity->GetRenderModel() ) {
+			renderEntity->SetRenderModel(renderModelManager->FindModel(temp));
 		}
 	}
-	if ( renderEntity->hModel ) {
-		renderEntity->bounds = renderEntity->hModel->Bounds( renderEntity );
+	if ( renderEntity->GetRenderModel() ) {
+		renderEntity->SetBounds(renderEntity->GetRenderModel()->Bounds(renderEntity));
 	} else {
-		renderEntity->bounds.Zero();
+		idBounds zero;
+		zero.Zero();
+		renderEntity->SetBounds(zero);
 	}
 
 	// Setup the lighting channels.
@@ -246,7 +246,7 @@ void idGameEdit::ParseSpawnArgsToRenderEntity( const idDict *args, renderEntity_
 
 		idStr litChannel = args->GetString("litchannel", "");
 		if (litChannel.Length() > 0) {
-			renderEntity->lightChannel = 0; // If we have light channels set, we have to opt into any channel we want to use.
+			renderEntity->ClearLightChannel(); // If we have light channels set, we have to opt into any channel we want to use.
 
 			idParser litChannelParser;
 			litChannelParser.LoadMemory(litChannel, litChannel.Length(), "litChannel");
@@ -258,59 +258,68 @@ void idGameEdit::ParseSpawnArgsToRenderEntity( const idDict *args, renderEntity_
 
 	temp = args->GetString( "skin" );
 	if ( temp[0] != '\0' ) {
-		renderEntity->customSkin = declManager->FindSkin( temp );
+		renderEntity->SetCustomSkin(declManager->FindSkin( temp ));
 	} else if ( modelDef ) {
-		renderEntity->customSkin = modelDef->GetDefaultSkin();
+		renderEntity->SetCustomSkin(modelDef->GetDefaultSkin());
 	}
 
 	temp = args->GetString( "shader" );
 	if ( temp[0] != '\0' ) {
-		renderEntity->customShader = declManager->FindMaterial( temp );
+		renderEntity->SetCustomShader(declManager->FindMaterial( temp ));
 	}
 
-	args->GetVector( "origin", "0 0 0", renderEntity->origin );
-
+	renderEntity->SetOrigin(args->GetVector( "origin", "0 0 0"));
+	
 	// get the rotation matrix in either full form, or single angle form
-	if ( !args->GetMatrix( "rotation", "1 0 0 0 1 0 0 0 1", renderEntity->axis ) ) {
-		angle = args->GetFloat( "angle" );
-		if ( angle != 0.0f ) {
-			renderEntity->axis = idAngles( 0.0f, angle, 0.0f ).ToMat3();
-		} else {
-			renderEntity->axis.Identity();
+	if (args->FindKey("rotation")) {
+		renderEntity->SetAxis(args->GetMatrix("rotation", "1 0 0 0 1 0 0 0 1"));
+	}
+	else
+	{
+		angle = args->GetFloat("angle");
+		if (angle != 0.0f) {
+			renderEntity->SetAxis(idAngles(0.0f, angle, 0.0f).ToMat3());
+		}
+		else {
+			idMat3 iden;
+			iden.Identity();
+			renderEntity->SetAxis(iden);
 		}
 	}
 
-	renderEntity->referenceSound = NULL;
+	renderEntity->SetReferenceSound(NULL);
 
 	// get shader parms
 	args->GetVector( "_color", "1 1 1", color );
-	renderEntity->shaderParms[ SHADERPARM_RED ]		= color[0];
-	renderEntity->shaderParms[ SHADERPARM_GREEN ]	= color[1];
-	renderEntity->shaderParms[ SHADERPARM_BLUE ]	= color[2];
-	renderEntity->shaderParms[ 3 ]					= args->GetFloat( "shaderParm3", "1" );
-	renderEntity->shaderParms[ 4 ]					= args->GetFloat( "shaderParm4", "0" );
-	renderEntity->shaderParms[ 5 ]					= args->GetFloat( "shaderParm5", "0" );
-	renderEntity->shaderParms[ 6 ]					= args->GetFloat( "shaderParm6", "0" );
-	renderEntity->shaderParms[ 7 ]					= args->GetFloat( "shaderParm7", "0" );
-	renderEntity->shaderParms[ 8 ]					= args->GetFloat( "shaderParm8", "0" );
-	renderEntity->shaderParms[ 9 ]					= args->GetFloat( "shaderParm9", "0" );
-	renderEntity->shaderParms[ 10 ]					= args->GetFloat( "shaderParm10", "0" );
-	renderEntity->shaderParms[ 11 ]					= args->GetFloat( "shaderParm11", "0" );
+	renderEntity->SetShaderParms(SHADERPARM_RED,		color[0]);
+	renderEntity->SetShaderParms(SHADERPARM_GREEN,	color[1]);
+	renderEntity->SetShaderParms(SHADERPARM_BLUE,	color[2]);
+	renderEntity->SetShaderParms(3,					args->GetFloat( "shaderParm3", "1" ));
+	renderEntity->SetShaderParms(4,					args->GetFloat( "shaderParm4", "0" ));
+	renderEntity->SetShaderParms(5,					args->GetFloat( "shaderParm5", "0" ));
+	renderEntity->SetShaderParms(6,					args->GetFloat( "shaderParm6", "0" ));
+	renderEntity->SetShaderParms(7,					args->GetFloat( "shaderParm7", "0" ));
+	renderEntity->SetShaderParms(8,					args->GetFloat( "shaderParm8", "0" ));
+	renderEntity->SetShaderParms(9,					args->GetFloat( "shaderParm9", "0" ));
+	renderEntity->SetShaderParms(10,					args->GetFloat( "shaderParm10", "0" ));
+	renderEntity->SetShaderParms(11,					args->GetFloat( "shaderParm11", "0" ));
 
 	// check noDynamicInteractions flag
-	renderEntity->noDynamicInteractions = args->GetBool( "noDynamicInteractions" );
+	renderEntity->SetNoDynamicInteractions(args->GetBool( "noDynamicInteractions" ));
 
 	// check noshadows flag
-	renderEntity->noShadow = args->GetBool( "noshadows" );
+	renderEntity->SetNoShadow(args->GetBool( "noshadows" ));
 
 	// check noselfshadows flag
-	renderEntity->noSelfShadow = args->GetBool( "noselfshadows" );
+	renderEntity->SetNoSelfShadow(args->GetBool( "noselfshadows" ));
 
 	// init any guis, including entity-specific states
 	for( i = 0; i < MAX_RENDERENTITY_GUI; i++ ) {
 		temp = args->GetString( i == 0 ? "gui" : va( "gui%d", i + 1 ) );
 		if ( temp[ 0 ] != '\0' ) {
-			AddRenderGui( temp, &renderEntity->gui[ i ], args );
+			idUserInterface* gui;
+			AddRenderGui( temp, &gui, args );
+			renderEntity->SetGui(i, gui);
 		}
 	}
 }
@@ -392,7 +401,7 @@ void idEntity::UpdateChangeableSpawnArgs( const idDict *source ) {
 	}
 
 	for ( i = 0; i < MAX_RENDERENTITY_GUI; i++ ) {
-		UpdateGuiParms( renderEntity.gui[ i ], source );
+		UpdateGuiParms( renderEntity->GetGui(i), source );
 	}
 }
 
@@ -434,8 +443,7 @@ idEntity::idEntity() {
 	memset( &fl, 0, sizeof( fl ) );
 	fl.neverDormant	= true;			// most entities never go dormant
 
-	memset( &renderEntity, 0, sizeof( renderEntity ) );
-	modelDefHandle	= -1;
+	renderEntity = NULL;
 	memset( &refSound, 0, sizeof( refSound ) );
 
 	mpGUIState = -1;
@@ -481,19 +489,22 @@ void idEntity::Spawn( void ) {
 
 	FixupLocalizedStrings();
 
-	// parse static models the same way the editor display does
-	gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, &renderEntity );
+	// Allocate a render entity from the world.
+	renderEntity = gameRenderWorld->AllocRenderEntity();
 
-	renderEntity.entityNum = entityNumber;
+	// parse static models the same way the editor display does
+	gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, renderEntity );
+
+	renderEntity->SetEntityNum(entityNumber);
 
 	// By default all render entities are affected by the world.
-	renderEntity.SetLightChannel(LIGHT_CHANNEL_WORLD, true);
+	renderEntity->SetLightChannel(LIGHT_CHANNEL_WORLD, true);
 	
 	// go dormant within 5 frames so that when the map starts most monsters are dormant
 	dormantStart = gameLocal.time - DELAY_DORMANT_TIME + gameLocal.msec * 5;
 
-	origin = renderEntity.origin;
-	axis = renderEntity.axis;
+	origin = renderEntity->GetOrigin();
+	axis = renderEntity->GetAxis();
 
 	// do the audio parsing the same way dmap and the editor do
 	gameEdit->ParseSpawnArgsToRefSound( &spawnArgs, &refSound );
@@ -510,7 +521,7 @@ void idEntity::Spawn( void ) {
 	}
 
 	for ( i = 0; i < MAX_RENDERENTITY_GUI; i++ ) {
-		UpdateGuiParms( renderEntity.gui[ i ], &spawnArgs );
+		UpdateGuiParms( renderEntity->GetGui( i ), &spawnArgs );
 	}
 
 	fl.solidForTeam = spawnArgs.GetBool( "solidForTeam", "0" );
@@ -675,7 +686,7 @@ void idEntity::Save( idSaveGame *savefile ) const {
 	savefile->Write( &flags, sizeof( flags ) );
 
 	savefile->WriteRenderEntity( renderEntity );
-	savefile->WriteInt( modelDefHandle );
+	//savefile->WriteInt( modelDefHandle );
 	savefile->WriteRefSound( refSound );
 
 	savefile->WriteObject( bindMaster );
@@ -750,7 +761,7 @@ void idEntity::Restore( idRestoreGame *savefile ) {
 	LittleBitField( &fl, sizeof( fl ) );
 	
 	savefile->ReadRenderEntity( renderEntity );
-	savefile->ReadInt( modelDefHandle );
+//	savefile->ReadInt( modelDefHandle );
 	savefile->ReadRefSound( refSound );
 
 	savefile->ReadObject( reinterpret_cast<idClass *&>( bindMaster ) );
@@ -788,9 +799,9 @@ void idEntity::Restore( idRestoreGame *savefile ) {
 	savefile->ReadInt( mpGUIState );
 
 	// restore must retrieve modelDefHandle from the renderer
-	if ( modelDefHandle != -1 ) {
-		modelDefHandle = gameRenderWorld->AddEntityDef( &renderEntity );
-	}
+//	if ( modelDefHandle != -1 ) {
+//		modelDefHandle = gameRenderWorld->AddEntityDef( &renderEntity );
+//	}
 }
 
 /*
@@ -1029,7 +1040,7 @@ void idEntity::SetShaderParm( int parmnum, float value ) {
 		return;
 	}
 
-	renderEntity.shaderParms[ parmnum ] = value;
+	renderEntity->SetShaderParms(parmnum, value);
 	UpdateVisuals();
 }
 
@@ -1039,9 +1050,9 @@ idEntity::SetColor
 ================
 */
 void idEntity::SetColor( float red, float green, float blue ) {
-	renderEntity.shaderParms[ SHADERPARM_RED ]		= red;
-	renderEntity.shaderParms[ SHADERPARM_GREEN ]	= green;
-	renderEntity.shaderParms[ SHADERPARM_BLUE ]		= blue;
+	renderEntity->SetShaderParms( SHADERPARM_RED, red);
+	renderEntity->SetShaderParms( SHADERPARM_GREEN, green);
+	renderEntity->SetShaderParms( SHADERPARM_BLUE, blue);
 	UpdateVisuals();
 }
 
@@ -1061,9 +1072,9 @@ idEntity::GetColor
 ================
 */
 void idEntity::GetColor( idVec3 &out ) const {
-	out[ 0 ] = renderEntity.shaderParms[ SHADERPARM_RED ];
-	out[ 1 ] = renderEntity.shaderParms[ SHADERPARM_GREEN ];
-	out[ 2 ] = renderEntity.shaderParms[ SHADERPARM_BLUE ];
+	out[ 0 ] = renderEntity->GetShaderParms( SHADERPARM_RED );
+	out[ 1 ] = renderEntity->GetShaderParms(SHADERPARM_GREEN );
+	out[ 2 ] = renderEntity->GetShaderParms(SHADERPARM_BLUE );
 }
 
 /*
@@ -1072,10 +1083,10 @@ idEntity::SetColor
 ================
 */
 void idEntity::SetColor( const idVec4 &color ) {
-	renderEntity.shaderParms[ SHADERPARM_RED ]		= color[ 0 ];
-	renderEntity.shaderParms[ SHADERPARM_GREEN ]	= color[ 1 ];
-	renderEntity.shaderParms[ SHADERPARM_BLUE ]		= color[ 2 ];
-	renderEntity.shaderParms[ SHADERPARM_ALPHA ]	= color[ 3 ];
+	renderEntity->SetShaderParms( SHADERPARM_RED, color[ 0 ]);
+	renderEntity->SetShaderParms( SHADERPARM_GREEN,	color[ 1 ]);
+	renderEntity->SetShaderParms( SHADERPARM_BLUE, color[ 2 ]);
+	renderEntity->SetShaderParms( SHADERPARM_ALPHA, color[ 3 ]);
 	UpdateVisuals();
 }
 
@@ -1085,10 +1096,10 @@ idEntity::GetColor
 ================
 */
 void idEntity::GetColor( idVec4 &out ) const {
-	out[ 0 ] = renderEntity.shaderParms[ SHADERPARM_RED ];
-	out[ 1 ] = renderEntity.shaderParms[ SHADERPARM_GREEN ];
-	out[ 2 ] = renderEntity.shaderParms[ SHADERPARM_BLUE ];
-	out[ 3 ] = renderEntity.shaderParms[ SHADERPARM_ALPHA ];
+	out[ 0 ] = renderEntity->GetShaderParms( SHADERPARM_RED );
+	out[ 1 ] = renderEntity->GetShaderParms( SHADERPARM_GREEN );
+	out[ 2 ] = renderEntity->GetShaderParms( SHADERPARM_BLUE );
+	out[ 3 ] = renderEntity->GetShaderParms( SHADERPARM_ALPHA );
 }
 
 /*
@@ -1108,23 +1119,29 @@ idEntity::SetModel
 */
 void idEntity::SetModel( const char *modelname ) {
 	assert( modelname );
+// jmarshall - why does SetModel need to nuke the entire renderEntity?
+	//FreeModelDef();
+// jmarshall end
 
-	FreeModelDef();
+	idRenderModel *model = renderModelManager->FindModel( modelname );
 
-	renderEntity.hModel = renderModelManager->FindModel( modelname );
-
-	if ( renderEntity.hModel ) {
-		renderEntity.hModel->Reset();
+	if ( model ) {
+		model->Reset();
 	}
 
-	renderEntity.callback = NULL;
-	renderEntity.numJoints = 0;
-	renderEntity.joints = NULL;
-	if ( renderEntity.hModel ) {
-		renderEntity.bounds = renderEntity.hModel->Bounds( &renderEntity );
+	renderEntity->SetRenderModel(model);
+	renderEntity->SetCallback(NULL);
+	renderEntity->SetNumJoints(0);
+	renderEntity->SetJoints(NULL);
+
+	idBounds bounds;
+	if (model) {
+		bounds = model->Bounds( renderEntity );
 	} else {
-		renderEntity.bounds.Zero();
+		bounds.Zero();
 	}
+
+	renderEntity->SetBounds(bounds);
 
 	UpdateVisuals();
 }
@@ -1135,7 +1152,7 @@ idEntity::SetSkin
 ================
 */
 void idEntity::SetSkin( const idDeclSkin *skin ) {
-	renderEntity.customSkin = skin;
+	renderEntity->SetCustomSkin(skin);
 	UpdateVisuals();
 }
 
@@ -1145,7 +1162,7 @@ idEntity::GetSkin
 ================
 */
 const idDeclSkin *idEntity::GetSkin( void ) const {
-	return renderEntity.customSkin;
+	return renderEntity->GetCustomSkin();
 }
 
 /*
@@ -1154,9 +1171,9 @@ idEntity::FreeModelDef
 ================
 */
 void idEntity::FreeModelDef( void ) {
-	if ( modelDefHandle != -1 ) {
-		gameRenderWorld->FreeEntityDef( modelDefHandle );
-		modelDefHandle = -1;
+	if ( renderEntity ) {
+		gameRenderWorld->FreeRenderEntity(renderEntity);
+		renderEntity = NULL;
 
 		rvClientEntity* cent;
 
@@ -1191,7 +1208,8 @@ idEntity::Hide
 void idEntity::Hide( void ) {
 	if ( !IsHidden() ) {
 		fl.hidden = true;
-		FreeModelDef();
+		//FreeModelDef();
+		renderEntity->SetHidden(true);
 		UpdateVisuals();
 	}
 }
@@ -1204,6 +1222,7 @@ idEntity::Show
 void idEntity::Show( void ) {
 	if ( IsHidden() ) {
 		fl.hidden = false;
+		renderEntity->SetHidden(false);
 		UpdateVisuals();
 	}
 }
@@ -1218,11 +1237,11 @@ void idEntity::UpdateModelTransform( void ) {
 	idMat3 axis;
 
 	if ( GetPhysicsToVisualTransform( origin, axis ) ) {
-		renderEntity.axis = axis * GetPhysics()->GetAxis();
-		renderEntity.origin = GetPhysics()->GetOrigin() + origin * renderEntity.axis;
+		renderEntity->SetAxis(renderEntity->GetAxis() * GetPhysics()->GetAxis());
+		renderEntity->SetOrigin(GetPhysics()->GetOrigin() + origin * renderEntity->GetAxis());
 	} else {
-		renderEntity.axis = GetPhysics()->GetAxis();
-		renderEntity.origin = GetPhysics()->GetOrigin();
+		renderEntity->SetAxis(GetPhysics()->GetAxis());
+		renderEntity->SetOrigin(GetPhysics()->GetOrigin());
 	}
 }
 
@@ -1238,7 +1257,7 @@ void idEntity::UpdateModel( void ) {
 	idAnimator *animator = GetAnimator();
 	if ( animator && animator->ModelHandle() ) {
 		// set the callback to update the joints
-		renderEntity.callback = idEntity::ModelCallback;
+		renderEntity->SetCallback(idEntity::ModelCallback);
 	}
 
 	// set to invalid number to force an update the next time the PVS areas are retrieved
@@ -1268,7 +1287,7 @@ void idEntity::UpdatePVSAreas( void ) {
 	idBounds modelAbsBounds;
 	int i;
 
-	modelAbsBounds.FromTransformedBounds( renderEntity.bounds, renderEntity.origin, renderEntity.axis );
+	modelAbsBounds.FromTransformedBounds( renderEntity->GetBounds(), renderEntity->GetOrigin(), renderEntity->GetAxis() );
 	localNumPVSAreas = gameLocal.pvs.GetPVSAreas( modelAbsBounds, localPVSAreas, sizeof( localPVSAreas ) / sizeof( localPVSAreas[0] ) );
 
 	// FIXME: some particle systems may have huge bounds and end up in many PVS areas
@@ -1368,12 +1387,12 @@ void idEntity::ProjectOverlay( const idVec3 &origin, const idVec3 &dir, float si
 	idPlane localPlane[2];
 
 	// make sure the entity has a valid model handle
-	if ( modelDefHandle < 0 ) {
+	if (renderEntity->GetRenderModel() == NULL) {
 		return;
 	}
 
 	// only do this on dynamic md5 models
-	if ( renderEntity.hModel->IsDynamicModel() != DM_CACHED ) {
+	if ( renderEntity->GetRenderModel()->IsDynamicModel() != DM_CACHED ) {
 		return;
 	}
 
@@ -1384,9 +1403,10 @@ void idEntity::ProjectOverlay( const idVec3 &origin, const idVec3 &dir, float si
 	axis[0] = axistemp[ 0 ] * c + axistemp[ 1 ] * -s;
 	axis[1] = axistemp[ 0 ] * -s + axistemp[ 1 ] * -c;
 
-	renderEntity.axis.ProjectVector( origin - renderEntity.origin, localOrigin );
-	renderEntity.axis.ProjectVector( axis[0], localAxis[0] );
-	renderEntity.axis.ProjectVector( axis[1], localAxis[1] );
+	
+	renderEntity->GetAxis().ProjectVector( origin - renderEntity->GetOrigin(), localOrigin );
+	renderEntity->GetAxis().ProjectVector( axis[0], localAxis[0] );
+	renderEntity->GetAxis().ProjectVector( axis[1], localAxis[1] );
 
 	size = 1.0f / size;
 	localAxis[0] *= size;
@@ -1401,7 +1421,7 @@ void idEntity::ProjectOverlay( const idVec3 &origin, const idVec3 &dir, float si
 	const idMaterial *mtr = declManager->FindMaterial( material );
 
 	// project an overlay onto the model
-	gameRenderWorld->ProjectOverlay( modelDefHandle, localPlane, mtr );
+	gameRenderWorld->ProjectOverlay(renderEntity->GetIndex(), localPlane, mtr );
 
 	// make sure non-animating models update their overlay
 	UpdateVisuals();
@@ -1428,20 +1448,16 @@ void idEntity::Present( void ) {
 
 	// camera target for remote render views
 	if ( cameraTarget && gameLocal.InPlayerPVS( this ) ) {
-		renderEntity.remoteRenderView = cameraTarget->GetRenderView();
+		renderEntity->SetRemoteRenderView(cameraTarget->GetRenderView());
 	}
 
 	// if set to invisible, skip
-	if ( !renderEntity.hModel || IsHidden() ) {
+	if (renderEntity->GetRenderModel() == NULL || IsHidden() ) {
 		return;
 	}
 
 	// add to refresh list
-	if ( modelDefHandle == -1 ) {
-		modelDefHandle = gameRenderWorld->AddEntityDef( &renderEntity );
-	} else {
-		gameRenderWorld->UpdateEntityDef( modelDefHandle, &renderEntity );
-	}
+	renderEntity->UpdateRenderEntity();	
 }
 
 /*
@@ -1449,8 +1465,8 @@ void idEntity::Present( void ) {
 idEntity::GetRenderEntity
 ================
 */
-renderEntity_t *idEntity::GetRenderEntity( void ) {
-	return &renderEntity;
+idRenderEntity*idEntity::GetRenderEntity( void ) {
+	return renderEntity;
 }
 
 /*
@@ -1459,7 +1475,11 @@ idEntity::GetModelDefHandle
 ================
 */
 int idEntity::GetModelDefHandle( void ) {
-	return modelDefHandle;
+	// jmarshall mimic the old behaivor
+	if (renderEntity == NULL)
+		return -1;
+
+	return renderEntity->GetIndex();
 }
 
 /*
@@ -1467,7 +1487,7 @@ int idEntity::GetModelDefHandle( void ) {
 idEntity::UpdateRenderEntity
 ================
 */
-bool idEntity::UpdateRenderEntity( renderEntity_t *renderEntity, const renderView_t *renderView ) {
+bool idEntity::UpdateRenderEntity(idRenderEntity*renderEntity, const renderView_t *renderView ) {
 	if ( gameLocal.inCinematic && gameLocal.skipCinematic ) {
 		return false;
 	}
@@ -1487,10 +1507,10 @@ idEntity::ModelCallback
 	NOTE: may not change the game state whatsoever!
 ================
 */
-bool idEntity::ModelCallback( renderEntity_t *renderEntity, const renderView_t *renderView ) {
+bool idEntity::ModelCallback(idRenderEntity* renderEntity, const renderView_t* renderView) {
 	idEntity *ent;
 
-	ent = gameLocal.entities[ renderEntity->entityNum ];
+	ent = gameLocal.entities[ renderEntity->GetEntityNum() ];
 	if ( !ent ) {
 		gameLocal.Error( "idEntity::ModelCallback: callback with NULL game entity" );
 	}
@@ -1642,7 +1662,7 @@ bool idEntity::StartSoundShader( const idSoundShader *shader, const s_channelTyp
 	}
 
 	// set reference to the sound for shader synced effects
-	renderEntity.referenceSound = refSound.referenceSound;
+	renderEntity->SetReferenceSound(refSound.referenceSound);
 
 	return true;
 }
@@ -1743,7 +1763,7 @@ idEntity::GetForwardVector
 */
 idVec3 idEntity::GetForwardVector(void) {
 	idVec3 forward;
-	renderEntity.axis.ToAngles().ToVectors(&forward);
+	renderEntity->GetAxis().ToAngles().ToVectors(&forward);
 	return forward;
 }
 
@@ -1753,8 +1773,8 @@ idEntity::GetPosition
 ================
 */
 void idEntity::GetPosition(idVec3& origin, idMat3& axis) const {
-	origin = renderEntity.origin;
-	axis = renderEntity.axis;
+	origin = renderEntity->GetOrigin();
+	axis = renderEntity->GetAxis();
 }
 
 /*
@@ -2194,8 +2214,8 @@ idEntity::ConvertLocalToWorldTransform
 void idEntity::ConvertLocalToWorldTransform( idVec3 &offset, idMat3 &axis ) {
 	UpdateModelTransform();
 
-	offset = renderEntity.origin + offset * renderEntity.axis;
-	axis *= renderEntity.axis;
+	offset = renderEntity->GetOrigin() +offset * renderEntity->GetAxis();
+	axis *= renderEntity->GetAxis();
 }
 
 /*
@@ -2321,15 +2341,15 @@ bool idEntity::GetMasterPosition( idVec3 &masterOrigin, idMat3 &masterAxis ) con
 				return false;
 			} else {
 				masterAnimator->GetJointTransform( bindJoint, gameLocal.time, masterOrigin, masterAxis );
-				masterAxis *= bindMaster->renderEntity.axis;
-				masterOrigin = bindMaster->renderEntity.origin + masterOrigin * bindMaster->renderEntity.axis;
+				masterAxis *= bindMaster->renderEntity->GetAxis();
+				masterOrigin = bindMaster->renderEntity->GetOrigin() + masterOrigin * bindMaster->renderEntity->GetAxis();
 			}
 		} else if ( bindBody >= 0 && bindMaster->GetPhysics() ) {
 			masterOrigin = bindMaster->GetPhysics()->GetOrigin( bindBody );
 			masterAxis = bindMaster->GetPhysics()->GetAxis( bindBody );
 		} else {
-			masterOrigin = bindMaster->renderEntity.origin;
-			masterAxis = bindMaster->renderEntity.axis;
+			masterOrigin = bindMaster->renderEntity->GetOrigin();
+			masterAxis = bindMaster->renderEntity->GetAxis();
 		}
 		return true;
 	} else {
@@ -3415,8 +3435,8 @@ idEntity::TriggerGuis
 void idEntity::TriggerGuis( void ) {
 	int i;
 	for ( i = 0; i < MAX_RENDERENTITY_GUI; i++ ) {
-		if ( renderEntity.gui[ i ] ) {
-			renderEntity.gui[ i ]->Trigger( gameLocal.time );
+		if ( renderEntity->GetGui(i)) {
+			renderEntity->GetGui(i)->Trigger( gameLocal.time );
 		}
 	}
 }
@@ -3463,7 +3483,7 @@ bool idEntity::HandleGuiCommands( idEntity *entityGui, const char *cmds ) {
 					}
 				}
 
-				entityGui->renderEntity.shaderParms[ SHADERPARM_MODE ] = 1.0f;
+				entityGui->renderEntity->SetShaderParms(SHADERPARM_MODE, 1.0f);
 				continue;
 			}
 
@@ -3522,10 +3542,10 @@ bool idEntity::HandleGuiCommands( idEntity *entityGui, const char *cmds ) {
 			}
 
 			if ( !token.Icmp( "turkeyscore" ) ) {
-				if ( src.ReadToken( &token2 ) && entityGui->renderEntity.gui[0] ) {
-					int score = entityGui->renderEntity.gui[0]->State().GetInt( "score" );
+				if ( src.ReadToken( &token2 ) && entityGui->renderEntity->GetGui(0) ) {
+					int score = entityGui->renderEntity->GetGui(0)->State().GetInt( "score" );
 					score += atoi( token2 );
-					entityGui->renderEntity.gui[0]->SetStateInt( "score", score );
+					entityGui->renderEntity->GetGui(0)->SetStateInt( "score", score );
 					if ( gameLocal.GetLocalPlayer() && score >= 25000 && !gameLocal.GetLocalPlayer()->inventory.turkeyScore ) {
 						gameLocal.GetLocalPlayer()->GiveEmail( "highScore" );
 						gameLocal.GetLocalPlayer()->inventory.turkeyScore = true;
@@ -3653,8 +3673,8 @@ void idEntity::ActivateTargets( idEntity *activator ) const {
 			ent->ProcessEvent( &EV_Activate, activator );
 		} 		
 		for ( j = 0; j < MAX_RENDERENTITY_GUI; j++ ) {
-			if ( ent->renderEntity.gui[ j ] ) {
-				ent->renderEntity.gui[ j ]->Trigger( gameLocal.time );
+			if ( ent->renderEntity->GetGui(j)) {
+				ent->renderEntity->GetGui(j)->Trigger( gameLocal.time );
 			}
 		}
 	}
@@ -3995,8 +4015,8 @@ void idEntity::Event_SpawnBind( void ) {
 
 					//FIXME: need a BindToJoint that accepts a joint position
 					parentAnimator->CreateFrame( gameLocal.time, true );
-					idJointMat *frame = parent->renderEntity.joints;
-					gameEdit->ANIM_CreateAnimFrame( parentAnimator->ModelHandle(), anim->MD5Anim( 0 ), parent->renderEntity.numJoints, frame, 0, parentAnimator->ModelDef()->GetVisualOffset(), parentAnimator->RemoveOrigin() );
+					idJointMat *frame = parent->renderEntity->GetJoints();
+					gameEdit->ANIM_CreateAnimFrame( parentAnimator->ModelHandle(), anim->MD5Anim( 0 ), parent->renderEntity->GetNumjoints(), frame, 0, parentAnimator->ModelDef()->GetVisualOffset(), parentAnimator->RemoveOrigin() );
 					BindToJoint( parent, joint, bindOrientated );
 					parentAnimator->ForceUpdate();
 				} else {
@@ -4043,7 +4063,7 @@ idEntity::Event_SetSkin
 ================
 */
 void idEntity::Event_SetSkin( const char *skinname ) {
-	renderEntity.customSkin = declManager->FindSkin( skinname );
+	renderEntity->SetCustomSkin(declManager->FindSkin( skinname ));
 	UpdateVisuals();
 }
 
@@ -4057,7 +4077,7 @@ void idEntity::Event_GetShaderParm( int parmnum ) {
 		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
 	}
 
-	idThread::ReturnFloat( renderEntity.shaderParms[ parmnum ] );
+	idThread::ReturnFloat( renderEntity->GetShaderParms( parmnum ) );
 }
 
 /*
@@ -4075,10 +4095,10 @@ idEntity::Event_SetShaderParms
 ================
 */
 void idEntity::Event_SetShaderParms( float parm0, float parm1, float parm2, float parm3 ) {
-	renderEntity.shaderParms[ SHADERPARM_RED ]		= parm0;
-	renderEntity.shaderParms[ SHADERPARM_GREEN ]	= parm1;
-	renderEntity.shaderParms[ SHADERPARM_BLUE ]		= parm2;
-	renderEntity.shaderParms[ SHADERPARM_ALPHA ]	= parm3;
+	renderEntity->SetShaderParms( SHADERPARM_RED, parm0);
+	renderEntity->SetShaderParms( SHADERPARM_GREEN, parm1);
+	renderEntity->SetShaderParms( SHADERPARM_BLUE, parm2);
+	renderEntity->SetShaderParms( SHADERPARM_ALPHA, parm3);
 	UpdateVisuals();
 }
 
@@ -4348,12 +4368,12 @@ idEntity::Event_SetGuiParm
 */
 void idEntity::Event_SetGuiParm( const char *key, const char *val ) {
 	for ( int i = 0; i < MAX_RENDERENTITY_GUI; i++ ) {
-		if ( renderEntity.gui[ i ] ) {
+		if ( renderEntity->GetGui(i) ) {
 			if ( idStr::Icmpn( key, "gui_", 4 ) == 0 ) {
 				spawnArgs.Set( key, val );
 			}
-			renderEntity.gui[ i ]->SetStateString( key, val );
-			renderEntity.gui[ i ]->StateChanged( gameLocal.time );
+			renderEntity->GetGui(i)->SetStateString( key, val );
+			renderEntity->GetGui(i)->StateChanged( gameLocal.time );
 		}
 	}
 }
@@ -4365,9 +4385,9 @@ idEntity::Event_SetGuiParm
 */
 void idEntity::Event_SetGuiFloat( const char *key, float f ) {
 	for ( int i = 0; i < MAX_RENDERENTITY_GUI; i++ ) {
-		if ( renderEntity.gui[ i ] ) {
-			renderEntity.gui[ i ]->SetStateString( key, va( "%f", f ) );
-			renderEntity.gui[ i ]->StateChanged( gameLocal.time );
+		if (renderEntity->GetGui(i)) {
+			renderEntity->GetGui(i)->SetStateString( key, va( "%f", f ) );
+			renderEntity->GetGui(i)->StateChanged( gameLocal.time );
 		}
 	}
 }
@@ -4791,10 +4811,10 @@ idEntity::WriteColorToSnapshot
 void idEntity::WriteColorToSnapshot( idBitMsgDelta &msg ) const {
 	idVec4 color;
 
-	color[0] = renderEntity.shaderParms[ SHADERPARM_RED ];
-	color[1] = renderEntity.shaderParms[ SHADERPARM_GREEN ];
-	color[2] = renderEntity.shaderParms[ SHADERPARM_BLUE ];
-	color[3] = renderEntity.shaderParms[ SHADERPARM_ALPHA ];
+	color[0] = renderEntity->GetShaderParms( SHADERPARM_RED );
+	color[1] = renderEntity->GetShaderParms( SHADERPARM_GREEN );
+	color[2] = renderEntity->GetShaderParms( SHADERPARM_BLUE );
+	color[3] = renderEntity->GetShaderParms( SHADERPARM_ALPHA );
 	msg.WriteLong( PackColor( color ) );
 }
 
@@ -4807,10 +4827,10 @@ void idEntity::ReadColorFromSnapshot( const idBitMsgDelta &msg ) {
 	idVec4 color;
 
 	UnpackColor( msg.ReadLong(), color );
-	renderEntity.shaderParms[ SHADERPARM_RED ] = color[0];
-	renderEntity.shaderParms[ SHADERPARM_GREEN ] = color[1];
-	renderEntity.shaderParms[ SHADERPARM_BLUE ] = color[2];
-	renderEntity.shaderParms[ SHADERPARM_ALPHA ] = color[3];
+	renderEntity->SetShaderParms( SHADERPARM_RED, color[0]);
+	renderEntity->SetShaderParms( SHADERPARM_GREEN, color[1]);
+	renderEntity->SetShaderParms( SHADERPARM_BLUE, color[2]);
+	renderEntity->SetShaderParms( SHADERPARM_ALPHA, color[3]);
 }
 
 /*
@@ -4820,8 +4840,8 @@ idEntity::WriteGUIToSnapshot
 */
 void idEntity::WriteGUIToSnapshot( idBitMsgDelta &msg ) const {
 	// no need to loop over MAX_RENDERENTITY_GUI at this time
-	if ( renderEntity.gui[ 0 ] ) {
-		msg.WriteByte( renderEntity.gui[ 0 ]->State().GetInt( "networkState" ) );
+	if ( renderEntity->GetGui(0)) {
+		msg.WriteByte(renderEntity->GetGui(0)->State().GetInt( "networkState" ) );
 	} else {
 		msg.WriteByte( 0 );
 	}
@@ -4836,7 +4856,7 @@ void idEntity::ReadGUIFromSnapshot( const idBitMsgDelta &msg ) {
 	int state;
 	idUserInterface *gui;
 	state = msg.ReadByte( );
-	gui = renderEntity.gui[ 0 ];
+	gui = renderEntity->GetGui(0);
 	if ( gui && state != mpGUIState ) {
 		mpGUIState = state;
 		gui->SetStateInt( "networkState", state );
@@ -5074,14 +5094,22 @@ void idAnimatedEntity::Restore( idRestoreGame *savefile ) {
 	animator.Restore( savefile );
 
 	// check if the entity has an MD5 model
-	if ( animator.ModelHandle() ) {
+	if ( animator.ModelHandle() && renderEntity ) {
 		// set the callback to update the joints
-		renderEntity.callback = idEntity::ModelCallback;
-		animator.GetJoints( &renderEntity.numJoints, &renderEntity.joints );
-		animator.GetBounds( gameLocal.time, renderEntity.bounds );
-		if ( modelDefHandle != -1 ) {
-			gameRenderWorld->UpdateEntityDef( modelDefHandle, &renderEntity );
-		}
+		renderEntity->SetCallback(idEntity::ModelCallback);
+
+		int numJoints;
+		idJointMat* joints;
+		idBounds bounds;
+
+		animator.GetJoints( &numJoints, &joints );
+		animator.GetBounds( gameLocal.time, bounds );
+
+		renderEntity->SetNumJoints(numJoints);
+		renderEntity->SetJoints(joints);
+		renderEntity->SetBounds(bounds);
+
+		renderEntity->UpdateRenderEntity();
 	}
 }
 
@@ -5137,8 +5165,11 @@ void idAnimatedEntity::UpdateAnimation( void ) {
 	}
 
 	// get the latest frame bounds
-	animator.GetBounds( gameLocal.time, renderEntity.bounds );
-	if ( renderEntity.bounds.IsCleared() && !fl.hidden ) {
+	idBounds bounds;
+	animator.GetBounds( gameLocal.time, bounds );
+	renderEntity->SetBounds(bounds);
+
+	if ( renderEntity->GetBounds().IsCleared() && !fl.hidden ) {
 		gameLocal.DPrintf( "%d: inside out bounds\n", gameLocal.time );
 	}
 
@@ -5164,22 +5195,35 @@ idAnimatedEntity::SetModel
 ================
 */
 void idAnimatedEntity::SetModel( const char *modelname ) {
-	FreeModelDef();
+// jmarshall - why do we need to nuke the entire render entity?
+	//FreeModelDef();
+// jmarshall end
 
-	renderEntity.hModel = animator.SetModel( modelname );
-	if ( !renderEntity.hModel ) {
+	idRenderModel *model = animator.SetModel( modelname );
+	if ( !model ) {
 		idEntity::SetModel( modelname );
 		return;
 	}
 
-	if ( !renderEntity.customSkin ) {
-		renderEntity.customSkin = animator.ModelDef()->GetDefaultSkin();
+	renderEntity->SetRenderModel(model);
+
+	if ( !renderEntity->GetCustomSkin() ) {
+		renderEntity->SetCustomSkin(animator.ModelDef()->GetDefaultSkin());
 	}
 
 	// set the callback to update the joints
-	renderEntity.callback = idEntity::ModelCallback;
-	animator.GetJoints( &renderEntity.numJoints, &renderEntity.joints );
-	animator.GetBounds( gameLocal.time, renderEntity.bounds );
+	renderEntity->SetCallback(idEntity::ModelCallback);
+
+	int numJoints;
+	idJointMat* joints;
+	idBounds bounds;
+
+	animator.GetJoints( &numJoints, &joints );
+	animator.GetBounds( gameLocal.time, bounds );
+
+	renderEntity->SetNumJoints(numJoints);
+	renderEntity->SetJoints(joints);
+	renderEntity->SetBounds(bounds);
 
 	UpdateVisuals();
 }
@@ -5221,7 +5265,7 @@ bool idAnimatedEntity::GetJointTransformForAnim( jointHandle_t jointHandle, int 
 	}
 
 	frame = ( idJointMat * )_alloca16( numJoints * sizeof( idJointMat ) );
-	gameEdit->ANIM_CreateAnimFrame( animator.ModelHandle(), anim->MD5Anim( 0 ), renderEntity.numJoints, frame, frameTime, animator.ModelDef()->GetVisualOffset(), animator.RemoveOrigin() );
+	gameEdit->ANIM_CreateAnimFrame( animator.ModelHandle(), anim->MD5Anim( 0 ), renderEntity->GetNumjoints(), frame, frameTime, animator.ModelDef()->GetVisualOffset(), animator.RemoveOrigin() );
 
 	offset = frame[ jointHandle ].ToVec3();
 	axis = frame[ jointHandle ].ToMat3();
@@ -5241,7 +5285,7 @@ void idAnimatedEntity::AddDamageEffect( const trace_t &collision, const idVec3 &
 	idVec3 origin, dir, localDir, localOrigin, localNormal;
 	idMat3 axis;
 
-	if ( !g_bloodEffects.GetBool() || renderEntity.joints == NULL ) {
+	if ( !g_bloodEffects.GetBool() || renderEntity->GetJoints() == NULL ) {
 		return;
 	}
 
@@ -5258,8 +5302,8 @@ void idAnimatedEntity::AddDamageEffect( const trace_t &collision, const idVec3 &
 	dir = velocity;
 	dir.Normalize();
 
-	axis = renderEntity.joints[jointNum].ToMat3() * renderEntity.axis;
-	origin = renderEntity.origin + renderEntity.joints[jointNum].ToVec3() * renderEntity.axis;
+	axis = renderEntity->GetJoints()[jointNum].ToMat3() * renderEntity->GetAxis();
+	origin = renderEntity->GetOrigin() + renderEntity->GetJoints()[jointNum].ToVec3() * renderEntity->GetAxis();
 
 	localOrigin = ( collision.c.point - origin ) * axis.Transpose();
 	localNormal = collision.c.normal * axis.Transpose();
@@ -5305,8 +5349,8 @@ void idAnimatedEntity::AddLocalDamageEffect( jointHandle_t jointNum, const idVec
 	idVec3 origin, dir;
 	idMat3 axis;
 
-	axis = renderEntity.joints[jointNum].ToMat3() * renderEntity.axis;
-	origin = renderEntity.origin + renderEntity.joints[jointNum].ToVec3() * renderEntity.axis;
+	axis = renderEntity->GetJoints()[jointNum].ToMat3() * renderEntity->GetAxis();
+	origin = renderEntity->GetOrigin() + renderEntity->GetJoints()[jointNum].ToVec3() * renderEntity->GetAxis();
 
 	origin = origin + localOrigin * axis;
 	dir = localDir * axis;
@@ -5400,8 +5444,8 @@ void idAnimatedEntity::UpdateDamageEffects( void ) {
 		idMat3 axis;
 
 		animator.GetJointTransform( de->jointNum, gameLocal.time, origin, axis );
-		axis *= renderEntity.axis;
-		origin = renderEntity.origin + origin * renderEntity.axis;
+		axis *= renderEntity->GetAxis();
+		origin = renderEntity->GetOrigin() + origin * renderEntity->GetAxis();
 		start = origin + de->localOrigin * axis;
 //		if ( !gameLocal.smokeParticles->EmitSmoke( de->type, de->time, gameLocal.random.CRandomFloat(), start, axis ) ) {
 //			de->time = 0;

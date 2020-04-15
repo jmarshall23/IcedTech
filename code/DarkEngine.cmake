@@ -107,7 +107,6 @@ set(src_engine
 	./model/Model_ColladaHelper.h
 	./model/Model_ColladaParser.cpp
 	./model/Model_ColladaParser.h
-	./model/Model_liquid.cpp
 	./model/Model_local.h
 	./model/Model_lwo.cpp
 	./model/Model_lwo.h

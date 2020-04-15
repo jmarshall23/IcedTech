@@ -560,6 +560,12 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 		if (edef == NULL)
 			continue;
 
+		if (edef->parms.hModel == NULL)
+			continue;
+
+		if (edef->parms.isHidden)
+			continue;
+
 		// if the entity doesn't have any light-interacting surfaces, we could skip this,
 			// but we don't want to instantiate dynamic models yet, so we can't check that on
 			// most things
@@ -636,7 +642,7 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 		// Check to see if this interaction has at least one channel from this light.
 		for (int i = 0; i < 32; i++) {
 			if (ldef->HasLightChannel(i)) {
-				if (edef->parms.HasLightChannel(i) || (i == LIGHT_CHANNEL_WORLD && edef->parms.hModel->IsWorldMesh())) {
+				if (edef->HasLightChannel(i) || (i == LIGHT_CHANNEL_WORLD && edef->parms.hModel->IsWorldMesh())) {
 					hasLightChannel = true;
 					break;
 				}
@@ -964,9 +970,9 @@ bool R_IssueEntityDefCallback( idRenderEntityLocal *def ) {
 	def->archived = false;		// will need to be written to the demo file
 	tr.pc.c_entityDefCallbacks++;
 	if ( tr.viewDef ) {
-		update = def->parms.callback( &def->parms, &tr.viewDef->renderView );
+		update = def->parms.callback( def, &tr.viewDef->renderView );
 	} else {
-		update = def->parms.callback( &def->parms, NULL );
+		update = def->parms.callback( def, NULL );
 	}
 
 	if ( !def->parms.hModel ) {
@@ -1028,7 +1034,7 @@ idRenderModel *R_EntityDefDynamicModel( idRenderEntityLocal *def ) {
 	if ( !def->dynamicModel ) {
 
 		// instantiate the snapshot of the dynamic model, possibly reusing memory from the cached snapshot
-		def->cachedDynamicModel = model->InstantiateDynamicModel( &def->parms, tr.viewDef, def->cachedDynamicModel );
+		def->cachedDynamicModel = model->InstantiateDynamicModel( def, tr.viewDef, def->cachedDynamicModel );
 
 		if ( def->cachedDynamicModel ) {
 
@@ -1076,7 +1082,7 @@ idRenderModel *R_EntityDefDynamicModel( idRenderEntityLocal *def ) {
 R_AddDrawSurf
 =================
 */
-void R_AddDrawSurf( const srfTriangles_t *tri, const viewEntity_t *space, const renderEntity_t *renderEntity,
+void R_AddDrawSurf( const srfTriangles_t *tri, const viewEntity_t *space, const idRenderEntityParms*renderEntity,
 					const idMaterial *shader, const idScreenRect &scissor, idRenderModel* model) {
 	drawSurf_t		*drawSurf;
 	const float		*shaderParms;

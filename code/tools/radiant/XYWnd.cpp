@@ -3207,15 +3207,6 @@ bool FilterBrush(brush_t *pb) {
 		return true;
 	}
 
-	if (g_qeglobals.d_savedinfo.exclude & EXCLUDE_DYNAMICS) {
-		if (pb->modelHandle > 0) {
-			idRenderModel *model = pb->modelHandle;
-			if ( dynamic_cast<idRenderModelLiquid*>(model) ) {
-				return true;			
-			}
-		}
-	}
-
 	if (g_qeglobals.d_savedinfo.exclude & EXCLUDE_CURVES) {
 		if (pb->pPatch) {
 			return true;

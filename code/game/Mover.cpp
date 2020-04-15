@@ -355,7 +355,7 @@ void idMover::Spawn( void ) {
 	if ( !spawnArgs.GetBool( "solid", "1" ) ) {
 		physicsObj.SetContents( 0 );
 	}
-	if ( !renderEntity.hModel || !spawnArgs.GetBool( "nopush" ) ) {
+	if ( !renderEntity->GetRenderModel() || !spawnArgs.GetBool( "nopush" ) ) {
 		physicsObj.SetPusher( 0 );
 	}
 	physicsObj.SetLinearExtrapolation( EXTRAPOLATION_NONE, 0, 0, dest_position, vec3_origin, vec3_origin );
@@ -540,9 +540,9 @@ void idMover::SetGuiState( const char *key, const char *val ) const {
 		idEntity *ent = guiTargets[ i ].GetEntity();
 		if ( ent ) {
 			for ( int j = 0; j < MAX_RENDERENTITY_GUI; j++ ) {
-				if ( ent->GetRenderEntity() && ent->GetRenderEntity()->gui[ j ] ) {
-					ent->GetRenderEntity()->gui[ j ]->SetStateString( key, val );
-					ent->GetRenderEntity()->gui[ j ]->StateChanged( gameLocal.time, true );
+				if ( ent->GetRenderEntity() && ent->GetRenderEntity()->GetGui( j ) ) {
+					ent->GetRenderEntity()->GetGui( j )->SetStateString( key, val );
+					ent->GetRenderEntity()->GetGui( j )->StateChanged( gameLocal.time, true );
 				}
 			}
 			ent->UpdateVisuals();
@@ -570,9 +570,9 @@ void idMover::SetGuiStates( const char *state ) {
 		SetGuiState( "movestate", state );
 	}
 	for ( i = 0; i < MAX_RENDERENTITY_GUI; i++ ) {
-		if ( renderEntity.gui[ i ] ) {
-			renderEntity.gui[ i ]->SetStateString( "movestate", state );
-			renderEntity.gui[ i ]->StateChanged( gameLocal.time, true );
+		if ( renderEntity->GetGui(i)) {
+			renderEntity->GetGui(i)->SetStateString( "movestate", state );
+			renderEntity->GetGui(i)->StateChanged( gameLocal.time, true );
 		}
 	}
 }
@@ -1919,9 +1919,9 @@ void idElevator::BeginMove( idThread *thread ) {
 		idEntity *ent = gameLocal.FindEntity( kv->GetValue() );
 		if ( ent ) {
 			for ( int j = 0; j < MAX_RENDERENTITY_GUI; j++ ) {
-				if ( ent->GetRenderEntity() && ent->GetRenderEntity()->gui[ j ] ) {
-					ent->GetRenderEntity()->gui[ j ]->SetStateString( "floor", "" );
-					ent->GetRenderEntity()->gui[ j ]->StateChanged( gameLocal.time, true );
+				if ( ent->GetRenderEntity() && ent->GetRenderEntity()->GetGui(j)) {
+					ent->GetRenderEntity()->GetGui( j )->SetStateString( "floor", "" );
+					ent->GetRenderEntity()->GetGui( j )->StateChanged( gameLocal.time, true );
 				}
 			}
 			ent->UpdateVisuals();
@@ -1989,9 +1989,9 @@ void idElevator::DoneMoving( void ) {
 		idEntity *ent = gameLocal.FindEntity( kv->GetValue() );
 		if ( ent ) {
 			for ( int j = 0; j < MAX_RENDERENTITY_GUI; j++ ) {
-				if ( ent->GetRenderEntity() && ent->GetRenderEntity()->gui[ j ] ) {
-					ent->GetRenderEntity()->gui[ j ]->SetStateString( "floor", va( "%i", currentFloor ) );
-					ent->GetRenderEntity()->gui[ j ]->StateChanged( gameLocal.time, true );
+				if ( ent->GetRenderEntity() && ent->GetRenderEntity()->GetGui(j)) {
+					ent->GetRenderEntity()->GetGui( j )->SetStateString( "floor", va( "%i", currentFloor ) );
+					ent->GetRenderEntity()->GetGui( j )->StateChanged( gameLocal.time, true );
 				}
 			}
 			ent->UpdateVisuals();
@@ -2904,9 +2904,9 @@ void idMover_Binary::SetGuiState( const char *key, const char *val ) const {
 		idEntity *ent = guiTargets[ i ].GetEntity();
 		if ( ent ) {
 			for ( int j = 0; j < MAX_RENDERENTITY_GUI; j++ ) {
-				if ( ent->GetRenderEntity() && ent->GetRenderEntity()->gui[ j ] ) {
-					ent->GetRenderEntity()->gui[ j ]->SetStateString( key, val );
-					ent->GetRenderEntity()->gui[ j ]->StateChanged( gameLocal.time, true );
+				if ( ent->GetRenderEntity() && ent->GetRenderEntity()->GetGui(j)) {
+					ent->GetRenderEntity()->GetGui( j )->SetStateString( key, val );
+					ent->GetRenderEntity()->GetGui( j )->StateChanged( gameLocal.time, true );
 				}
 			}
 			ent->UpdateVisuals();
@@ -3897,7 +3897,7 @@ void idDoor::Event_Activate( idEntity *activator ) {
 
 	ActivateTargets( activator );
 
-	renderEntity.shaderParms[ SHADERPARM_MODE ] = 1;
+	renderEntity->SetShaderParms(SHADERPARM_MODE, 1);
 	UpdateVisuals();
 
 	Use_BinaryMover( activator );

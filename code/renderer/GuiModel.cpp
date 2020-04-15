@@ -187,7 +187,7 @@ void idGuiModel::EmitSurface( guiModelSurface_t *surf, float modelMatrix[16], fl
 		return;
 	}
 
-	renderEntity_t renderEntity;
+	idRenderEntityParms renderEntity;
 	memset( &renderEntity, 0, sizeof( renderEntity ) );
 	memcpy( renderEntity.shaderParms, surf->color, sizeof( surf->color ) );
 

@@ -51,12 +51,10 @@ private:
 	void BuildAnimation(int time);
 	renderView_t refdef;
 	idRenderWorld *world;
-	renderEntity_t worldEntity;
+	idRenderEntity *worldEntity;
 	idRenderLight *rLight;
 	const idMD5Anim *modelAnim;
 
-	qhandle_t	worldModelDef;
-	qhandle_t   modelDef;
 	idWinStr modelName;
 	idWinStr animName;
 	idStr	 animClass;

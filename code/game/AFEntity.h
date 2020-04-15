@@ -29,63 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __GAME_AFENTITY_H__
 #define __GAME_AFENTITY_H__
 
-
-/*
-===============================================================================
-
-idMultiModelAF
-
-Entity using multiple separate visual models animated with a single
-articulated figure. Only used for debugging!
-
-===============================================================================
-*/
-const int GIB_DELAY = 200;  // only gib this often to keep performace hits when blowing up several mobs
-
-class idMultiModelAF : public idEntity {
-public:
-	CLASS_PROTOTYPE( idMultiModelAF );
-
-	void					Spawn( void );
-							~idMultiModelAF( void );
-
-	virtual void			Think( void );
-	virtual void			Present( void );
-
-	CLASS_STATES_PROTOTYPE(idMultiModelAF);
-protected:
-	idPhysics_AF			physicsObj;
-
-	void					SetModelForId( int id, const idStr &modelName );
-
-private:
-	idList<idRenderModel *>	modelHandles;
-	idList<int>				modelDefHandles;
-};
-
-
-/*
-===============================================================================
-
-idChain
-
-Chain hanging down from the ceiling. Only used for debugging!
-
-===============================================================================
-*/
-
-class idChain : public idMultiModelAF {
-public:
-	CLASS_PROTOTYPE( idChain );
-
-	void					Spawn( void );
-
-	CLASS_STATES_PROTOTYPE(idChain);
-protected:
-	void					BuildChain( const idStr &name, const idVec3 &origin, float linkLength, float linkWidth, float density, int numLinks, bool bindToWorld = true );
-};
-
-
 /*
 ===============================================================================
 
@@ -419,39 +362,6 @@ private:
 	idAFConstraint_Hinge *	steering[4];
 	jointHandle_t			wheelJoints[6];
 	float					wheelAngles[6];
-};
-
-
-/*
-===============================================================================
-
-idAFEntity_SteamPipe
-
-===============================================================================
-*/
-
-class idAFEntity_SteamPipe : public idAFEntity_Base {
-public:
-	CLASS_PROTOTYPE( idAFEntity_SteamPipe );
-
-							idAFEntity_SteamPipe( void );
-							~idAFEntity_SteamPipe( void );
-
-	void					Spawn( void );
-	void					Save( idSaveGame *savefile ) const;
-	void					Restore( idRestoreGame *savefile );
-
-	virtual void			Think( void );
-
-private:
-	int						steamBody;
-	float					steamForce;
-	float					steamUpForce;
-	idForce_Constant		force;
-	renderEntity_t			steamRenderEntity;
-	qhandle_t				steamModelDefHandle;
-
-	void					InitSteamRenderEntity( void );
 };
 
 

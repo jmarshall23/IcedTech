@@ -135,8 +135,8 @@ void idTarget_EndLevel::Draw() {
 	renderView.vieworg = initialViewOrg;
 	renderView.viewaxis = idAngles(initialViewAngles).toMat3();
 #else
-	renderView.vieworg = renderEntity.origin;
-	renderView.viewaxis = renderEntity.axis;
+	renderView.vieworg = renderEntity->GetOrigin();
+	renderView.viewaxis = renderEntity->GetAxis();
 #endif
 
 	gameRenderWorld->RenderScene( &renderView );

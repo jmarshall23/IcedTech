@@ -4555,7 +4555,7 @@ void idGameLocal::AlertBots(idPlayer* player, idVec3 alert_position) {
 			continue;
 
 		trace_t tr;
-		Trace(tr, alert_position, bot->GetRenderEntity()->origin, CONTENTS_SOLID, 0);
+		Trace(tr, alert_position, bot->GetRenderEntity()->GetOrigin(), CONTENTS_SOLID, 0);
 
 		if(tr.fraction == 1.0f) {
 			bot->SetEnemy(player);

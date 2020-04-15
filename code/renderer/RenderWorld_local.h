@@ -47,10 +47,9 @@ public:
 							idRenderWorldLocal();
 	virtual					~idRenderWorldLocal();
 
-	virtual	qhandle_t		AddEntityDef( const renderEntity_t *re );
-	virtual	void			UpdateEntityDef( qhandle_t entityHandle, const renderEntity_t *re );
-	virtual	void			FreeEntityDef( qhandle_t entityHandle );
-	virtual const renderEntity_t *GetRenderEntity( qhandle_t entityHandle ) const;
+	virtual idRenderEntity* AllocRenderEntity(void);
+	virtual void			FreeRenderEntity(idRenderEntity* renderEntity);
+	virtual const idRenderEntity* GetRenderEntity(qhandle_t entityHandle) const;
 
 	virtual idRenderLight* AllocRenderLight(void);
 	virtual void			FreeRenderLight(idRenderLight* renderLight);
@@ -165,7 +164,7 @@ public:
 	void					WriteFreeLight( qhandle_t handle );
 	void					WriteFreeEntity( qhandle_t handle );
 	void					WriteRenderLight( qhandle_t handle, const idRenderLightParms *light );
-	void					WriteRenderEntity( qhandle_t handle, const renderEntity_t *ent );
+	void					WriteRenderEntity( qhandle_t handle, const idRenderEntity *ent );
 	void					ReadRenderEntity();
 	void					ReadRenderLight();
 	

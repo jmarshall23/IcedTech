@@ -2084,7 +2084,7 @@ has any valid gui surfaces.
 =================
 */
 bool FindEntityGUIs( idEntity *ent, const modelSurface_t ** surfaces,  int maxSurfs, int &guiSurfaces ) {
-	renderEntity_t			*renderEnt;
+	idRenderEntity*			renderEnt;
 	idRenderModel			*renderModel;
 	const modelSurface_t	*surf;
 	const idMaterial		*shader;
@@ -2097,7 +2097,7 @@ bool FindEntityGUIs( idEntity *ent, const modelSurface_t ** surfaces,  int maxSu
 	guiSurfaces = 0;
 
 	renderEnt  = ent->GetRenderEntity();
-	renderModel = renderEnt->hModel;
+	renderModel = renderEnt->GetRenderModel();
 	if ( renderModel == NULL ) {
 		return false;
 	}
@@ -2131,7 +2131,7 @@ void Cmd_NextGUI_f( const idCmdArgs &args ) {
 	idEntity				*ent;
 	int						guiSurfaces;
 	bool					newEnt;
-	renderEntity_t			*renderEnt;
+	idRenderEntity			*renderEnt;
 	int						surfIndex;
 	srfTriangles_t			*geom;
 	idMat4					modelMatrix;
@@ -2221,8 +2221,8 @@ void Cmd_NextGUI_f( const idCmdArgs &args ) {
 
 	assert( geom->facePlanes != NULL );
 
-	modelMatrix = idMat4( renderEnt->axis, renderEnt->origin );	
-	normal = geom->facePlanes[ 0 ].Normal() * renderEnt->axis;
+	modelMatrix = idMat4( renderEnt->GetAxis(), renderEnt->GetOrigin() );	
+	normal = geom->facePlanes[ 0 ].Normal() * renderEnt->GetAxis();
 	center = geom->bounds.GetCenter() * modelMatrix;
 
 	origin = center + (normal * 32.0f);

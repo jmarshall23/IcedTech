@@ -1217,9 +1217,9 @@ void idGameLocal::ClientReadSnapshot( int clientNum, int sequence, const int gam
 	if ( player->spectating && player->spectator != player->entityNumber && gameLocal.entities[ player->spectator ] && gameLocal.entities[ player->spectator ]->IsType( idPlayer::Type ) ) {
 		static_cast< idPlayer * >( gameLocal.entities[ player->spectator ] )->ReadPlayerStateFromSnapshot( deltaMsg );
 		weap = static_cast< idPlayer * >( gameLocal.entities[ player->spectator ] )->weapon.GetEntity();
-		if ( weap && ( weap->GetRenderEntity()->bounds[0] == weap->GetRenderEntity()->bounds[1] ) ) {
+		if ( weap && ( weap->GetRenderEntity()->GetBounds()[0] == weap->GetRenderEntity()->GetBounds()[1] ) ) {
 			// update the weapon's viewmodel bounds so that the model doesn't flicker in the spectator's view
-			weap->GetAnimator()->GetBounds( gameLocal.time, weap->GetRenderEntity()->bounds );
+			weap->GetAnimator()->GetBounds( gameLocal.time, weap->GetRenderEntity()->GetBounds());
 			weap->UpdateVisuals();
 		}
 	} else {
@@ -1326,7 +1326,9 @@ void idGameLocal::ClientProcessReliableMessage( int clientNum, const idBitMsg &m
 			int spawnId = msg.ReadLong();
 			if ( !entities[ client ] ) {
 				SpawnPlayer( client, false, NULL );
-				entities[ client ]->FreeModelDef();
+// jmarshall
+				//entities[ client ]->FreeModelDef();
+// jmarshall end
 			}
 			// fix up the spawnId to match what the server says
 			// otherwise there is going to be a bogus delete/new of the client entity in the first ClientReadFromSnapshot

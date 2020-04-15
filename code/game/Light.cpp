@@ -364,7 +364,7 @@ void idLight::Spawn( void ) {
 
 	// also put the light texture on the model, so light flares
 	// can get the current intensity of the light
-	renderEntity.referenceShader = renderLight->GetShader();
+	renderEntity->SetReferenceShader(renderLight->GetShader());
 
 	spawnArgs.GetBool( "start_off", "0", start_off );
 	if ( start_off ) {
@@ -446,9 +446,9 @@ void idLight::SetLightLevel( void ) {
 	renderLight->SetShaderParam( SHADERPARM_RED, color[ 0 ]);
 	renderLight->SetShaderParam( SHADERPARM_GREEN, color[ 1 ]);
 	renderLight->SetShaderParam( SHADERPARM_BLUE, color[ 2 ]);
-	renderEntity.shaderParms[ SHADERPARM_RED ]	= color[ 0 ];
-	renderEntity.shaderParms[ SHADERPARM_GREEN ]= color[ 1 ];
-	renderEntity.shaderParms[ SHADERPARM_BLUE ]	= color[ 2 ];
+	renderEntity->SetShaderParms( SHADERPARM_RED, color[ 0 ]);
+	renderEntity->SetShaderParms( SHADERPARM_GREEN, color[ 1 ]);
+	renderEntity->SetShaderParms( SHADERPARM_BLUE, color[ 2 ]);
 	PresentLightDefChange();
 	PresentModelDefChange();
 }
@@ -494,7 +494,7 @@ idLight::SetColor
 void idLight::SetColor( const idVec4 &color ) {
 	baseColor = color.ToVec3();
 	renderLight->SetShaderParam(SHADERPARM_ALPHA, color[3]);
-	renderEntity.shaderParms[ SHADERPARM_ALPHA ]	= color[ 3 ];
+	renderEntity->SetShaderParms(SHADERPARM_ALPHA, color[ 3 ]);
 	SetLightLevel();
 }
 
@@ -533,10 +533,10 @@ void idLight::SetLightParms( float parm0, float parm1, float parm2, float parm3 
 	renderLight->SetShaderParam(SHADERPARM_GREEN, parm1);
 	renderLight->SetShaderParam(SHADERPARM_BLUE, parm2);
 	renderLight->SetShaderParam(SHADERPARM_ALPHA, parm3);
-	renderEntity.shaderParms[ SHADERPARM_RED ]		= parm0;
-	renderEntity.shaderParms[ SHADERPARM_GREEN ]	= parm1;
-	renderEntity.shaderParms[ SHADERPARM_BLUE ]		= parm2;
-	renderEntity.shaderParms[ SHADERPARM_ALPHA ]	= parm3;
+	renderEntity->SetShaderParms( SHADERPARM_RED, parm0);
+	renderEntity->SetShaderParms( SHADERPARM_GREEN, parm1);
+	renderEntity->SetShaderParms( SHADERPARM_BLUE, parm2);
+	renderEntity->SetShaderParms( SHADERPARM_ALPHA, parm3);
 	PresentLightDefChange();
 	PresentModelDefChange();
 }
@@ -667,7 +667,7 @@ void idLight::BecomeBroken( idEntity *activator ) {
 		ServerSendEvent( EVENT_BECOMEBROKEN, NULL, true, -1 );
 
 		if ( spawnArgs.GetString( "def_damage", "", &damageDefName ) ) {
-			idVec3 origin = renderEntity.origin + renderEntity.bounds.GetCenter() * renderEntity.axis;
+			idVec3 origin = renderEntity->GetOrigin() + renderEntity->GetBounds().GetCenter() * renderEntity->GetAxis();
 			gameLocal.RadiusDamage( origin, activator, activator, this, this, damageDefName );
 		}
 
@@ -676,11 +676,11 @@ void idLight::BecomeBroken( idEntity *activator ) {
 		ActivateTargets( activator );
 
 	// offset the start time of the shader to sync it to the game time
-	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.time );
+	renderEntity->SetShaderParms( SHADERPARM_TIMEOFFSET, -MS2SEC( gameLocal.time ));
 	renderLight->SetShaderParam(SHADERPARM_TIMEOFFSET, -MS2SEC( gameLocal.time ));
 
 	// set the state parm
-	renderEntity.shaderParms[ SHADERPARM_MODE ] = 1;
+	renderEntity->SetShaderParms( SHADERPARM_MODE, 1);
 	renderLight->SetShaderParam( SHADERPARM_MODE, 1);
 
 	// if the light has a sound, either start the alternate (broken) sound, or stop the sound
@@ -718,17 +718,12 @@ idLight::PresentModelDefChange
 ================
 */
 void idLight::PresentModelDefChange( void ) {
-
-	if ( !renderEntity.hModel || IsHidden() ) {
+	if ( renderEntity->GetRenderModel() == NULL || IsHidden() ) {
 		return;
 	}
 
 	// add to refresh list
-	if ( modelDefHandle == -1 ) {
-		modelDefHandle = gameRenderWorld->AddEntityDef( &renderEntity );
-	} else {
-		gameRenderWorld->UpdateEntityDef( modelDefHandle, &renderEntity );
-	}
+	renderEntity->UpdateRenderEntity();
 }
 
 /*
@@ -752,11 +747,11 @@ void idLight::Present( void ) {
 	// reference the sound for shader synced effects
 	if ( lightParent ) {
 		renderLight->SetReferenceSound(lightParent->GetSoundEmitter());
-		renderEntity.referenceSound = lightParent->GetSoundEmitter();
+		renderEntity->SetReferenceSound(lightParent->GetSoundEmitter());
 	}
 	else {
 		renderLight->SetReferenceSound(refSound.referenceSound);
-		renderEntity.referenceSound = refSound.referenceSound;
+		renderEntity->SetReferenceSound(refSound.referenceSound);
 	}
 
 	// update the renderLight and renderEntity to render the light and flare
@@ -998,7 +993,7 @@ void idLight::Event_SetSoundHandles( void ) {
 			light->FreeSoundEmitter( true );
 
 			// manually set the refSound to this light's refSound
-			light->renderEntity.referenceSound = renderEntity.referenceSound;
+			light->renderEntity->SetReferenceSound((idSoundEmitter *)renderEntity->GetReferenceSound());
 
 			// update the renderEntity to the renderer
 			light->UpdateVisuals();

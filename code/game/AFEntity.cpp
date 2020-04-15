@@ -31,217 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "Game_local.h"
 
-
-/*
-===============================================================================
-
-  idMultiModelAF
-
-===============================================================================
-*/
-
-CLASS_DECLARATION( idEntity, idMultiModelAF )
-END_CLASS
-
-CLASS_STATES_DECLARATION(idMultiModelAF)
-END_CLASS_STATES
-
-/*
-================
-idMultiModelAF::Spawn
-================
-*/
-void idMultiModelAF::Spawn( void ) {
-	BaseSpawn();
-	physicsObj.SetSelf( this );
-}
-
-/*
-================
-idMultiModelAF::~idMultiModelAF
-================
-*/
-idMultiModelAF::~idMultiModelAF( void ) {
-	int i;
-
-	for ( i = 0; i < modelDefHandles.Num(); i++ ) {
-		if ( modelDefHandles[i] != -1 ) {
-			gameRenderWorld->FreeEntityDef( modelDefHandles[i] );
-			modelDefHandles[i] = -1;
-		}
-	}
-}
-
-/*
-================
-idMultiModelAF::SetModelForId
-================
-*/
-void idMultiModelAF::SetModelForId( int id, const idStr &modelName ) {
-	modelHandles.AssureSize( id+1, NULL );
-	modelDefHandles.AssureSize( id+1, -1 );
-	modelHandles[id] = renderModelManager->FindModel( modelName );
-}
-
-/*
-================
-idMultiModelAF::Present
-================
-*/
-void idMultiModelAF::Present( void ) {
-	int i;
-
-	// don't present to the renderer if the entity hasn't changed
-	if ( !( thinkFlags & TH_UPDATEVISUALS ) ) {
-		return;
-	}
-	BecomeInactive( TH_UPDATEVISUALS );
-
-	for ( i = 0; i < modelHandles.Num(); i++ ) {
-
-		if ( !modelHandles[i] ) {
-			continue;
-		}
-
-		renderEntity.origin = physicsObj.GetOrigin( i );
-		renderEntity.axis = physicsObj.GetAxis( i );
-		renderEntity.hModel = modelHandles[i];
-		renderEntity.bodyId = i;
-
-		// add to refresh list
-		if ( modelDefHandles[i] == -1 ) {
-			modelDefHandles[i] = gameRenderWorld->AddEntityDef( &renderEntity );
-		} else {
-			gameRenderWorld->UpdateEntityDef( modelDefHandles[i], &renderEntity );
-		}
-	}
-}
-
-/*
-================
-idMultiModelAF::Think
-================
-*/
-void idMultiModelAF::Think( void ) {
-	RunPhysics();
-	Present();
-}
-
-
-/*
-===============================================================================
-
-  idChain
-
-===============================================================================
-*/
-
-CLASS_DECLARATION( idMultiModelAF, idChain )
-END_CLASS
-
-CLASS_STATES_DECLARATION(idChain)
-END_CLASS_STATES
-
-/*
-================
-idChain::BuildChain
-
-  builds a chain hanging down from the ceiling
-  the highest link is a child of the link below it etc.
-  this allows an object to be attached to multiple chains while keeping a single tree structure
-================
-*/
-void idChain::BuildChain( const idStr &name, const idVec3 &origin, float linkLength, float linkWidth, float density, int numLinks, bool bindToWorld ) {
-	int i;
-	float halfLinkLength = linkLength * 0.5f;
-	idTraceModel trm;
-	idClipModel *clip;
-	idAFBody *body, *lastBody;
-	idAFConstraint_BallAndSocketJoint *bsj;
-	idAFConstraint_UniversalJoint *uj;
-	idVec3 org;
-
-	// create a trace model
-	trm = idTraceModel( linkLength, linkWidth );
-	trm.Translate( -trm.offset );
-
-	org = origin - idVec3( 0, 0, halfLinkLength );
-
-	lastBody = NULL;
-	for ( i = 0; i < numLinks; i++ ) {
-
-		// add body
-		clip = new idClipModel( trm );
-		clip->SetContents( CONTENTS_SOLID );
-		clip->Link( gameLocal.clip, this, 0, org, mat3_identity );
-		body = new idAFBody( name + idStr(i), clip, density );
-		physicsObj.AddBody( body );
-
-		// visual model for body
-		SetModelForId( physicsObj.GetBodyId( body ), spawnArgs.GetString( "model" ) );
-
-		// add constraint
-		if ( bindToWorld ) {
-			if ( !lastBody ) {
-				uj = new idAFConstraint_UniversalJoint( name + idStr(i), body, lastBody );
-				uj->SetShafts( idVec3( 0, 0, -1 ), idVec3( 0, 0, 1 ) );
-				//uj->SetConeLimit( idVec3( 0, 0, -1 ), 30.0f );
-				//uj->SetPyramidLimit( idVec3( 0, 0, -1 ), idVec3( 1, 0, 0 ), 90.0f, 30.0f );
-			}
-			else {
-				uj = new idAFConstraint_UniversalJoint( name + idStr(i), lastBody, body );
-				uj->SetShafts( idVec3( 0, 0, 1 ), idVec3( 0, 0, -1 ) );
-				//uj->SetConeLimit( idVec3( 0, 0, 1 ), 30.0f );
-			}
-			uj->SetAnchor( org + idVec3( 0, 0, halfLinkLength ) );
-			uj->SetFriction( 0.9f );
-			physicsObj.AddConstraint( uj );
-		}
-		else {
-			if ( lastBody ) {
-				bsj = new idAFConstraint_BallAndSocketJoint( "joint" + idStr(i), lastBody, body );
-				bsj->SetAnchor( org + idVec3( 0, 0, halfLinkLength ) );
-				bsj->SetConeLimit( idVec3( 0, 0, 1 ), 60.0f, idVec3( 0, 0, 1 ) );
-				physicsObj.AddConstraint( bsj );
-			}
-		}
-
-		org[2] -= linkLength;
-
-		lastBody = body;
-	}
-}
-
-/*
-================
-idChain::Spawn
-================
-*/
-void idChain::Spawn( void ) {
-	int numLinks;
-	float length, linkLength, linkWidth, density;
-	bool drop;
-	idVec3 origin;
-
-	BaseSpawn();
-
-	spawnArgs.GetBool( "drop", "0", drop );
-	spawnArgs.GetInt( "links", "3", numLinks );
-	spawnArgs.GetFloat( "length", idStr( numLinks * 32.0f ), length );
-	spawnArgs.GetFloat( "width", "8", linkWidth );
-	spawnArgs.GetFloat( "density", "0.2", density );
-	linkLength = length / numLinks;
-	origin = GetPhysics()->GetOrigin();
-
-	// initialize physics
-	physicsObj.SetSelf( this );
-	physicsObj.SetGravity( gameLocal.GetGravity() );
-	physicsObj.SetClipMask( MASK_SOLID | CONTENTS_BODY );
-	SetPhysics( &physicsObj );
-
-	BuildChain( "link", origin, linkLength, linkWidth, density, numLinks, !drop );
-}
-
 /*
 ===============================================================================
 
@@ -502,7 +291,7 @@ void idAFAttachment::LinkCombat( void ) {
 	}
 
 	if ( combatModel ) {
-		combatModel->Link( gameLocal.clip, this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle );
+		combatModel->Link(gameLocal.clip, this, 0, renderEntity->GetOrigin(), renderEntity->GetAxis(), renderEntity->GetIndex());
 	}
 }
 
@@ -861,7 +650,7 @@ void idAFEntity_Base::LinkCombat( void ) {
 		return;
 	}
 	if ( combatModel ) {
-		combatModel->Link( gameLocal.clip, this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle );
+		combatModel->Link(gameLocal.clip, this, 0, renderEntity->GetOrigin(), renderEntity->GetAxis(), renderEntity->GetIndex());
 	}
 }
 
@@ -986,10 +775,7 @@ idAFEntity_Gibbable::~idAFEntity_Gibbable
 ================
 */
 idAFEntity_Gibbable::~idAFEntity_Gibbable() {
-	if ( skeletonModelDefHandle != -1 ) {
-		gameRenderWorld->FreeEntityDef( skeletonModelDefHandle );
-		skeletonModelDefHandle = -1;
-	}
+
 }
 
 /*
@@ -1056,10 +842,10 @@ void idAFEntity_Gibbable::InitSkeletonModel( void ) {
 		} else {
 			skeletonModel = renderModelManager->FindModel( modelName );
 		}
-		if ( skeletonModel != NULL && renderEntity.hModel != NULL ) {
-			if ( skeletonModel->NumJoints() != renderEntity.hModel->NumJoints() ) {
+		if ( skeletonModel != NULL && renderEntity->GetRenderModel() != NULL ) {
+			if ( skeletonModel->NumJoints() != renderEntity->GetRenderModel()->NumJoints() ) {
 				gameLocal.Error( "gib model '%s' has different number of joints than model '%s'",
-									skeletonModel->Name(), renderEntity.hModel->Name() );
+									skeletonModel->Name(), renderEntity->GetRenderModel()->Name() );
 			}
 		}
 	}
@@ -1071,7 +857,7 @@ idAFEntity_Gibbable::Present
 ================
 */
 void idAFEntity_Gibbable::Present( void ) {
-	renderEntity_t skeleton;
+	idRenderEntity *skeleton;
 
 	if ( !gameLocal.isNewFrame ) {
 		return;
@@ -1083,16 +869,16 @@ void idAFEntity_Gibbable::Present( void ) {
 	}
 
 	// update skeleton model
-	if ( gibbed && !IsHidden() && skeletonModel != NULL ) {
-		skeleton = renderEntity;
-		skeleton.hModel = skeletonModel;
-		// add to refresh list
-		if ( skeletonModelDefHandle == -1 ) {
-			skeletonModelDefHandle = gameRenderWorld->AddEntityDef( &skeleton );
-		} else {
-			gameRenderWorld->UpdateEntityDef( skeletonModelDefHandle, &skeleton );
-		}
-	}
+	//if ( gibbed && !IsHidden() && skeletonModel != NULL ) {
+	//	skeleton = renderEntity;
+	//	skeleton.hModel = skeletonModel;
+	//	// add to refresh list
+	//	if ( skeletonModelDefHandle == -1 ) {
+	//		skeletonModelDefHandle = gameRenderWorld->AddEntityDef( &skeleton );
+	//	} else {
+	//		gameRenderWorld->UpdateEntityDef( skeletonModelDefHandle, &skeleton );
+	//	}
+	//}
 
 	idEntity::Present();
 }
@@ -1155,8 +941,8 @@ void idAFEntity_Gibbable::SpawnGibs( const idVec3 &dir, const char *damageDefNam
 			velocity += ( i & 1 ) ? dir : -dir;
 			list[i]->GetPhysics()->SetLinearVelocity( velocity * 75.0f );
 		}
-		list[i]->GetRenderEntity()->noShadow = true;
-		list[i]->GetRenderEntity()->shaderParms[ SHADERPARM_TIME_OF_DEATH ] = gameLocal.time * 0.001f;
+		list[i]->GetRenderEntity()->SetNoShadow(true);
+		list[i]->GetRenderEntity()->SetShaderParms(SHADERPARM_TIME_OF_DEATH, gameLocal.time * 0.001f);
 		list[i]->PostEventSec( &EV_Remove, 4.0f );
 	}
 }
@@ -1191,10 +977,10 @@ void idAFEntity_Gibbable::Gib( const idVec3 &dir, const char *damageDefName ) {
 
 	if ( g_bloodEffects.GetBool() ) {
 		if ( gameLocal.time > gameLocal.GetGibTime() ) {
-			gameLocal.SetGibTime( gameLocal.time + GIB_DELAY );
+//			gameLocal.SetGibTime( gameLocal.time + GIB_DELAY );
 			SpawnGibs( dir, damageDefName );
-			renderEntity.noShadow = true;
-			renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH ] = gameLocal.time * 0.001f;
+			//renderEntity.SetNoShadow(true);
+			//renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH ] = gameLocal.time * 0.001f;
 			StartSound( "snd_gibbed", SND_CHANNEL_ANY, 0, false, NULL );
 			gibbed = true;
 		}
@@ -1444,9 +1230,9 @@ void idAFEntity_WithAttachedHead::SetupHead( void ) {
 		head = headEnt;
 
 		animator.GetJointTransform( joint, gameLocal.time, origin, axis );
-		origin = renderEntity.origin + origin * renderEntity.axis;
+		origin = renderEntity->GetOrigin() + origin * renderEntity->GetAxis();
 		headEnt->SetOrigin( origin );
-		headEnt->SetAxis( renderEntity.axis );
+		headEnt->SetAxis( renderEntity->GetAxis() );
 		headEnt->BindToJoint( this, joint, true );
 	}
 }
@@ -1473,7 +1259,7 @@ void idAFEntity_WithAttachedHead::LinkCombat( void ) {
 	}
 
 	if ( combatModel ) {
-		combatModel->Link( gameLocal.clip, this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle );
+		combatModel->Link( gameLocal.clip, this, 0, renderEntity->GetOrigin(), renderEntity->GetAxis(), renderEntity->GetIndex() );
 	}
 	headEnt = head.GetEntity();
 	if ( headEnt ) {
@@ -1685,7 +1471,7 @@ void idAFEntity_Vehicle::Use( idPlayer *other ) {
 	else {
 		player = other;
 		animator.GetJointTransform( eyesJoint, gameLocal.time, origin, axis );
-		origin = renderEntity.origin + origin * renderEntity.axis;
+		origin = renderEntity->GetOrigin() + origin * renderEntity->GetAxis();
 		player->GetPhysics()->SetOrigin( origin );
 		player->BindToBody( this, 0, true );
 
@@ -1789,7 +1575,7 @@ void idAFEntity_VehicleSimple::Spawn( void ) {
 		}
 
 		GetAnimator()->GetJointTransform( wheelJoints[i], 0, origin, axis );
-		origin = renderEntity.origin + origin * renderEntity.axis;
+		origin = renderEntity->GetOrigin() + origin * renderEntity->GetAxis();
 
 		suspension[i] = new idAFConstraint_Suspension();
 		suspension[i]->Setup( va( "suspension%d", i ), af.GetPhysics()->GetBody( 0 ), origin, af.GetPhysics()->GetAxis( 0 ), wheelModel );
@@ -1889,7 +1675,7 @@ void idAFEntity_VehicleSimple::Think( void ) {
 			}
 
 			// set wheel position for suspension
-			origin = ( origin - renderEntity.origin ) * renderEntity.axis.Transpose();
+			origin = ( origin - renderEntity->GetOrigin() ) * renderEntity->GetAxis().Transpose();
 			GetAnimator()->SetJointPos( wheelJoints[i], JOINTMOD_WORLD_OVERRIDE, origin );
 		}
 /*
@@ -2291,157 +2077,6 @@ void idAFEntity_VehicleSixWheels::Think( void ) {
 	}
 }
 
-
-/*
-===============================================================================
-
-  idAFEntity_SteamPipe
-
-===============================================================================
-*/
-
-CLASS_DECLARATION( idAFEntity_Base, idAFEntity_SteamPipe )
-END_CLASS
-
-
-/*
-================
-idAFEntity_SteamPipe::idAFEntity_SteamPipe
-================
-*/
-idAFEntity_SteamPipe::idAFEntity_SteamPipe( void ) {
-	steamBody			= 0;
-	steamForce			= 0.0f;
-	steamUpForce		= 0.0f;
-	steamModelDefHandle	= -1;
-	memset( &steamRenderEntity, 0, sizeof( steamRenderEntity ) );
-}
-
-/*
-================
-idAFEntity_SteamPipe::~idAFEntity_SteamPipe
-================
-*/
-idAFEntity_SteamPipe::~idAFEntity_SteamPipe( void ) {
-	if ( steamModelDefHandle >= 0 ){
-		gameRenderWorld->FreeEntityDef( steamModelDefHandle );
-	}
-}
-
-/*
-================
-idAFEntity_SteamPipe::Save
-================
-*/
-void idAFEntity_SteamPipe::Save( idSaveGame *savefile ) const {
-}
-
-/*
-================
-idAFEntity_SteamPipe::Restore
-================
-*/
-void idAFEntity_SteamPipe::Restore( idRestoreGame *savefile ) {
-	Spawn();
-}
-
-/*
-================
-idAFEntity_SteamPipe::Spawn
-================
-*/
-void idAFEntity_SteamPipe::Spawn( void ) {
-	idVec3 steamDir;
-	const char *steamBodyName;
-
-	BaseSpawn();
-
-	LoadAF();
-
-	SetCombatModel();
-
-	SetPhysics( af.GetPhysics() );
-
-	fl.takedamage = true;
-
-	steamBodyName = spawnArgs.GetString( "steamBody", "" );
-	steamForce = spawnArgs.GetFloat( "steamForce", "2000" );
-	steamUpForce = spawnArgs.GetFloat( "steamUpForce", "10" );
-	steamDir = af.GetPhysics()->GetAxis( steamBody )[2];
-	steamBody = af.GetPhysics()->GetBodyId( steamBodyName );
-	force.SetPosition( af.GetPhysics(), steamBody, af.GetPhysics()->GetOrigin( steamBody ) );
-	force.SetForce( steamDir * -steamForce );
-
-	InitSteamRenderEntity();
-
-	BecomeActive( TH_THINK );
-}
-
-/*
-================
-idAFEntity_SteamPipe::InitSteamRenderEntity
-================
-*/
-void idAFEntity_SteamPipe::InitSteamRenderEntity( void ) {
-	const char	*temp;
-	const idDeclModelDef *modelDef;
-
-	memset( &steamRenderEntity, 0, sizeof( steamRenderEntity ) );
-	steamRenderEntity.shaderParms[ SHADERPARM_RED ]		= 1.0f;
-	steamRenderEntity.shaderParms[ SHADERPARM_GREEN ]	= 1.0f;
-	steamRenderEntity.shaderParms[ SHADERPARM_BLUE ]	= 1.0f;
-	modelDef = NULL;
-	temp = spawnArgs.GetString ( "model_steam" );
-	if ( *temp != '\0' ) {
-		if ( !strstr( temp, "." ) ) {
-			modelDef = static_cast<const idDeclModelDef *>( declManager->FindType( DECL_MODELDEF, temp, false ) );
-			if ( modelDef ) {
-				steamRenderEntity.hModel = modelDef->ModelHandle();
-			}
-		}
-
-		if ( !steamRenderEntity.hModel ) {
-			steamRenderEntity.hModel = renderModelManager->FindModel( temp );
-		}
-
-		if ( steamRenderEntity.hModel ) {
-			steamRenderEntity.bounds = steamRenderEntity.hModel->Bounds( &steamRenderEntity );
-		} else {
-			steamRenderEntity.bounds.Zero();
-		}
-		steamRenderEntity.origin = af.GetPhysics()->GetOrigin( steamBody );
-		steamRenderEntity.axis = af.GetPhysics()->GetAxis( steamBody );
-		steamModelDefHandle = gameRenderWorld->AddEntityDef( &steamRenderEntity );
-	}
-}
-
-/*
-================
-idAFEntity_SteamPipe::Think
-================
-*/
-void idAFEntity_SteamPipe::Think( void ) {
-	idVec3 steamDir;
-
-	if ( thinkFlags & TH_THINK ) {
-		steamDir.x = gameLocal.random.CRandomFloat() * steamForce;
-		steamDir.y = gameLocal.random.CRandomFloat() * steamForce;
-		steamDir.z = steamUpForce;
-		force.SetForce( steamDir );
-		force.Evaluate( gameLocal.time );
-		//gameRenderWorld->DebugArrow( colorWhite, af.GetPhysics()->GetOrigin( steamBody ), af.GetPhysics()->GetOrigin( steamBody ) - 10.0f * steamDir, 4 );
-	}
-
-	if ( steamModelDefHandle >= 0 ){
-		steamRenderEntity.origin = af.GetPhysics()->GetOrigin( steamBody );
-		steamRenderEntity.axis = af.GetPhysics()->GetAxis( steamBody );
-		gameRenderWorld->UpdateEntityDef( steamModelDefHandle, &steamRenderEntity );
-	}
-
-	idAFEntity_Base::Think();
-}
-
-
 /*
 ===============================================================================
 
@@ -2684,7 +2319,7 @@ GetJointTransform
 ================
 */
 typedef struct {
-	renderEntity_t *ent;
+	idRenderEntity *ent;
 	const idMD5Joint *joints;
 } jointTransformData_t;
 
@@ -2692,12 +2327,12 @@ static bool GetJointTransform( void *model, const idJointMat *frame, const char 
 	int i;
 	jointTransformData_t *data = reinterpret_cast<jointTransformData_t *>(model);
 
-	for ( i = 0; i < data->ent->numJoints; i++ ) {
+	for ( i = 0; i < data->ent->GetNumjoints(); i++ ) {
 		if ( data->joints[i].name.Icmp( jointName ) == 0 ) {
 			break;
 		}
 	}
-	if ( i >= data->ent->numJoints ) {
+	if ( i >= data->ent->GetNumjoints() ) {
 		return false;
 	}
 	origin = frame[i].ToVec3();
@@ -2726,10 +2361,11 @@ idGameEdit::AF_CreateMesh
 ================
 */
 idRenderModel *idGameEdit::AF_CreateMesh( const idDict &args, idVec3 &meshOrigin, idMat3 &meshAxis, bool &poseIsSet ) {
+#if 0
 	int i, jointNum;
 	const idDeclAF *af;
 	const idDeclAF_Body *fb;
-	renderEntity_t ent;
+	idRenderEntity ent;
 	idVec3 origin, *bodyOrigin, *newBodyOrigin, *modifiedOrigin;
 	idMat3 axis, *bodyAxis, *newBodyAxis, *modifiedAxis;
 	declAFJointMod_t *jointMod;
@@ -2926,4 +2562,8 @@ idRenderModel *idGameEdit::AF_CreateMesh( const idDict &args, idVec3 &meshOrigin
 
 	// instantiate a mesh using the joint information from the render entity
 	return md5->InstantiateDynamicModel( &ent, NULL, NULL );
+#else
+	common->FatalError("Fix me!");
+	return NULL;
+#endif
 }

@@ -819,6 +819,7 @@ void R_RenderView( viewDef_t *parms ) {
 		if (light == NULL)
 			continue;
 
+		light->UpdateRenderLight();
 		vLight = R_SetLightDefViewLight(light);
 	}
 

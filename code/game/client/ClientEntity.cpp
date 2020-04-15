@@ -161,7 +161,7 @@ rvClientEntity::SetAxis
 */
 void rvClientEntity::SetAxis( const idMat3& axis ) {
 	if ( bindMaster ) {
-		bindAxis = axis * bindMaster->GetRenderEntity()->axis.Transpose();		
+		bindAxis = axis * bindMaster->GetRenderEntity()->GetAxis().Transpose();		
 	} else {
 		worldAxis = axis;
 	}

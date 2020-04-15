@@ -395,13 +395,15 @@ void rvmRenderModelFX::ProcessEffectGeometry(int frameNum, idMat3 axis, modelSur
 rvmRenderModelFX::InstantiateDynamicModel
 ========================
 */
-idRenderModel*  rvmRenderModelFX::InstantiateDynamicModel(const struct renderEntity_t* ent, const struct viewDef_s* view, idRenderModel* cachedModel) {
+idRenderModel*  rvmRenderModelFX::InstantiateDynamicModel(const class idRenderEntity* ent, const struct viewDef_s* view, idRenderModel* cachedModel) {
 	idRenderModelStatic* staticModel;
 
 	if (cachedModel && !r_useCachedDynamicModels.GetBool()) {
 		delete cachedModel;
 		cachedModel = NULL;
 	}
+
+	const idRenderEntityParms* parms = &((const idRenderEntityLocal*)ent)->parms;
 
 	if (purged) {
 		common->DWarning("model %s instantiated while purged", Name());
@@ -432,7 +434,7 @@ idRenderModel*  rvmRenderModelFX::InstantiateDynamicModel(const struct renderEnt
 			surf->id = i;
 		}
 
-		ProcessEffectGeometry(ent->frameNum, ent->axis, surf, effects[i]);
+		ProcessEffectGeometry(parms->frameNum, parms->axis, surf, effects[i]);
 
 		staticModel->bounds.AddPoint(surf->geometry->bounds[0]);
 		staticModel->bounds.AddPoint(surf->geometry->bounds[1]);
@@ -446,6 +448,6 @@ idRenderModel*  rvmRenderModelFX::InstantiateDynamicModel(const struct renderEnt
 rvmRenderModelFX::Bounds
 ========================
 */
-idBounds rvmRenderModelFX::Bounds(const struct renderEntity_t* ent) const {
+idBounds rvmRenderModelFX::Bounds(const class idRenderEntity* ent) const {
 	return modelBounds;
 }

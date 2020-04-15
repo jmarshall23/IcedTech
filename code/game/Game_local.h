@@ -205,8 +205,7 @@ struct fxEmitterInstance_t {
 	idListNode<fxEmitterInstance_t> listNode;
 
 	idRenderModel*					fxModel;
-	renderEntity_t					renderEntity;
-	qhandle_t						worldHandle;
+	idRenderEntity					*renderEntity;
 	bool							loop;
 };
 
@@ -896,8 +895,6 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "Target.h"
 #include "Trigger.h"
 #include "Sound.h"
-#include "SecurityCamera.h"
-#include "BrittleFracture.h"
 
 //#include "ai/AI.h"
 #include "anim/Anim_Testmodel.h"

@@ -248,7 +248,7 @@ public:
 
 	// These are the canonical idDict to parameter parsing routines used by both the game and tools.
 	virtual void				ParseSpawnArgsToRenderLight( const idDict *args, idRenderLight *renderLight );
-	virtual void				ParseSpawnArgsToRenderEntity( const idDict *args, renderEntity_t *renderEntity );
+	virtual void				ParseSpawnArgsToRenderEntity( const idDict *args, idRenderEntity *renderEntity );
 	virtual void				ParseSpawnArgsToRefSound( const idDict *args, refSound_t *refSound );
 
 	// Animation system calls for non-game based skeletal rendering.

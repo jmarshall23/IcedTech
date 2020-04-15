@@ -17,7 +17,7 @@ public:
 	virtual idPhysics*		GetPhysics		( void ) const;	
 	virtual bool			Collide			( const trace_t &collision, const idVec3 &velocity );
 	
-	renderEntity_t*			GetRenderEntity	( void );
+	idRenderEntity*			GetRenderEntity	( void );
 
 	void					Save			( idSaveGame *savefile ) const;
 	void					Restore			( idRestoreGame *savefile );
@@ -33,8 +33,7 @@ public:
 	void					SetOrigin		( const idVec3& origin );
 	void					SetAxis			( const idMat3& axis );
 protected:
-	renderEntity_t			renderEntity;
-	int						entityDefHandle;
+	idRenderEntity			*renderEntity;
 
 //	rvClientEffectPtr		trailEffect;
 //	float					trailAttenuateSpeed;
@@ -54,8 +53,8 @@ private:
 	void					Event_ClearDepthHack	( void );
 };
 
-ID_INLINE renderEntity_t* rvClientMoveable::GetRenderEntity ( void ) {
-	return &renderEntity;
+ID_INLINE idRenderEntity* rvClientMoveable::GetRenderEntity ( void ) {
+	return renderEntity;
 }
 
 extern const idEventDef CL_FadeOut;

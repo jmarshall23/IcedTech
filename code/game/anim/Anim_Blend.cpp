@@ -4953,7 +4953,7 @@ void idGameEdit::ANIM_CreateAnimFrame( const idRenderModel *model, const idMD5An
 	}
 
 	if ( numJoints != model->NumJoints() ) {
-		gameLocal.Error( "ANIM_CreateAnimFrame: different # of joints in renderEntity_t than in model (%s)", model->Name() );
+		gameLocal.Error( "ANIM_CreateAnimFrame: different # of joints in idRenderEntity than in model (%s)", model->Name() );
 	}
 
 	if ( !model->NumJoints() ) {
@@ -5008,7 +5008,6 @@ idGameEdit::ANIM_CreateMeshForAnim
 =====================
 */
 idRenderModel *idGameEdit::ANIM_CreateMeshForAnim( idRenderModel *model, const char *classname, const char *animname, int frame, bool remove_origin_offset ) {
-	renderEntity_t			ent;
 	const idDict			*args;
 	const char				*temp;
 	idRenderModel			*newmodel;
@@ -5029,11 +5028,6 @@ idRenderModel *idGameEdit::ANIM_CreateMeshForAnim( idRenderModel *model, const c
 		return NULL;
 	}
 
-	memset( &ent, 0, sizeof( ent ) );
-
-	ent.bounds.Clear();
-	ent.suppressSurfaceInViewID = 0;
-
 	modelDef = ANIM_GetModelDefFromEntityDef( args );
 	if ( modelDef ) {
 		animNum = modelDef->GetAnim( animname );
@@ -5045,7 +5039,7 @@ idRenderModel *idGameEdit::ANIM_CreateMeshForAnim( idRenderModel *model, const c
 			return NULL;
 		}
 		md5anim = anim->MD5Anim( 0 );
-		ent.customSkin = modelDef->GetDefaultSkin();
+		//ent.customSkin = modelDef->GetDefaultSkin();
 		offset = modelDef->GetVisualOffset();
 	} else {
 		filename = animname;
@@ -5064,18 +5058,19 @@ idRenderModel *idGameEdit::ANIM_CreateMeshForAnim( idRenderModel *model, const c
 
 	temp = args->GetString( "skin", "" );
 	if ( temp[ 0 ] ) {
-		ent.customSkin = declManager->FindSkin( temp );
+//		ent.customSkin = declManager->FindSkin( temp );
 	}
 
-	ent.numJoints = model->NumJoints();
-	ent.joints = ( idJointMat * )Mem_Alloc16( ent.numJoints * sizeof( *ent.joints ) );
+	int numJoints = model->NumJoints();
+	idJointMat *joints = ( idJointMat * )Mem_Alloc16( numJoints * sizeof( int ) );
 
-	ANIM_CreateAnimFrame( model, md5anim, ent.numJoints, ent.joints, FRAME2MS( frame ), offset, remove_origin_offset );
+	// jmarshall: fix this!
+	ANIM_CreateAnimFrame( model, md5anim, numJoints, joints, FRAME2MS( frame ), offset, remove_origin_offset );
 
-	newmodel = model->InstantiateDynamicModel( &ent, NULL, NULL );
+	newmodel = model->InstantiateDynamicModel( NULL, NULL, NULL );
 
-	Mem_Free16( ent.joints );
-	ent.joints = NULL;
+	Mem_Free16( joints );
+	joints = NULL;
 
 	return newmodel;
 }

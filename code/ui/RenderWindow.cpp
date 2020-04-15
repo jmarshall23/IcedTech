@@ -59,8 +59,8 @@ void idRenderWindow::CommonInit() {
 	modelAnim = NULL;
 	animLength = 0;
 	animEndTime = -1;
-	modelDef = -1;
 	updateAnimation = true;
+	worldEntity = NULL;
 }
 
 
@@ -71,8 +71,8 @@ void idRenderWindow::BuildAnimation(int time) {
 	}
 
 	if (animName.Length() && animClass.Length()) {
-		worldEntity.numJoints = worldEntity.hModel->NumJoints();
-		worldEntity.joints = ( idJointMat * )Mem_Alloc16( worldEntity.numJoints * sizeof( *worldEntity.joints ) );
+		worldEntity->SetNumJoints(worldEntity->GetRenderModel()->NumJoints());
+		worldEntity->SetJoints(( idJointMat * )Mem_Alloc16( worldEntity->GetNumjoints() * sizeof( *worldEntity->GetJoints() ) ));
 		modelAnim = gameEdit->ANIM_GetAnimFromEntityDef(animClass, animName);
 		if (modelAnim) {
 			animLength = gameEdit->ANIM_GetLength(modelAnim);
@@ -96,20 +96,19 @@ void idRenderWindow::PreRender() {
 		if ( !modelName[0] ) {
 			common->Warning( "Window '%s' in gui '%s': no model set", GetName(), GetGui()->GetSourceFile() );
 		}
-		memset( &worldEntity, 0, sizeof( worldEntity ) );
+		worldEntity = world->AllocRenderEntity();
 		spawnArgs.Clear();
 		spawnArgs.Set("classname", "func_static");
 		spawnArgs.Set("model", modelName);
 		spawnArgs.Set("origin", modelOrigin.c_str());
-		gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, &worldEntity );
-		if ( worldEntity.hModel ) {
+		gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, worldEntity );
+		if ( worldEntity->GetRenderModel() ) {
 			idVec3 v = modelRotate.ToVec3();
-			worldEntity.axis = v.ToMat3();
-			worldEntity.shaderParms[0] = 1;
-			worldEntity.shaderParms[1] = 1;
-			worldEntity.shaderParms[2] = 1;
-			worldEntity.shaderParms[3] = 1;
-			modelDef = world->AddEntityDef( &worldEntity );
+			worldEntity->SetAxis(v.ToMat3());
+			worldEntity->SetShaderParms(0,1);
+			worldEntity->SetShaderParms(1,1);
+			worldEntity->SetShaderParms(2,1);
+			worldEntity->SetShaderParms(3,1);
 		}
 		needsRender = false;
 	}
@@ -121,7 +120,7 @@ void idRenderWindow::Render( int time ) {
 	rLight->SetShaderParam(SHADERPARM_GREEN, lightColor.y());
 	rLight->SetShaderParam(SHADERPARM_BLUE, lightColor.z());
 	rLight->UpdateRenderLight();
-	if ( worldEntity.hModel ) {
+	if ( worldEntity->GetRenderModel() ) {
 		if (updateAnimation) {
 			BuildAnimation(time);
 		}
@@ -129,10 +128,10 @@ void idRenderWindow::Render( int time ) {
 			if (time > animEndTime) {
 				animEndTime = time + animLength;
 			}
-			gameEdit->ANIM_CreateAnimFrame(worldEntity.hModel, modelAnim, worldEntity.numJoints, worldEntity.joints, animLength - (animEndTime - time), vec3_origin, false );
+			gameEdit->ANIM_CreateAnimFrame(worldEntity->GetRenderModel(), modelAnim, worldEntity->GetNumjoints(), worldEntity->GetJoints(), animLength - (animEndTime - time), vec3_origin, false );
 		}
-		worldEntity.axis = idAngles(modelRotate.x(), modelRotate.y(), modelRotate.z()).ToMat3();
-		world->UpdateEntityDef(modelDef, &worldEntity);
+		worldEntity->SetAxis(idAngles(modelRotate.x(), modelRotate.y(), modelRotate.z()).ToMat3());
+		worldEntity->UpdateRenderEntity();
 	}
 }
 

@@ -503,7 +503,7 @@ jointHandle_t rvmRenderModelMDR::GetJointHandle(const char *name) const {
 idRenderModelMD3::Bounds
 =================
 */
-idBounds rvmRenderModelMDR::Bounds(const struct renderEntity_t *ent) const {
+idBounds rvmRenderModelMDR::Bounds(const class idRenderEntity*ent) const {
 	return bounds;
 }
 
@@ -521,7 +521,7 @@ int	rvmRenderModelMDR::Memory() const {
 rvmRenderModelMDR::RenderFramesToModel
 =================
 */
-void rvmRenderModelMDR::RenderFramesToModel(idRenderModelStatic *staticModel, const struct renderEntity_s *ent, const struct viewDef_s *view, const idMaterial *overrideMaterial, int scale) {
+void rvmRenderModelMDR::RenderFramesToModel(idRenderModelStatic *staticModel, const struct idRenderEntityParms *ent, const struct viewDef_s *view, const idMaterial *overrideMaterial, int scale) {
 	int				i, j, k;
 	float			frontlerp, backlerp;
 	int				*triangles;
@@ -665,8 +665,9 @@ void rvmRenderModelMDR::RenderFramesToModel(idRenderModelStatic *staticModel, co
 rvmRenderModelMDR::InstantiateDynamicModel
 =================
 */
-idRenderModel *rvmRenderModelMDR::InstantiateDynamicModel(const struct renderEntity_t *ent, const struct viewDef_s *view, idRenderModel *cachedModel) {
+idRenderModel *rvmRenderModelMDR::InstantiateDynamicModel(const class idRenderEntity* ent, const struct viewDef_s *view, idRenderModel *cachedModel) {
 	idRenderModelStatic	*staticModel;
+	class idRenderEntityLocal* renderEntity = (class idRenderEntityLocal*)ent;
 
 	if (cachedModel) {
 		delete cachedModel;
@@ -682,7 +683,8 @@ idRenderModel *rvmRenderModelMDR::InstantiateDynamicModel(const struct renderEnt
 
 	if (ent != NULL)
 	{
-		RenderFramesToModel(staticModel, (const renderEntity_s*)ent, view, ent->customShader, scale);
+		const idMaterial* material = renderEntity->GetCustomShader();
+		RenderFramesToModel(staticModel, &renderEntity->parms, view, material, scale);
 	}
 	else
 	{

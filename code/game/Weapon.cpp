@@ -137,7 +137,7 @@ idWeapon::idWeapon() {
 	flashColor				= vec3_origin;
 //	guiLightHandle			= -1;
 //	nozzleGlowHandle		= -1;
-	modelDefHandle			= -1;
+//	modelDefHandle			= -1;
 
 	berserk					= 2;
 	brassDelay				= 0;
@@ -564,22 +564,21 @@ void idWeapon::Clear( void ) {
 //		nozzleGlowHandle = -1;
 //	}
 
-	memset( &renderEntity, 0, sizeof( renderEntity ) );
-	renderEntity.entityNum	= entityNumber;
-
-	renderEntity.noShadow		= true;
-	renderEntity.noSelfShadow	= true;
-	renderEntity.customSkin		= NULL;
-
-	// set default shader parms
-	renderEntity.shaderParms[ SHADERPARM_RED ]	= 1.0f;
-	renderEntity.shaderParms[ SHADERPARM_GREEN ]= 1.0f;
-	renderEntity.shaderParms[ SHADERPARM_BLUE ]	= 1.0f;
-	renderEntity.shaderParms[3] = 1.0f;
-	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = 0.0f;
-	renderEntity.shaderParms[5] = 0.0f;
-	renderEntity.shaderParms[6] = 0.0f;
-	renderEntity.shaderParms[7] = 0.0f;
+	//renderEntity.entityNum	= entityNumber;
+	//
+	//renderEntity.noShadow		= true;
+	//renderEntity.noSelfShadow	= true;
+	//renderEntity.customSkin		= NULL;
+	//
+	//// set default shader parms
+	//renderEntity.shaderParms[ SHADERPARM_RED ]	= 1.0f;
+	//renderEntity.shaderParms[ SHADERPARM_GREEN ]= 1.0f;
+	//renderEntity.shaderParms[ SHADERPARM_BLUE ]	= 1.0f;
+	//renderEntity.shaderParms[3] = 1.0f;
+	//renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = 0.0f;
+	//renderEntity.shaderParms[5] = 0.0f;
+	//renderEntity.shaderParms[6] = 0.0f;
+	//renderEntity.shaderParms[7] = 0.0f;
 
 	if ( refSound.referenceSound ) {
 		refSound.referenceSound->Free( true );
@@ -694,7 +693,6 @@ void idWeapon::Clear( void ) {
 	allowDrop			= true;
 
 	animator.ClearAllAnims( gameLocal.time, 0 );
-	FreeModelDef();
 
 	sndHum				= NULL;
 
@@ -734,11 +732,11 @@ void idWeapon::InitWorldModel( const idDeclEntityDef *def ) {
 		ent->GetPhysics()->SetAxis( mat3_identity );
 
 		// supress model in player views, but allow it in mirrors and remote views
-		renderEntity_t *worldModelRenderEntity = ent->GetRenderEntity();
+		idRenderEntity *worldModelRenderEntity = ent->GetRenderEntity();
 		if ( worldModelRenderEntity ) {
-			worldModelRenderEntity->suppressSurfaceInViewID = owner->entityNumber+1;
-			worldModelRenderEntity->suppressShadowInViewID = owner->entityNumber+1;
-			worldModelRenderEntity->suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + owner->entityNumber;
+			worldModelRenderEntity->SetSuppressSurfaceInViewID(owner->entityNumber+1);
+			worldModelRenderEntity->SetSuppressShadowInViewID(owner->entityNumber+1);
+			worldModelRenderEntity->SetSuppressShadowInLightID(LIGHTID_VIEW_MUZZLE_FLASH + owner->entityNumber);
 		}
 	}
 	else {
@@ -975,11 +973,11 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 		}
 	}
 
-	renderEntity.gui[ 0 ] = NULL;
-	guiName = weaponDef->dict.GetString( "gui" );
-	if ( guiName[0] ) {
-		renderEntity.gui[ 0 ] = uiManager->FindGui( guiName, true, false, true );
-	}
+	//renderEntity.gui[ 0 ] = NULL;
+	//guiName = weaponDef->dict.GetString( "gui" );
+	//if ( guiName[0] ) {
+	//	renderEntity.gui[ 0 ] = uiManager->FindGui( guiName, true, false, true );
+	//}
 
 	zoomFov = weaponDef->dict.GetInt( "zoomFov", "70" );
 	berserk = weaponDef->dict.GetInt( "berserk", "2" );
@@ -1057,49 +1055,49 @@ idWeapon::UpdateGUI
 ================
 */
 void idWeapon::UpdateGUI( void ) {
-	if ( !renderEntity.gui[ 0 ] ) {
-		return;
-	}
-	
-	if ( state == WP_HOLSTERED ) {
-		return;
-	}
-
-	if ( owner->weaponGone ) {
-		// dropping weapons was implemented wierd, so we have to not update the gui when it happens or we'll get a negative ammo count
-		return;
-	}
-
-	if ( gameLocal.localClientNum != owner->entityNumber ) {
-		// if updating the hud for a followed client
-		if ( gameLocal.localClientNum >= 0 && gameLocal.entities[ gameLocal.localClientNum ] && gameLocal.entities[ gameLocal.localClientNum ]->IsType( idPlayer::Type ) ) {
-			idPlayer *p = static_cast< idPlayer * >( gameLocal.entities[ gameLocal.localClientNum ] );
-			if ( !p->spectating || p->spectator != owner->entityNumber ) {
-				return;
-			}
-		}
-		else {
-			return;
-		}
-	}
-
-	int inclip = AmmoInClip();
-	int ammoamount = AmmoAvailable();
-
-	if ( ammoamount < 0 ) {
-		// show infinite ammo
-		renderEntity.gui[ 0 ]->SetStateString( "player_ammo", "" );
-	}
-	else {
-		// show remaining ammo
-		renderEntity.gui[ 0 ]->SetStateString( "player_totalammo", va( "%i", ammoamount - inclip) );
-		renderEntity.gui[ 0 ]->SetStateString( "player_ammo", ClipSize() ? va( "%i", inclip ) : "--" );
-		renderEntity.gui[ 0 ]->SetStateString( "player_clips", ClipSize() ? va("%i", ammoamount / ClipSize()) : "--" );
-		renderEntity.gui[ 0 ]->SetStateString( "player_allammo", va( "%i/%i", inclip, ammoamount - inclip ) );
-	}
-	renderEntity.gui[ 0 ]->SetStateBool( "player_ammo_empty", ( ammoamount == 0 ) );
-	renderEntity.gui[ 0 ]->SetStateBool( "player_clip_empty", ( inclip == 0 ) );
-	renderEntity.gui[ 0 ]->SetStateBool( "player_clip_low", ( inclip <= lowAmmo ) );
+	//if ( !renderEntity.gui[ 0 ] ) {
+	//	return;
+	//}
+	//
+	//if ( state == WP_HOLSTERED ) {
+	//	return;
+	//}
+	//
+	//if ( owner->weaponGone ) {
+	//	// dropping weapons was implemented wierd, so we have to not update the gui when it happens or we'll get a negative ammo count
+	//	return;
+	//}
+	//
+	//if ( gameLocal.localClientNum != owner->entityNumber ) {
+	//	// if updating the hud for a followed client
+	//	if ( gameLocal.localClientNum >= 0 && gameLocal.entities[ gameLocal.localClientNum ] && gameLocal.entities[ gameLocal.localClientNum ]->IsType( idPlayer::Type ) ) {
+	//		idPlayer *p = static_cast< idPlayer * >( gameLocal.entities[ gameLocal.localClientNum ] );
+	//		if ( !p->spectating || p->spectator != owner->entityNumber ) {
+	//			return;
+	//		}
+	//	}
+	//	else {
+	//		return;
+	//	}
+	//}
+	//
+	//int inclip = AmmoInClip();
+	//int ammoamount = AmmoAvailable();
+	//
+	//if ( ammoamount < 0 ) {
+	//	// show infinite ammo
+	//	renderEntity.gui[ 0 ]->SetStateString( "player_ammo", "" );
+	//}
+	//else {
+	//	// show remaining ammo
+	//	renderEntity.gui[ 0 ]->SetStateString( "player_totalammo", va( "%i", ammoamount - inclip) );
+	//	renderEntity.gui[ 0 ]->SetStateString( "player_ammo", ClipSize() ? va( "%i", inclip ) : "--" );
+	//	renderEntity.gui[ 0 ]->SetStateString( "player_clips", ClipSize() ? va("%i", ammoamount / ClipSize()) : "--" );
+	//	renderEntity.gui[ 0 ]->SetStateString( "player_allammo", va( "%i/%i", inclip, ammoamount - inclip ) );
+	//}
+	//renderEntity.gui[ 0 ]->SetStateBool( "player_ammo_empty", ( ammoamount == 0 ) );
+	//renderEntity.gui[ 0 ]->SetStateBool( "player_clip_empty", ( inclip == 0 ) );
+	//renderEntity.gui[ 0 ]->SetStateBool( "player_clip_low", ( inclip <= lowAmmo ) );
 }
 
 /***********************************************************************
@@ -1171,20 +1169,25 @@ idWeapon::SetModel
 void idWeapon::SetModel( const char *modelname ) {
 	assert(modelname);
 
-	if (modelDefHandle >= 0) {
-		gameRenderWorld->RemoveDecals(modelDefHandle);
+	if (renderEntity->GetRenderModel()) {
+		gameRenderWorld->RemoveDecals(renderEntity->GetIndex());
 	}
 
-	renderEntity.hModel = animator.SetModel(modelname);
-	if (renderEntity.hModel) {
-		renderEntity.customSkin = animator.ModelDef()->GetDefaultSkin();
-		animator.GetJoints(&renderEntity.numJoints, &renderEntity.joints);
+	renderEntity->SetRenderModel(animator.SetModel(modelname));
+	if (renderEntity->GetRenderModel()) {
+		renderEntity->SetCustomSkin(animator.ModelDef()->GetDefaultSkin());
+
+		int numJoints;
+		idJointMat* joints;
+		animator.GetJoints(&numJoints, &joints);
+		renderEntity->SetNumJoints(numJoints);
+		renderEntity->SetJoints(joints);
 	}
 	else {
-		renderEntity.customSkin = NULL;
-		renderEntity.callback = NULL;
-		renderEntity.numJoints = 0;
-		renderEntity.joints = NULL;
+		renderEntity->SetCustomSkin(NULL);
+		renderEntity->SetCallback(NULL);
+		renderEntity->SetNumJoints(0);
+		renderEntity->SetJoints(NULL);
 	}
 
 	// hide the model until an animation is played
@@ -1575,10 +1578,6 @@ bool idWeapon::BloodSplat( float size ) {
 
 	hasBloodSplat = true;
 
-	if ( modelDefHandle < 0 ) {
-		return false;
-	}
-
 	if ( !GetGlobalJointTransform( true, ejectJointView, localOrigin, localAxis ) ) {
 		return false;
 	}
@@ -1610,7 +1609,7 @@ bool idWeapon::BloodSplat( float size ) {
 
 	const idMaterial *mtr = declManager->FindMaterial( "textures/decals/duffysplatgun" );
 
-	gameRenderWorld->ProjectOverlay( modelDefHandle, localPlane, mtr );
+	gameRenderWorld->ProjectOverlay(renderEntity->GetIndex(), localPlane, mtr );
 
 	return true;
 }
@@ -1750,27 +1749,29 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 	UpdateAnimation();
 
 	// Make sure the light rig player channel is enabled. 
-	renderEntity.SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_PLAYER, true);
+	renderEntity->SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_PLAYER, true);
 
 	// only show the surface in player view
-	renderEntity.allowSurfaceInViewID = owner->entityNumber+1;
+	renderEntity->SetAllowSurfaceInViewID(owner->entityNumber+1);
 
 	// first person weapons shouldn't have mipmapping.
-	renderEntity.forceVirtualTextureHighQuality = true;
+	renderEntity->SetForceVirtualtextureHighQuality(true);
 
 	// crunch the depth range so it never pokes into walls this breaks the machine gun gui
-	renderEntity.weaponDepthHack = true;
-	renderEntity.skipEntityViewCulling = true;
+	renderEntity->SetWeaponDepthHack(true);
+	renderEntity->SetSkipEntityViewCulling(true);
 
-	renderEntity.SetLightChannel(LIGHT_CHANNEL_WORLD, true);
-	renderEntity.SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_PLAYER, true);
+	renderEntity->SetLightChannel(LIGHT_CHANNEL_WORLD, true);
+	renderEntity->SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_PLAYER, true);
 
 	// present the model
 	if ( showViewModel ) {
 		Present();
 	}
 	else {
-		FreeModelDef();
+// jmarshall
+		//FreeModelDef();
+// jmarshall end
 	}
 
 	if ( worldModel.GetEntity() && worldModel.GetEntity()->GetRenderEntity() ) {
@@ -1778,11 +1779,11 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 		// don't show shadows of the world model in first person
 // jmarshall - hide view/world weapons(how did this work in the vanilla game?). 
 		if ( /*gameLocal.isMultiplayer || g_showPlayerShadow.GetBool() ||*/ pm_thirdPerson.GetBool() ) {
-			worldModel.GetEntity()->GetRenderEntity()->suppressShadowInViewID	= 0;
+			worldModel.GetEntity()->GetRenderEntity()->SetSuppressShadowInViewID(0);
 		}
 		else {
-			worldModel.GetEntity()->GetRenderEntity()->suppressShadowInViewID	= owner->entityNumber+1;
-			worldModel.GetEntity()->GetRenderEntity()->suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + owner->entityNumber;
+			worldModel.GetEntity()->GetRenderEntity()->SetSuppressShadowInViewID(owner->entityNumber+1);
+			worldModel.GetEntity()->GetRenderEntity()->SetSuppressShadowInLightID(LIGHTID_VIEW_MUZZLE_FLASH + owner->entityNumber);
 		}
 // jmarshall end
 	}
@@ -1852,9 +1853,9 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 
 	UpdateSound();
 
-	if(gameLocal.isClient) {
-		gameRenderWorld->DebugBox(idVec4(255, 255, 255, 255), idBox(renderEntity.origin, idVec3(10, 10, 10), mat3_identity));
-	}
+	//if(gameLocal.isClient) {
+	//	gameRenderWorld->DebugBox(idVec4(255, 255, 255, 255), idBox(renderEntity->GetOrigin(), idVec3(10, 10, 10), mat3_identity));
+	//}
 }
 
 /*
@@ -2181,10 +2182,10 @@ bool idWeapon::ClientReceiveEvent( int event, int time, const idBitMsg &msg ) {
 		}
 		case EVENT_CHANGESKIN: {
 			int index = gameLocal.ClientRemapDecl( DECL_SKIN, msg.ReadLong() );
-			renderEntity.customSkin = ( index != -1 ) ? static_cast<const idDeclSkin *>( declManager->DeclByIndex( DECL_SKIN, index ) ) : NULL;
+			renderEntity->SetCustomSkin(( index != -1 ) ? static_cast<const idDeclSkin *>( declManager->DeclByIndex( DECL_SKIN, index ) ) : NULL);
 			UpdateVisuals();
 			if ( worldModel.GetEntity() ) {
-				worldModel.GetEntity()->SetSkin( renderEntity.customSkin );
+				worldModel.GetEntity()->SetSkin( renderEntity->GetCustomSkin() );
 			}
 			return true;
 		}
@@ -2537,7 +2538,7 @@ void idWeapon::Event_SetSkin( const char *skinname ) {
 		skinDecl = declManager->FindSkin( skinname );
 	}
 
-	renderEntity.customSkin = skinDecl;
+	renderEntity->SetCustomSkin(skinDecl);
 	UpdateVisuals();
 
 	if ( worldModel.GetEntity() ) {
@@ -2702,13 +2703,13 @@ void idWeapon::Event_LaunchProjectiles( int num_projectiles, float spread, float
 
 	// set the shader parm to the time of last projectile firing,
 	// which the gun material shaders can reference for single shot barrel glows, etc
-	renderEntity.shaderParms[ SHADERPARM_DIVERSITY ]	= gameLocal.random.CRandomFloat();
-	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ]	= -MS2SEC( gameLocal.realClientTime );
+	//renderEntity.shaderParms[ SHADERPARM_DIVERSITY ]	= gameLocal.random.CRandomFloat();
+	//renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ]	= -MS2SEC( gameLocal.realClientTime );
 
-	if ( worldModel.GetEntity() ) {
-		worldModel.GetEntity()->SetShaderParm( SHADERPARM_DIVERSITY, renderEntity.shaderParms[ SHADERPARM_DIVERSITY ] );
-		worldModel.GetEntity()->SetShaderParm( SHADERPARM_TIMEOFFSET, renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] );
-	}
+	//if ( worldModel.GetEntity() ) {
+	//	worldModel.GetEntity()->SetShaderParm( SHADERPARM_DIVERSITY, renderEntity.shaderParms[ SHADERPARM_DIVERSITY ] );
+	//	worldModel.GetEntity()->SetShaderParm( SHADERPARM_TIMEOFFSET, renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] );
+	//}
 
 	// calculate the muzzle position
 	if ( barrelJointView != INVALID_JOINT && projectileDict.GetBool( "launchFromBarrel" ) ) {

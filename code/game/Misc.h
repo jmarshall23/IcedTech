@@ -140,56 +140,6 @@ private:
 	void				Event_RandomPath( void );
 };
 
-
-/*
-===============================================================================
-
-  Object that fires targets and changes shader parms when damaged.
-
-===============================================================================
-*/
-
-class idDamagable : public idEntity {
-public:
-	CLASS_PROTOTYPE( idDamagable );
-
-						idDamagable( void );
-
-	void				Save( idSaveGame *savefile ) const;
-	void				Restore( idRestoreGame *savefile );
-
-	void				Spawn( void );
-	void				Killed( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location );
-
-private:
-	int					count;
-	int					nextTriggerTime;
-
-	void				BecomeBroken( idEntity *activator );
-	void				Event_BecomeBroken( idEntity *activator );
-	void				Event_RestoreDamagable( void );
-};
-
-
-/*
-===============================================================================
-
-  Hidden object that explodes when activated
-
-===============================================================================
-*/
-
-class idExplodable : public idEntity {
-public:
-	CLASS_PROTOTYPE( idExplodable );
-
-	void				Spawn( void );
-
-private:
-	void				Event_Explode( idEntity *activator );
-};
-
-
 /*
 ===============================================================================
 
@@ -461,72 +411,6 @@ public:
 
 private:
 };
-
-
-/*
-===============================================================================
-
-  idBeam
-
-===============================================================================
-*/
-
-class idBeam : public idEntity {
-public:
-	CLASS_PROTOTYPE( idBeam );
-
-						idBeam();
-
-	void				Spawn( void );
-
-	void				Save( idSaveGame *savefile ) const;
-	void				Restore( idRestoreGame *savefile );
-
-	virtual void		Think( void );
-
-	void				SetMaster( idBeam *masterbeam );
-	void				SetBeamTarget( const idVec3 &origin );
-
-	virtual void		Show( void );
-
-	virtual void		WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void		ReadFromSnapshot( const idBitMsgDelta &msg );
-
-private:
-	void				Event_MatchTarget( void );
-	void				Event_Activate( idEntity *activator );
-
-	idEntityPtr<idBeam>	target;
-	idEntityPtr<idBeam>	master;
-};
-
-
-/*
-===============================================================================
-
-  idLiquid
-
-===============================================================================
-*/
-
-class idRenderModelLiquid;
-
-class idLiquid : public idEntity {
-public:
-	CLASS_PROTOTYPE( idLiquid );
-
-	void				Spawn( void );
-
-	void				Save( idSaveGame *savefile ) const;
-	void				Restore( idRestoreGame *savefile );
-
-private:
-	void				Event_Touch( idEntity *other, trace_t *trace );
-
-
-	idRenderModelLiquid *model;
-};
-
 
 /*
 ===============================================================================

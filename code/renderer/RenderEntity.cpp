@@ -31,6 +31,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
+/*
+=======================
+idRenderEntityLocal::idRenderEntityLocal
+=======================
+*/
 idRenderEntityLocal::idRenderEntityLocal() {
 	memset( &parms, 0, sizeof( parms ) );
 	memset( modelMatrix, 0, sizeof( modelMatrix ) );
@@ -51,27 +56,136 @@ idRenderEntityLocal::idRenderEntityLocal() {
 	firstInteraction		= NULL;
 	lastInteraction			= NULL;
 	needsPortalSky			= false;
+	parmsDirty = true;
+	modelChanged = true;
+
+	parms.lightChannel = 0;
+	SetLightChannel(0, true);
+	parms.hModel = nullptr;
+	parms.joints = nullptr;
+	parms.frameNum = 0;
+	parms.hasDynamicShadows = false;
+	parms.skipEntityViewCulling = false;
+	parms.forceVirtualTextureHighQuality = false;
+	parms.classType = RENDER_CLASS_WORLD;
 }
 
+
+/*
+=========================
+idRenderEntityLocal::SetLightChannel
+=========================
+*/
+void idRenderEntityLocal::SetLightChannel(int lightChannel, bool enabled) {
+	if (enabled) {
+		parms.lightChannel |= 1 << lightChannel;
+	}
+	else {
+		parms.lightChannel &= ~(1UL << lightChannel);
+	}
+}
+
+/*
+=========================
+idRenderEntityLocal::HasLightChannel
+=========================
+*/
+bool idRenderEntityLocal::HasLightChannel(int lightChannel) {
+	return (!!((parms.lightChannel) & (1ULL << (lightChannel))));
+}
+
+/*
+=========================
+idRenderEntityLocal::HasValidJoints
+=========================
+*/
+bool idRenderEntityLocal::HasValidJoints() const {
+	return parms.joints != nullptr;
+}
+
+/*
+=========================
+idRenderEntityLocal::FreeRenderEntity
+=========================
+*/
 void idRenderEntityLocal::FreeRenderEntity() {
+
 }
 
-void idRenderEntityLocal::UpdateRenderEntity( const renderEntity_t *re, bool forceUpdate ) {
+/*
+=========================
+idRenderEntityLocal::UpdateRenderEntity
+=========================
+*/
+void idRenderEntityLocal::UpdateRenderEntity( bool forceUpdate ) {
+	if (r_skipUpdates.GetBool()) {
+		return;
+	}
+
+	tr.pc.c_entityUpdates++;
+
+	if (!parms.forceUpdate) {
+
+		// check for exact match (OPTIMIZE: check through pointers more)
+		if (!parms.joints && !parms.callbackData && !dynamicModel && !parmsDirty) {
+			return;
+		}
+
+		// if the only thing that changed was shaderparms, we can just leave things as they are
+		// after updating parms
+
+		// if we have a callback function and the bounds, origin, axis and model match,
+		// then we can leave the references as they are
+		if (parms.callback) {			
+			if (!parmsDirty) {
+				// only clear the dynamic model and interaction surfaces if they exist
+				R_ClearEntityDefDynamicModel(this);
+				return;
+			}
+		}
+	}
+
+	// save any decals if the model is the same, allowing marks to move with entities
+	if (!modelChanged) {
+		R_FreeEntityDefDerivedData(this, true, true);
+	}
+	else {
+		R_FreeEntityDefDerivedData(this, false, false);
+	}
+
+	R_AxisToModelMatrix(parms.axis, parms.origin, modelMatrix);
+
+	lastModifiedFrameNum = tr.frameCount;
+	if (session->writeDemo && archived) {
+		world->WriteFreeEntity(index);
+		archived = false;
+	}
+
+	// optionally immediately issue any callbacks
+	if (!r_useEntityCallbacks.GetBool() && parms.callback) {
+		R_IssueEntityDefCallback(this);
+	}
+
+	// based on the model bounds, add references in each area
+	// that may contain the updated surface
+	R_CreateEntityRefs(this);
 }
 
-void idRenderEntityLocal::GetRenderEntity( renderEntity_t *re ) {
-}
-
+/*
+=========================
+idRenderEntityLocal::ForceUpdate
+=========================
+*/
 void idRenderEntityLocal::ForceUpdate() {
 }
 
+/*
+=========================
+idRenderEntityLocal::GetIndex
+=========================
+*/
 int idRenderEntityLocal::GetIndex() {
 	return index;
-}
-
-void idRenderEntityLocal::ProjectOverlay( const idPlane localTextureAxis[2], const idMaterial *material ) {
-}
-void idRenderEntityLocal::RemoveDecals() {
 }
 
 //======================================================================

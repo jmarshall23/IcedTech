@@ -138,7 +138,7 @@ bool idAF::UpdateAnimation( void ) {
 	int i;
 	idVec3 origin, renderOrigin, bodyOrigin;
 	idMat3 axis, renderAxis, bodyAxis;
-	renderEntity_t *renderEntity;
+	idRenderEntity *renderEntity;
 
 	if ( !IsLoaded() ) {
 		return false;
@@ -234,7 +234,7 @@ void idAF::SetupPose( idEntity *ent, int time ) {
 	idVec3 origin;
 	idMat3 axis;
 	idAnimator *animatorPtr;
-	renderEntity_t *renderEntity;
+	idRenderEntity *renderEntity;
 
 	if ( !IsLoaded() || !ent ) {
 		return;
@@ -264,8 +264,8 @@ void idAF::SetupPose( idEntity *ent, int time ) {
 	for ( i = 0; i < jointMods.Num(); i++ ) {
 		body = physicsObj.GetBody( jointMods[i].bodyId );
 		animatorPtr->GetJointTransform( jointMods[i].jointHandle, time, origin, axis );
-		body->SetWorldOrigin( renderEntity->origin + ( origin + jointMods[i].jointBodyOrigin * axis ) * renderEntity->axis );
-		body->SetWorldAxis( jointMods[i].jointBodyAxis * axis * renderEntity->axis );
+		body->SetWorldOrigin( renderEntity->GetOrigin() + ( origin + jointMods[i].jointBodyOrigin * axis ) * renderEntity->GetAxis() );
+		body->SetWorldAxis( jointMods[i].jointBodyAxis * axis * renderEntity->GetAxis() );
 	}
 
 	if ( isActive ) {
@@ -288,7 +288,7 @@ void idAF::ChangePose( idEntity *ent, int time ) {
 	idVec3 origin, lastOrigin;
 	idMat3 axis;
 	idAnimator *animatorPtr;
-	renderEntity_t *renderEntity;
+	idRenderEntity *renderEntity;
 
 	if ( !IsLoaded() || !ent ) {
 		return;
@@ -320,8 +320,8 @@ void idAF::ChangePose( idEntity *ent, int time ) {
 		body = physicsObj.GetBody( jointMods[i].bodyId );
 		animatorPtr->GetJointTransform( jointMods[i].jointHandle, time, origin, axis );
 		lastOrigin = body->GetWorldOrigin();
-		body->SetWorldOrigin( renderEntity->origin + ( origin + jointMods[i].jointBodyOrigin * axis ) * renderEntity->axis );
-		body->SetWorldAxis( jointMods[i].jointBodyAxis * axis * renderEntity->axis );
+		body->SetWorldOrigin( renderEntity->GetOrigin() + ( origin + jointMods[i].jointBodyOrigin * axis ) * renderEntity->GetAxis() );
+		body->SetWorldAxis( jointMods[i].jointBodyAxis * axis * renderEntity->GetAxis() );
 		body->SetLinearVelocity( ( body->GetWorldOrigin() - lastOrigin ) * invDelta );
 	}
 

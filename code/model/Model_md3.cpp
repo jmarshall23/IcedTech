@@ -272,7 +272,7 @@ void idRenderModelMD3::LerpMeshVertexes ( srfTriangles_t *tri, const struct md3S
 idRenderModelMD3::InstantiateDynamicModel
 =============
 */
-idRenderModel *idRenderModelMD3::InstantiateDynamicModel( const struct renderEntity_t *ent, const struct viewDef_s *view, idRenderModel *cachedModel ) {
+idRenderModel *idRenderModelMD3::InstantiateDynamicModel(const class idRenderEntity* renderEntity, const struct viewDef_s *view, idRenderModel *cachedModel ) {
 	int				i, j;
 	float			backlerp;
 	int *			triangles;
@@ -282,6 +282,9 @@ idRenderModel *idRenderModelMD3::InstantiateDynamicModel( const struct renderEnt
 	md3Surface_t *	surface;
 	int				frame, oldframe;
 	idRenderModelStatic	*staticModel;
+	const idRenderEntityParms* ent = &((const idRenderEntityLocal*)renderEntity)->parms;
+
+
 
 	if ( cachedModel ) {
 		delete cachedModel;
@@ -349,7 +352,7 @@ idRenderModelMD3::Bounds
 =====================
 */
 
-idBounds idRenderModelMD3::Bounds(const struct renderEntity_t *ent) const {
+idBounds idRenderModelMD3::Bounds(const class idRenderEntity *ent) const {
 	idBounds		ret;
 
 	ret.Clear();

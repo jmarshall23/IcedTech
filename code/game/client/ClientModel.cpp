@@ -25,7 +25,7 @@ rvClientModel::rvClientModel
 rvClientModel::rvClientModel ( void ) {
 	memset ( &renderEntity, 0, sizeof(renderEntity) );
 	worldAxis = mat3_identity;
-	entityDefHandle = -1;
+	renderEntity = NULL;
 }
 
 /*
@@ -43,9 +43,9 @@ rvClientModel::FreeEntityDef
 ================
 */
 void rvClientModel::FreeEntityDef ( void ) {
-	if ( entityDefHandle >= 0 ) {
-		gameRenderWorld->FreeEntityDef ( entityDefHandle );
-		entityDefHandle = -1;
+	if (renderEntity != NULL) {
+		gameRenderWorld->FreeRenderEntity(renderEntity);
+		renderEntity = NULL;
 	}	
 }
 
@@ -61,11 +61,13 @@ void rvClientModel::Spawn ( void ) {
 
 	spawnArgs.GetString ( "classname", "", classname );
 
-	// parse static models the same way the editor display does
-	gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, &renderEntity );
+	renderEntity = gameRenderWorld->AllocRenderEntity();
 
-	renderEntity.entityNum = entityNumber;
-	renderEntity.SetLightChannel(LIGHT_CHANNEL_WORLD, true);
+	// parse static models the same way the editor display does
+	gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, renderEntity );
+
+	renderEntity->SetEntityNum(entityNumber);
+	renderEntity->SetLightChannel(LIGHT_CHANNEL_WORLD, true);
 
 	spawnarg = spawnArgs.GetString( "model" );
 	if ( spawnarg && *spawnarg ) {
@@ -81,17 +83,17 @@ rvClientModel::Think
 void rvClientModel::Think ( void ) {
 	rvClientMoveable::Think();
 
-	if( bindMaster && (bindMaster->GetRenderEntity()->hModel && bindMaster->GetModelDefHandle() == -1) ) {
+	if( bindMaster && (bindMaster->GetRenderEntity()->GetRenderModel() && bindMaster->GetModelDefHandle() == -1) ) {
 		return;
 	}
 
-	idVec3 delta = renderEntity.origin - worldOrigin;
+	idVec3 delta = renderEntity->GetOrigin() - worldOrigin;
 	if(delta.Length() <= 0) {
 		stopSimulation = true;
 	}
 
-	renderEntity.origin = worldOrigin;
-	renderEntity.axis = worldAxis * scale.GetCurrentValue(gameLocal.GetTime());
+	renderEntity->SetOrigin(worldOrigin);
+	renderEntity->SetAxis(worldAxis * scale.GetCurrentValue(gameLocal.GetTime()));
 
 	UpdateBind();
 	Present();
@@ -104,19 +106,13 @@ rvClientModel::Present
 */
 void rvClientModel::Present(void) {
 	// Hide client entities bound to a hidden entity
-	if ( bindMaster && (bindMaster->IsHidden ( ) || (bindMaster->GetRenderEntity()->hModel && bindMaster->GetModelDefHandle() == -1) ) ) {
+	if ( bindMaster && (bindMaster->IsHidden ( ) || (bindMaster->GetRenderEntity()->GetRenderModel() && bindMaster->GetModelDefHandle() == -1) ) ) {
 		return;
 	}
 
-	renderEntity.origin = worldOrigin;
-	renderEntity.axis = worldAxis;
-
-	// add to refresh list
-	if ( entityDefHandle == -1 ) {
-		entityDefHandle = gameRenderWorld->AddEntityDef( &renderEntity );
-	} else {
-		gameRenderWorld->UpdateEntityDef( entityDefHandle, &renderEntity );
-	}		
+	renderEntity->SetOrigin(worldOrigin);
+	renderEntity->SetAxis(worldAxis);
+	renderEntity->UpdateRenderEntity();
 }
 
 /*
@@ -135,7 +131,7 @@ bool rvClientModel::SetCustomShader ( const char* shaderName ) {
 		return false;
 	}
 	
-	renderEntity.customShader = material;
+	renderEntity->SetCustomShader(material);
 
 	return true;
 }
@@ -147,7 +143,7 @@ rvClientModel::Save
 */
 void rvClientModel::Save( idSaveGame *savefile ) const {
 	savefile->WriteRenderEntity( renderEntity );
-	savefile->WriteInt( entityDefHandle );
+	//savefile->WriteInt( entityDefHandle );
 
 	savefile->WriteString ( classname );	// cnicholson: Added unsaved var
 
@@ -160,14 +156,14 @@ rvClientModel::Restore
 */
 void rvClientModel::Restore( idRestoreGame *savefile ) {
 	savefile->ReadRenderEntity( renderEntity );
-	savefile->ReadInt( entityDefHandle );
+//	savefile->ReadInt( entityDefHandle );
 
 	savefile->ReadString ( classname );		// cnicholson: Added unrestored var
 
 	// restore must retrieve entityDefHandle from the renderer
- 	if ( entityDefHandle != -1 ) {
- 		entityDefHandle = gameRenderWorld->AddEntityDef( &renderEntity );
- 	}
+// 	if ( entityDefHandle != -1 ) {
+// 		entityDefHandle = gameRenderWorld->AddEntityDef( &renderEntity );
+// 	}
 }
 
 /*
@@ -176,21 +172,27 @@ rvClientModel::SetModel
 ================
 */
 void rvClientModel::SetModel( const char* modelname ) {
-	FreeEntityDef();
+// jmarshall 
+	//FreeEntityDef();
+// jmarshall end
 
-	renderEntity.hModel = renderModelManager->FindModel( modelname );
+	idRenderModel *model = renderModelManager->FindModel( modelname );
 
-	if ( renderEntity.hModel ) {
-		renderEntity.hModel->Reset();
+	if ( model ) {
+		model->Reset();
 	}
 
-	renderEntity.callback = NULL;
-	renderEntity.numJoints = 0;
-	renderEntity.joints = NULL;
-	if ( renderEntity.hModel ) {
-		renderEntity.bounds = renderEntity.hModel->Bounds( &renderEntity );
+	renderEntity->SetRenderModel(model);
+	renderEntity->SetCallback(NULL);
+	renderEntity->SetNumJoints(0);
+	renderEntity->SetJoints(NULL);
+
+	if (model) {
+		renderEntity->SetBounds(model->Bounds( renderEntity ));
 	} else {
-		renderEntity.bounds.Zero();
+		idBounds bounds;
+		bounds.Zero();
+		renderEntity->SetBounds(bounds);
 	}
 }
 
@@ -206,12 +208,12 @@ void rvClientModel::ProjectOverlay( const idVec3 &origin, const idVec3 &dir, flo
 	idPlane localPlane[2];
 
 	// make sure the entity has a valid model handle
-	if ( entityDefHandle < 0 ) {
+	if ( renderEntity != NULL ) {
 		return;
 	}
 
 	// only do this on dynamic md5 models
-	if ( renderEntity.hModel->IsDynamicModel() != DM_CACHED ) {
+	if ( renderEntity->GetRenderModel()->IsDynamicModel() != DM_CACHED ) {
 		return;
 	}
 
@@ -222,9 +224,9 @@ void rvClientModel::ProjectOverlay( const idVec3 &origin, const idVec3 &dir, flo
 	axis[0] = axistemp[ 0 ] * c + axistemp[ 1 ] * -s;
 	axis[1] = axistemp[ 0 ] * -s + axistemp[ 1 ] * -c;
 
-	renderEntity.axis.ProjectVector( origin - renderEntity.origin, localOrigin );
-	renderEntity.axis.ProjectVector( axis[0], localAxis[0] );
-	renderEntity.axis.ProjectVector( axis[1], localAxis[1] );
+	renderEntity->GetAxis().ProjectVector( origin - renderEntity->GetOrigin(), localOrigin );
+	renderEntity->GetAxis().ProjectVector( axis[0], localAxis[0] );
+	renderEntity->GetAxis().ProjectVector( axis[1], localAxis[1] );
 
 	size = 1.0f / size;
 	localAxis[0] *= size;
@@ -239,7 +241,7 @@ void rvClientModel::ProjectOverlay( const idVec3 &origin, const idVec3 &dir, flo
 	const idMaterial *mtr = declManager->FindMaterial( material );
 
 	// project an overlay onto the model
-	gameRenderWorld->ProjectOverlay( entityDefHandle, localPlane, mtr );
+	gameRenderWorld->ProjectOverlay(renderEntity->GetIndex(), localPlane, mtr );
 
 	// make sure non-animating models update their overlay
 	UpdateVisuals();
@@ -250,7 +252,7 @@ void rvClientModel::ProjectOverlay( const idVec3 &origin, const idVec3 &dir, flo
 rvClientModel::UpdateRenderEntity
 ================
 */
-bool rvClientModel::UpdateRenderEntity( renderEntity_t *renderEntity, const renderView_t *renderView ) {
+bool rvClientModel::UpdateRenderEntity( idRenderEntity *renderEntity, const renderView_t *renderView ) {
 	if ( gameLocal.inCinematic && gameLocal.skipCinematic ) {
 		return false;
 	}
@@ -270,17 +272,17 @@ rvClientModel::ModelCallback
 NOTE: may not change the game state whatsoever!
 ================
 */
-bool rvClientModel::ModelCallback( renderEntity_t *renderEntity, const renderView_t *renderView ) {
+bool rvClientModel::ModelCallback(idRenderEntity*renderEntity, const renderView_t *renderView ) {
 	rvClientEntity *cent;
 
-	cent = gameLocal.clientEntities[ renderEntity->entityNum ];
+	cent = gameLocal.clientEntities[ renderEntity->GetEntityNum() ];
 	if ( !cent ) {
-		gameLocal.Error( "rvClientModel::ModelCallback: callback with NULL client entity '%d'", renderEntity->entityNum );
+		gameLocal.Error( "rvClientModel::ModelCallback: callback with NULL client entity '%d'", renderEntity->GetEntityNum() );
 		return false;
 	}
 
 	if( !cent->IsType( rvClientModel::Type ) ) {
-		gameLocal.Error( "rvClientModel::ModelCallback: callback with non-client model on client entity '%d'", renderEntity->entityNum );
+		gameLocal.Error( "rvClientModel::ModelCallback: callback with non-client model on client entity '%d'", renderEntity->GetEntityNum() );
 		return false;
 	}
 
@@ -306,11 +308,11 @@ void rvClientModel::UpdateModelTransform( void ) {
 	idMat3 axis;
 
 	if ( GetPhysicsToVisualTransform( origin, axis ) ) {
-		renderEntity.axis = axis * worldAxis;
-		renderEntity.origin = worldOrigin + origin * renderEntity.axis;
+		renderEntity->SetAxis(axis * worldAxis);
+		renderEntity->SetOrigin(worldOrigin + origin * renderEntity->GetAxis());
 	} else {
-		renderEntity.axis = worldAxis;
-		renderEntity.origin = worldOrigin;
+		renderEntity->SetAxis(worldAxis);
+		renderEntity->SetOrigin(worldOrigin);
 	}
 }
 
@@ -325,7 +327,7 @@ void rvClientModel::UpdateModel( void ) {
 	idAnimator *animator = GetAnimator();
 	if ( animator && animator->ModelHandle() ) {
 		// set the callback to update the joints
-		renderEntity.callback = rvClientModel::ModelCallback;
+		renderEntity->SetCallback(rvClientModel::ModelCallback);
 	}
 }
 
@@ -345,7 +347,7 @@ rvClientModel::SetSkin
 ================
 */
 void rvClientModel::SetSkin( const idDeclSkin *skin ) {
-	renderEntity.customSkin = skin;
+	renderEntity->SetCustomSkin(skin);
 	UpdateVisuals();
 }
 
@@ -417,10 +419,12 @@ void rvAnimatedClientEntity::UpdateAnimation( void ) {
 	}
 
 	// get the latest frame bounds
-	animator.GetBounds( gameLocal.time, renderEntity.bounds );
-	if ( renderEntity.bounds.IsCleared() ) {
+	idBounds bounds;
+	animator.GetBounds( gameLocal.time, bounds );
+	if ( bounds.IsCleared() ) {
 		gameLocal.DPrintf( "rvAnimatedClientEntity %s %d: inside out bounds - %d\n", GetClassname(), entityNumber, gameLocal.time );
 	}
+	renderEntity->SetBounds(bounds);
 
 	// update the renderEntity
 	UpdateVisuals();
@@ -438,20 +442,29 @@ rvAnimatedClientEntity::SetModel
 void rvAnimatedClientEntity::SetModel( const char *modelname ) {
 	FreeEntityDef();
 
-	renderEntity.hModel = animator.SetModel( modelname );
-	if ( !renderEntity.hModel ) {
+	idRenderModel *model = animator.SetModel( modelname );
+	if ( !model ) {
 		rvClientModel::SetModel( modelname );
 		return;
 	}
+	renderEntity->SetRenderModel(model);
 
-	if ( !renderEntity.customSkin ) {
-		renderEntity.customSkin = animator.ModelDef()->GetDefaultSkin();
+	if ( !renderEntity->GetCustomSkin() ) {
+		renderEntity->SetCustomSkin(animator.ModelDef()->GetDefaultSkin());
 	}
 
 	// set the callback to update the joints
-	renderEntity.callback = rvClientModel::ModelCallback;
-	animator.GetJoints( &renderEntity.numJoints, &renderEntity.joints );
-	animator.GetBounds( gameLocal.time, renderEntity.bounds );
+	renderEntity->SetCallback(rvClientModel::ModelCallback);
+
+	idJointMat* joints;
+	idBounds bounds;
+	int numJoints;
+	animator.GetJoints( &numJoints, &joints );
+	animator.GetBounds( gameLocal.time, bounds );
+
+	renderEntity->SetNumJoints(numJoints);
+	renderEntity->SetJoints(joints);
+	renderEntity->SetBounds(bounds);
 
 	//UpdateVisuals();
 	Present();

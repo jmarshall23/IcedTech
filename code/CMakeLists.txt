@@ -181,8 +181,6 @@ set(src_game
 	./game/AFEntity.cpp
 	./game/AFEntity.h
 	./game/anim
-	./game/BrittleFracture.cpp
-	./game/BrittleFracture.h
 	./game/Camera.cpp
 	./game/Camera.h
 	./game/Entity.cpp
@@ -226,8 +224,6 @@ set(src_game
 	./game/Pvs.cpp
 	./game/Pvs.h
 	./game/script
-	./game/SecurityCamera.cpp
-	./game/SecurityCamera.h
 	./game/Sound.cpp
 	./game/Sound.h
 	./game/Target.cpp

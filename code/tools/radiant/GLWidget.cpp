@@ -426,19 +426,17 @@ void idGLDrawableMaterial::draw(int x, int y, int w, int h) {
 
 			worldModel->FinishSurfaces();
 			
-			renderEntity_t worldEntity;
+			worldModelDef = world->AllocRenderEntity();
 
-			memset( &worldEntity, 0, sizeof( worldEntity ) );
 			if ( mat->HasGui() ) {
-				worldEntity.gui[ 0 ] = mat->GlobalGui();
+				worldModelDef->SetGui(0, mat->GlobalGui());
 			}
-			worldEntity.hModel = worldModel;
-			worldEntity.axis = mat3_default;
-			worldEntity.shaderParms[0] = 1;
-			worldEntity.shaderParms[1] = 1;
-			worldEntity.shaderParms[2] = 1;
-			worldEntity.shaderParms[3] = 1;
-			modelDef = world->AddEntityDef( &worldEntity );
+			worldModelDef->SetRenderModel(worldModel);
+			worldModelDef->SetAxis(mat3_default);
+			worldModelDef->SetShaderParms(0, 1);
+			worldModelDef->SetShaderParms(1, 1);
+			worldModelDef->SetShaderParms(2, 1);
+			worldModelDef->SetShaderParms(3, 1);
 
 			worldDirty = false;
 		}
@@ -648,8 +646,7 @@ void idGLDrawableModel::draw(int x, int y, int w, int h) {
 		gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, renderLight);
 
 
-		renderEntity_t worldEntity;
-		memset( &worldEntity, 0, sizeof( worldEntity ) );
+		worldModelDef = world->AllocRenderEntity();
 		spawnArgs.Clear();
 		spawnArgs.Set("classname", "func_static");
 		spawnArgs.Set("name", spawnArgs.GetString("model"));
@@ -657,17 +654,14 @@ void idGLDrawableModel::draw(int x, int y, int w, int h) {
 		if ( skinStr.Length() ) {
 			spawnArgs.Set( "skin", skinStr );
 		}
-		gameEdit->ParseSpawnArgsToRenderEntity(&spawnArgs, &worldEntity);
-		worldEntity.hModel = worldModel;
-
-		worldEntity.axis = rotation.ToMat3();
-
-		worldEntity.shaderParms[0] = 1;
-		worldEntity.shaderParms[1] = 1;
-		worldEntity.shaderParms[2] = 1;
-		worldEntity.shaderParms[3] = 1;
-		modelDef = world->AddEntityDef( &worldEntity );
-
+		gameEdit->ParseSpawnArgsToRenderEntity(&spawnArgs, worldModelDef);
+		worldModelDef->SetRenderModel(worldModel);
+		worldModelDef->SetAxis(rotation.ToMat3());
+		worldModelDef->SetShaderParms(0, 1);
+		worldModelDef->SetShaderParms(1, 1);
+		worldModelDef->SetShaderParms(2, 1);
+		worldModelDef->SetShaderParms(3, 1);
+		
 		worldDirty = false;
 	}
 		

@@ -468,52 +468,52 @@ void idSaveGame::WriteUserInterface( const idUserInterface *ui, bool unique ) {
 idSaveGame::WriteRenderEntity
 ================
 */
-void idSaveGame::WriteRenderEntity( const renderEntity_t &renderEntity ) {
+void idSaveGame::WriteRenderEntity( const idRenderEntity *renderEntity ) {
 	int i;
 
-	WriteModel( renderEntity.hModel );
-
-	WriteInt( renderEntity.entityNum );
-	WriteInt( renderEntity.bodyId );
-
-	WriteBounds( renderEntity.bounds );
-
-	// callback is set by class's Restore function
-
-	WriteInt( renderEntity.suppressSurfaceInViewID );
-	WriteInt( renderEntity.suppressShadowInViewID );
-	WriteInt( renderEntity.suppressShadowInLightID );
-	WriteInt( renderEntity.allowSurfaceInViewID );
-
-	WriteVec3( renderEntity.origin );
-	WriteMat3( renderEntity.axis );
-
-	WriteMaterial( renderEntity.customShader );
-	WriteMaterial( renderEntity.referenceShader );
-	WriteSkin( renderEntity.customSkin );
-
-	if ( renderEntity.referenceSound != NULL ) {
-		WriteInt( renderEntity.referenceSound->Index() );
-	} else {
-		WriteInt( 0 );
-	}
-
-	for( i = 0; i < MAX_ENTITY_SHADER_PARMS; i++ ) {
-		WriteFloat( renderEntity.shaderParms[ i ] );
-	}
-
-	for( i = 0; i < MAX_RENDERENTITY_GUI; i++ ) {
-		WriteUserInterface( renderEntity.gui[ i ], renderEntity.gui[ i ] ? renderEntity.gui[ i ]->IsUniqued() : false );
-	}
-
-	WriteFloat( renderEntity.modelDepthHack );
-
-	WriteBool( renderEntity.noSelfShadow );
-	WriteBool( renderEntity.noShadow );
-	WriteBool( renderEntity.noDynamicInteractions );
-	WriteBool( renderEntity.weaponDepthHack );
-
-	WriteInt( renderEntity.forceUpdate );
+	//WriteModel( renderEntity.hModel );
+	//
+	//WriteInt( renderEntity.entityNum );
+	//WriteInt( renderEntity.bodyId );
+	//
+	//WriteBounds( renderEntity.bounds );
+	//
+	//// callback is set by class's Restore function
+	//
+	//WriteInt( renderEntity.suppressSurfaceInViewID );
+	//WriteInt( renderEntity.suppressShadowInViewID );
+	//WriteInt( renderEntity.suppressShadowInLightID );
+	//WriteInt( renderEntity.allowSurfaceInViewID );
+	//
+	//WriteVec3( renderEntity.origin );
+	//WriteMat3( renderEntity.axis );
+	//
+	//WriteMaterial( renderEntity.customShader );
+	//WriteMaterial( renderEntity.referenceShader );
+	//WriteSkin( renderEntity.customSkin );
+	//
+	//if ( renderEntity.referenceSound != NULL ) {
+	//	WriteInt( renderEntity.referenceSound->Index() );
+	//} else {
+	//	WriteInt( 0 );
+	//}
+	//
+	//for( i = 0; i < MAX_ENTITY_SHADER_PARMS; i++ ) {
+	//	WriteFloat( renderEntity.shaderParms[ i ] );
+	//}
+	//
+	//for( i = 0; i < MAX_RENDERENTITY_GUI; i++ ) {
+	//	WriteUserInterface( renderEntity.gui[ i ], renderEntity.gui[ i ] ? renderEntity.gui[ i ]->IsUniqued() : false );
+	//}
+	//
+	//WriteFloat( renderEntity.modelDepthHack );
+	//
+	//WriteBool( renderEntity.noSelfShadow );
+	//WriteBool( renderEntity.noShadow );
+	//WriteBool( renderEntity.noDynamicInteractions );
+	//WriteBool( renderEntity.weaponDepthHack );
+	//
+	//WriteInt( renderEntity.forceUpdate );
 }
 
 /*
@@ -1204,58 +1204,58 @@ void idRestoreGame::ReadUserInterface( idUserInterface *&ui ) {
 idRestoreGame::ReadRenderEntity
 ================
 */
-void idRestoreGame::ReadRenderEntity( renderEntity_t &renderEntity ) {
+void idRestoreGame::ReadRenderEntity(idRenderEntity* renderEntity ) {
 	int i;
 	int index;
 
-	ReadModel( renderEntity.hModel );
-
-	ReadInt( renderEntity.entityNum );
-	ReadInt( renderEntity.bodyId );
-
-	ReadBounds( renderEntity.bounds );
-
-	// callback is set by class's Restore function
-	renderEntity.callback = NULL;
-	renderEntity.callbackData = NULL;
-
-	ReadInt( renderEntity.suppressSurfaceInViewID );
-	ReadInt( renderEntity.suppressShadowInViewID );
-	ReadInt( renderEntity.suppressShadowInLightID );
-	ReadInt( renderEntity.allowSurfaceInViewID );
-
-	ReadVec3( renderEntity.origin );
-	ReadMat3( renderEntity.axis );
-
-	ReadMaterial( renderEntity.customShader );
-	ReadMaterial( renderEntity.referenceShader );
-	ReadSkin( renderEntity.customSkin );
-
-	ReadInt( index );
-	renderEntity.referenceSound = gameSoundWorld->EmitterForIndex( index );
-
-	for( i = 0; i < MAX_ENTITY_SHADER_PARMS; i++ ) {
-		ReadFloat( renderEntity.shaderParms[ i ] );
-	}
-
-	for( i = 0; i < MAX_RENDERENTITY_GUI; i++ ) {
-		ReadUserInterface( renderEntity.gui[ i ] );
-	}
-
-	// idEntity will restore "cameraTarget", which will be used in idEntity::Present to restore the remoteRenderView
-	renderEntity.remoteRenderView = NULL;
-
-	renderEntity.joints = NULL;
-	renderEntity.numJoints = 0;
-
-	ReadFloat( renderEntity.modelDepthHack );
-
-	ReadBool( renderEntity.noSelfShadow );
-	ReadBool( renderEntity.noShadow );
-	ReadBool( renderEntity.noDynamicInteractions );
-	ReadBool( renderEntity.weaponDepthHack );
-
-	ReadInt( renderEntity.forceUpdate );
+//	ReadModel( renderEntity.hModel );
+//
+//	ReadInt( renderEntity.entityNum );
+//	ReadInt( renderEntity.bodyId );
+//
+//	ReadBounds( renderEntity.bounds );
+//
+//	// callback is set by class's Restore function
+//	renderEntity.callback = NULL;
+//	renderEntity.callbackData = NULL;
+//
+//	ReadInt( renderEntity.suppressSurfaceInViewID );
+//	ReadInt( renderEntity.suppressShadowInViewID );
+//	ReadInt( renderEntity.suppressShadowInLightID );
+//	ReadInt( renderEntity.allowSurfaceInViewID );
+//
+//	ReadVec3( renderEntity.origin );
+//	ReadMat3( renderEntity.axis );
+//
+//	ReadMaterial( renderEntity.customShader );
+//	ReadMaterial( renderEntity.referenceShader );
+//	ReadSkin( renderEntity.customSkin );
+//
+//	ReadInt( index );
+//	renderEntity.referenceSound = gameSoundWorld->EmitterForIndex( index );
+//
+//	for( i = 0; i < MAX_ENTITY_SHADER_PARMS; i++ ) {
+//		ReadFloat( renderEntity.shaderParms[ i ] );
+//	}
+//
+//	for( i = 0; i < MAX_RENDERENTITY_GUI; i++ ) {
+//		ReadUserInterface( renderEntity.gui[ i ] );
+//	}
+//
+//	// idEntity will restore "cameraTarget", which will be used in idEntity::Present to restore the remoteRenderView
+//	renderEntity.remoteRenderView = NULL;
+//
+//	renderEntity.joints = NULL;
+//	renderEntity.numJoints = 0;
+//
+//	ReadFloat( renderEntity.modelDepthHack );
+//
+//	ReadBool( renderEntity.noSelfShadow );
+//	ReadBool( renderEntity.noShadow );
+//	ReadBool( renderEntity.noDynamicInteractions );
+//	ReadBool( renderEntity.weaponDepthHack );
+//
+//	ReadInt( renderEntity.forceUpdate );
 }
 
 /*

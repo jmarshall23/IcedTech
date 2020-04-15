@@ -15,7 +15,7 @@ public:
 	virtual void				Spawn			( void );
 	virtual void				Think			( void );
 	
-	virtual renderEntity_t*		GetRenderEntity	( void );
+	virtual idRenderEntity*		GetRenderEntity	( void );
 	const char*					GetClassname	( void ) const;
 
 	virtual bool				SetCustomShader	( const char* shaderName );
@@ -31,8 +31,8 @@ public:
 	virtual idAnimator*			GetAnimator( void ) { return NULL; }	
 
 
-	bool						UpdateRenderEntity( renderEntity_t *renderEntity, const renderView_t *renderView );
-	static bool					ModelCallback( renderEntity_t *renderEntity, const renderView_t *renderView );
+	bool						UpdateRenderEntity(idRenderEntity*renderEntity, const renderView_t *renderView );
+	static bool					ModelCallback(idRenderEntity*renderEntity, const renderView_t *renderView );
 
 	virtual bool				GetPhysicsToVisualTransform( idVec3 &origin, idMat3 &axis );
 	void						ProjectOverlay( const idVec3 &origin, const idVec3 &dir, float size, const char *material );
@@ -42,26 +42,19 @@ public:
 	void						UpdateModelTransform( void );
 
 	void						SetSkin( const idDeclSkin* skin );
-	int							GetModelDefHandle( void );
 protected:
 	void						Present( void );
 
-	renderEntity_t				renderEntity;
-	int							entityDefHandle;
-
+	idRenderEntity				*renderEntity;
 	idStr						classname;
 };
 
-ID_INLINE renderEntity_t* rvClientModel::GetRenderEntity ( void ) {
-	return &renderEntity;
+ID_INLINE idRenderEntity* rvClientModel::GetRenderEntity ( void ) {
+	return renderEntity;
 }
 
 ID_INLINE const char* rvClientModel::GetClassname ( void ) const {
 	return classname.c_str();
-}
-
-ID_INLINE int rvClientModel::GetModelDefHandle( void ) {
-	return entityDefHandle;
 }
 
 class rvAnimatedClientEntity : public rvClientModel {

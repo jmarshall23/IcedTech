@@ -179,7 +179,7 @@ void R_CreateEntityRefs( idRenderEntityLocal *def ) {
 	if ( def->parms.callback ) {
 		def->referenceBounds = def->parms.bounds;
 	} else {
-		def->referenceBounds = def->parms.hModel->Bounds( &def->parms );
+		def->referenceBounds = def->parms.hModel->Bounds( def );
 	}
 
 	// some models, like empty particles, may not need to be added at all

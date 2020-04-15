@@ -70,7 +70,7 @@ idItem::idItem() {
 	inViewTime = 0;
 	lastCycle = 0;
 	lastRenderViewTime = -1;
-	itemShellHandle = -1;
+	shellRenderEntity = NULL;
 	shellMaterial = NULL;
 	orgOrigin.Zero();
 	canPickUp = true;
@@ -85,8 +85,9 @@ idItem::~idItem
 */
 idItem::~idItem() {
 	// remove the highlight shell
-	if ( itemShellHandle != -1 ) {
-		gameRenderWorld->FreeEntityDef( itemShellHandle );
+	if (shellRenderEntity != NULL) {
+		gameRenderWorld->FreeRenderEntity(shellRenderEntity);
+		shellRenderEntity = NULL;
 	}
 
 	if (itemLightRig1) {
@@ -134,7 +135,7 @@ void idItem::Restore( idRestoreGame *savefile ) {
 	savefile->ReadInt( lastCycle );
 	savefile->ReadInt( lastRenderViewTime );
 
-	itemShellHandle = -1;
+	//itemShellHandle = -1;
 }
 
 /*
@@ -142,7 +143,7 @@ void idItem::Restore( idRestoreGame *savefile ) {
 idItem::UpdateRenderEntity
 ================
 */
-bool idItem::UpdateRenderEntity( renderEntity_t *renderEntity, const renderView_t *renderView ) const {
+bool idItem::UpdateRenderEntity(idRenderEntity*renderEntity, const renderView_t *renderView ) const {
 
 	if ( lastRenderViewTime == renderView->time ) {
 		return false;
@@ -151,7 +152,7 @@ bool idItem::UpdateRenderEntity( renderEntity_t *renderEntity, const renderView_
 	lastRenderViewTime = renderView->time;
 
 	// check for glow highlighting if near the center of the view
-	idVec3 dir = renderEntity->origin - renderView->vieworg;
+	idVec3 dir = renderEntity->GetOrigin() - renderView->vieworg;
 	dir.Normalize();
 	float d = dir * renderView->viewaxis[0];
 
@@ -176,19 +177,19 @@ bool idItem::UpdateRenderEntity( renderEntity_t *renderEntity, const renderView_
 
 	// fade down after the last pulse finishes 
 	if ( !inView && cycle > lastCycle ) {
-		renderEntity->shaderParms[4] = 0.0f;
+		renderEntity->SetShaderParms(4, 0.0f);
 	} else {
 		// pulse up in 1/4 second
 		cycle -= (int)cycle;
 		if ( cycle < 0.1f ) {
-			renderEntity->shaderParms[4] = cycle * 10.0f;
+			renderEntity->SetShaderParms(4, cycle * 10.0f);
 		} else if ( cycle < 0.2f ) {
-			renderEntity->shaderParms[4] = 1.0f;
+			renderEntity->SetShaderParms(4, 1.0f);
 		} else if ( cycle < 0.3f ) {
-			renderEntity->shaderParms[4] = 1.0f - ( cycle - 0.2f ) * 10.0f;
+			renderEntity->SetShaderParms(4, 1.0f - ( cycle - 0.2f ) * 10.0f);
 		} else {
 			// stay off between pulses
-			renderEntity->shaderParms[4] = 0.0f;
+			renderEntity->SetShaderParms(4, 0.0f);
 		}
 	}
 
@@ -201,7 +202,7 @@ bool idItem::UpdateRenderEntity( renderEntity_t *renderEntity, const renderView_
 idItem::ModelCallback
 ================
 */
-bool idItem::ModelCallback( renderEntity_t *renderEntity, const renderView_t *renderView ) {
+bool idItem::ModelCallback(idRenderEntity*renderEntity, const renderView_t *renderView ) {
 	const idItem *ent;
 
 	// this may be triggered by a model trace or other non-view related source
@@ -209,7 +210,7 @@ bool idItem::ModelCallback( renderEntity_t *renderEntity, const renderView_t *re
 		return false;
 	}
 
-	ent = static_cast<idItem *>(gameLocal.entities[ renderEntity->entityNum ]);
+	ent = static_cast<idItem *>(gameLocal.entities[ renderEntity->GetEntityNum() ]);
 	if ( !ent ) {
 		gameLocal.Error( "idItem::ModelCallback: callback with NULL game entity" );
 	}
@@ -240,7 +241,7 @@ void idItem::Think( void ) {
 		}
 	}
 
-	itemLightRig1->SetOrigin(renderEntity.origin);
+	itemLightRig1->SetOrigin(renderEntity->GetOrigin());
 
 	Present();
 }
@@ -253,23 +254,12 @@ idItem::Present
 void idItem::Present( void ) {
 	idEntity::Present();
 
-	if ( !fl.hidden && pulse ) {
-		// also add a highlight shell model
-		renderEntity_t	shell;
-
-		shell = renderEntity;
-
-		// we will mess with shader parms when the item is in view
-		// to give the "item pulse" effect
-		shell.callback = idItem::ModelCallback;
-		shell.entityNum = entityNumber;
-		shell.customShader = shellMaterial;
-		if ( itemShellHandle == -1 ) {
-			itemShellHandle = gameRenderWorld->AddEntityDef( &shell );
-		} else {
-			gameRenderWorld->UpdateEntityDef( itemShellHandle, &shell );
-		}
-
+	if ( !fl.hidden ) {
+		shellRenderEntity->ImportParms(renderEntity);
+		shellRenderEntity->SetDynamicShadows(false);
+		shellRenderEntity->SetEntityNum(entityNumber);
+		shellRenderEntity->SetCustomShader(shellMaterial);
+		shellRenderEntity->UpdateRenderEntity();
 	}
 }
 
@@ -284,6 +274,8 @@ void idItem::Spawn( void ) {
 	float		tsize;
 
 	BaseSpawn();
+
+	shellRenderEntity = gameRenderWorld->AllocRenderEntity();
 
 	if ( spawnArgs.GetBool( "dropToFloor" ) ) {
 		PostEventMS( &EV_DropToFloor, 0 );
@@ -324,7 +316,7 @@ void idItem::Spawn( void ) {
 	if (!gameLocal.SpawnEntityDef(itemLightRigDef, (idEntity**)&itemLightRig1, true))
 		gameLocal.Error("Failed to spawn weapon light rig!");
 
-	renderEntity.SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_ITEMS, true);
+	renderEntity->SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_ITEMS, true);
 
 	giveTo = spawnArgs.GetString( "owner" );
 	if ( giveTo.Length() ) {
@@ -349,11 +341,10 @@ void idItem::Spawn( void ) {
 
 	inViewTime = -1000;
 	lastCycle = -1;
-	itemShellHandle = -1;
 	shellMaterial = declManager->FindMaterial( "itemHighlightShell" );
 
 	// Require dynamic shadows.
-	renderEntity.hasDynamicShadows = true;
+	renderEntity->SetDynamicShadows(true);
 }
 
 /*
@@ -418,9 +409,8 @@ bool idItem::Pickup( idPlayer *player ) {
 	Hide();
 
 	// add the highlight shell
-	if ( itemShellHandle != -1 ) {
-		gameRenderWorld->FreeEntityDef( itemShellHandle );
-		itemShellHandle = -1;
+	if (shellRenderEntity != NULL) {
+		shellRenderEntity->SetHidden(true);	
 	}
 
 	float respawn = spawnArgs.GetFloat( "respawn" );
@@ -481,6 +471,10 @@ void idItem::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 		Hide();
 	} else {
 		Show();
+		if (shellRenderEntity)
+		{
+			shellRenderEntity->SetHidden(false);
+		}
 	}
 }
 
@@ -501,9 +495,9 @@ bool idItem::ClientReceiveEvent( int event, int time, const idBitMsg &msg ) {
 			Hide();
 
 			// remove the highlight shell
-			if ( itemShellHandle != -1 ) {
-				gameRenderWorld->FreeEntityDef( itemShellHandle );
-				itemShellHandle = -1;
+			if (shellRenderEntity != NULL) {
+				gameRenderWorld->FreeRenderEntity(shellRenderEntity);
+				shellRenderEntity = NULL;
 			}
 			return true;
 		}
@@ -535,7 +529,7 @@ void idItem::Event_DropToFloor( void ) {
 		return;
 	}
 
-	gameLocal.clip.TraceBounds( trace, renderEntity.origin, renderEntity.origin - idVec3( 0, 0, 64 ), renderEntity.bounds, MASK_SOLID | CONTENTS_CORPSE, this );
+	gameLocal.clip.TraceBounds( trace, renderEntity->GetOrigin(), renderEntity->GetOrigin() - idVec3( 0, 0, 64 ), renderEntity->GetBounds(), MASK_SOLID | CONTENTS_CORPSE, this );
 	SetOrigin( trace.endpos );
 }
 
@@ -584,6 +578,10 @@ void idItem::Event_Respawn( void ) {
 	}
 	BecomeActive( TH_THINK );
 	Show();
+	if (shellRenderEntity)
+	{
+		shellRenderEntity->SetHidden(false);
+	}
 	inViewTime = -1000;
 	lastCycle = -1;
 	GetPhysics()->SetContents( CONTENTS_TRIGGER );

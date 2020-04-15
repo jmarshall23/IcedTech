@@ -33,7 +33,7 @@ rvClientMoveable::rvClientMoveable
 */
 rvClientMoveable::rvClientMoveable ( void ) {
 	memset ( &renderEntity, 0, sizeof(renderEntity) );
-	entityDefHandle = -1;
+	renderEntity = NULL;
 	scale.Init( 0, 0, 1.0f, 1.0f );
 }
 
@@ -57,9 +57,9 @@ rvClientMoveable::FreeEntityDef
 ================
 */
 void rvClientMoveable::FreeEntityDef ( void ) {
-	if ( entityDefHandle >= 0 ) {
-		gameRenderWorld->FreeEntityDef ( entityDefHandle );
-		entityDefHandle = -1;
+	if ( renderEntity ) {
+		gameRenderWorld->FreeRenderEntity(renderEntity);
+		renderEntity = NULL;
 	}	
 }
 
@@ -86,7 +86,7 @@ bool rvClientMoveable::SetCustomShader(const char* shaderName) {
 		return false;
 	}
 
-	renderEntity.customShader = material;
+	renderEntity->SetCustomShader( material);
 
 	return true;
 }
@@ -100,8 +100,11 @@ rvClientMoveable::Spawn
 void rvClientMoveable::Spawn ( void ) {
 	BaseSpawn();
 
+	// allocate a new render entity.
+	renderEntity = gameRenderWorld->AllocRenderEntity();
+
 	// parse static models the same way the editor display does
-	gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, &renderEntity );
+	gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, renderEntity );
 
 	idTraceModel	trm;
 	int				clipShrink;
@@ -191,7 +194,7 @@ rvClientMoveable::Think
 ================
 */
 void rvClientMoveable::Think ( void ) {
-	if( bindMaster && (bindMaster->GetRenderEntity()->hModel && bindMaster->GetModelDefHandle() == -1) ) {
+	if( bindMaster && (bindMaster->GetRenderEntity()->GetRenderModel() && bindMaster->GetModelDefHandle() == -1) ) {
 		return;
 	}
 
@@ -219,15 +222,9 @@ void rvClientMoveable::Think ( void ) {
 	//	}
 	//}
 
-	renderEntity.origin = worldOrigin;
-	renderEntity.axis = worldAxis * scale.GetCurrentValue( gameLocal.GetTime() );
-
-	// add to refresh list
-	if ( entityDefHandle == -1 ) {
-		entityDefHandle = gameRenderWorld->AddEntityDef( &renderEntity );
-	} else {
-		gameRenderWorld->UpdateEntityDef( entityDefHandle, &renderEntity );
-	}		
+	renderEntity->SetOrigin(worldOrigin);
+	renderEntity->SetAxis(worldAxis * scale.GetCurrentValue( gameLocal.GetTime() ));
+	renderEntity->UpdateRenderEntity();	
 }
 
 /*
@@ -269,7 +266,7 @@ rvClientMoveable::Save
 */
 void rvClientMoveable::Save( idSaveGame *savefile ) const {
 	savefile->WriteRenderEntity( renderEntity );
-	savefile->WriteInt( entityDefHandle );
+	//savefile->WriteInt(renderEntity->GetIndex());
 
 //	trailEffect.Save( savefile );
 //	savefile->WriteFloat( trailAttenuateSpeed );
@@ -292,7 +289,7 @@ rvClientMoveable::Restore
 */
 void rvClientMoveable::Restore( idRestoreGame *savefile ) {
 	savefile->ReadRenderEntity( renderEntity );
-	savefile->ReadInt( entityDefHandle );
+	//savefile->ReadInt( entityDefHandle );
 
 //	trailEffect.Restore( savefile );
 //	savefile->ReadFloat( trailAttenuateSpeed );
@@ -306,9 +303,9 @@ void rvClientMoveable::Restore( idRestoreGame *savefile ) {
 	savefile->ReadBool(mHasBounced);
 
 	// restore must retrieve entityDefHandle from the renderer
- 	if ( entityDefHandle != -1 ) {
- 		entityDefHandle = gameRenderWorld->AddEntityDef( &renderEntity );
- 	}
+ 	//if ( entityDefHandle != -1 ) {
+ 	//	entityDefHandle = gameRenderWorld->AddEntityDef( &renderEntity );
+ 	//}
 
 	// TORESTORE: idInterpolate<float>	scale;
 }
@@ -319,8 +316,8 @@ rvClientMoveable::Event_FadeOut
 ================
 */
 void rvClientMoveable::Event_FadeOut ( int duration ) {
-	renderEntity.noShadow = true;
-	renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH ] = gameLocal.time * 0.001f;
+	renderEntity->SetNoShadow(true);
+	renderEntity->SetShaderParms(SHADERPARM_TIME_OF_DEATH, gameLocal.time * 0.001f);
 	PostEventMS ( &EV_Remove, duration );	
 }
 

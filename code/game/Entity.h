@@ -188,7 +188,7 @@ public:
 
 	// visuals
 	virtual void			Present( void );
-	virtual renderEntity_t *GetRenderEntity( void );
+	virtual idRenderEntity *GetRenderEntity( void );
 	virtual int				GetModelDefHandle( void );
 	virtual void			SetModel( const char *modelname );
 	void					SetSkin( const idDeclSkin *skin );
@@ -215,8 +215,8 @@ public:
 
 	// animation
 	virtual bool			UpdateAnimationControllers( void );
-	bool					UpdateRenderEntity( renderEntity_t *renderEntity, const renderView_t *renderView );
-	static bool				ModelCallback( renderEntity_t *renderEntity, const renderView_t *renderView );
+	bool					UpdateRenderEntity(idRenderEntity*renderEntity, const renderView_t *renderView );
+	static bool				ModelCallback( idRenderEntity *renderEntity, const renderView_t *renderView );
 	virtual idAnimator *	GetAnimator( void );	// returns animator object used by this entity
 
 	// sound
@@ -362,8 +362,7 @@ public:
 	void					ClientSendEvent( int eventId, const idBitMsg *msg ) const;
 
 protected:
-	renderEntity_t			renderEntity;						// used to present a model to the renderer
-	int						modelDefHandle;						// handle to static renderer model
+	idRenderEntity			*renderEntity;						// used to present a model to the renderer
 	refSound_t				refSound;							// used to present sound to the audio engine
 
 private:

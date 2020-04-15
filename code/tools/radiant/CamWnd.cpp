@@ -1225,9 +1225,9 @@ void CCamWnd::BuildEntityRenderState( entity_t *ent, bool update) {
 			ent->renderLight = NULL;
 		}
 
-		if ( ent->modelDef >= 0 ) {
-			g_qeglobals.rw->FreeEntityDef( ent->modelDef );
-			ent->modelDef = -1;
+		if ( ent->modelDef != NULL) {
+			g_qeglobals.rw->FreeRenderEntity(ent->modelDef);
+			ent->modelDef = NULL;
 		}
 	}
 
@@ -1249,10 +1249,12 @@ void CCamWnd::BuildEntityRenderState( entity_t *ent, bool update) {
 	// any entity can have a model
 	name = ValueForKey( ent, "name" );
 	v = spawnArgs.GetString("model");
-	if ( v && *v ) {
-		renderEntity_t	refent;
-
-		refent.referenceSound = ent->soundEmitter;
+	if ( v && *v ) {		
+		if (ent->modelDef != NULL) {
+			g_qeglobals.rw->FreeRenderEntity(ent->modelDef);
+		}
+		ent->modelDef = g_qeglobals.rw->AllocRenderEntity();
+		ent->modelDef->SetReferenceSound(ent->soundEmitter);
 
 		if ( !stricmp( name, v ) ) {
 			// build the model from brushes
@@ -1261,11 +1263,6 @@ void CCamWnd::BuildEntityRenderState( entity_t *ent, bool update) {
 
 			for (brush_t *b = ent->brushes.onext; b != &ent->brushes; b = b->onext) {
 				Brush_ToTris( b, &tris, &mats, false, true);
-			}
-
-			if ( ent->modelDef >= 0 ) {
-				g_qeglobals.rw->FreeEntityDef( ent->modelDef );
-				ent->modelDef = -1;
 			}
 
 			idRenderModel *bmodel = renderModelManager->FindModel( name );
@@ -1292,42 +1289,39 @@ void CCamWnd::BuildEntityRenderState( entity_t *ent, bool update) {
 			renderModelManager->AddModel( bmodel );
 
 			// FIXME: brush entities
-			gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, &refent );
-
-			ent->modelDef = g_qeglobals.rw->AddEntityDef( &refent );
-
+			gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, ent->modelDef);
 		} else {
 			// use the game's epair parsing code so
 			// we can use the same renderEntity generation
-			gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, &refent );
-			idRenderModelMD5 *md5 = dynamic_cast<idRenderModelMD5 *>( refent.hModel );
+			gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, ent->modelDef);
+			idRenderModelMD5 *md5 = dynamic_cast<idRenderModelMD5 *>(ent->modelDef->GetRenderModel());
 			if (md5) {
 				idStr str;
 				spawnArgs.GetString("anim", "idle", str);
-				refent.numJoints = md5->NumJoints();
-				if ( update && refent.joints ) {
-					Mem_Free16( refent.joints );
+				ent->modelDef->SetNumJoints(md5->NumJoints());
+
+				idJointMat* joints = ent->modelDef->GetJoints();
+				if ( update && joints ) {
+					Mem_Free16( joints );
+					ent->modelDef->SetJoints(NULL);
 				}
 // jmarshall				
 				const idMD5Anim *anim = gameEdit->ANIM_GetAnimFromEntityDef(spawnArgs.GetString("classname"), str);
 				if (anim != nullptr)
 				{
-					refent.joints = (idJointMat *)Mem_Alloc16(refent.numJoints * sizeof(*refent.joints));
+					ent->modelDef->SetJoints((idJointMat *)Mem_Alloc16(ent->modelDef->GetNumjoints() * sizeof(*ent->modelDef->GetJoints())));
 
 					int frame = spawnArgs.GetInt("frame") + 1;
 					if (frame < 1) {
 						frame = 1;
 					}
 					const idVec3 &offset = gameEdit->ANIM_GetModelOffsetFromEntityDef(spawnArgs.GetString("classname"));
-					gameEdit->ANIM_CreateAnimFrame(md5, anim, refent.numJoints, refent.joints, (frame * 1000) / 24, offset, false);
+					gameEdit->ANIM_CreateAnimFrame(md5, anim, ent->modelDef->GetNumjoints(), ent->modelDef->GetJoints(), (frame * 1000) / 24, offset, false);
 				}
 // jmarshall end
 				
 			}
-			if (ent->modelDef >= 0) {
-				g_qeglobals.rw->FreeEntityDef( ent->modelDef );
-			}
-			ent->modelDef = g_qeglobals.rw->AddEntityDef( &refent );
+			
 		}
 	}
 
@@ -1694,7 +1688,6 @@ so it can be rendered by the game renderSystem
 =================
 */
 void CCamWnd::BuildRendererState() {
-	renderEntity_t	worldEntity;
 	entity_t	*ent;
 	brush_t		*brush;
 
@@ -1754,15 +1747,14 @@ void CCamWnd::BuildRendererState() {
 	worldModel->FinishSurfaces();
 
 	// the worldEntity just has the handle for the worldModel
-	memset( &worldEntity, 0, sizeof( worldEntity ) );
-	worldEntity.hModel = worldModel;
-	worldEntity.axis = mat3_default;
-	worldEntity.shaderParms[0] = 1;
-	worldEntity.shaderParms[1] = 1;
-	worldEntity.shaderParms[2] = 1;
-	worldEntity.shaderParms[3] = 1;
-
-	worldModelDef = g_qeglobals.rw->AddEntityDef( &worldEntity );
+	worldModelDef = g_qeglobals.rw->AllocRenderEntity();
+	
+	worldModelDef->SetRenderModel(worldModel);
+	worldModelDef->SetAxis(mat3_default);
+	worldModelDef->SetShaderParms(0, 1);
+	worldModelDef->SetShaderParms(1, 1);
+	worldModelDef->SetShaderParms(2, 1);
+	worldModelDef->SetShaderParms(3, 1);
 
 	// create the light and model entities exactly the way the game code would
 	for ( ent = entities.next ; ent != &entities ; ent = ent->next ) {
@@ -1802,7 +1794,7 @@ bool CCamWnd::UpdateRenderEntities() {
 
 	bool ret = false;
 	for ( entity_t *ent = entities.next ; ent != &entities ; ent = ent->next ) {
-		BuildEntityRenderState( ent, (ent->renderLight != NULL || ent->modelDef != -1 || ent->soundEmitter ) ? true : false );
+		BuildEntityRenderState( ent, (ent->renderLight != NULL || ent->modelDef != NULL || ent->soundEmitter ) ? true : false );
 		if (ret == false && ent->modelDef || ent->renderLight != NULL) {
 			ret = true;
 		}
@@ -1825,20 +1817,19 @@ void CCamWnd::FreeRendererState() {
 			ent->renderLight = NULL;
 		}
 
-		if (ent->modelDef >= 0) {
-			renderEntity_t *refent = const_cast<renderEntity_t *>(g_qeglobals.rw->GetRenderEntity( ent->modelDef ));
-			if ( refent ) {
-				if ( refent->callbackData ) {
-					Mem_Free( refent->callbackData );
-					refent->callbackData = NULL;
-				}
-				if ( refent->joints ) {
-					Mem_Free16(refent->joints);
-					refent->joints = NULL;
-				}
+		if (ent->modelDef != NULL) {
+			if(ent->modelDef->GetCallbackData()) {
+				Mem_Free(ent->modelDef->GetCallbackData());
+				ent->modelDef->SetCallbackData(NULL);
 			}
-			g_qeglobals.rw->FreeEntityDef( ent->modelDef );
-			ent->modelDef = -1;
+
+			if(ent->modelDef->GetJoints()) {
+				Mem_Free16(ent->modelDef->GetJoints());
+				ent->modelDef->SetJoints(NULL);
+			}
+
+			g_qeglobals.rw->FreeRenderEntity( ent->modelDef );
+			ent->modelDef = NULL;
 		}
 	}
 

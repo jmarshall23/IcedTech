@@ -1128,7 +1128,7 @@ idRenderModel *R_EntityDefDynamicModel( idRenderEntityLocal *def );
 viewEntity_t *R_SetEntityDefViewEntity( idRenderEntityLocal *def );
 viewLight_t *R_SetLightDefViewLight( idRenderLightLocal *def );
 
-void R_AddDrawSurf( const srfTriangles_t *tri, const viewEntity_t *space, const renderEntity_t *renderEntity,
+void R_AddDrawSurf( const srfTriangles_t *tri, const viewEntity_t *space, const idRenderEntityParms *renderEntity,
 					const idMaterial *shader, const idScreenRect &scissor, idRenderModel* model);
 
 bool R_CreateAmbientCache( srfTriangles_t *tri, bool needsLighting );

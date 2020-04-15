@@ -47,9 +47,7 @@ public:
 
 public:
 	playerIconType_t	iconType;
-	renderEntity_t		renderEnt;
-	qhandle_t			iconHandle;
-
+	idRenderEntity		*renderEnt;
 public:
 	void	FreeIcon( void );
 	bool	CreateIcon( idPlayer* player, playerIconType_t type, const char *mtr, const idVec3 &origin, const idMat3 &axis );

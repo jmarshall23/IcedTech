@@ -36,7 +36,7 @@ typedef struct entity_s {
 	int			undoId, redoId, entityId;	// used for undo/redo
 	idVec3		origin;
 	idRenderLight* renderLight;
-	qhandle_t	modelDef;
+	idRenderEntity	*modelDef;
 	idSoundEmitter *soundEmitter;
 	eclass_t *	eclass;
 	idDict		epairs;

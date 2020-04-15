@@ -73,7 +73,7 @@ public:
 	void					WriteModelDef( const class idDeclModelDef *modelDef );
 	void					WriteModel( const idRenderModel *model );
 	void					WriteUserInterface( const idUserInterface *ui, bool unique );
-	void					WriteRenderEntity( const renderEntity_t &renderEntity );
+	void					WriteRenderEntity( const idRenderEntity *renderEntity );
 	void					WriteRenderLight( const idRenderLight *renderLight );
 	void					WriteRefSound( const refSound_t &refSound );
 	void					WriteRenderView( const renderView_t &view );
@@ -131,7 +131,7 @@ public:
 	void					ReadModelDef( const idDeclModelDef *&modelDef );
 	void					ReadModel( idRenderModel *&model );
 	void					ReadUserInterface( idUserInterface *&ui );
-	void					ReadRenderEntity( renderEntity_t &renderEntity );
+	void					ReadRenderEntity(idRenderEntity *renderEntity );
 	void					ReadRenderLight(idRenderLight* renderLight );
 	void					ReadRefSound( refSound_t &refSound );
 	void					ReadRenderView( renderView_t &view );

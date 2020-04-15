@@ -55,9 +55,9 @@ void rvmPortalSky::LoadPortalSkyMap(const char* name) {
 		rvmPortalSkyEntity_t  portalSkyEntity;
 
 		if(classname == "func_static") {
-			gameEdit->ParseSpawnArgsToRenderEntity(&entity->epairs, &portalSkyEntity.renderEntity);
-			portalSkyEntity.renderEntity.classType = RENDER_CLASS_SKYPORTAL;
-			portalSkyEntity.renderEntityWorldId = gameRenderWorld->AddEntityDef(&portalSkyEntity.renderEntity);
+			//gameEdit->ParseSpawnArgsToRenderEntity(&entity->epairs, &portalSkyEntity.renderEntity);
+			//portalSkyEntity.renderEntity.classType = RENDER_CLASS_SKYPORTAL;
+			//portalSkyEntity.renderEntityWorldId = gameRenderWorld->AddEntityDef(&portalSkyEntity.renderEntity);
 		}
 		else if(classname == "light") {
 			//gameEdit->ParseSpawnArgsToRenderLight(&entity->epairs, &portalSkyEntity.renderLight);

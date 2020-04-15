@@ -76,8 +76,7 @@ protected:
 	idAngles		viewRotation;
 	float			viewDistance;
 
-	renderEntity_t	worldEntity;
-	qhandle_t		modelDefHandle;
+	idRenderEntity	*worldEntity;
 
 	int				objectId;
 	idStr			customModelName;

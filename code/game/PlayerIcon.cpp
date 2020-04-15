@@ -43,7 +43,7 @@ idPlayerIcon::idPlayerIcon
 ===============
 */
 idPlayerIcon::idPlayerIcon() {
-	iconHandle	= -1;
+	renderEnt	= NULL;
 	iconType	= ICON_NONE;
 }
 
@@ -110,9 +110,9 @@ idPlayerIcon::FreeIcon
 ===============
 */
 void idPlayerIcon::FreeIcon( void ) {
-	if ( iconHandle != - 1 ) {
-		gameRenderWorld->FreeEntityDef( iconHandle );
-		iconHandle = -1;
+	if (renderEnt != NULL) {
+		gameRenderWorld->FreeRenderEntity(renderEnt);
+		renderEnt = NULL;
 	}
 	iconType = ICON_NONE;
 }
@@ -142,27 +142,26 @@ bool idPlayerIcon::CreateIcon( idPlayer *player, playerIconType_t type, const ch
 
 	FreeIcon();
 
-	memset( &renderEnt, 0, sizeof( renderEnt ) );
-	renderEnt.origin	= origin;
-	renderEnt.axis		= axis;
-	renderEnt.shaderParms[ SHADERPARM_RED ]				= 1.0f;
-	renderEnt.shaderParms[ SHADERPARM_GREEN ]			= 1.0f;
-	renderEnt.shaderParms[ SHADERPARM_BLUE ]			= 1.0f;
-	renderEnt.shaderParms[ SHADERPARM_ALPHA ]			= 1.0f;
-	renderEnt.shaderParms[ SHADERPARM_SPRITE_WIDTH ]	= 16.0f;
-	renderEnt.shaderParms[ SHADERPARM_SPRITE_HEIGHT ]	= 16.0f;
-	renderEnt.hModel = renderModelManager->FindModel( "_sprite" );
-	renderEnt.callback = NULL;
-	renderEnt.numJoints = 0;
-	renderEnt.joints = NULL;
-	renderEnt.customSkin = 0;
-	renderEnt.noShadow = true;
-	renderEnt.noSelfShadow = true;
-	renderEnt.customShader = declManager->FindMaterial( mtr );
-	renderEnt.referenceShader = 0;
-	renderEnt.bounds = renderEnt.hModel->Bounds( &renderEnt );
+	renderEnt = gameRenderWorld->AllocRenderEntity();
+	renderEnt->SetOrigin(origin);
+	renderEnt->SetAxis(axis);
+	renderEnt->SetShaderParms(SHADERPARM_RED, 1.0f);
+	renderEnt->SetShaderParms(SHADERPARM_GREEN, 1.0f);
+	renderEnt->SetShaderParms(SHADERPARM_BLUE, 1.0f);
+	renderEnt->SetShaderParms(SHADERPARM_ALPHA, 1.0f);
+	renderEnt->SetShaderParms(SHADERPARM_SPRITE_WIDTH, 16.0f);
+	renderEnt->SetShaderParms(SHADERPARM_SPRITE_HEIGHT, 16.0f);
+	renderEnt->SetRenderModel(renderModelManager->FindModel( "_sprite" ));
+	renderEnt->SetCallback(NULL);
+	renderEnt->SetNumJoints(0);
+	renderEnt->SetJoints(NULL);
+	renderEnt->SetCustomSkin(NULL);
+	renderEnt->SetNoShadow(true);
+	renderEnt->SetNoSelfShadow(true);
+	renderEnt->SetCustomShader(declManager->FindMaterial(mtr));
+	renderEnt->SetReferenceShader(NULL);
+	renderEnt->SetBounds(renderEnt->GetRenderModel()->Bounds(renderEnt));
 
-	iconHandle = gameRenderWorld->AddEntityDef( &renderEnt );
 	iconType = type;
 
 	return true;
@@ -174,10 +173,10 @@ idPlayerIcon::UpdateIcon
 ===============
 */
 void idPlayerIcon::UpdateIcon( idPlayer *player, const idVec3 &origin, const idMat3 &axis ) {
-	assert( iconHandle >= 0 );
+	assert(renderEnt != NULL);
 
-	renderEnt.origin = origin;
-	renderEnt.axis	= axis;
-	gameRenderWorld->UpdateEntityDef( iconHandle, &renderEnt );
+	renderEnt->SetOrigin(origin);
+	renderEnt->SetAxis(axis);
+	renderEnt->UpdateRenderEntity();
 }
 

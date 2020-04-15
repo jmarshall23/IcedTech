@@ -17,17 +17,16 @@ fxEmitterInstance_t *idGameLocal::CreateEffect(const char* effectModel, idVec3 o
 
 	emitter->loop = loop;
 	emitter->fxModel = renderModelManager->FindModel(effectModel);
-	emitter->renderEntity.hModel = (idRenderModel *)emitter->fxModel;
-	emitter->renderEntity.lightChannel = 0;
-	emitter->renderEntity.origin = origin;
-	emitter->renderEntity.axis = axis;
-	emitter->renderEntity.frameNum = 0;
-	emitter->renderEntity.bounds = emitter->fxModel->Bounds();
-	emitter->renderEntity.entityNum = 1;
-	emitter->renderEntity.SetLightChannel(LIGHT_CHANNEL_WORLD, true);
 
-	emitter->worldHandle = gameRenderWorld->AddEntityDef(&emitter->renderEntity);
-
+	emitter->renderEntity = gameRenderWorld->AllocRenderEntity();
+	emitter->renderEntity->SetRenderModel((idRenderModel *)emitter->fxModel);
+	emitter->renderEntity->SetLightChannel(LIGHT_CHANNEL_WORLD, true);
+	emitter->renderEntity->SetOrigin(origin);
+	emitter->renderEntity->SetAxis(axis);
+	emitter->renderEntity->SetFrameNum(0);
+	emitter->renderEntity->SetBounds(emitter->fxModel->Bounds());
+	emitter->renderEntity->SetEntityNum(1);
+	
 	fxEmitters.AddToFront(emitter);
 
 	return emitter;
@@ -39,7 +38,8 @@ idGameLocal::RemoveEffect
 ==================
 */
 void idGameLocal::RemoveEffect(fxEmitterInstance_t* fx) {
-	gameRenderWorld->FreeEntityDef(fx->worldHandle);
+	gameRenderWorld->FreeRenderEntity(fx->renderEntity);
+	fx->renderEntity = NULL;
 	fxEmitters.Remove(fx);
 	delete fx;
 }
@@ -56,11 +56,13 @@ void idGameLocal::RunFX(void) {
 		if (emitter == NULL)
 			break;
 
-		emitter->renderEntity.frameNum++;
-		if(emitter->renderEntity.frameNum >= emitter->fxModel->NumFrames()) {	
+		int frameNum = emitter->renderEntity->GetFrameNum();
+
+		frameNum++;
+		if(frameNum >= emitter->fxModel->NumFrames()) {
 			if(emitter->loop)
 			{
-				emitter->renderEntity.frameNum = 0;
+				frameNum = 0;
 			}
 			else {
 				fxEmitterInstance_t* oldEmitter = emitter;
@@ -71,7 +73,8 @@ void idGameLocal::RunFX(void) {
 			break;
 		}
 		else {
-			gameRenderWorld->UpdateEntityDef(emitter->worldHandle, &emitter->renderEntity);
+			emitter->renderEntity->SetFrameNum(frameNum);
+			emitter->renderEntity->UpdateRenderEntity();
 		}
 
 		emitter = emitter->listNode.GetNext();

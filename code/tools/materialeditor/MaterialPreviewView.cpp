@@ -183,7 +183,7 @@ extern float	fDiff(float f1, float f2);
 
 idGLDrawableView::idGLDrawableView() {
 	material = NULL;
-	modelDefHandle = -1;
+	worldEntity = NULL;
 
 	objectId = 0;
 	showLights = true;
@@ -209,33 +209,34 @@ void idGLDrawableView::ResetView( void ) {
 
 	InitWorld();
 
-	memset( &worldEntity, 0, sizeof( worldEntity ) );
+	worldEntity = world->AllocRenderEntity();
 	spawnArgs.Clear();
 	spawnArgs.Set("classname", "func_static");
 	spawnArgs.Set("name", spawnArgs.GetString("model"));
 	spawnArgs.Set("origin", "0 0 0");
 
-	gameEdit->ParseSpawnArgsToRenderEntity(&spawnArgs, &worldEntity);
+	gameEdit->ParseSpawnArgsToRenderEntity(&spawnArgs, worldEntity);
 
 	// load a model and set the current material as its customshader
 	worldModel = renderModelManager->FindModel("models/materialeditor/cube128.ase");
-	worldEntity.hModel = worldModel;
+	worldEntity->SetRenderModel(worldModel);
 
 	// current material
-	worldEntity.customShader = material;
+	worldEntity->SetCustomShader(material);
 
 	// current rotation
-	worldEntity.axis = mat3_identity;
+	worldEntity->SetAxis(mat3_identity);
 
 	// set global shader parms
 	memset( globalParms, 0, sizeof( globalParms ) );
 	globalParms[0] = globalParms[1] = globalParms[2] = globalParms[3] = 1.f;
 
-	worldEntity.shaderParms[0] = 1.f;
-	worldEntity.shaderParms[1] = 1.f;
-	worldEntity.shaderParms[2] = 1.f;
-	worldEntity.shaderParms[3] = 1.f;
-	modelDefHandle = world->AddEntityDef( &worldEntity );
+	worldEntity->SetShaderParms(0, 1.f);
+	worldEntity->SetShaderParms(1, 1.f);
+	worldEntity->SetShaderParms(2, 1.f);
+	worldEntity->SetShaderParms(3, 1.f);
+
+	worldEntity->UpdateRenderEntity();
 }
 
 void idGLDrawableView::InitWorld() {
@@ -446,16 +447,16 @@ void idGLDrawableView::UpdateModel( void ) {
 			break;
 	};
 
-	worldEntity.hModel = worldModel;
+	worldEntity->SetRenderModel( worldModel);
 
 	// current material
-	worldEntity.customShader = material;
+	worldEntity->SetCustomShader(material);
 	// current rotation
-	worldEntity.origin = viewOrigin;
+	worldEntity->SetOrigin(viewOrigin);
 
-	worldEntity.axis = mat3_identity;
+	worldEntity->SetAxis( mat3_identity);
 
-	world->UpdateEntityDef( modelDefHandle, &worldEntity );
+	worldEntity->UpdateRenderEntity();
 }
 
 void idGLDrawableView::UpdateLights( void ) {
@@ -588,7 +589,7 @@ void idGLDrawableView::setLocalParm( int parmNum, float value ) {
 		return;
 	}
 
-	worldEntity.shaderParms[ parmNum ] = value;
+	worldEntity->SetShaderParms( parmNum, value);
 
 	UpdateModel();
 }

@@ -83,7 +83,7 @@ private:
 // jmarshall end
 
 	// for item pulse effect
-	int						itemShellHandle;
+	idRenderEntity	*shellRenderEntity;
 	const idMaterial *		shellMaterial;
 
 	// used to update the item pulse effect
@@ -92,8 +92,8 @@ private:
 	mutable int				lastCycle;
 	mutable int				lastRenderViewTime;
 
-	bool					UpdateRenderEntity( renderEntity_t *renderEntity, const renderView_t *renderView ) const;
-	static bool				ModelCallback( renderEntity_t *renderEntity, const renderView_t *renderView );
+	bool					UpdateRenderEntity(idRenderEntity*renderEntity, const renderView_t *renderView ) const;
+	static bool				ModelCallback(idRenderEntity*renderEntity, const renderView_t *renderView );
 
 	void					Event_DropToFloor( void );
 	void					Event_Touch( idEntity *other, trace_t *trace );

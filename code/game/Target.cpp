@@ -951,7 +951,7 @@ void idTarget_SetInfluence::Event_GatherEntities() {
 				soundList.Append( ent->entityNumber );
 				continue;
 			}
-			if ( guis && ent->GetRenderEntity() && ent->GetRenderEntity()->gui[ 0 ] && ent->spawnArgs.FindKey( "gui_demonic" ) ) {
+			if ( guis && ent->GetRenderEntity() && ent->GetRenderEntity()->GetGui( 0 ) && ent->spawnArgs.FindKey( "gui_demonic" ) ) {
 				guiList.Append( ent->entityNumber );
 				continue;
 			}
@@ -1087,8 +1087,8 @@ void idTarget_SetInfluence::Event_Activate( idEntity *activator ) {
 		}
 		update = false;
 		for ( j = 0; j < MAX_RENDERENTITY_GUI; j++ ) {
-			if ( ent->GetRenderEntity()->gui[ j ] && ent->spawnArgs.FindKey( j == 0 ? "gui_demonic" : va( "gui_demonic%d", j+1 ) ) ) {
-				ent->GetRenderEntity()->gui[ j ] = uiManager->FindGui( ent->spawnArgs.GetString( j == 0 ? "gui_demonic" : va( "gui_demonic%d", j+1 ) ), true );
+			if ( ent->GetRenderEntity()->GetGui( j ) && ent->spawnArgs.FindKey( j == 0 ? "gui_demonic" : va( "gui_demonic%d", j+1 ) ) ) {
+				ent->GetRenderEntity()->SetGui(j, uiManager->FindGui( ent->spawnArgs.GetString( j == 0 ? "gui_demonic" : va( "gui_demonic%d", j+1 ) ), true ));
 				update = true;
 			}
 		}
@@ -1210,8 +1210,8 @@ void idTarget_SetInfluence::Event_RestoreInfluence() {
 		}
 		update = false;
 		for( j = 0; j < MAX_RENDERENTITY_GUI; j++ ) {
-			if ( ent->GetRenderEntity()->gui[ j ] ) {
-				ent->GetRenderEntity()->gui[ j ] = uiManager->FindGui( ent->spawnArgs.GetString( j == 0 ? "gui" : va( "gui%d", j+1 ) ) );
+			if ( ent->GetRenderEntity()->GetGui( j ) ) {
+				ent->GetRenderEntity()->SetGui(j, uiManager->FindGui( ent->spawnArgs.GetString( j == 0 ? "gui" : va( "gui%d", j+1 ) ) ));
 				update = true;
 			}
 		}
@@ -1268,10 +1268,10 @@ void idTarget_SetKeyVal::Event_Activate( idEntity *activator ) {
 					val = kv->GetValue().Right( kv->GetValue().Length() - n - 1 );
 					ent->spawnArgs.Set( key, val );
 					for ( int j = 0; j < MAX_RENDERENTITY_GUI; j++ ) {
-						if ( ent->GetRenderEntity()->gui[ j ] ) {
+						if ( ent->GetRenderEntity()->GetGui( j ) ) {
 							if ( idStr::Icmpn( key, "gui_", 4 ) == 0 ) {
-								ent->GetRenderEntity()->gui[ j ]->SetStateString( key, val );
-								ent->GetRenderEntity()->gui[ j ]->StateChanged( gameLocal.time );
+								ent->GetRenderEntity()->GetGui( j )->SetStateString( key, val );
+								ent->GetRenderEntity()->GetGui( j )->StateChanged( gameLocal.time );
 							}
 						}
 					}

@@ -7,8 +7,8 @@
 struct rvmPortalSkyEntity_t {
 	rvmPortalSkyEntity_t();
 
-	renderEntity_t renderEntity;
-	qhandle_t renderEntityWorldId;
+	//idRenderEntity renderEntity;
+	//qhandle_t renderEntityWorldId;
 
 //	renderLight_t renderLight;
 //	qhandle_t renderLightWorldId;
@@ -18,7 +18,7 @@ struct rvmPortalSkyEntity_t {
 // rvmPortalSkyEntity_t::rvmPortalSkyEntity_t
 //
 ID_INLINE rvmPortalSkyEntity_t::rvmPortalSkyEntity_t() {
-	renderEntityWorldId = -1;
+	//renderEntityWorldId = -1;
 	//renderLightWorldId = -1;
 }
 

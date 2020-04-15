@@ -581,7 +581,7 @@ void idIK_Walk::Evaluate( void ) {
 
 	normal = - self->GetPhysics()->GetGravityNormal();
 	modelOrigin = self->GetPhysics()->GetOrigin();
-	modelAxis = self->GetRenderEntity()->axis;
+	modelAxis = self->GetRenderEntity()->GetAxis();
 	modelHeight = modelOrigin * normal;
 
 	modelOrigin += modelOffset * modelAxis;
@@ -1055,8 +1055,8 @@ void idIK_Reach::Evaluate( void ) {
 	idMat3 shoulderAxis[MAX_ARMS], elbowAxis[MAX_ARMS];
 	trace_t trace;
 
-	modelOrigin = self->GetRenderEntity()->origin;
-	modelAxis = self->GetRenderEntity()->axis;
+	modelOrigin = self->GetRenderEntity()->GetOrigin();
+	modelAxis = self->GetRenderEntity()->GetAxis();
 
 	// solve IK
 	for ( i = 0; i < numArms; i++ ) {

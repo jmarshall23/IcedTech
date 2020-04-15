@@ -623,49 +623,49 @@ Debugging tool
 =====================
 */
 static void RB_ShowSurfaceInfo( drawSurf_t **drawSurfs, int numDrawSurfs ) {
-	modelTrace_t mt;
-	idVec3 start, end;
-	
-	if ( !r_showSurfaceInfo.GetBool() ) {
-		return;
-	}
-
-	// start far enough away that we don't hit the player model
-	start = tr.primaryView->renderView.vieworg + tr.primaryView->renderView.viewaxis[0] * 16;
-	end = start + tr.primaryView->renderView.viewaxis[0] * 1000.0f;
-	if ( !tr.primaryWorld->Trace( mt, start, end, 0.0f, false ) ) {
-		return;
-	}
-
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	globalImages->BindNull();
-	glDisable( GL_TEXTURE_2D );
-	glDisable( GL_STENCIL_TEST );
-
-	glColor3f( 1, 1, 1 );
-
-	GL_State( GLS_POLYMODE_LINE );
-
-	glPolygonOffset( -1, -2 );
-	glEnable( GL_POLYGON_OFFSET_LINE );
-
-	idVec3	trans[3];
-	float	matrix[16];
-
-	// transform the object verts into global space
-	R_AxisToModelMatrix( mt.entity->axis, mt.entity->origin, matrix );
-
-	tr.primaryWorld->DrawText( mt.entity->hModel->Name(), mt.point + tr.primaryView->renderView.viewaxis[2] * 12,
-		0.35f, colorRed, tr.primaryView->renderView.viewaxis );
-	tr.primaryWorld->DrawText( mt.material->GetName(), mt.point, 
-		0.35f, colorBlue, tr.primaryView->renderView.viewaxis );
-
-	glEnable( GL_DEPTH_TEST );
-	glDisable( GL_POLYGON_OFFSET_LINE );
-
-	glDepthRange( 0, 1 );
-	GL_State( GLS_DEFAULT );
-	GL_Cull( CT_FRONT_SIDED );
+	//modelTrace_t mt;
+	//idVec3 start, end;
+	//
+	//if ( !r_showSurfaceInfo.GetBool() ) {
+	//	return;
+	//}
+	//
+	//// start far enough away that we don't hit the player model
+	//start = tr.primaryView->renderView.vieworg + tr.primaryView->renderView.viewaxis[0] * 16;
+	//end = start + tr.primaryView->renderView.viewaxis[0] * 1000.0f;
+	//if ( !tr.primaryWorld->Trace( mt, start, end, 0.0f, false ) ) {
+	//	return;
+	//}
+	//
+	//glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	//globalImages->BindNull();
+	//glDisable( GL_TEXTURE_2D );
+	//glDisable( GL_STENCIL_TEST );
+	//
+	//glColor3f( 1, 1, 1 );
+	//
+	//GL_State( GLS_POLYMODE_LINE );
+	//
+	//glPolygonOffset( -1, -2 );
+	//glEnable( GL_POLYGON_OFFSET_LINE );
+	//
+	//idVec3	trans[3];
+	//float	matrix[16];
+	//
+	//// transform the object verts into global space
+	//R_AxisToModelMatrix( mt.entity->axis, mt.entity->origin, matrix );
+	//
+	//tr.primaryWorld->DrawText( mt.entity->hModel->Name(), mt.point + tr.primaryView->renderView.viewaxis[2] * 12,
+	//	0.35f, colorRed, tr.primaryView->renderView.viewaxis );
+	//tr.primaryWorld->DrawText( mt.material->GetName(), mt.point, 
+	//	0.35f, colorBlue, tr.primaryView->renderView.viewaxis );
+	//
+	//glEnable( GL_DEPTH_TEST );
+	//glDisable( GL_POLYGON_OFFSET_LINE );
+	//
+	//glDepthRange( 0, 1 );
+	//GL_State( GLS_DEFAULT );
+	//GL_Cull( CT_FRONT_SIDED );
 }
 
 
@@ -724,7 +724,7 @@ static void RB_ShowViewEntitys( viewEntity_t *vModels ) {
 		if ( !model ) {
 			continue;	// particles won't instantiate without a current view
 		}
-		b = model->Bounds( &vModels->entityDef->parms );
+		b = model->Bounds( vModels->entityDef );
 		RB_DrawBounds( b );
 	}
 

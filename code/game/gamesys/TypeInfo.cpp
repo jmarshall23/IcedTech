@@ -319,7 +319,7 @@ bool IsAllowedToChangedFromSaveGames( const char *varName, const char *varType, 
 		}
 	} else if ( idStr::Icmp( scope, "idPhysics_AF" ) == 0 ) {
 		return true;
-	} else if ( idStr::Icmp( scope, "renderEntity_t" ) == 0 ) {
+	} else if ( idStr::Icmp( scope, "idRenderEntity" ) == 0 ) {
 		// These get fixed up when UpdateVisuals is called
 		if ( idStr::Icmp( varName, "origin" ) == 0 ) {
 			return true;

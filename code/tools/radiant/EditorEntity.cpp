@@ -474,7 +474,7 @@ entity_t *Entity_New() {
 	ent->trackLightOrigin = false;
 	ent->rotation.Identity();
 	ent->renderLight = NULL;
-	ent->modelDef = -1;
+	ent->modelDef = NULL;
 	ent->soundEmitter = NULL;
 	ent->curve = NULL;
 	return ent;

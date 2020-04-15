@@ -81,7 +81,7 @@ const int SHADERPARM_PARTICLE_STOPTIME = 8;	// don't spawn any more particles af
 const int MAX_RENDERENTITY_GUI		= 3;
 
 
-typedef bool(*deferredEntityCallback_t)( renderEntity_t *, const renderView_t* );
+typedef bool(*deferredEntityCallback_t)( idRenderEntity *, const renderView_t* );
 
 //
 // renderClassWorldType_t
@@ -90,154 +90,6 @@ enum renderClassWorldType_t {
 	RENDER_CLASS_WORLD = 0,			// Entity/light that belongs to the main world.
 	RENDER_CLASS_SKYPORTAL,			// Entity/light that belongs to the portal sky.
 };
-
-// jmarshall - added constructor here.
-struct renderEntity_t {
-	renderEntity_t();
-
-	bool HasValidJoints() const;
-	void SetLightChannel(int lightChannel, bool enabled);
-	bool HasLightChannel(int lightChannel);
-
-	idRenderModel *			hModel;				// this can only be null if callback is set
-
-	renderClassWorldType_t	classType;
-
-	int						lightChannel;
-
-	int						entityNum;
-	int						bodyId;
-
-	int						frameNum;
-
-	bool					hasDynamicShadows;
-
-	bool					skipEntityViewCulling;
-
-	// This disables mipmapping on this render entity.
-	bool					forceVirtualTextureHighQuality;
-
-	// Entities that are expensive to generate, like skeletal models, can be
-	// deferred until their bounds are found to be in view, in the frustum
-	// of a shadowing light that is in view, or contacted by a trace / overlay test.
-	// This is also used to do visual cueing on items in the view
-	// The renderView may be NULL if the callback is being issued for a non-view related
-	// source.
-	// The callback function should clear renderEntity->callback if it doesn't
-	// want to be called again next time the entity is referenced (ie, if the
-	// callback has now made the entity valid until the next updateEntity)
-	idBounds				bounds;					// only needs to be set for deferred models and md5s
-	deferredEntityCallback_t	callback;
-
-	void *					callbackData;			// used for whatever the callback wants
-
-	// player bodies and possibly player shadows should be suppressed in views from
-	// that player's eyes, but will show up in mirrors and other subviews
-	// security cameras could suppress their model in their subviews if we add a way
-	// of specifying a view number for a remoteRenderMap view
-	int						suppressSurfaceInViewID;
-	int						suppressShadowInViewID;
-
-	// world models for the player and weapons will not cast shadows from view weapon
-	// muzzle flashes
-	int						suppressShadowInLightID;
-
-	// if non-zero, the surface and shadow (if it casts one)
-	// will only show up in the specific view, ie: player weapons
-	int						allowSurfaceInViewID;
-
-	// positioning
-	// axis rotation vectors must be unit length for many
-	// R_LocalToGlobal functions to work, so don't scale models!
-	// axis vectors are [0] = forward, [1] = left, [2] = up
-	idVec3					origin;
-	idMat3					axis;
-
-	// texturing
-	const idMaterial *		customShader;			// if non-0, all surfaces will use this
-	const idMaterial *		referenceShader;		// used so flares can reference the proper light shader
-	const idDeclSkin *		customSkin;				// 0 for no remappings
-	class idSoundEmitter *	referenceSound;			// for shader sound tables, allowing effects to vary with sounds
-	float					shaderParms[ MAX_ENTITY_SHADER_PARMS ];	// can be used in any way by shader or model generation
-
-	// networking: see WriteGUIToSnapshot / ReadGUIFromSnapshot
-	class idUserInterface * gui[ MAX_RENDERENTITY_GUI ];
-
-	struct renderView_t*	remoteRenderView;		// any remote camera surfaces will use this
-
-	int						numJoints;
-	idJointMat *			joints;					// array of joints that will modify vertices.
-													// NULL if non-deformable model.  NOT freed by renderer
-
-	float					modelDepthHack;			// squash depth range so particle effects don't clip into walls
-
-	// options to override surface shader flags (replace with material parameters?)
-	bool					noSelfShadow;			// cast shadows onto other objects,but not self
-	bool					noShadow;				// no shadow at all
-
-	bool					noDynamicInteractions;	// don't create any light / shadow interactions after
-													// the level load is completed.  This is a performance hack
-													// for the gigantic outdoor meshes in the monorail map, so
-													// all the lights in the moving monorail don't touch the meshes
-
-	bool					weaponDepthHack;		// squash depth range so view weapons don't poke into walls
-													// this automatically implies noShadow
-	int						forceUpdate;			// force an update (NOTE: not a bool to keep this struct a multiple of 4 bytes)
-	int						timeGroup;
-	int						xrayIndex;
-};
-
-/*
-=========================
-renderEntity_t::renderEntity_t
-=========================
-*/
-ID_INLINE renderEntity_t::renderEntity_t()
-{
-	lightChannel = 0;
-	SetLightChannel(0, true);
-	hModel = nullptr;
-	joints = nullptr;
-	frameNum = 0;
-	hasDynamicShadows = false;
-	skipEntityViewCulling = false;
-	forceVirtualTextureHighQuality = false;
-	classType = RENDER_CLASS_WORLD;
-}
-
-/*
-=========================
-renderEntity_t::SetLightChannel
-=========================
-*/
-ID_INLINE void renderEntity_t::SetLightChannel(int lightChannel, bool enabled) {
-	if(enabled) {
-		this->lightChannel |= 1 << lightChannel;
-	}
-	else {
-		this->lightChannel &= ~(1UL << lightChannel);
-	}
-}
-
-/*
-=========================
-renderEntity_t::HasLightChannel
-=========================
-*/
-ID_INLINE bool renderEntity_t::HasLightChannel(int lightChannel) {
-	return (!!((this->lightChannel) & (1ULL << (lightChannel))));
-}
-
-/*
-=========================
-renderEntity_t::HasValidJoints
-=========================
-*/
-ID_INLINE bool renderEntity_t::HasValidJoints() const { 
-	return joints != nullptr; 
-}
-
-// jmarshall end
 
 #include "RenderEntity.h"
 
@@ -332,7 +184,7 @@ typedef struct modelTrace_s {
 	idVec3					point;				// end point of trace in global space
 	idVec3					normal;				// hit triangle normal vector in global space
 	const idMaterial *		material;			// material of hit surface
-	const renderEntity_t *	entity;				// render entity that was hit
+	const idRenderEntity *	entity;				// render entity that was hit
 	int						jointNumber;		// md5 joint nearest to the hit triangle
 } modelTrace_t;
 
@@ -372,10 +224,9 @@ public:
 	// entityDefs and lightDefs are added to a given world to determine
 	// what will be drawn for a rendered scene.  Most update work is defered
 	// until it is determined that it is actually needed for a given view.
-	virtual	qhandle_t		AddEntityDef( const renderEntity_t *re ) = 0;
-	virtual	void			UpdateEntityDef( qhandle_t entityHandle, const renderEntity_t *re ) = 0;
-	virtual	void			FreeEntityDef( qhandle_t entityHandle ) = 0;
-	virtual const renderEntity_t *GetRenderEntity( qhandle_t entityHandle ) const = 0;
+	virtual idRenderEntity* AllocRenderEntity(void) = 0;
+	virtual void			FreeRenderEntity(idRenderEntity* renderEntity) = 0;
+	virtual const idRenderEntity* GetRenderEntity(qhandle_t entityHandle) const = 0;
 
 	virtual idRenderLight*  AllocRenderLight(void) = 0;
 	virtual void			FreeRenderLight(idRenderLight* renderLight) = 0;

@@ -603,7 +603,7 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 	 
 	tr.pc.c_createInteractions++;
 
-	bounds = model->Bounds( &entityDef->parms );
+	bounds = model->Bounds( entityDef );
 
 // jmarshall We don't need exact frustum checks its too slow.
 	// if it doesn't contact the light frustum, none of the surfaces will

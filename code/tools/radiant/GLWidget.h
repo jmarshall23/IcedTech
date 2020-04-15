@@ -80,9 +80,9 @@ public:
 protected:
 	idRenderWorld *world;
 	idRenderModel *worldModel;
-	qhandle_t	worldModelDef;
+	idRenderEntity *worldModelDef;
 	idRenderLight* renderLight;
-	qhandle_t   modelDef;
+	
 };
 
 class idGLDrawableMaterial : public idGLDrawableWorld {

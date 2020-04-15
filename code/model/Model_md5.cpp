@@ -801,7 +801,7 @@ This calculates a rough bounds by using the joint radii without
 transforming all the points
 ====================
 */
-idBounds idRenderModelMD5::Bounds( const renderEntity_t *ent ) const {
+idBounds idRenderModelMD5::Bounds( const idRenderEntity *ent ) const {
 #if 0
 	// we can't calculate a rational bounds without an entity,
 	// because joints could be positioned to deform it into an
@@ -816,7 +816,8 @@ idBounds idRenderModelMD5::Bounds( const renderEntity_t *ent ) const {
 		return bounds;
 	}
 
-	return ent->bounds;
+	idRenderEntityLocal* rent = (idRenderEntityLocal*)ent;
+	return rent->GetBounds();
 }
 
 /*
@@ -824,7 +825,7 @@ idBounds idRenderModelMD5::Bounds( const renderEntity_t *ent ) const {
 idRenderModelMD5::DrawJoints
 ====================
 */
-void idRenderModelMD5::DrawJoints( const renderEntity_t *ent, const struct viewDef_s *view ) const {
+void idRenderModelMD5::DrawJoints( const idRenderEntityParms *ent, const struct viewDef_s *view ) const {
 	int					i;
 	int					num;
 	idVec3				pos;
@@ -971,8 +972,9 @@ static void TransformJoints(idJointMat* __restrict outJoints, const int numJoint
 idRenderModelMD5::InstantiateDynamicModel
 ====================
 */
-idRenderModel* idRenderModelMD5::InstantiateDynamicModel(const struct renderEntity_t* ent, const struct viewDef_s* view, idRenderModel* cachedModel) {
+idRenderModel* idRenderModelMD5::InstantiateDynamicModel(const class idRenderEntity* ent, const struct viewDef_s* view, idRenderModel* cachedModel) {
 	idRenderModelMD5Instance* staticModel;
+	const idRenderEntityLocal* renderEntity = (const idRenderEntityLocal*)ent;
 
 	if (cachedModel && !r_useCachedDynamicModels.GetBool()) {
 		delete cachedModel;
@@ -1006,13 +1008,13 @@ idRenderModel* idRenderModelMD5::InstantiateDynamicModel(const struct renderEnti
 	}
 
 	staticModel->jointBuffer = jointBuffer;
-	if (ent == nullptr || ent->joints == nullptr)
+	if (renderEntity == nullptr || renderEntity->parms.joints == nullptr)
 	{
 		TransformJoints(staticModel->jointsInverted, joints.Num(), &poseMat3[0], invertedDefaultPose.Ptr());
 	}
 	else
 	{
-		TransformJoints(staticModel->jointsInverted, joints.Num(), ent->joints, invertedDefaultPose.Ptr());
+		TransformJoints(staticModel->jointsInverted, joints.Num(), renderEntity->parms.joints, invertedDefaultPose.Ptr());
 	}
 
 	staticModel->CreateStaticMeshSurfaces(meshes);
@@ -1219,7 +1221,7 @@ void idRenderModelMD5Instance::CreateStaticMeshSurfaces(const idList<idMD5Mesh>&
 idRenderModelMD5Instance::UpdateSurface
 ====================
 */
-void idRenderModelMD5Instance::UpdateSurfaceGPU(struct deformInfo_s* deformInfo, const struct renderEntity_t* ent, modelSurface_t* surf, const idMaterial* shader) {
+void idRenderModelMD5Instance::UpdateSurfaceGPU(struct deformInfo_s* deformInfo, const idRenderEntityParms* ent, modelSurface_t* surf, const idMaterial* shader) {
 	int i, base;
 	srfTriangles_t* tri;
 

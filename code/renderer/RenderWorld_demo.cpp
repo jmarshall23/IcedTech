@@ -157,7 +157,7 @@ bool		idRenderWorldLocal::ProcessDemoCommand( idDemoFile *readDemo, renderView_t
 		if ( r_showDemo.GetBool() ) {
 			common->Printf( "DC_DELETE_ENTITYDEF: %i\n", h );
 		}
-		FreeEntityDef( h );
+		FreeRenderEntity( entityDefs[h] );
 		break;
 	case DC_UPDATE_LIGHTDEF:
 		ReadRenderLight();
@@ -260,7 +260,7 @@ void	idRenderWorldLocal::WriteLoadMap() {
 	demoHeader_t	header;
 	strncpy( header.mapname, mapName.c_str(), sizeof( header.mapname ) - 1 );
 	header.version = 4;
-	header.sizeofRenderEntity = sizeof( renderEntity_t );
+	header.sizeofRenderEntity = sizeof( idRenderEntityParms );
 	header.sizeofRenderLight = sizeof( idRenderLightParms );
 	session->writeDemo->WriteInt( header.version );
 	session->writeDemo->WriteInt( header.sizeofRenderEntity );
@@ -296,7 +296,7 @@ void	idRenderWorldLocal::WriteVisibleDefs( const viewDef_t *viewDef ) {
 		}
 
 		// write it out
-		WriteRenderEntity( ent->index, &ent->parms );
+		WriteRenderEntity( ent->index, ent );
 		ent->archived = true;
 	}
 
@@ -515,7 +515,9 @@ void	idRenderWorldLocal::ReadRenderLight( ) {
 WriteRenderEntity
 ================
 */
-void	idRenderWorldLocal::WriteRenderEntity( qhandle_t handle, const renderEntity_t *ent ) {
+void	idRenderWorldLocal::WriteRenderEntity( qhandle_t handle, const idRenderEntity*rent ) {
+
+	idRenderEntityParms* ent = &((idRenderEntityLocal *)rent)->parms;
 
 	// only the main renderWorld writes stuff to demos, not the wipes or
 	// menu renders
@@ -618,7 +620,7 @@ ReadRenderEntity
 ================
 */
 void	idRenderWorldLocal::ReadRenderEntity() {
-	renderEntity_t		ent;
+	idRenderEntityParms		ent;
 	int				index, i;
 
 	session->readDemo->ReadInt( index );
@@ -716,7 +718,9 @@ void	idRenderWorldLocal::ReadRenderEntity() {
 		ent.xrayIndex = 0;
 	}
 
-	UpdateEntityDef( index, &ent );
+	idRenderEntityLocal* _ent = (idRenderEntityLocal * )AllocRenderEntity();
+	memcpy(&_ent->parms, &ent, sizeof(_ent->parms));
+	_ent->UpdateRenderEntity();
 
 	if ( r_showDemo.GetBool() ) {
 		common->Printf( "DC_UPDATE_ENTITYDEF: %i = %s\n", index, ent.hModel ? ent.hModel->Name() : "NULL" );

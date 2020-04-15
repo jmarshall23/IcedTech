@@ -269,12 +269,12 @@ void idDragEntity::Update( idPlayer *player ) {
 
 		cursor->drag.SetDragPosition( cursor->GetPhysics()->GetOrigin() );
 
-		renderEntity_t *renderEntity = drag->GetRenderEntity();
+		idRenderEntity *renderEntity = drag->GetRenderEntity();
 		idAnimator *dragAnimator = drag->GetAnimator();
 
 		if ( joint != INVALID_JOINT && renderEntity && dragAnimator ) {
 			dragAnimator->GetJointTransform( joint, gameLocal.time, cursor->draggedPosition, axis );
-			cursor->draggedPosition = renderEntity->origin + cursor->draggedPosition * renderEntity->axis;
+			cursor->draggedPosition = renderEntity->GetOrigin() + cursor->draggedPosition * renderEntity->GetAxis();
 			gameRenderWorld->DrawText( va( "%s\n%s\n%s, %s", drag->GetName(), drag->GetType()->classname, dragAnimator->GetJointName( joint ), bodyName.c_str() ), cursor->GetPhysics()->GetOrigin(), 0.1f, colorWhite, viewAxis, 1 );
 		} else {
 			cursor->draggedPosition = cursor->GetPhysics()->GetOrigin();
@@ -285,9 +285,9 @@ void idDragEntity::Update( idPlayer *player ) {
 	// if there is a selected entity
 	if ( selected.GetEntity() && g_dragShowSelection.GetBool() ) {
 		// draw the bbox of the selected entity
-		renderEntity_t *renderEntity = selected.GetEntity()->GetRenderEntity();
+		idRenderEntity *renderEntity = selected.GetEntity()->GetRenderEntity();
 		if ( renderEntity ) {
-			gameRenderWorld->DebugBox( colorYellow, idBox( renderEntity->bounds, renderEntity->origin, renderEntity->axis ) );
+			gameRenderWorld->DebugBox( colorYellow, idBox( renderEntity->GetBounds(), renderEntity->GetOrigin(), renderEntity->GetAxis() ) );
 		}
 	}
 }
