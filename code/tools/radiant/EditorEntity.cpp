@@ -473,7 +473,7 @@ entity_t *Entity_New() {
 	ent->lightRotation.Identity();
 	ent->trackLightOrigin = false;
 	ent->rotation.Identity();
-	ent->lightDef = -1;
+	ent->renderLight = NULL;
 	ent->modelDef = -1;
 	ent->soundEmitter = NULL;
 	ent->curve = NULL;

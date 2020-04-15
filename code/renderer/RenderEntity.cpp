@@ -76,13 +76,59 @@ void idRenderEntityLocal::RemoveDecals() {
 
 //======================================================================
 
+/*
+==========================
+idRenderLightParms::idRenderLightParms
+==========================
+*/
+idRenderLightParms::idRenderLightParms()
+{
+	lightChannel = 0;
+	axis.Zero();
+	origin.Zero();
+	uniqueLightId = -1;
+	suppressLightInViewID = -1;
+	allowLightInViewID = -1;
+	noShadows = false;
+	noSpecular = false;
+	pointLight = false;
+	parallel = false;
+	lightRadius.Zero();
+	lightCenter.Zero();
+	ambientLight = false;
+	target.Zero();
+	right.Zero();
+	up.Zero();
+	start.Zero();
+	end.Zero();
+	prelightModel = NULL;
+	lightId = 0;
+	shader = NULL;
+	referenceSound = NULL;
+	dynamicShadows = false;
+	name = "";
+	classType = RENDER_CLASS_WORLD;
+
+	for (int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++)
+		shaderParms[i] = 0;
+}
+
+/*
+==========================
+idRenderLightLocal::idRenderLightLocal
+==========================
+*/
 idRenderLightLocal::idRenderLightLocal() {
-	memset( &parms, 0, sizeof( parms ) );
+	memset(&parms, 0, sizeof(parms));
 	memset( modelMatrix, 0, sizeof( modelMatrix ) );
 	memset( shadowFrustums, 0, sizeof( shadowFrustums ) );
 	memset( lightProject, 0, sizeof( lightProject ) );
 	memset( frustum, 0, sizeof( frustum ) );
 	memset( frustumWindings, 0, sizeof( frustumWindings ) );
+
+	SetLightChannel(0, true);
+
+	parmsDirty = true;
 
 	lightHasMoved			= false;
 	world					= NULL;
@@ -104,6 +150,11 @@ idRenderLightLocal::idRenderLightLocal() {
 	lastInteraction			= NULL;
 }
 
+/*
+==========================
+idRenderLightLocal::~idRenderLightLocal
+==========================
+*/
 idRenderLightLocal::~idRenderLightLocal() {
 	if (currentOcclusionQuery != NULL) {
 		delete currentOcclusionQuery;
@@ -113,14 +164,91 @@ idRenderLightLocal::~idRenderLightLocal() {
 	R_FreeLightDefFrustum(this);
 }
 
+/*
+==========================
+idRenderLightLocal::SetLightChannel
+==========================
+*/
+void idRenderLightLocal::SetLightChannel(int lightChannel, bool enabled) {
+	if (enabled) {
+		this->parms.lightChannel |= 1 << lightChannel;
+	}
+	else {
+		this->parms.lightChannel &= ~(1UL << lightChannel);
+	}
+}
+
+/*
+==========================
+idRenderLightLocal::HasLightChannel
+==========================
+*/
+bool idRenderLightLocal::HasLightChannel(int lightChannel) {
+	return (!!((this->parms.lightChannel) & (1ULL << (lightChannel))));
+}
+
+/*
+==========================
+idRenderLightLocal::ClearLightChannel
+==========================
+*/
+void idRenderLightLocal::ClearLightChannel(void) {
+	parms.lightChannel = 0;
+}
+
+/*
+==========================
+idRenderLightLocal::FreeRenderLight
+==========================
+*/
 void idRenderLightLocal::FreeRenderLight() {
 }
-void idRenderLightLocal::UpdateRenderLight( const renderLight_t *re, bool forceUpdate ) {
+
+/*
+==========================
+idRenderLightLocal::UpdateRenderLight
+==========================
+*/
+void idRenderLightLocal::UpdateRenderLight( bool forceUpdate ) {
+	if (r_skipUpdates.GetBool()) {
+		return;
+	}
+
+	tr.pc.c_lightUpdates++;
+	
+	lastModifiedFrameNum = tr.frameCount;
+	if (session->writeDemo && archived) {
+		world->WriteFreeLight(index);
+		archived = false;
+	}
+
+	if (lightHasMoved) {
+		parms.prelightModel = NULL;
+	}
+
+	if (parmsDirty)
+	{
+		R_FreeLightDefDerivedData(this);
+		R_DeriveLightData(this);
+		R_CreateLightRefs(this);
+		R_CreateLightDefFogPortals(this);
+	}
+	parmsDirty = false;
 }
-void idRenderLightLocal::GetRenderLight( renderLight_t *re ) {
-}
+
+/*
+==========================
+idRenderLightLocal::ForceUpdate
+==========================
+*/
 void idRenderLightLocal::ForceUpdate() {
 }
+
+/*
+==========================
+idRenderLightLocal::GetIndex
+==========================
+*/
 int idRenderLightLocal::GetIndex() {
 	return index;
 }

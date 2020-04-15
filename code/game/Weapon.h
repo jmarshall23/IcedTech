@@ -295,17 +295,6 @@ private:
 	int						brassDelay;
 	idStr					icon;
 
-	// view weapon gui light
-	renderLight_t			guiLight;
-	int						guiLightHandle;
-
-	// muzzle flash
-	renderLight_t			muzzleFlash;		// positioned on view weapon bone
-	int						muzzleFlashHandle;
-
-	renderLight_t			worldMuzzleFlash;	// positioned on world weapon bone
-	int						worldMuzzleFlashHandle;
-
 	idVec3					currentGunOffset;
 
 	idVec3					flashColor;
@@ -370,8 +359,6 @@ private:
 										// this also assumes a nozzle light atm
 	int						nozzleFxFade;		// time it takes to fade between the effects
 	int						lastAttack;			// last time an attack occured
-	renderLight_t			nozzleGlow;			// nozzle light
-	int						nozzleGlowHandle;	// handle for nozzle light
 
 	idVec3					nozzleGlowColor;	// color of the nozzle glow
 	const idMaterial *		nozzleGlowShader;	// shader for glow light

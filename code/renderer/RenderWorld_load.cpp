@@ -278,7 +278,7 @@ void idRenderWorldLocal::FreeDefs() {
 
 		light = lightDefs[i];
 		if ( light && light->world == this ) {
-			FreeLightDef( i );
+			FreeRenderLight( light );
 			lightDefs[i] = NULL;
 		}
 	}

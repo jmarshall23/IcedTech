@@ -169,7 +169,7 @@ bool		idRenderWorldLocal::ProcessDemoCommand( idDemoFile *readDemo, renderView_t
 		if ( r_showDemo.GetBool() ) {
 			common->Printf( "DC_DELETE_LIGHTDEF: %i\n", h );
 		}
-		FreeLightDef( h );
+		FreeRenderLight(lightDefs[h]);
 		break;
 
 	case DC_CAPTURE_RENDER:
@@ -261,7 +261,7 @@ void	idRenderWorldLocal::WriteLoadMap() {
 	strncpy( header.mapname, mapName.c_str(), sizeof( header.mapname ) - 1 );
 	header.version = 4;
 	header.sizeofRenderEntity = sizeof( renderEntity_t );
-	header.sizeofRenderLight = sizeof( renderLight_t );
+	header.sizeofRenderLight = sizeof( idRenderLightParms );
 	session->writeDemo->WriteInt( header.version );
 	session->writeDemo->WriteInt( header.sizeofRenderEntity );
 	session->writeDemo->WriteInt( header.sizeofRenderLight );
@@ -404,7 +404,7 @@ void	idRenderWorldLocal::WriteFreeLight( qhandle_t handle ) {
 WriteRenderLight
 ================
 */
-void	idRenderWorldLocal::WriteRenderLight( qhandle_t handle, const renderLight_t *light ) {
+void	idRenderWorldLocal::WriteRenderLight( qhandle_t handle, const idRenderLightParms*light ) {
 
 	// only the main renderWorld writes stuff to demos, not the wipes or
 	// menu renders
@@ -460,7 +460,7 @@ ReadRenderLight
 ================
 */
 void	idRenderWorldLocal::ReadRenderLight( ) {
-	renderLight_t	light;
+	idRenderLightParms	light;
 	int				index;
 
 	session->readDemo->ReadInt( index );
@@ -501,7 +501,9 @@ void	idRenderWorldLocal::ReadRenderLight( ) {
 		light.referenceSound = session->sw->EmitterForIndex( index );
 	}
 
-	UpdateLightDef( index, &light );
+	idRenderLightLocal* rlight = (idRenderLightLocal *)AllocRenderLight();
+	rlight->parms = light;
+	rlight->UpdateRenderLight();
 
 	if ( r_showDemo.GetBool() ) {
 		common->Printf( "DC_UPDATE_LIGHTDEF: %i\n", index );

@@ -91,8 +91,8 @@ void idRenderWindow::PreRender() {
 		spawnArgs.Set("name", "light_1");
 		spawnArgs.Set("origin", lightOrigin.ToVec3().ToString());
 		spawnArgs.Set("_color", lightColor.ToVec3().ToString());
-		gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &rLight );
-		lightDef = world->AddLightDef( &rLight );
+		rLight = world->AllocRenderLight();
+		gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, rLight );
 		if ( !modelName[0] ) {
 			common->Warning( "Window '%s' in gui '%s': no model set", GetName(), GetGui()->GetSourceFile() );
 		}
@@ -116,11 +116,11 @@ void idRenderWindow::PreRender() {
 }
 
 void idRenderWindow::Render( int time ) {
-	rLight.origin = lightOrigin.ToVec3();
-	rLight.shaderParms[SHADERPARM_RED] = lightColor.x();
-	rLight.shaderParms[SHADERPARM_GREEN] = lightColor.y();
-	rLight.shaderParms[SHADERPARM_BLUE] = lightColor.z();
-	world->UpdateLightDef(lightDef, &rLight);
+	rLight->SetOrigin(lightOrigin.ToVec3());
+	rLight->SetShaderParam(SHADERPARM_RED, lightColor.x());
+	rLight->SetShaderParam(SHADERPARM_GREEN, lightColor.y());
+	rLight->SetShaderParam(SHADERPARM_BLUE, lightColor.z());
+	rLight->UpdateRenderLight();
 	if ( worldEntity.hModel ) {
 		if (updateAnimation) {
 			BuildAnimation(time);

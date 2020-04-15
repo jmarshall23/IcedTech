@@ -1003,7 +1003,7 @@ void Cmd_PopLight_f( const idCmdArgs &args ) {
 		if ( removeFromMap && mapEnt ) {
 			mapFile->RemoveEntity( mapEnt );
 		}
-		gameLocal.Printf( "Removing light %i\n", lastLight->GetLightDefHandle() );
+		//gameLocal.Printf( "Removing light %i\n", lastLight->GetLightDefHandle() );
 		delete lastLight;
 	} else {
 		gameLocal.Printf( "No lights to clear.\n" );

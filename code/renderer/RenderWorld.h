@@ -239,131 +239,7 @@ ID_INLINE bool renderEntity_t::HasValidJoints() const {
 
 // jmarshall end
 
-struct renderLight_t {
-	renderLight_t();
-
-	void SetLightChannel(int lightChannel, bool enabled);
-	bool HasLightChannel(int lightChannel);
-
-	const char				*name;				// for debugging.
-
-	renderClassWorldType_t	classType;
-
-	idMat3					axis;				// rotation vectors, must be unit length
-	idVec3					origin;
-
-	int						lightChannel;
-
-	int						uniqueLightId;		// light id that is unique to this light
-
-	bool					dynamicShadows;		// if this light has dynamic shadows or not.
-
-	// if non-zero, the light will not show up in the specific view,
-	// which may be used if we want to have slightly different muzzle
-	// flash lights for the player and other views
-	int						suppressLightInViewID;
-
-	// if non-zero, the light will only show up in the specific view
-	// which can allow player gun gui lights and such to not effect everyone
-	int						allowLightInViewID;
-
-	// I am sticking the four bools together so there are no unused gaps in
-	// the padded structure, which could confuse the memcmp that checks for redundant
-	// updates
-	bool					noShadows;			// (should we replace this with material parameters on the shader?)
-	bool					noSpecular;			// (should we replace this with material parameters on the shader?)
-
-	bool					pointLight;			// otherwise a projection light (should probably invert the sense of this, because points are way more common)
-	bool					parallel;			// lightCenter gives the direction to the light at infinity
-	idVec3					lightRadius;		// xyz radius for point lights
-	idVec3					lightCenter;		// offset the lighting direction for shading and
-												// shadows, relative to origin
-	bool					ambientLight;		// light is ambient only
-
-	// frustum definition for projected lights, all reletive to origin
-	// FIXME: we should probably have real plane equations here, and offer
-	// a helper function for conversion from this format
-	idVec3					target;
-	idVec3					right;
-	idVec3					up;
-	idVec3					start;
-	idVec3					end;
-
-	// Dmap will generate an optimized shadow volume named _prelight_<lightName>
-	// for the light against all the _area* models in the map.  The renderer will
-	// ignore this value if the light has been moved after initial creation
-	idRenderModel *			prelightModel;
-
-	// muzzle flash lights will not cast shadows from player and weapon world models
-	int						lightId;
-
-
-	const idMaterial *		shader;				// NULL = either lights/defaultPointLight or lights/defaultProjectedLight
-	float					shaderParms[MAX_ENTITY_SHADER_PARMS];		// can be used in any way by shader
-	idSoundEmitter *		referenceSound;		// for shader sound tables, allowing effects to vary with sounds
-};
-
-/*
-=========================
-renderLight_t::renderLight_t
-=========================
-*/
-ID_INLINE renderLight_t::renderLight_t()
-{
-	lightChannel = 0;
-	SetLightChannel(0, true);
-
-	axis.Zero();
-	origin.Zero();
-	uniqueLightId = -1;
-	suppressLightInViewID = -1;
-	allowLightInViewID = -1;
-	noShadows = false;
-	noSpecular = false;
-	pointLight = false;
-	parallel = false;
-	lightRadius.Zero();
-	lightCenter.Zero();
-	ambientLight = false;
-	target.Zero();
-	right.Zero();
-	up.Zero();
-	start.Zero();
-	end.Zero();
-	prelightModel = NULL;
-	lightId = 0;
-	shader = NULL;
-	referenceSound = NULL;
-	dynamicShadows = false;
-	name = "";
-	classType = RENDER_CLASS_WORLD;
-
-	for (int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++)
-		shaderParms[i] = 0;
-}
-
-/*
-=========================
-renderLight_t::SetLightChannel
-=========================
-*/
-ID_INLINE void renderLight_t::SetLightChannel(int lightChannel, bool enabled) {
-	if (enabled) {
-		this->lightChannel |= 1 << lightChannel;
-	}
-	else {
-		this->lightChannel &= ~(1UL << lightChannel);
-	}
-}
-
-/*
-=========================
-renderLight_t::HasLightChannel
-=========================
-*/
-ID_INLINE bool renderLight_t::HasLightChannel(int lightChannel) {
-	return (!!((this->lightChannel) & (1ULL << (lightChannel))));
-}
+#include "RenderEntity.h"
 
 struct renderView_t {
 // jmarshall
@@ -501,10 +377,8 @@ public:
 	virtual	void			FreeEntityDef( qhandle_t entityHandle ) = 0;
 	virtual const renderEntity_t *GetRenderEntity( qhandle_t entityHandle ) const = 0;
 
-	virtual	qhandle_t		AddLightDef( const renderLight_t *rlight ) = 0;
-	virtual	void			UpdateLightDef( qhandle_t lightHandle, const renderLight_t *rlight ) = 0;
-	virtual	void			FreeLightDef( qhandle_t lightHandle ) = 0;
-	virtual const renderLight_t *GetRenderLight( qhandle_t lightHandle ) const = 0;
+	virtual idRenderLight*  AllocRenderLight(void) = 0;
+	virtual void			FreeRenderLight(idRenderLight* renderLight) = 0;
 
 	// Force the generation of all light / surface interactions at the start of a level
 	// If this isn't called, they will all be dynamically generated

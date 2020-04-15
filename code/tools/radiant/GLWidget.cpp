@@ -362,7 +362,6 @@ void idGLDrawableMaterial::draw(int x, int y, int w, int h) {
 
 		if (worldDirty) {
 			InitWorld();
-			renderLight_t	parms;
 			idDict spawnArgs;
 			spawnArgs.Set("classname", "light");
 			spawnArgs.Set("name", "light_1");
@@ -370,8 +369,8 @@ void idGLDrawableMaterial::draw(int x, int y, int w, int h) {
 			idStr str;
 			sprintf(str, "%f %f %f", light, light, light);
 			spawnArgs.Set("_color", str);
-			gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &parms );
-			lightDef = world->AddLightDef( &parms );
+			renderLight = world->AllocRenderLight();
+			gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, renderLight);
 
 			idImage *img = (mat->GetNumStages() > 0) ? mat->GetStage(0)->texture.image : mat->GetEditorImage();
 
@@ -638,7 +637,6 @@ void idGLDrawableModel::draw(int x, int y, int w, int h) {
 	if (worldDirty) {
 		//InitWorld();
 		world->InitFromMap( NULL );
-		renderLight_t	parms;
 		idDict spawnArgs;
 		spawnArgs.Set("classname", "light");
 		spawnArgs.Set("name", "light_1");
@@ -646,8 +644,9 @@ void idGLDrawableModel::draw(int x, int y, int w, int h) {
 		idStr str;
 		sprintf(str, "%f %f %f", light, light, light);
 		spawnArgs.Set("_color", str);
-		gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &parms );
-		lightDef = world->AddLightDef( &parms );
+		renderLight = world->AllocRenderLight();
+		gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, renderLight);
+
 
 		renderEntity_t worldEntity;
 		memset( &worldEntity, 0, sizeof( worldEntity ) );

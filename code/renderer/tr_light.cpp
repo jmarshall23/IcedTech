@@ -635,7 +635,7 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 
 		// Check to see if this interaction has at least one channel from this light.
 		for (int i = 0; i < 32; i++) {
-			if (ldef->parms.HasLightChannel(i)) {
+			if (ldef->HasLightChannel(i)) {
 				if (edef->parms.HasLightChannel(i) || (i == LIGHT_CHANNEL_WORLD && edef->parms.hModel->IsWorldMesh())) {
 					hasLightChannel = true;
 					break;

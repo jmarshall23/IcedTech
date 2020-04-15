@@ -85,8 +85,7 @@ protected:
 	float			globalParms[MAX_GLOBAL_SHADER_PARMS];
 
 	typedef struct {
-		renderLight_t		renderLight;
-		qhandle_t			lightDefHandle;
+		idRenderLight		*renderLight;
 		idVec3				origin;
 		const idMaterial	*shader;
 		float				radius;

@@ -126,19 +126,17 @@ idWeapon::idWeapon() {
 	owner					= NULL;
 	worldModel				= NULL;
 	weaponDef				= NULL;
+//	guiLight				= NULL;
+//	muzzleFlash				= NULL;
+//	worldMuzzleFlash		= NULL;
 	isFiring = false;
 
-	memset( &guiLight, 0, sizeof( guiLight ) );
-	memset( &muzzleFlash, 0, sizeof( muzzleFlash ) );
-	memset( &worldMuzzleFlash, 0, sizeof( worldMuzzleFlash ) );
-	memset( &nozzleGlow, 0, sizeof( nozzleGlow ) );
+////	memset( &nozzleGlow, 0, sizeof( nozzleGlow ) );
 
 	muzzleFlashEnd			= 0;
 	flashColor				= vec3_origin;
-	muzzleFlashHandle		= -1;
-	worldMuzzleFlashHandle	= -1;
-	guiLightHandle			= -1;
-	nozzleGlowHandle		= -1;
+//	guiLightHandle			= -1;
+//	nozzleGlowHandle		= -1;
 	modelDefHandle			= -1;
 
 	berserk					= 2;
@@ -292,14 +290,14 @@ void idWeapon::Save( idSaveGame *savefile ) const {
 	savefile->WriteInt( brassDelay );
 	savefile->WriteString( icon );
 
-	savefile->WriteInt( guiLightHandle );
-	savefile->WriteRenderLight( guiLight );
+//	savefile->WriteInt( guiLightHandle );
+//	savefile->WriteRenderLight( guiLight );
 
-	savefile->WriteInt( muzzleFlashHandle );
-	savefile->WriteRenderLight( muzzleFlash );
+//	savefile->WriteInt( muzzleFlashHandle );
+//	savefile->WriteRenderLight( muzzleFlash );
 
-	savefile->WriteInt( worldMuzzleFlashHandle );
-	savefile->WriteRenderLight( worldMuzzleFlash );
+//	savefile->WriteInt( worldMuzzleFlashHandle );
+//	savefile->WriteRenderLight( worldMuzzleFlash );
 
 	savefile->WriteVec3( flashColor );
 	savefile->WriteInt( muzzleFlashEnd );
@@ -354,8 +352,8 @@ void idWeapon::Save( idSaveGame *savefile ) const {
 
 	savefile->WriteInt( lastAttack );
 
-	savefile->WriteInt( nozzleGlowHandle );
-	savefile->WriteRenderLight( nozzleGlow );
+//	savefile->WriteInt( nozzleGlowHandle );
+//	savefile->WriteRenderLight( nozzleGlow );
 
 	savefile->WriteVec3( nozzleGlowColor );
 	savefile->WriteMaterial( nozzleGlowShader );
@@ -440,14 +438,14 @@ void idWeapon::Restore( idRestoreGame *savefile ) {
 	savefile->ReadInt( brassDelay );
 	savefile->ReadString( icon );
 
-	savefile->ReadInt( guiLightHandle );
-	savefile->ReadRenderLight( guiLight );
+//	savefile->ReadInt( guiLightHandle );
+//	savefile->ReadRenderLight( guiLight );
 
-	savefile->ReadInt( muzzleFlashHandle );
-	savefile->ReadRenderLight( muzzleFlash );
+//	savefile->ReadInt( muzzleFlashHandle );
+//	savefile->ReadRenderLight( muzzleFlash );
 
-	savefile->ReadInt( worldMuzzleFlashHandle );
-	savefile->ReadRenderLight( worldMuzzleFlash );
+//	savefile->ReadInt( worldMuzzleFlashHandle );
+//	savefile->ReadRenderLight( worldMuzzleFlash );
 
 	savefile->ReadVec3( flashColor );
 	savefile->ReadInt( muzzleFlashEnd );
@@ -503,8 +501,8 @@ void idWeapon::Restore( idRestoreGame *savefile ) {
 
 	savefile->ReadInt( lastAttack );
 
-	savefile->ReadInt( nozzleGlowHandle );
-	savefile->ReadRenderLight( nozzleGlow );
+//	savefile->ReadInt( nozzleGlowHandle );
+//	savefile->ReadRenderLight( nozzleGlow );
 
 	savefile->ReadVec3( nozzleGlowColor );
 	savefile->ReadMaterial( nozzleGlowShader );
@@ -545,26 +543,26 @@ void idWeapon::Clear( void ) {
 	//WEAPON_RAISEWEAPON.Unlink();
 	//WEAPON_LOWERWEAPON.Unlink();
 
-	if ( muzzleFlashHandle != -1 ) {
-		gameRenderWorld->FreeLightDef( muzzleFlashHandle );
-		muzzleFlashHandle = -1;
-	}
-	if ( muzzleFlashHandle != -1 ) {
-		gameRenderWorld->FreeLightDef( muzzleFlashHandle );
-		muzzleFlashHandle = -1;
-	}
-	if ( worldMuzzleFlashHandle != -1 ) {
-		gameRenderWorld->FreeLightDef( worldMuzzleFlashHandle );
-		worldMuzzleFlashHandle = -1;
-	}
-	if ( guiLightHandle != -1 ) {
-		gameRenderWorld->FreeLightDef( guiLightHandle );
-		guiLightHandle = -1;
-	}
-	if ( nozzleGlowHandle != -1 ) {
-		gameRenderWorld->FreeLightDef( nozzleGlowHandle );
-		nozzleGlowHandle = -1;
-	}
+//	if ( muzzleFlashHandle != -1 ) {
+//		gameRenderWorld->FreeLightDef( muzzleFlashHandle );
+//		muzzleFlashHandle = -1;
+//	}
+//	if ( muzzleFlashHandle != -1 ) {
+//		gameRenderWorld->FreeLightDef( muzzleFlashHandle );
+//		muzzleFlashHandle = -1;
+//	}
+//	if ( worldMuzzleFlashHandle != -1 ) {
+//		gameRenderWorld->FreeLightDef( worldMuzzleFlashHandle );
+//		worldMuzzleFlashHandle = -1;
+//	}
+//	if ( guiLightHandle != -1 ) {
+//		gameRenderWorld->FreeLightDef( guiLightHandle );
+//		guiLightHandle = -1;
+//	}
+//	if ( nozzleGlowHandle != -1 ) {
+//		gameRenderWorld->FreeLightDef( nozzleGlowHandle );
+//		nozzleGlowHandle = -1;
+//	}
 
 	memset( &renderEntity, 0, sizeof( renderEntity ) );
 	renderEntity.entityNum	= entityNumber;
@@ -682,7 +680,7 @@ void idWeapon::Clear( void ) {
 	nozzleFx			= false;
 	nozzleFxFade		= 1500;
 	lastAttack			= 0;
-	nozzleGlowHandle	= -1;
+//	nozzleGlowHandle	= -1;
 	nozzleGlowShader	= NULL;
 	nozzleGlowRadius	= 10;
 	nozzleGlowColor.Zero();
@@ -827,13 +825,16 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 	nextStrikeFx = 0;
 
 	// setup gui light
-	memset( &guiLight, 0, sizeof( guiLight ) );
-	const char *guiLightShader = weaponDef->dict.GetString( "mtr_guiLightShader" );
-	if ( *guiLightShader != '\0' ) {
-		guiLight.shader = declManager->FindMaterial( guiLightShader, false );
-		guiLight.lightRadius[0] = guiLight.lightRadius[1] = guiLight.lightRadius[2] = 3;
-		guiLight.pointLight = true;
-	}
+	//if(guiLight == NULL) {
+	//	guiLight = gameRenderWorld->AllocRenderLight();
+	//}
+	//
+	//const char* guiLightShader = weaponDef->dict.GetString("mtr_guiLightShader");
+	//if (*guiLightShader != '\0') {
+	//	guiLight->shader = declManager->FindMaterial(guiLightShader, false);
+	//	guiLight->lightRadius[0] = guiLight->lightRadius[1] = guiLight->lightRadius[2] = 3;
+	//	guiLight->pointLight = true;
+	//}	
 
 	// setup the view model
 	vmodel = weaponDef->dict.GetString( "model_view" );
@@ -895,37 +896,36 @@ void idWeapon::GetWeaponDef( const char *objectname, int ammoinclip ) {
 	flashUp			= weaponDef->dict.GetVector( "flashUp" );
 	flashRight		= weaponDef->dict.GetVector( "flashRight" );
 
-	memset( &muzzleFlash, 0, sizeof( muzzleFlash ) );
-	muzzleFlash.lightId = LIGHTID_VIEW_MUZZLE_FLASH + owner->entityNumber;
-	muzzleFlash.allowLightInViewID = owner->entityNumber+1;
+//	muzzleFlash->lightId = LIGHTID_VIEW_MUZZLE_FLASH + owner->entityNumber;
+//	muzzleFlash->allowLightInViewID = owner->entityNumber+1;
 
 	// the weapon lights will only be in first person
-	guiLight.allowLightInViewID = owner->entityNumber+1;
-	nozzleGlow.allowLightInViewID = owner->entityNumber+1;
+//	guiLight->allowLightInViewID = owner->entityNumber+1;
+//	nozzleGlow.allowLightInViewID = owner->entityNumber+1;
 
-	muzzleFlash.pointLight								= flashPointLight;
-	muzzleFlash.shader									= flashShader;
-	muzzleFlash.shaderParms[ SHADERPARM_RED ]			= flashColor[0];
-	muzzleFlash.shaderParms[ SHADERPARM_GREEN ]			= flashColor[1];
-	muzzleFlash.shaderParms[ SHADERPARM_BLUE ]			= flashColor[2];
-	muzzleFlash.shaderParms[ SHADERPARM_TIMESCALE ]		= 1.0f;
-
-	muzzleFlash.lightRadius[0]							= flashRadius;
-	muzzleFlash.lightRadius[1]							= flashRadius;
-	muzzleFlash.lightRadius[2]							= flashRadius;
-
-	if ( !flashPointLight ) {
-		muzzleFlash.target								= flashTarget;
-		muzzleFlash.up									= flashUp;
-		muzzleFlash.right								= flashRight;
-		muzzleFlash.end									= flashTarget;
-	}
-
-	// the world muzzle flash is the same, just positioned differently
-	worldMuzzleFlash = muzzleFlash;
-	worldMuzzleFlash.suppressLightInViewID = owner->entityNumber+1;
-	worldMuzzleFlash.allowLightInViewID = 0;
-	worldMuzzleFlash.lightId = LIGHTID_WORLD_MUZZLE_FLASH + owner->entityNumber;
+//	muzzleFlash->pointLight								= flashPointLight;
+//	muzzleFlash->shader									= flashShader;
+//	muzzleFlash->shaderParms[ SHADERPARM_RED ]			= flashColor[0];
+//	muzzleFlash->shaderParms[ SHADERPARM_GREEN ]			= flashColor[1];
+//	muzzleFlash->shaderParms[ SHADERPARM_BLUE ]			= flashColor[2];
+//	muzzleFlash->shaderParms[ SHADERPARM_TIMESCALE ]		= 1.0f;
+//
+//	muzzleFlash->lightRadius[0]							= flashRadius;
+//	muzzleFlash->lightRadius[1]							= flashRadius;
+//	muzzleFlash->lightRadius[2]							= flashRadius;
+//
+//	if ( !flashPointLight ) {
+//		muzzleFlash->target								= flashTarget;
+//		muzzleFlash->up									= flashUp;
+//		muzzleFlash->right								= flashRight;
+//		muzzleFlash->end									= flashTarget;
+//	}
+//
+//	// the world muzzle flash is the same, just positioned differently
+//	worldMuzzleFlash = muzzleFlash;
+//	worldMuzzleFlash.suppressLightInViewID = owner->entityNumber+1;
+//	worldMuzzleFlash.allowLightInViewID = 0;
+//	worldMuzzleFlash.lightId = LIGHTID_WORLD_MUZZLE_FLASH + owner->entityNumber;
 
 	//-----------------------------------
 
@@ -1115,18 +1115,18 @@ idWeapon::UpdateFlashPosition
 */
 void idWeapon::UpdateFlashPosition( void ) {
 	// the flash has an explicit joint for locating it
-	GetGlobalJointTransform( true, flashJointView, muzzleFlash.origin, muzzleFlash.axis );
-
-	// if the desired point is inside or very close to a wall, back it up until it is clear
-	idVec3	start = muzzleFlash.origin - playerViewAxis[0] * 16;
-	idVec3	end = muzzleFlash.origin + playerViewAxis[0] * 8;
-	trace_t	tr;
-	gameLocal.clip.TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL, owner );
-	// be at least 8 units away from a solid
-	muzzleFlash.origin = tr.endpos - playerViewAxis[0] * 8;
-
-	// put the world muzzle flash on the end of the joint, no matter what
-	GetGlobalJointTransform( false, flashJointWorld, worldMuzzleFlash.origin, worldMuzzleFlash.axis );
+//	GetGlobalJointTransform( true, flashJointView, muzzleFlash.origin, muzzleFlash.axis );
+//
+//	// if the desired point is inside or very close to a wall, back it up until it is clear
+//	idVec3	start = muzzleFlash.origin - playerViewAxis[0] * 16;
+//	idVec3	end = muzzleFlash.origin + playerViewAxis[0] * 8;
+//	trace_t	tr;
+//	gameLocal.clip.TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL, owner );
+//	// be at least 8 units away from a solid
+//	muzzleFlash.origin = tr.endpos - playerViewAxis[0] * 8;
+//
+//	// put the world muzzle flash on the end of the joint, no matter what
+//	GetGlobalJointTransform( false, flashJointWorld, worldMuzzleFlash.origin, worldMuzzleFlash.axis );
 }
 
 /*
@@ -1135,35 +1135,7 @@ idWeapon::MuzzleFlashLight
 ================
 */
 void idWeapon::MuzzleFlashLight( void ) {
-	
-	if ( !lightOn && ( !g_muzzleFlash.GetBool() || !muzzleFlash.lightRadius[0] ) ) {
-		return;
-	}
 
-	if ( flashJointView == INVALID_JOINT ) {
-		return;
-	}
-
-	UpdateFlashPosition();
-
-	// these will be different each fire
-	muzzleFlash.shaderParms[ SHADERPARM_TIMEOFFSET ]	= -MS2SEC( gameLocal.time );
-	muzzleFlash.shaderParms[ SHADERPARM_DIVERSITY ]		= renderEntity.shaderParms[ SHADERPARM_DIVERSITY ];
-
-	worldMuzzleFlash.shaderParms[ SHADERPARM_TIMEOFFSET ]	= -MS2SEC( gameLocal.time );
-	worldMuzzleFlash.shaderParms[ SHADERPARM_DIVERSITY ]	= renderEntity.shaderParms[ SHADERPARM_DIVERSITY ];
-
-	// the light will be removed at this time
-	muzzleFlashEnd = gameLocal.time + flashTime;
-
-	if ( muzzleFlashHandle != -1 ) {
-		gameRenderWorld->UpdateLightDef( muzzleFlashHandle, &muzzleFlash );
-		gameRenderWorld->UpdateLightDef( worldMuzzleFlashHandle, &worldMuzzleFlash );
-	}
-	else {
-		muzzleFlashHandle = gameRenderWorld->AddLightDef( &muzzleFlash );
-		worldMuzzleFlashHandle = gameRenderWorld->AddLightDef( &worldMuzzleFlash );
-	}
 }
 
 /*
@@ -1583,53 +1555,7 @@ idWeapon::UpdateNozzelFx
 ================
 */
 void idWeapon::UpdateNozzleFx( void ) {
-	if ( !nozzleFx ) {
-		return;
-	}
 
-	//
-	// shader parms
-	//
-	int la = gameLocal.time - lastAttack + 1;
-	float s = 1.0f;
-	float l = 0.0f;
-	if ( la < nozzleFxFade ) {
-		s = ((float)la / nozzleFxFade);
-		l = 1.0f - s;
-	}
-	renderEntity.shaderParms[5] = s;
-	renderEntity.shaderParms[6] = l;
-
-	if ( ventLightJointView == INVALID_JOINT ) {
-		return;
-	}
-
-	//
-	// vent light
-	//
-	if ( nozzleGlowHandle == -1 ) {
-		memset(&nozzleGlow, 0, sizeof(nozzleGlow));
-		if ( owner ) {
-			nozzleGlow.allowLightInViewID = owner->entityNumber+1;
-		}
-		nozzleGlow.pointLight = true;
-		nozzleGlow.noShadows = true;
-		nozzleGlow.lightRadius.x = nozzleGlowRadius;
-		nozzleGlow.lightRadius.y = nozzleGlowRadius;
-		nozzleGlow.lightRadius.z = nozzleGlowRadius;
-		nozzleGlow.shader = nozzleGlowShader;
-		nozzleGlow.shaderParms[ SHADERPARM_TIMESCALE ]	= 1.0f;
-		nozzleGlow.shaderParms[ SHADERPARM_TIMEOFFSET ]	= -MS2SEC( gameLocal.time );
-		GetGlobalJointTransform( true, ventLightJointView, nozzleGlow.origin, nozzleGlow.axis );
-		nozzleGlowHandle = gameRenderWorld->AddLightDef(&nozzleGlow);
-	}
-
-	GetGlobalJointTransform( true, ventLightJointView, nozzleGlow.origin, nozzleGlow.axis );
-
-	nozzleGlow.shaderParms[ SHADERPARM_RED ] = nozzleGlowColor.x * s;
-	nozzleGlow.shaderParms[ SHADERPARM_GREEN ] = nozzleGlowColor.y * s;
-	nozzleGlow.shaderParms[ SHADERPARM_BLUE ] = nozzleGlowColor.z * s;
-	gameRenderWorld->UpdateLightDef(nozzleGlowHandle, &nozzleGlow);
 }
 
 
@@ -1736,45 +1662,45 @@ idWeapon::AlertMonsters
 ================
 */
 void idWeapon::AlertMonsters( void ) {
-	trace_t	tr;
-	idEntity *ent;
-	idVec3 end = muzzleFlash.origin + muzzleFlash.axis * muzzleFlash.target;
-
-	gameLocal.clip.TracePoint( tr, muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, owner );
-	if ( g_debugWeapon.GetBool() ) {
-		gameRenderWorld->DebugLine( colorYellow, muzzleFlash.origin, end, 0 );
-		gameRenderWorld->DebugArrow( colorGreen, muzzleFlash.origin, tr.endpos, 2, 0 );
-	}
-
-	if ( tr.fraction < 1.0f ) {
-		ent = gameLocal.GetTraceEntity( tr );
-		if (ent->IsType(idTrigger::Type)) {
-			ent->Signal( SIG_TOUCH );
-			ent->ProcessEvent( &EV_Touch, owner, &tr );
-		}
-	}
-
-	// jitter the trace to try to catch cases where a trace down the center doesn't hit the monster
-	end += muzzleFlash.axis * muzzleFlash.right * idMath::Sin16( MS2SEC( gameLocal.time ) * 31.34f );
-	end += muzzleFlash.axis * muzzleFlash.up * idMath::Sin16( MS2SEC( gameLocal.time ) * 12.17f );
-	gameLocal.clip.TracePoint( tr, muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, owner );
-	if ( g_debugWeapon.GetBool() ) {
-		gameRenderWorld->DebugLine( colorYellow, muzzleFlash.origin, end, 0 );
-		gameRenderWorld->DebugArrow( colorGreen, muzzleFlash.origin, tr.endpos, 2, 0 );
-	}
-
-	if ( tr.fraction < 1.0f ) {
-		ent = gameLocal.GetTraceEntity( tr );
-// jmarshall - add bot code here?
-		/*if ( ent->IsType( idAI::Type ) ) {
-			static_cast<idAI *>( ent )->TouchedByFlashlight( owner );
-		}
-		else*/ if (ent->IsType(idTrigger::Type)) {
-			ent->Signal( SIG_TOUCH );
-			ent->ProcessEvent( &EV_Touch, owner, &tr );
-		}
-// jmarshall end
-	}
+//	trace_t	tr;
+//	idEntity *ent;
+//	idVec3 end = muzzleFlash.origin + muzzleFlash.axis * muzzleFlash.target;
+//
+//	gameLocal.clip.TracePoint( tr, muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, owner );
+//	if ( g_debugWeapon.GetBool() ) {
+//		gameRenderWorld->DebugLine( colorYellow, muzzleFlash.origin, end, 0 );
+//		gameRenderWorld->DebugArrow( colorGreen, muzzleFlash.origin, tr.endpos, 2, 0 );
+//	}
+//
+//	if ( tr.fraction < 1.0f ) {
+//		ent = gameLocal.GetTraceEntity( tr );
+//		if (ent->IsType(idTrigger::Type)) {
+//			ent->Signal( SIG_TOUCH );
+//			ent->ProcessEvent( &EV_Touch, owner, &tr );
+//		}
+//	}
+//
+//	// jitter the trace to try to catch cases where a trace down the center doesn't hit the monster
+//	end += muzzleFlash.axis * muzzleFlash.right * idMath::Sin16( MS2SEC( gameLocal.time ) * 31.34f );
+//	end += muzzleFlash.axis * muzzleFlash.up * idMath::Sin16( MS2SEC( gameLocal.time ) * 12.17f );
+//	gameLocal.clip.TracePoint( tr, muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, owner );
+//	if ( g_debugWeapon.GetBool() ) {
+//		gameRenderWorld->DebugLine( colorYellow, muzzleFlash.origin, end, 0 );
+//		gameRenderWorld->DebugArrow( colorGreen, muzzleFlash.origin, tr.endpos, 2, 0 );
+//	}
+//
+//	if ( tr.fraction < 1.0f ) {
+//		ent = gameLocal.GetTraceEntity( tr );
+//// jmarshall - add bot code here?
+//		/*if ( ent->IsType( idAI::Type ) ) {
+//			static_cast<idAI *>( ent )->TouchedByFlashlight( owner );
+//		}
+//		else*/ if (ent->IsType(idTrigger::Type)) {
+//			ent->Signal( SIG_TOUCH );
+//			ent->ProcessEvent( &EV_Touch, owner, &tr );
+//		}
+//// jmarshall end
+//	}
 }
 
 /*
@@ -1890,40 +1816,35 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 	}
 
 	// remove the muzzle flash light when it's done
-	if ( ( !lightOn && ( gameLocal.time >= muzzleFlashEnd ) ) || IsHidden() ) {
-		if ( muzzleFlashHandle != -1 ) {
-			gameRenderWorld->FreeLightDef( muzzleFlashHandle );
-			muzzleFlashHandle = -1;
-		}
-		if ( worldMuzzleFlashHandle != -1 ) {
-			gameRenderWorld->FreeLightDef( worldMuzzleFlashHandle );
-			worldMuzzleFlashHandle = -1;
-		}
-	}
+	//if ( ( !lightOn && ( gameLocal.time >= muzzleFlashEnd ) ) || IsHidden() ) {
+	//	if ( muzzleFlashHandle != -1 ) {
+	//		gameRenderWorld->FreeLightDef( muzzleFlashHandle );
+	//		muzzleFlashHandle = -1;
+	//	}
+	//	if ( worldMuzzleFlashHandle != -1 ) {
+	//		gameRenderWorld->FreeLightDef( worldMuzzleFlashHandle );
+	//		worldMuzzleFlashHandle = -1;
+	//	}
+	//}
 
 	// update the muzzle flash light, so it moves with the gun
-	if ( muzzleFlashHandle != -1 ) {
-		UpdateFlashPosition();
-		gameRenderWorld->UpdateLightDef( muzzleFlashHandle, &muzzleFlash );
-		gameRenderWorld->UpdateLightDef( worldMuzzleFlashHandle, &worldMuzzleFlash );
-
-		// wake up monsters with the flashlight
-		if ( !gameLocal.isMultiplayer && lightOn && !owner->fl.notarget ) {
-			AlertMonsters();
-		}
-	}
-
-	// update the gui light
-	if ( guiLight.lightRadius[0] && guiLightJointView != INVALID_JOINT ) {
-		GetGlobalJointTransform( true, guiLightJointView, guiLight.origin, guiLight.axis );
-
-		if ( ( guiLightHandle != -1 ) ) {
-			gameRenderWorld->UpdateLightDef( guiLightHandle, &guiLight );
-		}
-		else {
-			guiLightHandle = gameRenderWorld->AddLightDef( &guiLight );
-		}
-	}
+	//if ( muzzleFlashHandle != -1 ) {
+	//	UpdateFlashPosition();
+	//	gameRenderWorld->UpdateLightDef( muzzleFlashHandle, &muzzleFlash );
+	//	gameRenderWorld->UpdateLightDef( worldMuzzleFlashHandle, &worldMuzzleFlash );
+	//
+	//	// wake up monsters with the flashlight
+	//	if ( !gameLocal.isMultiplayer && lightOn && !owner->fl.notarget ) {
+	//		AlertMonsters();
+	//	}
+	//}
+	//
+	//// update the gui light
+	//if (guiLight->lightRadius[0] && guiLightJointView != INVALID_JOINT ) {
+	//	GetGlobalJointTransform( true, guiLightJointView, guiLight->origin, guiLight->axis );
+	//
+	//	guiLight->UpdateRenderLight();
+	//}
 
 	if (idealState != WP_READY && sndHum ) {
 		StopSound( SND_CHANNEL_BODY, false );
@@ -2659,7 +2580,7 @@ void idWeapon::Event_GetLightParm( int parmnum ) {
 		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
 	}
 
-	idThread::ReturnFloat( muzzleFlash.shaderParms[ parmnum ] );
+//	idThread::ReturnFloat( muzzleFlash.shaderParms[ parmnum ] );
 }
 
 /*
@@ -2672,9 +2593,9 @@ void idWeapon::Event_SetLightParm( int parmnum, float value ) {
 		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
 	}
 
-	muzzleFlash.shaderParms[ parmnum ]		= value;
-	worldMuzzleFlash.shaderParms[ parmnum ]	= value;
-	UpdateVisuals();
+//	muzzleFlash.shaderParms[ parmnum ]		= value;
+//	worldMuzzleFlash.shaderParms[ parmnum ]	= value;
+//	UpdateVisuals();
 }
 
 /*
@@ -2683,17 +2604,17 @@ idWeapon::Event_SetLightParms
 ================
 */
 void idWeapon::Event_SetLightParms( float parm0, float parm1, float parm2, float parm3 ) {
-	muzzleFlash.shaderParms[ SHADERPARM_RED ]			= parm0;
-	muzzleFlash.shaderParms[ SHADERPARM_GREEN ]			= parm1;
-	muzzleFlash.shaderParms[ SHADERPARM_BLUE ]			= parm2;
-	muzzleFlash.shaderParms[ SHADERPARM_ALPHA ]			= parm3;
-
-	worldMuzzleFlash.shaderParms[ SHADERPARM_RED ]		= parm0;
-	worldMuzzleFlash.shaderParms[ SHADERPARM_GREEN ]	= parm1;
-	worldMuzzleFlash.shaderParms[ SHADERPARM_BLUE ]		= parm2;
-	worldMuzzleFlash.shaderParms[ SHADERPARM_ALPHA ]	= parm3;
-
-	UpdateVisuals();
+//	muzzleFlash.shaderParms[ SHADERPARM_RED ]			= parm0;
+//	muzzleFlash.shaderParms[ SHADERPARM_GREEN ]			= parm1;
+//	muzzleFlash.shaderParms[ SHADERPARM_BLUE ]			= parm2;
+//	muzzleFlash.shaderParms[ SHADERPARM_ALPHA ]			= parm3;
+//
+//	worldMuzzleFlash.shaderParms[ SHADERPARM_RED ]		= parm0;
+//	worldMuzzleFlash.shaderParms[ SHADERPARM_GREEN ]	= parm1;
+//	worldMuzzleFlash.shaderParms[ SHADERPARM_BLUE ]		= parm2;
+//	worldMuzzleFlash.shaderParms[ SHADERPARM_ALPHA ]	= parm3;
+//
+//	UpdateVisuals();
 }
 
 /*

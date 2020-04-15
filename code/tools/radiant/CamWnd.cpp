@@ -1220,9 +1220,9 @@ void CCamWnd::BuildEntityRenderState( entity_t *ent, bool update) {
 
 	// delete the existing def if we aren't creating a brand new world
 	if ( !update ) {
-		if ( ent->lightDef >= 0 ) {
-			g_qeglobals.rw->FreeLightDef( ent->lightDef );
-			ent->lightDef = -1;
+		if ( ent->renderLight != NULL ) {
+			g_qeglobals.rw->FreeRenderLight(ent->renderLight);
+			ent->renderLight = NULL;
 		}
 
 		if ( ent->modelDef >= 0 ) {
@@ -1341,21 +1341,26 @@ void CCamWnd::BuildEntityRenderState( entity_t *ent, bool update) {
 	}
 	// use the game's epair parsing code so
 	// we can use the same renderLight generation
-
-	renderLight_t	lightParms;
-
-	gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &lightParms );
-	lightParms.referenceSound = ent->soundEmitter;
-
-	if (update && ent->lightDef >= 0) {
-		g_qeglobals.rw->UpdateLightDef( ent->lightDef, &lightParms );
-	} else {
-		if (ent->lightDef >= 0) {
-			g_qeglobals.rw->FreeLightDef(ent->lightDef);
-		}
-		ent->lightDef = g_qeglobals.rw->AddLightDef( &lightParms );
+// jmarshall
+	if(ent->renderLight == NULL) {
+		ent->renderLight = g_qeglobals.rw->AllocRenderLight();
 	}
 
+	gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, ent->renderLight);
+	ent->renderLight->SetReferenceSound(ent->soundEmitter);
+	if(update) {
+		ent->renderLight->UpdateRenderLight();
+	}
+
+	//if (update && ent->lightDef >= 0) {
+	//	g_qeglobals.rw->UpdateLightDef( ent->lightDef, &lightParms );
+	//} else {
+	//	if (ent->lightDef >= 0) {
+	//		g_qeglobals.rw->FreeLightDef(ent->lightDef);
+	//	}
+	//	ent->lightDef = g_qeglobals.rw->AddLightDef( &lightParms );
+	//}
+// jmarshall end
 }
 
 void Tris_ToOBJ(const char *outFile, idTriList *tris, idMatList *mats) {
@@ -1797,8 +1802,8 @@ bool CCamWnd::UpdateRenderEntities() {
 
 	bool ret = false;
 	for ( entity_t *ent = entities.next ; ent != &entities ; ent = ent->next ) {
-		BuildEntityRenderState( ent, (ent->lightDef != -1 || ent->modelDef != -1 || ent->soundEmitter ) ? true : false );
-		if (ret == false && ent->modelDef || ent->lightDef) {
+		BuildEntityRenderState( ent, (ent->renderLight != NULL || ent->modelDef != -1 || ent->soundEmitter ) ? true : false );
+		if (ret == false && ent->modelDef || ent->renderLight != NULL) {
 			ret = true;
 		}
 	}
@@ -1815,9 +1820,9 @@ CCamWnd::FreeRendererState
 void CCamWnd::FreeRendererState() {
 
 	for ( entity_t *ent = entities.next ; ent != &entities ; ent = ent->next ) {
-		if (ent->lightDef >= 0) {
-			g_qeglobals.rw->FreeLightDef( ent->lightDef );
-			ent->lightDef = -1;
+		if (ent->renderLight != NULL) {
+			g_qeglobals.rw->FreeRenderLight( ent->renderLight);
+			ent->renderLight = NULL;
 		}
 
 		if (ent->modelDef >= 0) {
@@ -2017,7 +2022,7 @@ void CCamWnd::DrawEntityData() {
 				continue;
 			}
 
-			if ((pass == 1 && selectMode) || (entityMode && pass == 0 && brush->owner->lightDef >= 0)) {
+			if ((pass == 1 && selectMode) || (entityMode && pass == 0 && brush->owner->renderLight != NULL)) {
 				Brush_DrawXY(brush, 0, true, true);
 			}
 

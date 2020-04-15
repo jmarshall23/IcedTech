@@ -660,7 +660,7 @@ R_RenderLightFrustum
 Called by the editor and dmap to operate on light volumes
 ===============
 */
-void R_RenderLightFrustum( const renderLight_t &renderLight, idPlane lightFrustum[6] ) {
+void R_RenderLightFrustum( const idRenderLightParms&renderLight, idPlane lightFrustum[6] ) {
 	idRenderLightLocal	fakeLight;
 
 	memset( &fakeLight, 0, sizeof( fakeLight ) );
@@ -922,16 +922,19 @@ void R_ReCreateWorldReferences( void ) {
 			R_CreateEntityRefs(def);
 		}
 
-		for ( i = 0 ; i < rw->lightDefs.Num() ; i++ ) {
-			light = rw->lightDefs[i];
-			if ( !light ) {
-				continue;
-			}
-			renderLight_t parms = light->parms;
-
-			light->world->FreeLightDef( i );
-			rw->UpdateLightDef( i, &parms );
-		}
+// jmarshall - why is this needed?
+		//for ( i = 0 ; i < rw->lightDefs.Num() ; i++ ) {
+		//	light = rw->lightDefs[i];
+		//	if ( !light ) {
+		//		continue;
+		//	}			
+		//
+		//	idRenderLightParms parms = light->parms;
+		//
+		//	light->world->FreeLightDef( i );
+		//	rw->UpdateLightDef( i, &parms );
+		//}
+// jmarshall end
 	}
 }
 

@@ -521,44 +521,45 @@ void idSaveGame::WriteRenderEntity( const renderEntity_t &renderEntity ) {
 idSaveGame::WriteRenderLight
 ================
 */
-void idSaveGame::WriteRenderLight( const renderLight_t &renderLight ) {
+void idSaveGame::WriteRenderLight( const idRenderLight*renderLight ) {
 	int i;
-
-	WriteMat3( renderLight.axis );
-	WriteVec3( renderLight.origin );
-
-	WriteInt( renderLight.suppressLightInViewID );
-	WriteInt( renderLight.allowLightInViewID );
-	WriteBool( renderLight.noShadows );
-	WriteBool( renderLight.noSpecular );
-	WriteBool( renderLight.pointLight );
-	WriteBool( renderLight.parallel );
-
-	WriteVec3( renderLight.lightRadius );
-	WriteVec3( renderLight.lightCenter );
-
-	WriteVec3( renderLight.target );
-	WriteVec3( renderLight.right );
-	WriteVec3( renderLight.up );
-	WriteVec3( renderLight.start );
-	WriteVec3( renderLight.end );
-
-	// only idLight has a prelightModel and it's always based on the entityname, so we'll restore it there
-	// WriteModel( renderLight.prelightModel );
-
-	WriteInt( renderLight.lightId );
-
-	WriteMaterial( renderLight.shader );
-
-	for( i = 0; i < MAX_ENTITY_SHADER_PARMS; i++ ) {
-		WriteFloat( renderLight.shaderParms[ i ] );
-	}
-
-	if ( renderLight.referenceSound != NULL ) {
-		WriteInt( renderLight.referenceSound->Index() );
-	} else {
-		WriteInt( 0 );
-	}
+// jmarshall - fix save games!
+//	WriteMat3( renderLight->GetAxis() );
+//	WriteVec3( renderLight->GetOrigin() );
+//
+//	WriteInt( renderLight->GetSuppressLightInVewId()suppressLightInViewID );
+//	WriteInt( renderLight->allowLightInViewID );
+//	WriteBool( renderLight->noShadows );
+//	WriteBool( renderLight->noSpecular );
+//	WriteBool( renderLight->pointLight );
+//	WriteBool( renderLight->parallel );
+//
+//	WriteVec3( renderLight->lightRadius );
+//	WriteVec3( renderLight->lightCenter );
+//
+//	WriteVec3( renderLight->target );
+//	WriteVec3( renderLight->right );
+//	WriteVec3( renderLight->up );
+//	WriteVec3( renderLight->start );
+//	WriteVec3( renderLight->end );
+//
+//	// only idLight has a prelightModel and it's always based on the entityname, so we'll restore it there
+//	// WriteModel( renderLight.prelightModel );
+//
+//	WriteInt( renderLight->lightId );
+//
+//	WriteMaterial( renderLight->shader );
+//
+//	for( i = 0; i < MAX_ENTITY_SHADER_PARMS; i++ ) {
+//		WriteFloat( renderLight->shaderParms[ i ] );
+//	}
+//
+//	if ( renderLight->referenceSound != NULL ) {
+//		WriteInt( renderLight->referenceSound->Index() );
+//	} else {
+//		WriteInt( 0 );
+//	}
+// jmarshall end
 }
 
 /*
@@ -1262,43 +1263,45 @@ void idRestoreGame::ReadRenderEntity( renderEntity_t &renderEntity ) {
 idRestoreGame::ReadRenderLight
 ================
 */
-void idRestoreGame::ReadRenderLight( renderLight_t &renderLight ) {
-	int index;
-	int i;
-
-	ReadMat3( renderLight.axis );
-	ReadVec3( renderLight.origin );
-
-	ReadInt( renderLight.suppressLightInViewID );
-	ReadInt( renderLight.allowLightInViewID );
-	ReadBool( renderLight.noShadows );
-	ReadBool( renderLight.noSpecular );
-	ReadBool( renderLight.pointLight );
-	ReadBool( renderLight.parallel );
-
-	ReadVec3( renderLight.lightRadius );
-	ReadVec3( renderLight.lightCenter );
-
-	ReadVec3( renderLight.target );
-	ReadVec3( renderLight.right );
-	ReadVec3( renderLight.up );
-	ReadVec3( renderLight.start );
-	ReadVec3( renderLight.end );
-
-	// only idLight has a prelightModel and it's always based on the entityname, so we'll restore it there
-	// ReadModel( renderLight.prelightModel );
-	renderLight.prelightModel = NULL;
-
-	ReadInt( renderLight.lightId );
-
-	ReadMaterial( renderLight.shader );
-
-	for( i = 0; i < MAX_ENTITY_SHADER_PARMS; i++ ) {
-		ReadFloat( renderLight.shaderParms[ i ] );
-	}
-
-	ReadInt( index );
-	renderLight.referenceSound = gameSoundWorld->EmitterForIndex( index );
+void idRestoreGame::ReadRenderLight(idRenderLight* renderLight ) {
+// jmarshall - fix save games
+//	int index;
+//	int i;
+//
+//	ReadMat3( renderLight->axis );
+//	ReadVec3( renderLight->origin );
+//
+//	ReadInt( renderLight->suppressLightInViewID );
+//	ReadInt( renderLight->allowLightInViewID );
+//	ReadBool( renderLight->noShadows );
+//	ReadBool( renderLight->noSpecular );
+//	ReadBool( renderLight->pointLight );
+//	ReadBool( renderLight->parallel );
+//
+//	ReadVec3( renderLight->lightRadius );
+//	ReadVec3( renderLight->lightCenter );
+//
+//	ReadVec3( renderLight->target );
+//	ReadVec3( renderLight->right );
+//	ReadVec3( renderLight->up );
+//	ReadVec3( renderLight->start );
+//	ReadVec3( renderLight->end );
+//
+//	// only idLight has a prelightModel and it's always based on the entityname, so we'll restore it there
+//	// ReadModel( renderLight.prelightModel );
+//	renderLight->prelightModel = NULL;
+//
+//	ReadInt( renderLight->lightId );
+//
+//	ReadMaterial( renderLight->shader );
+//
+//	for( i = 0; i < MAX_ENTITY_SHADER_PARMS; i++ ) {
+//		ReadFloat( renderLight->shaderParms[ i ] );
+//	}
+//
+//	ReadInt( index );
+//	renderLight->referenceSound = gameSoundWorld->EmitterForIndex( index );
+// jmarshall end
 }
 
 /*

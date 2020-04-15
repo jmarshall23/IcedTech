@@ -64,7 +64,7 @@ idProjectile::idProjectile
 */
 idProjectile::idProjectile( void ) {
 	owner				= NULL;
-	lightDefHandle		= -1;
+//	lightDefHandle		= -1;
 	thrust				= 0.0f;
 	thrust_end			= 0;
 	smokeFly			= NULL;
@@ -76,8 +76,8 @@ idProjectile::idProjectile( void ) {
 	lightColor			= vec3_zero;
 	state				= SPAWNED;
 	damagePower			= 1.0f;
+	renderLight = NULL;
 	memset( &projectileFlags, 0, sizeof( projectileFlags ) );
-	memset( &renderLight, 0, sizeof( renderLight ) );
 
 	// note: for net_instanthit projectiles, we will force this back to false at spawn time
 	fl.networkSync		= true;
@@ -123,7 +123,7 @@ void idProjectile::Save( idSaveGame *savefile ) const {
 	savefile->WriteInt( thrust_end );
 
 	savefile->WriteRenderLight( renderLight );
-	savefile->WriteInt( (int)lightDefHandle );
+//	savefile->WriteInt( (int)lightDefHandle );
 	savefile->WriteVec3( lightOffset );
 	savefile->WriteInt( lightStartTime );
 	savefile->WriteInt( lightEndTime );
@@ -156,7 +156,7 @@ void idProjectile::Restore( idRestoreGame *savefile ) {
 	savefile->ReadInt( thrust_end );
 
 	savefile->ReadRenderLight( renderLight );
-	savefile->ReadInt( (int &)lightDefHandle );
+//	savefile->ReadInt( (int &)lightDefHandle );
 	savefile->ReadVec3( lightOffset );
 	savefile->ReadInt( lightStartTime );
 	savefile->ReadInt( lightEndTime );
@@ -220,19 +220,21 @@ void idProjectile::Create( idEntity *owner, const idVec3 &start, const idVec3 &d
 
 	this->owner = owner;
 
-	memset( &renderLight, 0, sizeof( renderLight ) );
+
+	renderLight = gameRenderWorld->AllocRenderLight();
 	shaderName = spawnArgs.GetString( "mtr_light_shader" );
 	if ( *(const char *)shaderName ) {
-		renderLight.shader = declManager->FindMaterial( shaderName, false );
-		renderLight.pointLight = true;
-		renderLight.lightRadius[0] =
-		renderLight.lightRadius[1] =
-		renderLight.lightRadius[2] = spawnArgs.GetFloat( "light_radius" );
-		spawnArgs.GetVector( "light_color", "1 1 1", light_color );
-		renderLight.shaderParms[0] = light_color[0];
-		renderLight.shaderParms[1] = light_color[1];
-		renderLight.shaderParms[2] = light_color[2];
-		renderLight.shaderParms[3] = 1.0f;
+		float radius = spawnArgs.GetFloat("light_radius");
+		spawnArgs.GetVector("light_color", "1 1 1", light_color);
+
+		renderLight->SetShader(declManager->FindMaterial( shaderName, false ));
+		renderLight->SetPointLight(true);
+		
+		renderLight->SetLightRadius(idVec3(radius, radius, radius));
+		renderLight->SetShaderParam(0, light_color[0]);
+		renderLight->SetShaderParam(1, light_color[1]);
+		renderLight->SetShaderParam(2, light_color[2]);
+		renderLight->SetShaderParam(3, 1.0f);
 	}
 
 	spawnArgs.GetVector( "light_offset", "0 0 0", lightOffset );
@@ -273,9 +275,9 @@ idProjectile::FreeLightDef
 =================
 */
 void idProjectile::FreeLightDef( void ) {
-	if ( lightDefHandle != -1 ) {
-		gameRenderWorld->FreeLightDef( lightDefHandle );
-		lightDefHandle = -1;
+	if (renderLight != NULL ) {
+		gameRenderWorld->FreeRenderLight( renderLight );
+		renderLight = NULL;
 	}
 }
 
@@ -468,24 +470,22 @@ void idProjectile::Think( void ) {
 	}
 
 	// add the light
-	if ( renderLight.lightRadius.x > 0.0f && g_projectileLights.GetBool() ) {
-		renderLight.origin = GetPhysics()->GetOrigin() + GetPhysics()->GetAxis() * lightOffset;
-		renderLight.axis = GetPhysics()->GetAxis();
-		if ( ( lightDefHandle != -1 ) ) {
-			if ( lightEndTime > 0 && gameLocal.time <= lightEndTime + gameLocal.GetMSec() ) {
-				idVec3 color( 0, 0, 0 );
-				if ( gameLocal.time < lightEndTime ) {
-					float frac = ( float )( gameLocal.time - lightStartTime ) / ( float )( lightEndTime - lightStartTime );
-					color.Lerp( lightColor, color, frac );
-				} 
-				renderLight.shaderParms[SHADERPARM_RED] = color.x;
-				renderLight.shaderParms[SHADERPARM_GREEN] = color.y;
-				renderLight.shaderParms[SHADERPARM_BLUE] = color.z;
-			} 
-			gameRenderWorld->UpdateLightDef( lightDefHandle, &renderLight );
-		} else {
-			lightDefHandle = gameRenderWorld->AddLightDef( &renderLight );
-		}
+	if (renderLight && renderLight->GetLightRadius().x > 0.0f && g_projectileLights.GetBool() ) {
+		renderLight->SetOrigin(GetPhysics()->GetOrigin() + GetPhysics()->GetAxis() * lightOffset);
+		renderLight->SetAxis(GetPhysics()->GetAxis());
+		//if ( ( lightDefHandle != -1 ) ) {
+		//	if ( lightEndTime > 0 && gameLocal.time <= lightEndTime + gameLocal.GetMSec() ) {
+		//		idVec3 color( 0, 0, 0 );
+		//		if ( gameLocal.time < lightEndTime ) {
+		//			float frac = ( float )( gameLocal.time - lightStartTime ) / ( float )( lightEndTime - lightStartTime );
+		//			color.Lerp( lightColor, color, frac );
+		//		} 
+		//		renderLight->SetShaderParam(SHADERPARM_RED, color.x);
+		//		renderLight->SetShaderParam(SHADERPARM_GREEN, color.y);
+		//		renderLight->SetShaderParam(SHADERPARM_BLUE, color.z);
+		//	} 
+		//	renderLight->UpdateRenderLight();
+		//}
 	}
 }
 
@@ -872,24 +872,24 @@ void idProjectile::Explode( const trace_t &collision, idEntity *ignore ) {
 	}
 
 	// explosion light
-	light_shader = spawnArgs.GetString( "mtr_explode_light_shader" );
-	if ( *light_shader ) {
-		renderLight.shader = declManager->FindMaterial( light_shader, false );
-		renderLight.pointLight = true;
-		renderLight.lightRadius[0] =
-		renderLight.lightRadius[1] =
-		renderLight.lightRadius[2] = spawnArgs.GetFloat( "explode_light_radius" );
-		spawnArgs.GetVector( "explode_light_color", "1 1 1", lightColor );
-		renderLight.shaderParms[SHADERPARM_RED] = lightColor.x;
-		renderLight.shaderParms[SHADERPARM_GREEN] = lightColor.y;
-		renderLight.shaderParms[SHADERPARM_BLUE] = lightColor.z;
-		renderLight.shaderParms[SHADERPARM_ALPHA] = 1.0f;
-		renderLight.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC( gameLocal.time );
-		light_fadetime = spawnArgs.GetFloat( "explode_light_fadetime", "0.5" );
-		lightStartTime = gameLocal.time;
-		lightEndTime = gameLocal.time + SEC2MS( light_fadetime );
-		BecomeActive( TH_THINK );
-	}
+	//light_shader = spawnArgs.GetString( "mtr_explode_light_shader" );
+	//if ( *light_shader ) {
+	//	renderLight.shader = declManager->FindMaterial( light_shader, false );
+	//	renderLight.pointLight = true;
+	//	renderLight.lightRadius[0] =
+	//	renderLight.lightRadius[1] =
+	//	renderLight.lightRadius[2] = spawnArgs.GetFloat( "explode_light_radius" );
+	//	spawnArgs.GetVector( "explode_light_color", "1 1 1", lightColor );
+	//	renderLight.shaderParms[SHADERPARM_RED] = lightColor.x;
+	//	renderLight.shaderParms[SHADERPARM_GREEN] = lightColor.y;
+	//	renderLight.shaderParms[SHADERPARM_BLUE] = lightColor.z;
+	//	renderLight.shaderParms[SHADERPARM_ALPHA] = 1.0f;
+	//	renderLight.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC( gameLocal.time );
+	//	light_fadetime = spawnArgs.GetFloat( "explode_light_fadetime", "0.5" );
+	//	lightStartTime = gameLocal.time;
+	//	lightEndTime = gameLocal.time + SEC2MS( light_fadetime );
+	//	BecomeActive( TH_THINK );
+	//}
 
 	fl.takedamage = false;
 	physicsObj.SetContents( 0 );

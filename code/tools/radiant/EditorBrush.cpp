@@ -3609,11 +3609,11 @@ void DrawProjectedLight(brush_t *b, bool bSelected, bool texture) {
 	// we can use the same renderLight generation
 	entity_t *ent = b->owner;
 	idDict	spawnArgs;
-	renderLight_t	parms;
+	idRenderLightLocal fakeRenderLight;
 
 	spawnArgs = ent->epairs;
-	gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &parms );
-	R_RenderLightFrustum( parms, planes );
+	gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &fakeRenderLight);
+	R_RenderLightFrustum(fakeRenderLight.parms, planes );
 
 	tri = R_PolytopeSurface(6, planes, NULL);
 

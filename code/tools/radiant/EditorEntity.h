@@ -35,7 +35,7 @@ typedef struct entity_s {
 	brush_t		brushes;					// head/tail of list
 	int			undoId, redoId, entityId;	// used for undo/redo
 	idVec3		origin;
-	qhandle_t	lightDef;
+	idRenderLight* renderLight;
 	qhandle_t	modelDef;
 	idSoundEmitter *soundEmitter;
 	eclass_t *	eclass;

@@ -339,147 +339,48 @@ const renderEntity_t *idRenderWorldLocal::GetRenderEntity( qhandle_t entityHandl
 }
 
 /*
-==================
-AddLightDef
-==================
+===========================
+idRenderWorldLocal::AllocRenderLight
+===========================
 */
-qhandle_t idRenderWorldLocal::AddLightDef( const renderLight_t *rlight ) {
+idRenderLight* idRenderWorldLocal::AllocRenderLight(void) {
 	// try and reuse a free spot
 	int lightHandle = lightDefs.FindNull();
 
-	if ( lightHandle == -1 ) {
-		lightHandle = lightDefs.Append( NULL );
-		if ( interactionTable && lightDefs.Num() > interactionTableHeight ) {
+	if (lightHandle == -1) {
+		lightHandle = lightDefs.Append(NULL);
+		if (interactionTable && lightDefs.Num() > interactionTableHeight) {
 			ResizeInteractionTable();
 		}
-	}
-	UpdateLightDef( lightHandle, rlight );
+	}	
 
-	return lightHandle;
+	// create a new one
+	idRenderLightLocal * renderLight = new idRenderLightLocal;
+	lightDefs[lightHandle] = renderLight;
+
+	renderLight->world = this;
+	renderLight->index = lightHandle;
+
+	return renderLight;
 }
 
 /*
-=================
-UpdateLightDef
-
-The generation of all the derived interaction data will
-usually be deferred until it is visible in a scene
-
-Does not write to the demo file, which will only be done for visible lights
-=================
+===========================
+idRenderWorldLocal::FreeRenderLight
+===========================
 */
-void idRenderWorldLocal::UpdateLightDef( qhandle_t lightHandle, const renderLight_t *rlight ) {
-	if ( r_skipUpdates.GetBool() ) {
-		return;
+void idRenderWorldLocal::FreeRenderLight(idRenderLight* renderLight) {
+	idRenderLightLocal* rlight = (idRenderLightLocal*)renderLight;
+	int lightHandle = rlight->index;
+
+	R_FreeLightDefDerivedData(rlight);
+
+	if (session->writeDemo && rlight->archived) {
+		WriteFreeLight(lightHandle);
 	}
 
-	tr.pc.c_lightUpdates++;
-
-	// create new slots if needed
-	if ( lightHandle < 0 || lightHandle > LUDICROUS_INDEX ) {
-		common->Error( "idRenderWorld::UpdateLightDef: index = %i", lightHandle );
-	}
-	while ( lightHandle >= lightDefs.Num() ) {
-		lightDefs.Append( NULL );
-	}
-
-	bool justUpdate = false;
-	idRenderLightLocal *light = lightDefs[lightHandle];
-	if ( light ) {
-		// if the shape of the light stays the same, we don't need to dump
-		// any of our derived data, because shader parms are calculated every frame
-		if ( rlight->axis == light->parms.axis && rlight->end == light->parms.end &&
-			 rlight->lightCenter == light->parms.lightCenter && rlight->lightRadius == light->parms.lightRadius &&
-			 rlight->noShadows == light->parms.noShadows && rlight->origin == light->parms.origin &&
-			 rlight->parallel == light->parms.parallel && rlight->pointLight == light->parms.pointLight &&
-			 rlight->right == light->parms.right && rlight->start == light->parms.start &&
-			 rlight->target == light->parms.target && rlight->up == light->parms.up && 
-			 rlight->shader == light->lightShader && rlight->prelightModel == light->parms.prelightModel ) {
-			justUpdate = true;
-		} else {
-			// if we are updating shadows, the prelight model is no longer valid
-			light->lightHasMoved = true;
-			R_FreeLightDefDerivedData( light );
-		}
-	} else {
-		// create a new one
-		light = new idRenderLightLocal;
-		lightDefs[lightHandle] = light;
-
-		light->world = this;
-		light->index = lightHandle;
-	}
-
-	light->parms = *rlight;
-	light->lastModifiedFrameNum = tr.frameCount;
-	if ( session->writeDemo && light->archived ) {
-		WriteFreeLight( lightHandle );
-		light->archived = false;
-	}
-
-	if ( light->lightHasMoved ) {
-		light->parms.prelightModel = NULL;
-	}
-
-	if (!justUpdate) {
-		R_DeriveLightData( light );
-		R_CreateLightRefs( light );
-		R_CreateLightDefFogPortals( light );
-	}
-}
-
-/*
-====================
-FreeLightDef
-
-Frees all references and lit surfaces from the light, and
-NULL's out it's entry in the world list
-====================
-*/
-void idRenderWorldLocal::FreeLightDef( qhandle_t lightHandle ) {
-	idRenderLightLocal	*light;
-
-	if ( lightHandle < 0 || lightHandle >= lightDefs.Num() ) {
-		common->Printf( "idRenderWorld::FreeLightDef: invalid handle %i [0, %i]\n", lightHandle, lightDefs.Num() );
-		return;
-	}
-
-	light = lightDefs[lightHandle];
-	if ( !light ) {
-		common->Printf( "idRenderWorld::FreeLightDef: handle %i is NULL\n", lightHandle );
-		return;
-	}
-
-	R_FreeLightDefDerivedData( light );
-
-	if ( session->writeDemo && light->archived ) {
-		WriteFreeLight( lightHandle );
-	}
-
-	delete light;
+	delete rlight;
 	lightDefs[lightHandle] = NULL;
-}
-
-/*
-==================
-GetRenderLight
-==================
-*/
-const renderLight_t *idRenderWorldLocal::GetRenderLight( qhandle_t lightHandle ) const {
-	idRenderLightLocal *def;
-
-	if ( lightHandle < 0 || lightHandle >= lightDefs.Num() ) {
-		common->Printf( "idRenderWorld::GetRenderLight: handle %i > %i\n", lightHandle, lightDefs.Num() );
-		return NULL;
-	}
-
-	def = lightDefs[lightHandle];
-	if ( !def ) {
-		common->Printf( "idRenderWorld::GetRenderLight: handle %i is NULL\n", lightHandle );
-		return NULL;
-	}
-
-	return &def->parms;
 }
 
 /*

@@ -52,10 +52,8 @@ public:
 	virtual	void			FreeEntityDef( qhandle_t entityHandle );
 	virtual const renderEntity_t *GetRenderEntity( qhandle_t entityHandle ) const;
 
-	virtual	qhandle_t		AddLightDef( const renderLight_t *rlight );
-	virtual	void			UpdateLightDef( qhandle_t lightHandle, const renderLight_t *rlight );
-	virtual	void			FreeLightDef( qhandle_t lightHandle );
-	virtual const renderLight_t *GetRenderLight( qhandle_t lightHandle ) const;
+	virtual idRenderLight* AllocRenderLight(void);
+	virtual void			FreeRenderLight(idRenderLight* renderLight);
 
 	virtual bool			CheckAreaForPortalSky( int areaNum );
 
@@ -166,7 +164,7 @@ public:
 	void					WriteVisibleDefs( const viewDef_t *viewDef );
 	void					WriteFreeLight( qhandle_t handle );
 	void					WriteFreeEntity( qhandle_t handle );
-	void					WriteRenderLight( qhandle_t handle, const renderLight_t *light );
+	void					WriteRenderLight( qhandle_t handle, const idRenderLightParms *light );
 	void					WriteRenderEntity( qhandle_t handle, const renderEntity_t *ent );
 	void					ReadRenderEntity();
 	void					ReadRenderLight();

@@ -81,7 +81,7 @@ protected:
 	idRenderWorld *world;
 	idRenderModel *worldModel;
 	qhandle_t	worldModelDef;
-	qhandle_t	lightDef;
+	idRenderLight* renderLight;
 	qhandle_t   modelDef;
 };
 

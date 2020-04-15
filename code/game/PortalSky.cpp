@@ -60,9 +60,9 @@ void rvmPortalSky::LoadPortalSkyMap(const char* name) {
 			portalSkyEntity.renderEntityWorldId = gameRenderWorld->AddEntityDef(&portalSkyEntity.renderEntity);
 		}
 		else if(classname == "light") {
-			gameEdit->ParseSpawnArgsToRenderLight(&entity->epairs, &portalSkyEntity.renderLight);
-			portalSkyEntity.renderLight.classType = RENDER_CLASS_SKYPORTAL;
-			portalSkyEntity.renderLightWorldId = gameRenderWorld->AddLightDef(&portalSkyEntity.renderLight);
+			//gameEdit->ParseSpawnArgsToRenderLight(&entity->epairs, &portalSkyEntity.renderLight);
+			//portalSkyEntity.renderLight.classType = RENDER_CLASS_SKYPORTAL;
+			//portalSkyEntity.renderLightWorldId = gameRenderWorld->AddLightDef(&portalSkyEntity.renderLight);
 		}
 		else {
 			common->Warning("Unknown portal sky entity class %s\n", classname.c_str());

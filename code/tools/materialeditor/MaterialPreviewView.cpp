@@ -371,14 +371,15 @@ void idGLDrawableView::addLight( void ) {
 	spawnArgs.Set( "texture", "lights/defaultPointLight" );
 	sprintf( str, "%f %f %f", 1.f, 1.f, 1.f );
 	spawnArgs.Set( "_color", str );
-	gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &viewLight.renderLight );
 
-	viewLight.lightDefHandle = world->AddLightDef( &viewLight.renderLight );
-	viewLight.origin = viewLight.renderLight.origin;
+	viewLight.renderLight = world->AllocRenderLight();
+	gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, viewLight.renderLight );
+
+	viewLight.origin = viewLight.renderLight->GetOrigin();
 	viewLight.shader = declManager->FindMaterial( "lights/defaultPointLight", false );
-	viewLight.color.x = viewLight.renderLight.shaderParms[ SHADERPARM_RED ];
-	viewLight.color.y = viewLight.renderLight.shaderParms[ SHADERPARM_GREEN ];
-	viewLight.color.z = viewLight.renderLight.shaderParms[ SHADERPARM_BLUE ];
+	viewLight.color.x = viewLight.renderLight->GetShaderParam(SHADERPARM_RED);
+	viewLight.color.y = viewLight.renderLight->GetShaderParam(SHADERPARM_GREEN);
+	viewLight.color.z = viewLight.renderLight->GetShaderParam(SHADERPARM_BLUE);
 	viewLight.radius = 300.f;
 	viewLight.allowMove = true;
 
@@ -388,7 +389,7 @@ void idGLDrawableView::addLight( void ) {
 
 void idGLDrawableView::deleteLight( const int lightId ) {
 	if ( lightId < viewLights.Num() ) {
-		world->FreeLightDef( viewLights[lightId].lightDefHandle );
+		world->FreeRenderLight( viewLights[lightId].renderLight );
 
 		viewLights.RemoveIndex( lightId );
 	}
@@ -463,18 +464,16 @@ void idGLDrawableView::UpdateLights( void ) {
 	for ( i = 0; i < viewLights.Num(); i++ ) {
 		lightInfo_t	*vLight = &viewLights[i];
 
-		vLight->renderLight.shader = vLight->shader;
+		vLight->renderLight->SetShader(vLight->shader);
 
-		vLight->renderLight.shaderParms[ SHADERPARM_RED ] = vLight->color.x;
-		vLight->renderLight.shaderParms[ SHADERPARM_GREEN ] = vLight->color.y;
-		vLight->renderLight.shaderParms[ SHADERPARM_BLUE ] = vLight->color.z;
+		vLight->renderLight->SetShaderParam(SHADERPARM_RED, vLight->color.x);
+		vLight->renderLight->SetShaderParam(SHADERPARM_GREEN, vLight->color.y);
+		vLight->renderLight->SetShaderParam(SHADERPARM_BLUE, vLight->color.z);
 
-		vLight->renderLight.lightRadius[0] = vLight->renderLight.lightRadius[1] =
-		vLight->renderLight.lightRadius[2] = vLight->radius;
-
-		vLight->renderLight.origin = vLight->origin;
-
-		world->UpdateLightDef( vLight->lightDefHandle, &vLight->renderLight );
+		vLight->renderLight->SetLightRadius(idVec3(vLight->radius, vLight->radius, vLight->radius));
+		vLight->renderLight->SetOrigin(vLight->origin);
+		
+		vLight->renderLight->UpdateRenderLight();
 	}
 }
 
@@ -490,9 +489,9 @@ void idGLDrawableView::drawLights( renderView_t *refdef ) {
 		lColor.z = vLight->color.z;
 		lColor.w = 1.f;
 
-		idSphere sphere(vLight->renderLight.origin, 4);
+		idSphere sphere(vLight->renderLight->GetOrigin(), 4);
 		session->rw->DebugSphere( lColor, sphere, 0, true );
-		session->rw->DrawText( va( "%d", i+1 ), vLight->renderLight.origin + idVec3(0,0,5), 0.25f, idVec4(1,1,0,1), refdef->viewaxis, 1, 0, true );
+		session->rw->DrawText( va( "%d", i+1 ), vLight->renderLight->GetOrigin() + idVec3(0,0,5), 0.25f, idVec4(1,1,0,1), refdef->viewaxis, 1, 0, true );
 	}
 }
 
