@@ -499,10 +499,6 @@ void idSoundEmitterLocal::Update( int currentTime ) {
 	if ( s_singleEmitter.GetInteger() > 0 && s_singleEmitter.GetInteger() != index ) {
 		return;
 	}
-	if ( soundWorld->listener.area == -1 ) {
-		// listener is outside the world
-		return;
-	}
 	if ( soundSystemLocal.muted || soundWorld != soundSystemLocal.currentSoundWorld ) {
 		return;
 	}
@@ -536,7 +532,7 @@ void idSoundEmitterLocal::Update( int currentTime ) {
 			} else {
 				lastValidPortalArea = soundInArea;
 			}
-			if ( soundInArea != -1 && soundInArea != soundWorld->listener.area ) {
+			{
 				spatializedDistance = maxDistance * METERS_TO_DOOM;
 				soundWorld->ResolveOrigin( 0, NULL, soundInArea, 0.0f, origin, this );
 				spatializedDistance *= DOOM_TO_METERS;

@@ -62,7 +62,6 @@ idSoundWorldLocal::idSoundWorldLocal() {
 	listener.axis.Identity();
 	listener.pos.Zero();
 	listener.id = -1;
-	listener.area = 0;
 
 	shakeAmp = 0.0f;
 	currentCushionDB = DB_SILENCE;
@@ -172,12 +171,6 @@ void idSoundWorldLocal::PlaceListener( const idVec3 & origin, const idMat3 & axi
 	listener.axis = axis;
 	listener.pos = origin;
 	listener.id = id;
-
-	if ( renderWorld ) {
-		listener.area = renderWorld->PointInArea( origin );	// where are we?
-	} else {
-		listener.area = 0;
-	}
 }
 
 /*
@@ -694,92 +687,10 @@ void idSoundWorldLocal::ResolveOrigin( const int stackDepth, const soundPortalTr
 		return;
 	}
 
-	if ( soundArea == listener.area ) {
-		float fullDist = dist + (soundOrigin - listener.pos).LengthFast();
-		if ( fullDist < def->spatializedDistance ) {
-			def->spatializedDistance = fullDist;
-			def->spatializedOrigin = soundOrigin;
-		}
-		return;
-	}
-
-	if ( stackDepth == MAX_PORTAL_TRACE_DEPTH ) {
-		// don't spend too much time doing these calculations in big maps
-		return;
-	}
-
-	soundPortalTrace_t newStack;
-	newStack.portalArea = soundArea;
-	newStack.prevStack = prevStack;
-
-	int numPortals = renderWorld->NumPortalsInArea( soundArea );
-	for( int p = 0; p < numPortals; p++ ) {
-		exitPortal_t re = renderWorld->GetPortal( soundArea, p );
-
-		float occlusionDistance = 0;
-
-		// air blocking windows will block sound like closed doors
-		if ( (re.blockingBits & ( PS_BLOCK_VIEW | PS_BLOCK_AIR ) ) ) {
-			// we could just completely cut sound off, but reducing the volume works better
-			// continue;
-			occlusionDistance = s_doorDistanceAdd.GetFloat();
-		}
-
-		// what area are we about to go look at
-		int otherArea = re.areas[0];
-		if ( re.areas[0] == soundArea ) {
-			otherArea = re.areas[1];
-		}
-
-		// if this area is already in our portal chain, don't bother looking into it
-		const soundPortalTrace_t *prev;
-		for ( prev = prevStack ; prev ; prev = prev->prevStack ) {
-			if ( prev->portalArea == otherArea ) {
-				break;
-			}
-		}
-		if ( prev ) {
-			continue;
-		}
-
-		// pick a point on the portal to serve as our virtual sound origin
-		idVec3	source;
-
-		idPlane	pl;
-		re.w->GetPlane( pl );
-
-		float	scale;
-		idVec3	dir = listener.pos - soundOrigin;
-		if ( !pl.RayIntersection( soundOrigin, dir, scale ) ) {
-			source = re.w->GetCenter();
-		} else {
-			source = soundOrigin + scale * dir;
-
-			// if this point isn't inside the portal edges, slide it in
-			for ( int i = 0 ; i < re.w->GetNumPoints() ; i++ ) {
-				int j = ( i + 1 ) % re.w->GetNumPoints();
-				idVec3	edgeDir = (*(re.w))[j].ToVec3() - (*(re.w))[i].ToVec3();
-				idVec3	edgeNormal;
-
-				edgeNormal.Cross( pl.Normal(), edgeDir );
-
-				idVec3	fromVert = source - (*(re.w))[j].ToVec3();
-
-				float d = edgeNormal * fromVert;
-				if ( d > 0 ) {
-					// move it in
-					float div = edgeNormal.Normalize();
-					d /= div;
-
-					source -= d * edgeNormal;
-				}
-			}
-		}
-
-		idVec3 tlen = source - soundOrigin;
-		float tlenLength = tlen.LengthFast();
-
-		ResolveOrigin( stackDepth+1, &newStack, otherArea, dist+tlenLength+occlusionDistance, source, def );
+	float fullDist = dist + (soundOrigin - listener.pos).LengthFast();
+	if (fullDist < def->spatializedDistance) {
+		def->spatializedDistance = fullDist;
+		def->spatializedOrigin = soundOrigin;
 	}
 }
 
@@ -987,7 +898,7 @@ void idSoundWorldLocal::WriteToSaveGame( idFile * savefile ) {
 	savefile->WriteMat3( listener.axis );
 	savefile->WriteVec3( listener.pos );
 	savefile->WriteInt( listener.id );
-	savefile->WriteInt( listener.area );
+//	savefile->WriteInt( listener.area );
 
 	savefile->WriteFloat( shakeAmp );
 
@@ -1066,7 +977,7 @@ void idSoundWorldLocal::ReadFromSaveGame( idFile * savefile ) {
 	savefile->ReadMat3( listener.axis );
 	savefile->ReadVec3( listener.pos );
 	savefile->ReadInt( listener.id );
-	savefile->ReadInt( listener.area );
+//	savefile->ReadInt( listener.area );
 
 	savefile->ReadFloat( shakeAmp );
 

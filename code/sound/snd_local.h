@@ -116,7 +116,6 @@ struct listener_t {
 	idMat3	axis;		// orientation of the listener
 	idVec3	pos;		// position in meters
 	int		id;			// the entity number, used to detect when a sound is local
-	int		area;		// area number the listener is in
 };
 
 class idSoundFade {

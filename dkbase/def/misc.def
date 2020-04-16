@@ -84,6 +84,7 @@ entityDef speaker {
 	"editor_var random"				"wait variance."
 	
 	"spawnclass"					"idSound"
+	"s_shader"						"notset"
 }
 
 entityDef info_location {

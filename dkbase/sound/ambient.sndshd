@@ -1,0 +1,8 @@
+ambient_wind {
+	minDistance 5
+	maxDistance 100
+	volume 2
+	looping
+
+	sound/ambient/wind.wav
+}
