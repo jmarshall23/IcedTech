@@ -20,6 +20,9 @@ public:
 	virtual bool			HasLightChannel(int lightChannel) = 0;
 	virtual void			ClearLightChannel(void) = 0;
 
+	virtual bool			IsEnabled(void) = 0;
+	virtual void			SetEnabled(bool isEnabled) = 0;
+
 	virtual void			SetName(const char* name) = 0;
 	virtual const char*		GetName(void) = 0;
 

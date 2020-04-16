@@ -91,7 +91,7 @@ idItem::~idItem() {
 	}
 
 	if (itemLightRig1) {
-		itemLightRig1->PostEventMS(&EV_Remove, 0);
+		gameRenderWorld->FreeRenderLight(itemLightRig1);
 		itemLightRig1 = NULL;
 	}
 }
@@ -230,18 +230,19 @@ void idItem::Think( void ) {
 			idVec3		org;
 
 			ang.pitch = ang.roll = 0.0f;
-			ang.yaw = ( gameLocal.time & 4095 ) * 360.0f / -4096.0f;
-			SetAngles( ang );
+			ang.yaw = (gameLocal.time & 4095) * 360.0f / -4096.0f;
+			SetAngles(ang);
 
 			float scale = 0.005f + entityNumber * 0.00001f;
-			
+
 			org = orgOrigin;
-			org.z += 4.0f + cos( ( gameLocal.time + 2000 ) * scale ) * 4.0f;
-			SetOrigin( org );
+			org.z += 4.0f + cos((gameLocal.time + 2000) * scale) * 4.0f;
+			SetOrigin(org);
 		}
 	}
 
 	itemLightRig1->SetOrigin(renderEntity->GetOrigin());
+	itemLightRig1->UpdateRenderLight();
 
 	Present();
 }
@@ -297,7 +298,7 @@ void idItem::Spawn( void ) {
 	modelindex = gameLocal.GetBotItemEntry(spawnArgs.GetString("modelindex"));
 // jmarshall end
 
-
+	
 	// Create the lighting rigs.
 	idDict itemLightRigDef;
 
@@ -309,12 +310,13 @@ void idItem::Spawn( void ) {
 	itemLightRigDef.Set("nodiffuse", "0");
 	itemLightRigDef.Set("falloff", "0");
 	itemLightRigDef.Set("ambient", "0");
-	itemLightRigDef.Set("litchannel", va("%d", LIGHT_CHANNEL_LIGHTRIG_ITEMS));
-	itemLightRigDef.Set("_color", "0.375 0.375 0.375");
+	//itemLightRigDef.Set("litchannel", va("%d", LIGHT_CHANNEL_LIGHTRIG_ITEMS));
+	itemLightRigDef.Set("_color", "0.5 0.5 0.5");
 	itemLightRigDef.Set("light_radius", "200 200 200");
 
-	if (!gameLocal.SpawnEntityDef(itemLightRigDef, (idEntity**)&itemLightRig1, true))
-		gameLocal.Error("Failed to spawn weapon light rig!");
+	itemLightRig1 = gameRenderWorld->AllocRenderLight();
+
+	gameEdit->ParseSpawnArgsToRenderLight(&itemLightRigDef, itemLightRig1);
 
 	renderEntity->SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_ITEMS, true);
 
@@ -407,6 +409,8 @@ bool idItem::Pickup( idPlayer *player ) {
 
 	// hide the model
 	Hide();
+
+	itemLightRig1->SetEnabled(false);
 
 	// add the highlight shell
 	if (shellRenderEntity != NULL) {
@@ -582,6 +586,7 @@ void idItem::Event_Respawn( void ) {
 	{
 		shellRenderEntity->SetHidden(false);
 	}
+	itemLightRig1->SetEnabled(true);
 	inViewTime = -1000;
 	lastCycle = -1;
 	GetPhysics()->SetContents( CONTENTS_TRIGGER );
@@ -1055,7 +1060,7 @@ void idMoveableItem::Think( void ) {
 		//	smokeTime = 0;
 		//	BecomeInactive( TH_UPDATEPARTICLES );
 		//}
-	}
+	}	
 
 	Present();
 }

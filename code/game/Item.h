@@ -79,7 +79,7 @@ private:
 	bool					canPickUp;
 // jmarshall
 	int						modelindex;
-	idLight*				itemLightRig1;
+	idRenderLight*			itemLightRig1;
 // jmarshall end
 
 	// for item pulse effect

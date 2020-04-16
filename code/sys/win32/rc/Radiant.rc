@@ -1846,13 +1846,13 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "id Software"
-            VALUE "FileDescription", "DOOM 3"
+            VALUE "CompanyName", "Real VectorMath Studios"
+            VALUE "FileDescription", "Darklight Arena"
             VALUE "FileVersion", "1, 0, 0, 1"
-            VALUE "InternalName", "DOOM 3"
-            VALUE "LegalCopyright", "Copyright (C) 2004 id Software"
-            VALUE "OriginalFilename", "Doom.EXE"
-            VALUE "ProductName", "DOOM 3"
+            VALUE "InternalName", "Darklight Arena"
+            VALUE "LegalCopyright", "Copyright (C) Real VectorMath Studios"
+            VALUE "OriginalFilename", "Darklight.exe"
+            VALUE "ProductName", "Darklight Arena"
             VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
@@ -2233,7 +2233,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "Doom 3"
+    IDR_MAINFRAME           "Darklight Arena"
     IDR_RADIANTYPE          "\nRadian\nRadian\n\n\nRadiant.Document\nRadian Document"
     IDR_SHADERTYPE          "\nUntitled\nSHADER Document\nShader Files (*.shader)\n.shader\nShaderFileType\nSHADER File Type\nSHADER\nShader Files\n"
 END

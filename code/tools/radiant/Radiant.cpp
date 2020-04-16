@@ -1060,7 +1060,7 @@ void Sys_UpdateStatusBar( void )
 void Sys_Status(const char *psz, int part )
 {
 	if ( part < 0 ) {
-		common->Printf("%s", psz);
+		//common->Printf("%s", psz);
 		part = 0;
 	}
 	g_pParentWnd->SetStatusText(part, psz);

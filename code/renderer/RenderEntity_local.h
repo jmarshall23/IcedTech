@@ -9,6 +9,8 @@ struct idRenderLightParms {
 
 	idStr name;	
 
+	bool					isEnabled;
+
 	renderClassWorldType_t	classType;
 
 	idMat3					axis;				// rotation vectors, must be unit length
@@ -80,6 +82,9 @@ public:
 public:
 	virtual void			SetName(const char* name) { parms.name = name; }
 	virtual const char*		GetName(void) { return parms.name.c_str(); }
+
+	virtual bool			IsEnabled(void) { return parms.isEnabled; }
+	virtual void			SetEnabled(bool isEnabled) { parms.isEnabled = isEnabled; parmsDirty = true; }
 
 	virtual idMat3			GetAxis(void) { return parms.axis; }
 	virtual void			SetAxis(idMat3 axis) {

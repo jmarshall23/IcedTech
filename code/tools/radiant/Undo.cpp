@@ -266,7 +266,7 @@ void Undo_GeneralStart(char *operation)
 	{
 		if (!g_lastundo->done)
 		{
-			common->Printf("Undo_Start: WARNING last undo not finished.\n");
+	//		common->Printf("Undo_Start: WARNING last undo not finished.\n");
 		}
 	}
 

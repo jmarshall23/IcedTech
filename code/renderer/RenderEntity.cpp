@@ -201,6 +201,7 @@ idRenderLightParms::idRenderLightParms()
 	axis.Zero();
 	origin.Zero();
 	uniqueLightId = -1;
+	isEnabled = true;
 	suppressLightInViewID = -1;
 	allowLightInViewID = -1;
 	noShadows = false;
@@ -243,6 +244,7 @@ idRenderLightLocal::idRenderLightLocal() {
 	SetLightChannel(0, true);
 
 	parmsDirty = true;
+	parms.isEnabled = true;
 
 	lightHasMoved			= false;
 	world					= NULL;

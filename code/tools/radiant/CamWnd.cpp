@@ -1336,9 +1336,11 @@ void CCamWnd::BuildEntityRenderState( entity_t *ent, bool update) {
 	// use the game's epair parsing code so
 	// we can use the same renderLight generation
 // jmarshall
-	if(ent->renderLight == NULL) {
-		ent->renderLight = g_qeglobals.rw->AllocRenderLight();
+	if(ent->renderLight != NULL) {
+		g_qeglobals.rw->FreeRenderLight(ent->renderLight);
 	}
+
+	ent->renderLight = g_qeglobals.rw->AllocRenderLight();
 
 	gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, ent->renderLight);
 	ent->renderLight->SetReferenceSound(ent->soundEmitter);
@@ -1755,6 +1757,7 @@ void CCamWnd::BuildRendererState() {
 	worldModelDef->SetShaderParms(1, 1);
 	worldModelDef->SetShaderParms(2, 1);
 	worldModelDef->SetShaderParms(3, 1);
+	worldModelDef->UpdateRenderEntity();
 
 	// create the light and model entities exactly the way the game code would
 	for ( ent = entities.next ; ent != &entities ; ent = ent->next ) {
