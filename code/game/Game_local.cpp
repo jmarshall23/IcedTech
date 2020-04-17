@@ -964,6 +964,8 @@ void idGameLocal::LocalMapRestart( ) {
 
 	Printf( "----------- Game Map Restart ------------\n" );
 
+	portalSky.FreePortalSky();
+
 	gamestate = GAMESTATE_SHUTDOWN;
 
 	for ( i = 0; i < MAX_CLIENTS; i++ ) {
