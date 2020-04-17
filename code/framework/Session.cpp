@@ -2484,7 +2484,7 @@ void idSessionLocal::UpdateScreen( bool outOfSequence ) {
 
 #if defined(_WIN32) && defined(ID_ALLOW_TOOLS)
 
-	if ( com_editors ) {
+	if ( com_editors & EDITOR_RADIANT ) {
 		if ( common->IsEditorRunning() ) {
 			return;
 		}

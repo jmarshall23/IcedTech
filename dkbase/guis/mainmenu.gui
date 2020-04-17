@@ -6,60 +6,94 @@ windowDef Desktop
 		rect	0,0,1280,720
 		visible	1
 		backcolor	0,0,0,1
-		background  "ui/mainmenu/backloopvideo"
+		background	"ui/mainmenu/backloopvideo"
 	}
-	windowDef unnamed
+	windowDef SinglePlayerBack
 	{
-		rect	1,302,1282,60
+		rect	921,291,437,54
+		visible	1
+		backcolor	0.39215687,0.39215687,0.39215687,1
+	}
+	windowDef SingePlayerTxt
+	{
+		rect	935,292,431,60
 		visible	1
 		forecolor	1,1,1,1
 		text	"Single Player"
-		textscale	1
-		textalign	1
-	}
-	windowDef unnamed1
-	{
-		rect	1,349,1278,60
-		visible	1
-		forecolor	0.50196081,0.50196081,0.50196081,1
-		text	"Multiplayer"
-		textscale	1
-		textalign	1
-	}
-	windowDef unnamed11
-	{
-		rect	1,397,1284,60
-		visible	1
-		forecolor	0.50196081,0.50196081,0.50196081,1
-		text	"Options"
-		textscale	1
-		textalign	1
-	}
-	windowDef unnamed111
-	{
-		rect	0,447,1284,60
-		visible	1
-		forecolor	0.50196081,0.50196081,0.50196081,1
-		text	"Credits"
-		textscale	1
-		textalign	1
-	}
-	windowDef unnamed2
-	{
-		rect	1,492,1282,60
-		visible	1
-		forecolor	1,1,1,1
-		text	"Exit"
-		textscale	1
-		textalign	1
+		textscale	0.75
 	}
 	windowDef unnamed3
 	{
-		rect	1,110,1282,123
+		rect	-68,566,772,54
 		visible	1
 		forecolor	1,1,1,1
 		text	"Darklight Arena"
-		textscale	2
+		textscale	1
 		textalign	1
+	}
+	windowDef unnamed31
+	{
+		rect	-75,613,772,54
+		visible	1
+		forecolor	1,1,1,1
+		text	"Pre-Release Build"
+		textscale	0.60000002
+		textalign	1
+	}
+	windowDef MultiPlayerBack
+	{
+		rect	906,364,450,54
+		visible	1
+		backcolor	0.39215687,0.39215687,0.39215687,1
+	}
+	windowDef MultiplayerTxt
+	{
+		rect	922,367,405,45
+		visible	1
+		forecolor	0.50196081,0.50196081,0.50196081,1
+		text	"Multiplayer"
+		textscale	0.75
+	}
+	windowDef OptionsBack
+	{
+		rect	887,436,450,54
+		visible	1
+		backcolor	0.39215687,0.39215687,0.39215687,1
+	}
+	windowDef OptionsTxt
+	{
+		rect	903,439,405,45
+		visible	1
+		forecolor	0.50196081,0.50196081,0.50196081,1
+		text	"Options"
+		textscale	0.75
+	}
+	windowDef CreditsBack
+	{
+		rect	875,513,450,54
+		visible	1
+		backcolor	0.39215687,0.39215687,0.39215687,1
+	}
+	windowDef CreditsTxt
+	{
+		rect	891,516,405,45
+		visible	1
+		forecolor	0.50196081,0.50196081,0.50196081,1
+		text	Credits
+		textscale	0.75
+	}
+	windowDef ExitBack
+	{
+		rect	860,588,437,54
+		visible	1
+		backcolor	0.39215687,0.39215687,0.39215687,1
+	}
+	windowDef ExitTxt
+	{
+		rect	869,589,431,60
+		visible	1
+		forecolor	1,1,1,1
+		text	Exit
+		textscale	0.75
 	}
 }
