@@ -1563,8 +1563,6 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 	// and draw the loading gui instead of game draws
 	insideExecuteMapChange = true;
 
-	common->BeginLoadScreen();
-
 	// shut down the existing game if it is running
 	UnloadMap();
 
@@ -1589,6 +1587,8 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 	// set the loading gui that we will wipe to
 	LoadLoadingGui( mapString );
 
+	common->BeginLoadScreen();
+
 	// if this works out we will probably want all the sizes in a def file although this solution will 
 	// work for new maps etc. after the first load. we can also drop the sizes into the default.cfg
 	fileSystem->ResetReadCount();
@@ -1599,9 +1599,6 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 	}
 
 	ClearWipe();
-
-	// let the loading gui spin for 1 second to animate out
-	ShowLoadingGui();
 
 	// note any warning prints that happen during the load process
 	common->ClearWarnings( mapString );
