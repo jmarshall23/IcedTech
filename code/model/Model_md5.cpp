@@ -709,9 +709,14 @@ void idRenderModelMD5::LoadModel() {
 // jmarshall end
 	}
 #ifndef ID_DEDICATED
-	// Upload the bind pose to the GPU.
-	jointBuffer = new idJointBuffer();
-	jointBuffer->AllocBufferObject((float *)invertedDefaultPose.Ptr(), invertedDefaultPose.Num());
+	{
+		idScopedCriticalSection lock(com_loadScreenMutex);
+		rvmScopedLoadContext scopedContext;
+
+		// Upload the bind pose to the GPU.
+		jointBuffer = new idJointBuffer();
+		jointBuffer->AllocBufferObject((float *)invertedDefaultPose.Ptr(), invertedDefaultPose.Num());
+	}
 #endif
 
 	//

@@ -1452,6 +1452,7 @@ void idSessionLocal::LoadLoadingGui( const char *mapName ) {
 		guiLoading = uiManager->FindGui( "guis/map/loading.gui", true, false, true );
 	}
 	guiLoading->SetStateFloat( "map_loading", 0.0f );
+	guiLoading->ResetCinematics();
 }
 
 /*
@@ -1558,6 +1559,12 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 	fullMapName += mapString;
 	fullMapName.StripFileExtension();
 
+	// cause prints to force screen updates as a pacifier,
+	// and draw the loading gui instead of game draws
+	insideExecuteMapChange = true;
+
+	common->BeginLoadScreen();
+
 	// shut down the existing game if it is running
 	UnloadMap();
 
@@ -1570,7 +1577,7 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 	}
 
 	// note which media we are going to need to load
-	if ( !reloadingSameMap ) {
+	if ( !reloadingSameMap ) {		
 		declManager->BeginLevelLoad();
 		renderSystem->BeginLevelLoad();
 		soundSystem->BeginLevelLoad();
@@ -1581,10 +1588,6 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 
 	// set the loading gui that we will wipe to
 	LoadLoadingGui( mapString );
-
-	// cause prints to force screen updates as a pacifier,
-	// and draw the loading gui instead of game draws
-	insideExecuteMapChange = true;
 
 	// if this works out we will probably want all the sizes in a def file although this solution will 
 	// work for new maps etc. after the first load. we can also drop the sizes into the default.cfg
@@ -1656,8 +1659,10 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 		}
 	}
 
+	common->EndLoadScreen();
+
 	// actually purge/load the media
-	if ( !reloadingSameMap ) {
+	if ( !reloadingSameMap ) {		
 		renderSystem->EndLevelLoad();
 		soundSystem->EndLevelLoad();
 		declManager->EndLevelLoad();

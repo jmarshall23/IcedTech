@@ -180,7 +180,7 @@ bool idCinematicLocal::InitFromFile(const char* qpath, bool looping) {
 	startTime = 0;
 
 	idStr fileFullPath = qpath;
-	fileFullPath.StripFilename();
+	fileFullPath.StripPath();
 	fileFullPath.StripFileExtension();
 
 	idStr fullpath;

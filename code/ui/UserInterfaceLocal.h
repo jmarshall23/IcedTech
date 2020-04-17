@@ -48,6 +48,7 @@ public:
 	virtual void				SetStateBool( const char *varName, const bool value );
 	virtual void				SetStateInt( const char *varName, const int value );
 	virtual void				SetStateFloat( const char *varName, const float value );
+	virtual void				ResetCinematics(void);
 
 	// Gets a gui state variable
 	virtual const char*			GetStateString( const char *varName, const char* defaultString = "" ) const;

@@ -50,6 +50,9 @@ public:
 	virtual bool				IsEditorGameRunning(void);
 	virtual void				GetEditorGameWindow(int& width, int& height);
 
+	virtual void				BeginLoadScreen(void);
+	virtual void				EndLoadScreen(void);
+
 #ifdef ID_DEDICATED
 	virtual bool				IsDedicatedServer(void) { return true; }
 #else

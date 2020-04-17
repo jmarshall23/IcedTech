@@ -337,9 +337,6 @@ void idCommonLocal::VPrintf( const char *fmt, va_list args ) {
 		if ( com_refreshOnPrint ) {
 			session->UpdateScreen();
 		}
-
-		// let session redraw the animated loading screen if necessary
-		session->PacifierUpdate();
 	}
 
 #ifdef _WIN32

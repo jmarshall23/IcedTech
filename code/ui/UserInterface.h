@@ -80,6 +80,9 @@ public:
 								// Removes a gui state variable
 	virtual void				DeleteStateVar( const char *varName ) = 0;
 
+								// Resets cinematics for the gui.
+	virtual void				ResetCinematics(void) = 0;
+
 								// Sets a gui state variable.
 	virtual void				SetStateString( const char *varName, const char *value ) = 0;
 	virtual void				SetStateBool( const char *varName, const bool value ) = 0;

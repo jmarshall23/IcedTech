@@ -22,6 +22,7 @@ set(src_engine
 	./framework/CmdSystem.cpp
 	./framework/CmdSystem.h
 	./framework/Common.cpp
+	./framework/Common_loadscreen.cpp
 	./framework/Common.h
 	./framework/Compressor.cpp
 	./framework/Compressor.h

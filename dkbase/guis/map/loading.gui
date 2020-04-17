@@ -1,0 +1,30 @@
+windowDef Desktop
+{
+	rect	0,0,1280,720
+	
+	onTrigger {
+		resetCinematics;
+	}
+	windowDef unnamed
+	{
+		rect	-70,-34,1408,822
+		visible	1
+		background	"ui/loading/backloopvideo"
+		matcolor	1,1,1,1
+	}
+	windowDef unnamed1
+	{
+		rect	0,0,1279,78
+		visible	1
+		backcolor	0,0,0,0.48235294
+	}
+	windowDef unnamed2
+	{
+		rect	0,0,332,65
+		visible	1
+		forecolor	1,1,1,1
+		text	"Loading Please Wait"
+		textscale	1
+	}
+
+}

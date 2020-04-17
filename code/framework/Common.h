@@ -56,6 +56,18 @@ typedef enum {
 #define STRTABLE_ID				"#str_"
 #define STRTABLE_ID_LENGTH		5
 
+// jmarshall
+class rvmScopedLoadContext {
+public:
+	rvmScopedLoadContext();
+	~rvmScopedLoadContext();
+private:
+	bool contextSwitched;
+};
+// jmarshall end
+
+extern idSysMutex	com_loadScreenMutex;
+
 extern idCVar		com_version;
 extern idCVar		com_skipRenderer;
 extern idCVar		com_asyncInput;
@@ -226,6 +238,12 @@ public:
 								// Returns true if we are running as a dedicated server.
 								// This means we are headless.
 	virtual bool				IsDedicatedServer(void) = 0;
+
+								// Begins the load screen.
+	virtual void				BeginLoadScreen(void) = 0;
+
+								// Ends the load screen.
+	virtual void				EndLoadScreen(void) = 0;
 };
 
 extern idCommon *		common;

@@ -618,6 +618,25 @@ void idUserInterfaceLocal::RecurseSetKeyBindingNames( idWindow *window ) {
 
 /*
 ==============
+idUserInterfaceLocal::ResetCinematics
+==============
+*/
+void idUserInterfaceLocal::ResetCinematics(void) {	
+	if (desktop == NULL)
+		return;
+
+	desktop->ResetCinematics();
+
+	for (int i = 0; i < desktop->GetChildCount(); i++) {
+		idWindow* next = desktop->GetChild(i);
+		if(next) {
+			next->ResetCinematics();
+		}
+	}
+}
+
+/*
+==============
 idUserInterfaceLocal::SetKeyBindingNames
 ==============
 */

@@ -263,7 +263,6 @@ On exit, the idImage will have a valid OpenGL texture number that can be bound
 ===============
 */
 void idImage::ActuallyLoadImage( bool fromBackEnd ) {
-
 	// if we don't have a rendering context yet, just return
 	if ( !renderSystem->IsOpenGLRunning()) {
 		return;

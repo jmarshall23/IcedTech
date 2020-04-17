@@ -4,3 +4,10 @@ ui/mainmenu/backloopvideo
 		videomap loop videos/MenuIntro.mp4
 	}
 }
+
+ui/loading/backloopvideo
+{
+	{
+		videomap loop videos/LoadingMovie.mp4
+	}
+}

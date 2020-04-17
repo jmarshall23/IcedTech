@@ -3,20 +3,11 @@
 during Darklight Arena initialization...
 WARNING: Couldn't load image: textures/loadingicon2 : textures/loadingicon2
 WARNING: Couldn't load image: textures/loadingicon3 : textures/loadingicon3
-WARNING: Couldn't load image: ui/assets/guicursor_arrow : ui/assets/guicursor_arrow
-WARNING: Couldn't load image: ui/assets/guicursor_hand : ui/assets/guicursor_hand
-WARNING: Couldn't load image: ui/assets/scrollbar_down : ui/assets/scrollbar_down
-WARNING: Couldn't load image: ui/assets/scrollbar_left : ui/assets/scrollbar_left
-WARNING: Couldn't load image: ui/assets/scrollbar_right : ui/assets/scrollbar_right
-WARNING: Couldn't load image: ui/assets/scrollbar_thumb : ui/assets/scrollbar_thumb
-WARNING: Couldn't load image: ui/assets/scrollbar_up : ui/assets/scrollbar_up
-WARNING: Couldn't load image: ui/assets/scrollbarh : ui/assets/scrollbarh
-WARNING: Couldn't load image: ui/assets/scrollbarv : ui/assets/scrollbarv
 WARNING: file materials/gothic_light_built.mtr, line 21: material 'textures/gothic_light/border7_ceil39b' previously defined at materials/gothic_light_built.mtr:7
 WARNING: file materials/weapons.mtr, line 1504: material 'models/weapons/plasmagun/plasmagun' previously defined at materials/newweapons.mtr:17
 WARNING: file materials/weapons.mtr, line 1870: material 'models/weapons/machinegun/machinegun' previously defined at materials/newweapons.mtr:1
 
-14 warnings.
+5 warnings.
 
 
 -------------- Errors ---------------

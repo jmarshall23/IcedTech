@@ -287,6 +287,9 @@ void idImage::AllocImage() {
 	GL_CheckErrors();
 	PurgeImage();
 
+	idScopedCriticalSection lock(com_loadScreenMutex);
+	rvmScopedLoadContext scopedContext;
+
 	switch ( opts.format ) {
 	case FMT_RGBA8:
 		internalFormat = GL_RGBA8;
@@ -512,6 +515,8 @@ idImage::PurgeImage
 ========================
 */
 void idImage::PurgeImage() {
+	idScopedCriticalSection lock(com_loadScreenMutex);
+	rvmScopedLoadContext scopedContext;
 	if ( texnum != TEXTURE_NOT_LOADED ) {
 		glDeleteTextures( 1, (GLuint *)&texnum );	// this should be the ONLY place it is ever called!
 		texnum = TEXTURE_NOT_LOADED;

@@ -933,6 +933,8 @@ idRenderProgManager::LoadGLSLShader
 ================================================================================================
 */
 GLuint idRenderProgManager::LoadGLSLShader( GLenum target, const char * name, const char* outname, const char* macros, idList<int> & uniforms ) {
+	idScopedCriticalSection lock(com_loadScreenMutex);
+	rvmScopedLoadContext scopedContext;
 
 	idStr inFile;
 	idStr outFileHLSL;
@@ -1195,6 +1197,9 @@ idRenderProgManager::LoadGLSLProgram
 ================================================================================================
 */
 void idRenderProgManager::LoadGLSLProgram( const int programIndex, const int vertexShaderIndex, const int fragmentShaderIndex ) {
+	idScopedCriticalSection lock(com_loadScreenMutex);
+	rvmScopedLoadContext scopedContext;
+	
 	glslProgram_t & prog = glslPrograms[programIndex];
 
 	if ( prog.progId != INVALID_PROGID ) {

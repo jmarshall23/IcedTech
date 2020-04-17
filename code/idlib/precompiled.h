@@ -125,11 +125,11 @@ If you have questions concerning this license or the applicable additional terms
 #include "../framework/Licensee.h"
 #include "../framework/CmdSystem.h"
 #include "../framework/CVarSystem.h"
+#include "../framework/Thread.h"
 #include "../framework/Common.h"
 #include "../framework/File.h"
 #include "../framework/FileSystem.h"
 #include "../framework/UsercmdGen.h"
-#include "../framework/Thread.h"
 #include "../framework/ParallelJobList.h"
 
 // navigation

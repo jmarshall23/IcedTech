@@ -562,9 +562,9 @@ void idRenderModelManagerLocal::EndLevelLoad() {
 			loadCount++;
 			model->LoadModel();
 
-			if ( ( loadCount & 15 ) == 0 ) {
-				session->PacifierUpdate();
-			}
+			//if ( ( loadCount & 15 ) == 0 ) {
+			//	session->PacifierUpdate();
+			//}
 		}
 	}
 
