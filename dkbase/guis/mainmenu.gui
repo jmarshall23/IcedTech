@@ -3,9 +3,10 @@ windowDef Desktop
 	rect	0,0,1280,720
 	windowDef TempBack
 	{
-		rect	-42,-25,1360,783
+		rect	0,0,1280,720
 		visible	1
-		backcolor	0.15686275,0.15686275,0.15686275,1
+		backcolor	0,0,0,1
+		background  "ui/mainmenu/backloopvideo"
 	}
 	windowDef unnamed
 	{
