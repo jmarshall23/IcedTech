@@ -16,6 +16,9 @@ public:
 	virtual void			ForceUpdate() = 0;
 	virtual int				GetIndex() = 0;
 
+	virtual renderClassWorldType_t GetRenderClassType() = 0;
+	virtual void			SetRenderClassType(renderClassWorldType_t type) = 0;
+
 	virtual void			SetLightChannel(int lightChannel, bool enabled) = 0;
 	virtual bool			HasLightChannel(int lightChannel) = 0;
 	virtual void			ClearLightChannel(void) = 0;

@@ -1125,7 +1125,7 @@ void R_ListRenderEntityDefs_f( const idCmdArgs &args );
 bool R_IssueEntityDefCallback( idRenderEntityLocal *def );
 idRenderModel *R_EntityDefDynamicModel( idRenderEntityLocal *def );
 
-viewEntity_t *R_SetEntityDefViewEntity( idRenderEntityLocal *def );
+viewEntity_t *R_SetEntityDefViewEntity( idRenderEntityLocal *def, bool modelSpace );
 viewLight_t *R_SetLightDefViewLight( idRenderLightLocal *def );
 
 void R_AddDrawSurf( const srfTriangles_t *tri, const viewEntity_t *space, const idRenderEntityParms *renderEntity,
@@ -1135,6 +1135,8 @@ bool R_CreateAmbientCache( srfTriangles_t *tri, bool needsLighting );
 bool R_CreateLightingCache( const idRenderEntityLocal *ent, const idRenderLightLocal *light, srfTriangles_t *tri );
 void R_CreatePrivateShadowCache( srfTriangles_t *tri );
 void R_CreateVertexProgramShadowCache( srfTriangles_t *tri );
+
+void R_AddAmbientDrawsurfs(viewEntity_t* vEntity, idRenderModel* instanceModel, bool skipCulling);
 
 /*
 ============================================================

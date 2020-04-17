@@ -55,14 +55,16 @@ void rvmPortalSky::LoadPortalSkyMap(const char* name) {
 		rvmPortalSkyEntity_t  portalSkyEntity;
 
 		if(classname == "func_static") {
-			//gameEdit->ParseSpawnArgsToRenderEntity(&entity->epairs, &portalSkyEntity.renderEntity);
-			//portalSkyEntity.renderEntity.classType = RENDER_CLASS_SKYPORTAL;
-			//portalSkyEntity.renderEntityWorldId = gameRenderWorld->AddEntityDef(&portalSkyEntity.renderEntity);
+			portalSkyEntity.renderEntity = gameRenderWorld->AllocRenderEntity();
+			gameEdit->ParseSpawnArgsToRenderEntity(&entity->epairs, portalSkyEntity.renderEntity);
+			portalSkyEntity.renderEntity->SetRenderClassType(RENDER_CLASS_SKYPORTAL);
+			portalSkyEntity.renderEntity->UpdateRenderEntity();
 		}
 		else if(classname == "light") {
-			//gameEdit->ParseSpawnArgsToRenderLight(&entity->epairs, &portalSkyEntity.renderLight);
-			//portalSkyEntity.renderLight.classType = RENDER_CLASS_SKYPORTAL;
-			//portalSkyEntity.renderLightWorldId = gameRenderWorld->AddLightDef(&portalSkyEntity.renderLight);
+			portalSkyEntity.renderLight = gameRenderWorld->AllocRenderLight();
+			gameEdit->ParseSpawnArgsToRenderLight(&entity->epairs, portalSkyEntity.renderLight);
+			portalSkyEntity.renderLight->SetRenderClassType(RENDER_CLASS_SKYPORTAL);
+			portalSkyEntity.renderLight->UpdateRenderLight();
 		}
 		else {
 			common->Warning("Unknown portal sky entity class %s\n", classname.c_str());
@@ -82,6 +84,20 @@ void rvmPortalSky::FreePortalSky(void) {
 	if (mapFile == NULL) {
 		return;
 	}
+
+	for(int i = 0; i < skyEntities.Num(); i++) {
+		if(skyEntities[i].renderEntity != NULL) {
+			gameRenderWorld->FreeRenderEntity(skyEntities[i].renderEntity);
+			skyEntities[i].renderEntity = NULL;
+		}
+
+		if(skyEntities[i].renderLight != NULL) {
+			gameRenderWorld->FreeRenderLight(skyEntities[i].renderLight);
+			skyEntities[i].renderLight = NULL;
+		}
+	}
+
+	skyEntities.Clear();
 
 	delete mapFile;
 	mapFile = NULL;

@@ -22,6 +22,11 @@ namespace radiant.net.forms
             this.Load += InspecterDialog_Load;
         }
 
+        public bool EntityPropertyGridFocus()
+        {
+            return entityPropertyGrid.ContainsFocus;
+        }
+
         private void InspecterDialog_Load(object sender, EventArgs e)
         {
             string[] materialDirectories = NativeAPI.RadiantAPI_GetMaterialDirectoriesManaged().Split(';');
@@ -104,6 +109,11 @@ namespace radiant.net.forms
         }
 
         private void entityPropertyGrid_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void InspecterDialog_Load_1(object sender, EventArgs e)
         {
 
         }

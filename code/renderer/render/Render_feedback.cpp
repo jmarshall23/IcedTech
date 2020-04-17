@@ -27,6 +27,10 @@ void RB_T_FillFeedbackPass(const drawSurf_t *surf) {
 		renderProgManager.BindShader_VirtualTextureFeedback();
 	}
 
+	if (surf->surfaceClassType != backEnd.currentClassDrawType) {
+		return;
+	}
+
 	tri = surf->geo;
 	shader = surf->material;
 

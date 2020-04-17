@@ -34,6 +34,9 @@ namespace radiant.net.forms
 
         private void MainFrm_KeyDown(object sender, KeyEventArgs e)
         {
+            if (Editor.inspecterDialog.EntityPropertyGridFocus())
+                return;
+
             if (Editor.xyWndDialog.IsGamePreviewVisible())
             {
                 NativeAPI.RadiantAPI_GameWindowKeyboard(RadiantHelpers.GetKeyAscii2(e), true);
@@ -45,6 +48,9 @@ namespace radiant.net.forms
 
         private void MainFrm_KeyUp(object sender, KeyEventArgs e)
         {
+            if (Editor.inspecterDialog.EntityPropertyGridFocus())
+                return;
+
             if (Editor.xyWndDialog.IsGamePreviewVisible())
             {
                 NativeAPI.RadiantAPI_GameWindowKeyboard(RadiantHelpers.GetKeyAscii2(e), false);

@@ -761,6 +761,34 @@ static void R_SortDrawSurfs( void ) {
 }
 
 /*
+=================
+R_AddSkySurfaces
+=================
+*/
+void R_AddSkySurfaces(void) {
+	for(int i = 0; i < tr.viewDef->renderWorld->entityDefs.Num(); i++) {
+		idRenderEntityLocal* entity = tr.viewDef->renderWorld->entityDefs[i];
+
+		if (entity == NULL)
+			continue;
+
+		if (entity->GetRenderClassType() != RENDER_CLASS_SKYPORTAL)
+			continue;
+
+		if (entity->GetHidden())
+			continue;
+
+		idRenderModel* skyModel = entity->GetRenderModel();
+		if(skyModel == NULL)
+			continue;
+
+
+		viewEntity_t* viewEntity = R_SetEntityDefViewEntity(entity, true);
+		R_AddAmbientDrawsurfs(viewEntity, skyModel, true);
+	}
+}
+
+/*
 ================
 R_RenderView
 
@@ -846,6 +874,9 @@ void R_RenderView( viewDef_t *parms ) {
 
 	// sort all the ambient surfaces for translucency ordering
 	R_SortDrawSurfs();
+
+	// Add the portal sky renderModels and renderLights at the very end.
+	R_AddSkySurfaces();
 
 	// generate any subviews (mirrors, cameras, etc) before adding this view
 	if ( R_GenerateSubViews() ) {

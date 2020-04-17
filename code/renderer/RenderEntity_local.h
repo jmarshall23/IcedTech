@@ -83,6 +83,9 @@ public:
 	virtual void			SetName(const char* name) { parms.name = name; }
 	virtual const char*		GetName(void) { return parms.name.c_str(); }
 
+	virtual renderClassWorldType_t GetRenderClassType() { return parms.classType; }
+	virtual void			SetRenderClassType(renderClassWorldType_t type) { parmsDirty = true; parms.classType = type; }
+
 	virtual bool			IsEnabled(void) { return parms.isEnabled; }
 	virtual void			SetEnabled(bool isEnabled) { parms.isEnabled = isEnabled; parmsDirty = true; }
 

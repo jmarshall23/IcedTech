@@ -485,7 +485,11 @@ void RB_STD_T_RenderShaderPasses( const drawSurf_t *surf ) {
 		return;
 	}
 
-	// change the matrix if needed
+	if(surf->surfaceClassType != backEnd.currentClassDrawType) {
+		return;
+	}
+
+	// change the matrix if needed	
 	if ( surf->space != backEnd.currentSpace ) {
 		glLoadMatrixf( surf->space->modelViewMatrix );
 		backEnd.currentSpace = surf->space;
@@ -493,7 +497,14 @@ void RB_STD_T_RenderShaderPasses( const drawSurf_t *surf ) {
 	}
 
 	// change the scissor if needed
-	if ( r_useScissor.GetBool() && !backEnd.currentScissor.Equals( surf->scissorRect ) ) {
+	if(backEnd.currentClassDrawType == RENDER_CLASS_SKYPORTAL)
+	{
+		glScissor(backEnd.viewDef->viewport.x1,
+			backEnd.viewDef->viewport.y1,
+			backEnd.viewDef->viewport.x2 + 1,
+			backEnd.viewDef->viewport.y2 + 1);
+	}
+	else if ( r_useScissor.GetBool() && !backEnd.currentScissor.Equals( surf->scissorRect )) {
 		backEnd.currentScissor = surf->scissorRect;
 		glScissor( backEnd.viewDef->viewport.x1 + backEnd.currentScissor.x1, 
 			backEnd.viewDef->viewport.y1 + backEnd.currentScissor.y1,
@@ -584,9 +595,33 @@ void RB_STD_T_RenderShaderPasses( const drawSurf_t *surf ) {
 			glVertexAttribPointerARB(PC_ATTRIB_INDEX_ST, 2, GL_FLOAT, false, sizeof(idDrawVert), ac->st.ToFloatPtr());
 			glVertexAttribPointerARB(PC_ATTRIB_INDEX_VERTEX, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
 
-			GL_State( pStage->drawStateBits );
+			if (surf->surfaceClassType == RENDER_CLASS_SKYPORTAL) {
+				GL_State(GLS_DEPTHFUNC_LESS);
 
-			RB_SetMVP(surf->space->mvp);
+				float viewRotationMatrix[24];
+				memcpy(viewRotationMatrix, backEnd.viewDef->worldSpace.transposedModelViewMatrix, sizeof(float) * 16);
+
+				// Remove the translation from the view rotation matrix.
+				viewRotationMatrix[3] = 0;
+				viewRotationMatrix[7] = 0;
+				viewRotationMatrix[11] = 0;
+				viewRotationMatrix[16] = 1;
+
+				idRenderMatrix modelViewProjectionMatrix;
+				idRenderMatrix::Multiply(backEnd.viewDef->projectionRenderMatrix, *(idRenderMatrix*)viewRotationMatrix, modelViewProjectionMatrix);
+
+				idVec4 color(1, 1, 1, 1);
+				idVec4 textureMatrix(1, 1, 1, 1);
+				RB_SetVertexParm(RENDERPARM_COLOR, color.ToFloatPtr());
+				RB_SetVertexParm(RENDERPARM_TEXTUREMATRIX_S, textureMatrix.ToFloatPtr());
+				RB_SetVertexParm(RENDERPARM_TEXTUREMATRIX_T, textureMatrix.ToFloatPtr());
+				RB_SetMVP(modelViewProjectionMatrix);
+			}
+			else
+			{
+				GL_State(pStage->drawStateBits);
+				RB_SetMVP(surf->space->mvp);
+			}
 			
 			renderProgManager.BindShader(newStage->glslProgram, newStage->glslProgram);
 
@@ -1583,6 +1618,15 @@ void	RB_STD_DrawView( void ) {
 		backEnd.currentClassDrawType = RENDER_CLASS_SKYPORTAL;
 		RB_STD_FillDepthBuffer(drawSurfs, numDrawSurfs);
 		RB_Interaction_DrawInteractions();
+
+		// disable stencil shadow test
+		glStencilFunc(GL_ALWAYS, 128, 255);
+
+		// uplight the entire screen to crutch up not having better blending range
+		//RB_STD_LightScale();
+
+		// now draw any non-light dependent shading passes
+		int	processed = RB_STD_DrawShaderPasses(drawSurfs, numDrawSurfs);
 
 		// Clear the depth buffer.
 		glClear(GL_DEPTH_BUFFER_BIT);

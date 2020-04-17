@@ -7,19 +7,16 @@
 struct rvmPortalSkyEntity_t {
 	rvmPortalSkyEntity_t();
 
-	//idRenderEntity renderEntity;
-	//qhandle_t renderEntityWorldId;
-
-//	renderLight_t renderLight;
-//	qhandle_t renderLightWorldId;
+	idRenderEntity* renderEntity;
+	idRenderLight* renderLight;
 };
 
 //
 // rvmPortalSkyEntity_t::rvmPortalSkyEntity_t
 //
 ID_INLINE rvmPortalSkyEntity_t::rvmPortalSkyEntity_t() {
-	//renderEntityWorldId = -1;
-	//renderLightWorldId = -1;
+	renderEntity = NULL;
+	renderLight = NULL;
 }
 
 //

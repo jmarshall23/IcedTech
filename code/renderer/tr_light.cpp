@@ -376,7 +376,7 @@ a viewEntity and add it to the list with an empty scissor rect.
 This does not instantiate dynamic models for the entity yet.
 =============
 */
-viewEntity_t *R_SetEntityDefViewEntity( idRenderEntityLocal *def ) {
+viewEntity_t *R_SetEntityDefViewEntity( idRenderEntityLocal *def, bool modelSpace) {
 	viewEntity_t		*vModel;
 
 	if ( def->viewCount == tr.viewCount ) {
@@ -403,7 +403,13 @@ viewEntity_t *R_SetEntityDefViewEntity( idRenderEntityLocal *def ) {
 		R_MatrixMultiply(vModel->modelMatrix, tr.viewDef->worldSpace.modelViewMatrix, vModel->modelViewMatrix);
 
 		idRenderMatrix viewMat;
-		idRenderMatrix::Transpose(*(idRenderMatrix *)vModel->modelViewMatrix, viewMat);
+
+		if (!modelSpace) {
+			idRenderMatrix::Transpose(*(idRenderMatrix*)vModel->modelViewMatrix, viewMat);
+		}
+		else {
+			idRenderMatrix::Transpose(*(idRenderMatrix*)vModel->modelMatrix, viewMat);
+		}
 		idRenderMatrix::Multiply(tr.viewDef->projectionRenderMatrix, viewMat, vModel->mvp);
 		//if (renderEntity->weaponDepthHack) {
 		//	idRenderMatrix::ApplyDepthHack(vEntity->mvp);
@@ -604,7 +610,7 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 				// if this entity wasn't in view already, the scissor rect will be empty,
 				// so it will only be used for shadow casting
 				if (!inter->IsEmpty()) {
-					R_SetEntityDefViewEntity(edef);
+					R_SetEntityDefViewEntity(edef, false);
 				}
 				continue;
 			}
@@ -626,7 +632,7 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 				// if this entity wasn't in view already, the scissor rect will be empty,
 				// so it will only be used for shadow casting
 				if (!inter->IsEmpty()) {
-					R_SetEntityDefViewEntity(edef);
+					R_SetEntityDefViewEntity(edef, false);
 				}
 				continue;
 			}
@@ -690,7 +696,7 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 
 		// if this entity wasn't in view already, the scissor rect will be empty,
 		// so it will only be used for shadow casting
-		R_SetEntityDefViewEntity(edef);
+		R_SetEntityDefViewEntity(edef, false);
 	}
 }
 
@@ -1251,7 +1257,7 @@ Walks through the viewEntitys list and creates drawSurf_t for each surface of
 each viewEntity that has a non-empty scissorRect
 ===============
 */
-static void R_AddAmbientDrawsurfs( viewEntity_t *vEntity, idRenderModel* instanceModel ) {
+void R_AddAmbientDrawsurfs( viewEntity_t *vEntity, idRenderModel* instanceModel, bool skipCulling ) {
 	int					i, total;
 	idRenderEntityLocal	*def;
 	srfTriangles_t		*tri;
@@ -1317,7 +1323,7 @@ static void R_AddAmbientDrawsurfs( viewEntity_t *vEntity, idRenderModel* instanc
 			}
 		}
 
-		if ( !R_CullLocalBox( tri->bounds, vEntity->modelMatrix, 5, tr.viewDef->frustum ) ) {
+		if ( !R_CullLocalBox( tri->bounds, vEntity->modelMatrix, 5, tr.viewDef->frustum ) || skipCulling) {
 
 			def->visibleCount = tr.viewCount;
 
@@ -1451,7 +1457,7 @@ void R_AddModelSurfaces( void ) {
 				continue;
 			}
 
-			R_AddAmbientDrawsurfs( vEntity, model );
+			R_AddAmbientDrawsurfs( vEntity, model, false );
 			tr.pc.c_visibleViewEntities++;
 		} else {
 			tr.pc.c_shadowViewEntities++;

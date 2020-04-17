@@ -287,6 +287,9 @@ void idGameEdit::ParseSpawnArgsToRenderEntity( const idDict *args, idRenderEntit
 		}
 	}
 
+	if (args->FindKey("material_override") != NULL) {
+		renderEntity->SetCustomShader(declManager->FindMaterial(args->GetString("material_override"), false));
+	}
 	renderEntity->SetReferenceSound(NULL);
 
 	// get shader parms

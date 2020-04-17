@@ -2,6 +2,27 @@ textures/skies/mars
 {
 	qer_editorimage textures/skies/mars.png
 	{
-		map textures/skies/mars.png
+		program sky_color.vfp
+		fragmentMap 0 textures/skies/mars.png
+	}
+}
+
+textures/skies/clouds
+{
+	qer_editorimage textures/skies/clouds1.png
+	{
+		blend blend
+		program clouds.vfp
+		fragmentMap 0 textures/skies/clouds1.png
+	}
+}
+
+textures/skies/lava
+{
+	qer_editorimage models/lavasky/image.png
+	{
+		program lava_mask.vfp
+		fragmentMap 0 models/lavasky/image.png
+		fragmentMap 1 models/lavasky/lavamask.png
 	}
 }

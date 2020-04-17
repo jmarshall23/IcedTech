@@ -14,7 +14,7 @@ namespace radiant.net
     {
         public static NativeWindow nativeWindow;
         static ProgressDialog progressDialog;
-        static InspecterDialog inspecterDialog;
+        public static InspecterDialog inspecterDialog;
         static CamWndDialog camWndDialog;
         public static XYWndDialog xyWndDialog;
         static MainFrm mainFrm;
