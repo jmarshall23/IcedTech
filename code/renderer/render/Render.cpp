@@ -400,7 +400,10 @@ void RB_BindVariableStageImage( const textureStage_t *texture, const float *shad
 		cin = texture->cinematic->ImageForTime( (int)(1000 * ( backEnd.viewDef->floatTime + backEnd.viewDef->renderView.shaderParms[11] ) ) );
 
 		if ( cin.image ) {
-			globalImages->cinematicImage->UploadScratch( cin.image, cin.imageWidth, cin.imageHeight );
+// jmarshall
+			//globalImages->cinematicImage->UploadScratch( cin.image, cin.imageWidth, cin.imageHeight );
+			cin.image->Bind();
+// jmarshall end
 		} else {
 			globalImages->blackImage->Bind();
 		}

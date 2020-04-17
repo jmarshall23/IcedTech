@@ -478,6 +478,12 @@ set(src_external
 	./external/imgui/examples/imgui_impl_win32.h
 )
 
+set(FFmpeg_LIBRARIES
+				"${CMAKE_SOURCE_DIR}/external/ffmpeg-win64/lib/avcodec.lib"
+				"${CMAKE_SOURCE_DIR}/external/ffmpeg-win64/lib/avformat.lib"
+				"${CMAKE_SOURCE_DIR}/external/ffmpeg-win64/lib/avutil.lib"
+				"${CMAKE_SOURCE_DIR}/external/ffmpeg-win64/lib/swscale.lib")
+
 # Engine Directories
 include_directories(./external/dxsdk/Include)
 include_directories(./external/zlib)
@@ -492,10 +498,10 @@ target_include_directories(External PRIVATE ./external/Recast/include ./external
 # DoomDLL Project
 add_definitions(-D__DOOM_DLL__)
 add_library(DoomDLL SHARED  ${src_engine} ./framework/Engine_precompiled.cpp )
-target_link_libraries(DoomDLL idLib External Tools "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib" "${CMAKE_SOURCE_DIR}/external/openal/out/build/x64-Release/OpenAL32.lib")
+target_link_libraries(DoomDLL idLib External Tools "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib" "${CMAKE_SOURCE_DIR}/external/openal/out/build/x64-Release/OpenAL32.lib" ${FFmpeg_LIBRARIES})
 add_precompiled_header( DoomDLL Engine_precompiled.h  SOURCE_CXX ./framework/Engine_precompiled.cpp )
 set_target_properties(DoomDLL PROPERTIES OUTPUT_NAME "DoomDLL" LINK_FLAGS "/STACK:16777216,16777216 /PDB:\"DoomDLL.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/exports.def")
-target_include_directories(DoomDLL PRIVATE ./external/Recast/include ./external/detour/Include ./external/openal/include)
+target_include_directories(DoomDLL PRIVATE ./external/Recast/include ./external/detour/Include ./external/openal/include ./external/ffmpeg-win64/include)
 
 # Launcher Project
 add_executable(Launcher ${src_launcher})
@@ -506,7 +512,7 @@ set_target_properties(Launcher PROPERTIES OUTPUT_NAME "Darklight" LINK_FLAGS "/S
 add_executable(DoomDedicatedServer ${src_engine} ./framework/Dedicated_precompiled.cpp)
 target_compile_definitions(DoomDedicatedServer PRIVATE ID_DEDICATED ID_ENGINE_EXECUTABLE)
 add_precompiled_header( DoomDedicatedServer Engine_precompiled.h  SOURCE_CXX ./framework/Dedicated_precompiled.cpp )
-target_link_libraries(DoomDedicatedServer idLib External "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib" "${CMAKE_SOURCE_DIR}/external/openal/out/build/x64-Release/OpenAL32.lib")
-target_include_directories(DoomDedicatedServer PRIVATE ./external/Recast/include ./external/detour/Include ./external/openal/include)
+target_link_libraries(DoomDedicatedServer idLib External "opengl32.lib" "dxguid.lib" "glu32.lib" "dinput8.lib" "winmm.lib" "wsock32.lib" "dbghelp.lib" "iphlpapi.lib" "${CMAKE_SOURCE_DIR}/external/openal/out/build/x64-Release/OpenAL32.lib"  ${FFmpeg_LIBRARIES})
+target_include_directories(DoomDedicatedServer PRIVATE ./external/Recast/include ./external/detour/Include ./external/openal/include ./external/ffmpeg-win64/include)
 set_target_properties(DoomDedicatedServer PROPERTIES OUTPUT_NAME "DarklightDedicated" LINK_FLAGS "/STACK:16777216,16777216 /SUBSYSTEM:WINDOWS /PDB:\"DarklightDedicated.pdb\"")
 add_dependencies(DoomDedicatedServer DoomDLL )

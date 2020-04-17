@@ -2115,7 +2115,10 @@ void RB_TestImage( void ) {
 
 		cin = tr.testVideo->ImageForTime( (int)(1000 * ( backEnd.viewDef->floatTime - tr.testVideoStartTime ) ) );
 		if ( cin.image ) {
-			image->UploadScratch( cin.image, cin.imageWidth, cin.imageHeight );
+// jmarshall
+			//image->UploadScratch( cin.image, cin.imageWidth, cin.imageHeight );
+			image = cin.image;
+// jmarshall end
 		} else {
 			tr.testImage = NULL;
 			renderProgManager.Unbind();
