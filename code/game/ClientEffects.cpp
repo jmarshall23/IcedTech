@@ -112,7 +112,7 @@ rvmClientEffect_debris::LaunchEffect
 */
 void rvmClientEffect_debris::LaunchEffect(const idDeclEntityDef **debrisArray, int debrisArraySize, idVec3 origin, idMat3 axis, const char* shaderName) {
 	int speed = 100 + idMath::FRandRange(0, 100);
-	int count = idMath::FRandRange(6, 12);
+	int count = idMath::FRandRange(2, 4);
 	idVec3 unitvel;
 	idVec3 forward;
 	idRandom rand;
@@ -127,7 +127,7 @@ void rvmClientEffect_debris::LaunchEffect(const idDeclEntityDef **debrisArray, i
 		idVec3 velocity(forward[0] + rand.CRandomFloat() * 0.9, forward[1] + rand.CRandomFloat() * 0.9, fabs(forward[2]) > 0.5 ? forward[2] * (0.2 + 0.8 * rand.RandomFloat()) : rand.RandomFloat() * 0.6);
 		velocity *= speed + speed * 0.5f * rand.CRandomFloat();
 
-		AddClientModel(dict, origin + (forward * idMath::FRandRange(1, 5)), axis, velocity, shaderName);
+		AddClientModel(dict, origin + (forward * idMath::FRandRange(15, 20)), axis, velocity, shaderName);
 	}
 
 	// Ensure we don't let the debris cause collision with other meshes, but it can collide with the world.
