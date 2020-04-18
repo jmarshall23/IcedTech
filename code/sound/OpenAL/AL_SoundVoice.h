@@ -62,6 +62,10 @@ public:
 		
 		alSourcef( openalSource, AL_PITCH, p );
 	}
+
+	void		SetLooping(bool looping) {
+		alSourcei(openalSource, AL_LOOPING, looping);
+	}
 	
 	void					Create( const idSoundSample* leadinSample, const idSoundSample* loopingSample );
 	

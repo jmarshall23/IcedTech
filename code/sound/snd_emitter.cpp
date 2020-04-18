@@ -338,6 +338,7 @@ void idSoundChannel::UpdateHardware( float volumeAdd, int currentTime ) {
 	hardwareVoice->SetGain( volume );
 	hardwareVoice->SetInnerRadius( parms.minDistance * METERS_TO_DOOM );
 	hardwareVoice->SetPitch( soundWorld->slowmoSpeed * idMath::ClampFloat( 0.2f, 5.0f, timescale.GetFloat() ) );
+	hardwareVoice->SetLooping(parms.soundShaderFlags & SSF_LOOPING);
 
 	if ( soundWorld->enviroSuitActive ) {
 		hardwareVoice->SetOcclusion( 0.5f );
