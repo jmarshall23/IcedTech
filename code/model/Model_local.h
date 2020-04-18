@@ -51,6 +51,7 @@ public:
 	virtual						~idRenderModelStatic();
 
 	virtual void				InitFromFile( const char *fileName );
+	virtual void				DrawEditorModel(idVec3& origin, idMat3& axis, bool cameraView);
 	virtual void				PartialInitFromFile( const char *fileName );
 	virtual void				PurgeModel();
 	virtual void				Reset() {};
@@ -145,6 +146,10 @@ protected:
 	static idCVar				r_slopVertex;			// merge xyz coordinates this far apart
 	static idCVar				r_slopTexCoord;			// merge texture coordinates this far apart
 	static idCVar				r_slopNormal;			// merge normals that dot less than this
+protected:
+	idVertexBuffer*				editorVertexMesh;
+	idIndexBuffer*				editorIndexBuffer;
+	int							numEditorIndexes;
 };
 
 /*

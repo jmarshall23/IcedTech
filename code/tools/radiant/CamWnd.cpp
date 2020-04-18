@@ -855,7 +855,6 @@ void DrawAxial(face_t *selFace) {
 	}
 }
 
-
 /*
  =======================================================================================================================
     Cam_Draw
@@ -872,7 +871,7 @@ void CCamWnd::SetProjectionMatrix() {
 	float	xmin, xmax, ymin, ymax;
 	float	width, height;
 	float	zNear;
-	float	projectionMatrix[16];
+	
 
 	//
 	// set up projection matrix
@@ -888,28 +887,30 @@ void CCamWnd::SetProjectionMatrix() {
 	width = xmax - xmin;
 	height = ymax - ymin;
 
-	projectionMatrix[0] = 2 * zNear / width;
-	projectionMatrix[4] = 0;
-	projectionMatrix[8] = ( xmax + xmin ) / width;	// normally 0
-	projectionMatrix[12] = 0;
+	float	radiant_projectionMatrix[16];
 
-	projectionMatrix[1] = 0;
-	projectionMatrix[5] = 2 * zNear / height;
-	projectionMatrix[9] = ( ymax + ymin ) / height;	// normally 0
-	projectionMatrix[13] = 0;
+	radiant_projectionMatrix[0] = 2 * zNear / width;
+	radiant_projectionMatrix[4] = 0;
+	radiant_projectionMatrix[8] = ( xmax + xmin ) / width;	// normally 0
+	radiant_projectionMatrix[12] = 0;
+
+	radiant_projectionMatrix[1] = 0;
+	radiant_projectionMatrix[5] = 2 * zNear / height;
+	radiant_projectionMatrix[9] = ( ymax + ymin ) / height;	// normally 0
+	radiant_projectionMatrix[13] = 0;
 
 	// this is the far-plane-at-infinity formulation
-	projectionMatrix[2] = 0;
-	projectionMatrix[6] = 0;
-	projectionMatrix[10] = -1;
-	projectionMatrix[14] = -2 * zNear;
+	radiant_projectionMatrix[2] = 0;
+	radiant_projectionMatrix[6] = 0;
+	radiant_projectionMatrix[10] = -1;
+	radiant_projectionMatrix[14] = -2 * zNear;
 
-	projectionMatrix[3] = 0;
-	projectionMatrix[7] = 0;
-	projectionMatrix[11] = -1;
-	projectionMatrix[15] = 0;
+	radiant_projectionMatrix[3] = 0;
+	radiant_projectionMatrix[7] = 0;
+	radiant_projectionMatrix[11] = -1;
+	radiant_projectionMatrix[15] = 0;
 
-	glLoadMatrixf( projectionMatrix );
+	glLoadMatrixf(radiant_projectionMatrix);
 #endif
 }
 

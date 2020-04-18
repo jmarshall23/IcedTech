@@ -49,40 +49,6 @@ const int POINTS_PER_KNOT = 50;
 
 /*
 ================
-DrawRenderModel
-================
-*/
-void DrawRenderModel( idRenderModel *model, idVec3 &origin, idMat3 &axis, bool cameraView ) {
-	for ( int i = 0; i < model->NumSurfaces(); i++ ) {
-		const modelSurface_t *surf = model->Surface( i );
-		const idMaterial *material = surf->shader;
-
-		int nDrawMode = g_pParentWnd->GetCamera()->Camera().draw_mode;
-
-		if ( cameraView ) {
-			material->GetEditorImage()->Bind();
-		}
-
-		glBegin( GL_TRIANGLES );
-
-		const srfTriangles_t	*tri = surf->geometry;
-		for ( int j = 0; j < tri->numIndexes; j += 3 ) {
-			for ( int k = 0; k < 3; k++ ) {
-				int		index = tri->indexes[j + k];
-				idVec3	v;
-
-				v = tri->verts[index].xyz * axis + origin;
-				glTexCoord2f( tri->verts[index].st.x, tri->verts[index].st.y );
-				glVertex3fv( v.ToFloatPtr() );
-			}
-		}
-
-		glEnd();
-	}
-}
-
-/*
-================
 SnapVectorToGrid
 ================
 */
@@ -4042,8 +4008,8 @@ void Brush_DrawModel( brush_t *b, bool camera, bool bSelected ) {
 			glColor3fv(nonSelectedMesh.ToFloatPtr());
 // jmarshall end
 		}
-
-		DrawRenderModel( model, b->owner->origin, axis, camera );
+		
+		model->DrawEditorModel(b->owner->origin, axis, camera);
 
 		glColor4fv( colorSave.ToFloatPtr() );
 
@@ -4068,7 +4034,7 @@ void Brush_DrawModel( brush_t *b, bool camera, bool bSelected ) {
 			glDisable( GL_DEPTH_TEST );
             glColor3f( 1.0f, 1.0f, 1.0f );
             glPolygonOffset( 1.0f, 3.0f );
-            DrawRenderModel( model, b->owner->origin, axis, false );
+			model->DrawEditorModel(b->owner->origin, axis, false);
 			glEnable( GL_DEPTH_TEST );
         }
 
@@ -4328,7 +4294,7 @@ void Brush_DrawEnv( brush_t *b, bool cameraView, bool bSelected ) {
 		} else {
 			glColor3f( 1.f, 1.f, 1.f );
 		}
-		DrawRenderModel( model, origin, axis, true );
+		model->DrawEditorModel(origin, axis, true);
 		globalImages->BindNull();
 		delete model;
 		model = NULL;

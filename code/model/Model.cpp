@@ -62,6 +62,8 @@ idRenderModelStatic::idRenderModelStatic() {
 	levelLoadReferenced = false;
 	timeStamp = 0;
 	jointsInverted = nullptr;
+	editorVertexMesh = NULL;
+	editorIndexBuffer = NULL;
 }
 
 /*
@@ -2610,6 +2612,18 @@ void idRenderModelStatic::PurgeModel() {
 	}
 	surfaces.Clear();
 
+	if (editorVertexMesh) {
+		delete editorVertexMesh;
+		editorVertexMesh = NULL;
+	}
+
+	if (editorIndexBuffer) {
+		delete editorIndexBuffer;
+		editorIndexBuffer = NULL;
+	}
+
+	numEditorIndexes = 0;
+
 	purged = true;
 }
 
@@ -2818,4 +2832,89 @@ bool idRenderModelStatic::FindSurfaceWithId( int id, int &surfaceNum ) {
 		}
 	}
 	return false;
+}
+
+/*
+=================
+idRenderModelStatic::DrawEditorModel
+=================
+*/
+void idRenderModelStatic::DrawEditorModel(idVec3& origin, idMat3& axis, bool cameraView) {
+	if (editorVertexMesh == NULL || editorIndexBuffer == NULL) {
+		idList<idDrawVert> drawVerts;
+		idList<GLuint> drawIndexes;
+
+		drawVerts.SetGranularity(20000);
+		drawIndexes.SetGranularity(20000);
+
+		numEditorIndexes = 0;
+
+		for (int i = 0; i < NumSurfaces(); i++) {
+			int startIndex = drawVerts.Num();
+
+			const modelSurface_t* surf = Surface(i);
+			const idMaterial* material = surf->shader;
+
+			const srfTriangles_t* tri = surf->geometry;
+			for (int j = 0; j < tri->numIndexes; j += 3) {
+				for (int k = 0; k < 3; k++) {
+					int		index = tri->indexes[j + k];
+					drawIndexes.Append(startIndex + index);					
+					numEditorIndexes++;
+				}
+			}
+
+			for(int j = 0; j < tri->numVerts; j++) {
+				drawVerts.Append(tri->verts[j]);
+			}
+		}
+
+		editorVertexMesh = new idVertexBuffer();
+		editorVertexMesh->AllocBufferObject(drawVerts.Ptr(), drawVerts.Num() * sizeof(idDrawVert));
+
+		editorIndexBuffer = new idIndexBuffer();
+		editorIndexBuffer->AllocBufferObject(drawIndexes.Ptr(), drawIndexes.Num() * sizeof(GLuint));
+	}
+	
+	glPushMatrix();
+	idAngles angles = axis.ToAngles();
+
+	glTranslatef(origin.x, origin.y, origin.z);
+	glRotatef(angles[1], 0, 0, 1);
+	glRotatef(-angles[0], 0, 1, 0);
+	glRotatef(-angles[2], 1, 0, 0);
+
+	GLuint vertexbuffer = (GLuint)editorVertexMesh->GetAPIObject();
+	GLuint indexBuffer = (GLuint)editorIndexBuffer->GetAPIObject();
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_VERTEX);
+		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_ST);
+
+		idDrawVert* ac = NULL;
+		glVertexAttribPointerARB(PC_ATTRIB_INDEX_ST, 2, GL_FLOAT, false, sizeof(idDrawVert), ac->st.ToFloatPtr());
+		glVertexAttribPointerARB(PC_ATTRIB_INDEX_VERTEX, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
+
+		
+		int numIndexes = 0;
+		for (int i = 0; i < NumSurfaces(); i++) {
+			const modelSurface_t* surf = Surface(i);
+			const idMaterial* material = surf->shader;
+
+			if(cameraView) {
+				material->GetEditorImage()->Bind();
+			}
+
+			const srfTriangles_t* tri = surf->geometry;
+			glDrawElements(GL_TRIANGLES, tri->numIndexes, GL_UNSIGNED_INT, (void*)(numIndexes * sizeof(GLuint)));
+
+			numIndexes += tri->numIndexes;
+		}
+
+		glDisableVertexAttribArray(PC_ATTRIB_INDEX_VERTEX);
+		glDisableVertexAttribArray(PC_ATTRIB_INDEX_ST);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glPopMatrix();
 }

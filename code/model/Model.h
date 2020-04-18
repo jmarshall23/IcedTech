@@ -185,6 +185,9 @@ public:
 	// Loads static models only, dynamic models must be loaded by the modelManager
 	virtual void				InitFromFile( const char *fileName ) = 0;
 
+	// Draws the model for radiant.
+	virtual void				DrawEditorModel(idVec3& origin, idMat3& axis, bool cameraView) = 0;
+
 	// renderBump uses this to load the very high poly count models, skipping the
 	// shadow and tangent generation, along with some surface cleanup to make it load faster
 	virtual void				PartialInitFromFile( const char *fileName ) = 0;
