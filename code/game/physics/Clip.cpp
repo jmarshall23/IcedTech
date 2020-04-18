@@ -213,7 +213,7 @@ idClipModel::LoadModel
 ================
 */
 bool idClipModel::LoadModel( const char *name ) {
-	renderModelHandle = -1;
+	renderEntity = NULL;
 	if ( traceModelIndex != -1 ) {
 		FreeTraceModel( traceModelIndex );
 		traceModelIndex = -1;
@@ -236,7 +236,7 @@ idClipModel::LoadModel
 */
 void idClipModel::LoadModel( const idTraceModel &trm ) {
 	collisionModelHandle = 0;
-	renderModelHandle = -1;
+	renderEntity = NULL;
 	if ( traceModelIndex != -1 ) {
 		FreeTraceModel( traceModelIndex );
 	}
@@ -249,20 +249,15 @@ void idClipModel::LoadModel( const idTraceModel &trm ) {
 idClipModel::LoadModel
 ================
 */
-//void idClipModel::LoadModel( const int renderModelHandle ) {
-//	collisionModelHandle = 0;
-//	this->renderModelHandle = renderModelHandle;
-//	if ( renderModelHandle != -1 ) {
-//		const idRenderEntity *renderEntity = gameRenderWorld->GetRenderEntity( renderModelHandle );
-//		if ( renderEntity ) {
-//			bounds = renderEntity->bounds;
-//		}
-//	}
-//	if ( traceModelIndex != -1 ) {
-//		FreeTraceModel( traceModelIndex );
-//		traceModelIndex = -1;
-//	}
-//}
+void idClipModel::LoadModel(idRenderEntity* renderEntity) {
+	collisionModelHandle = 0;
+	this->renderEntity = renderEntity;
+	bounds = renderEntity->GetBounds();
+	if ( traceModelIndex != -1 ) {
+		FreeTraceModel( traceModelIndex );
+		traceModelIndex = -1;
+	}
+}
 
 /*
 ================
@@ -281,7 +276,6 @@ void idClipModel::Init( void ) {
 	material = NULL;
 	contents = CONTENTS_BODY;
 	collisionModelHandle = 0;
-	renderModelHandle = -1;
 	traceModelIndex = -1;
 	clipLinks = NULL;
 	touchCount = -1;
@@ -324,11 +318,11 @@ idClipModel::idClipModel( const idTraceModel &trm ) {
 idClipModel::idClipModel
 ================
 */
-//idClipModel::idClipModel( const int renderModelHandle ) {
-//	Init();
-//	contents = CONTENTS_RENDERMODEL;
-//	LoadModel( renderModelHandle );
-//}
+idClipModel::idClipModel( idRenderEntity *renderEntity ) {
+	Init();
+	contents = CONTENTS_RENDERMODEL;
+	LoadModel(renderEntity);
+}
 
 /*
 ================
@@ -351,7 +345,7 @@ idClipModel::idClipModel( const idClipModel *model ) {
 	if ( model->traceModelIndex != -1 ) {
 		LoadModel( *GetCachedTraceModel( model->traceModelIndex ) );
 	}
-	renderModelHandle = model->renderModelHandle;
+	renderEntity = model->renderEntity;
 	clipLinks = NULL;
 	touchCount = -1;
 }
@@ -411,7 +405,7 @@ void idClipModel::Save( idSaveGame *savefile ) const {
 		savefile->WriteString( "" );
 	}
 	savefile->WriteInt( traceModelIndex );
-	savefile->WriteInt( renderModelHandle );
+	//savefile->WriteInt( renderModelHandle );
 	savefile->WriteBool( clipLinks != NULL );
 	savefile->WriteInt( touchCount );
 }
@@ -445,17 +439,17 @@ void idClipModel::Restore( idRestoreGame *savefile ) {
 	if ( traceModelIndex >= 0 ) {
 		traceModelCache[traceModelIndex]->refCount++;
 	}
-	savefile->ReadInt( renderModelHandle );
+	//savefile->ReadInt( renderModelHandle );
 	savefile->ReadBool( linked );
 	savefile->ReadInt( touchCount );
 
 	// the render model will be set when the clip model is linked
-	renderModelHandle = -1;
+	renderEntity = NULL; // todo broken saves
 	clipLinks = NULL;
 	touchCount = -1;
 
 	if ( linked ) {
-		Link( gameLocal.clip, entity, id, origin, axis, renderModelHandle );
+		Link( gameLocal.clip, entity, id, origin, axis, renderEntity );
 	}
 }
 
@@ -478,7 +472,7 @@ idClipModel::Handle
 ================
 */
 idCollisionModel *idClipModel::Handle( void ) const {
-	assert( renderModelHandle == -1 );
+	assert(renderEntity == NULL);
 	if ( collisionModelHandle ) {
 		return collisionModelHandle;
 	} else if ( traceModelIndex != -1 ) {
@@ -603,15 +597,14 @@ void idClipModel::Link( idClip &clp ) {
 idClipModel::Link
 ===============
 */
-void idClipModel::Link( idClip &clp, idEntity *ent, int newId, const idVec3 &newOrigin, const idMat3 &newAxis, int renderModelHandle ) {
+void idClipModel::Link( idClip &clp, idEntity *ent, int newId, const idVec3 &newOrigin, const idMat3 &newAxis, idRenderEntity* renderEntity) {
 
 	this->entity = ent;
 	this->id = newId;
 	this->origin = newOrigin;
 	this->axis = newAxis;
-	if ( renderModelHandle != -1 ) {
-		this->renderModelHandle = renderModelHandle;
-		const idRenderEntity *renderEntity = gameRenderWorld->GetRenderEntity( renderModelHandle );
+	if ( renderEntity != NULL ) {
+		this->renderEntity = renderEntity;
 		if ( renderEntity ) {
 			this->bounds = ((idRenderEntity *)renderEntity)->GetBounds();
 		}
@@ -939,7 +932,7 @@ void idClip::TraceRenderModel( trace_t &trace, const idVec3 &start, const idVec3
 		modelTrace_t modelTrace;
 
 		// test with exact render model and modify trace_t structure accordingly
-		if ( gameRenderWorld->ModelTrace( modelTrace, touch->renderModelHandle, start, end, radius ) ) {
+		if ( gameRenderWorld->ModelTrace( modelTrace, touch->renderEntity->GetIndex(), start, end, radius ) ) {
 			trace.fraction = modelTrace.fraction;
 			trace.endAxis = axis;
 			trace.endpos = modelTrace.point;
@@ -1042,7 +1035,7 @@ void idClip::TranslationEntities( trace_t &results, const idVec3 &start, const i
 			continue;
 		}
 
-		if ( touch->renderModelHandle != -1 ) {
+		if ( touch->renderEntity != NULL ) {
 			idClip::numRenderModelTraces++;
 			TraceRenderModel( trace, start, end, radius, trmAxis, touch );
 		} else {
@@ -1129,7 +1122,7 @@ bool idClip::Translation( trace_t &results, const idVec3 &start, const idVec3 &e
 			continue;
 		}
 
-		if ( touch->renderModelHandle != -1 ) {
+		if ( touch->renderEntity != NULL ) {
 			idClip::numRenderModelTraces++;
 			TraceRenderModel( trace, start, end, radius, trmAxis, touch );
 		} else {
@@ -1196,7 +1189,7 @@ bool idClip::Rotation( trace_t &results, const idVec3 &start, const idRotation &
 		}
 
 		// no rotational collision with render models
-		if ( touch->renderModelHandle != -1 ) {
+		if ( touch->renderEntity != NULL ) {
 			continue;
 		}
 
@@ -1294,7 +1287,7 @@ bool idClip::Motion( trace_t &results, const idVec3 &start, const idVec3 &end, c
 				continue;
 			}
 
-			if ( touch->renderModelHandle != -1 ) {
+			if ( touch->renderEntity != NULL ) {
 				idClip::numRenderModelTraces++;
 				TraceRenderModel( trace, start, end, radius, trmAxis, touch );
 			} else {
@@ -1347,7 +1340,7 @@ bool idClip::Motion( trace_t &results, const idVec3 &start, const idVec3 &end, c
 			}
 
 			// no rotational collision detection with render models
-			if ( touch->renderModelHandle != -1 ) {
+			if ( touch->renderEntity != NULL ) {
 				continue;
 			}
 
@@ -1436,7 +1429,7 @@ int idClip::Contacts( contactInfo_t *contacts, const int maxContacts, const idVe
 		}
 
 		// no contacts with render models
-		if ( touch->renderModelHandle != -1 ) {
+		if ( touch->renderEntity != NULL ) {
 			continue;
 		}
 
@@ -1541,7 +1534,7 @@ int idClip::Contents( const idVec3 &start, const idClipModel *mdl, const idMat3 
 		}
 
 		// no contents test with render models
-		if ( touch->renderModelHandle != -1 ) {
+		if ( touch->renderEntity != NULL ) {
 			continue;
 		}
 
@@ -1632,7 +1625,7 @@ bool idClip::GetModelContactFeature( const contactInfo_t &contact, const idClipM
 	if ( clipModel == NULL ) {
 		handle = NULL;
 	} else {
-		if ( clipModel->renderModelHandle != -1 ) {
+		if ( clipModel->renderEntity != NULL ) {
 			winding += contact.point;
 			return true;
 		} else if ( clipModel->traceModelIndex != -1 ) {
@@ -1717,7 +1710,7 @@ void idClip::DrawClipModels( const idVec3 &eye, const float radius, const idEnti
 		if ( clipModel->GetEntity() == passEntity ) {
 			continue;
 		}
-		if ( clipModel->renderModelHandle != -1 ) {
+		if ( clipModel->renderEntity != NULL ) {
 			gameRenderWorld->DebugBounds( colorCyan, clipModel->GetAbsBounds() );
 		} else {
 			clipModel->Handle()->DrawModel( clipModel->GetOrigin(), clipModel->GetAxis(), eye, radius );

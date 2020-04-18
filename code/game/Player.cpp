@@ -2198,9 +2198,9 @@ void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_a
 	physicsObj.SetClipModelAxis();
 	physicsObj.EnableClip();
 
-	//if ( !spectating ) {
-	//	SetCombatContents( true );
-	//}
+	if ( !spectating ) {
+		SetCombatContents( true );
+	}
 
 	physicsObj.SetLinearVelocity( vec3_origin );
 

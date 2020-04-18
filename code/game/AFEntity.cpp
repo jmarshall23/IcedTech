@@ -262,13 +262,13 @@ idAFAttachment::SetCombatModel
 ================
 */
 void idAFAttachment::SetCombatModel( void ) {
-	//if ( combatModel ) {
-	//	combatModel->Unlink();
-	//	combatModel->LoadModel( modelDefHandle );
-	//} else {
-	//	combatModel = new idClipModel( modelDefHandle );
-	//}
-	//combatModel->SetOwner( body );
+	if ( combatModel ) {
+		combatModel->Unlink();
+		combatModel->LoadModel( renderEntity );
+	} else {
+		combatModel = new idClipModel(renderEntity);
+	}
+	combatModel->SetOwner( body );
 }
 
 /*
@@ -291,7 +291,7 @@ void idAFAttachment::LinkCombat( void ) {
 	}
 
 	if ( combatModel ) {
-		combatModel->Link(gameLocal.clip, this, 0, renderEntity->GetOrigin(), renderEntity->GetAxis(), renderEntity->GetIndex());
+		combatModel->Link(gameLocal.clip, this, 0, renderEntity->GetOrigin(), renderEntity->GetAxis(), renderEntity);
 	}
 }
 
@@ -605,12 +605,12 @@ idAFEntity_Base::SetCombatModel
 ================
 */
 void idAFEntity_Base::SetCombatModel( void ) {
-	//if ( combatModel ) {
-	//	combatModel->Unlink();
-	//	combatModel->LoadModel( modelDefHandle );
-	//} else {
-	//	combatModel = new idClipModel( modelDefHandle );
-	//}
+	if ( combatModel ) {
+		combatModel->Unlink();
+		combatModel->LoadModel( renderEntity );
+	} else {
+		combatModel = new idClipModel(renderEntity);
+	}
 }
 
 /*
@@ -628,7 +628,12 @@ idAFEntity_Base::SetCombatContents
 ================
 */
 void idAFEntity_Base::SetCombatContents( bool enable ) {
-	assert( combatModel );
+// jmarshall
+	//assert( combatModel );
+	if (combatModel == NULL) {
+		SetCombatModel();
+	}
+// jmarshall end
 	if ( enable && combatModelContents ) {
 		assert( !combatModel->GetContents() );
 		combatModel->SetContents( combatModelContents );
@@ -650,7 +655,7 @@ void idAFEntity_Base::LinkCombat( void ) {
 		return;
 	}
 	if ( combatModel ) {
-		combatModel->Link(gameLocal.clip, this, 0, renderEntity->GetOrigin(), renderEntity->GetAxis(), renderEntity->GetIndex());
+		combatModel->Link(gameLocal.clip, this, 0, renderEntity->GetOrigin(), renderEntity->GetAxis(), renderEntity);
 	}
 }
 
@@ -1259,7 +1264,7 @@ void idAFEntity_WithAttachedHead::LinkCombat( void ) {
 	}
 
 	if ( combatModel ) {
-		combatModel->Link( gameLocal.clip, this, 0, renderEntity->GetOrigin(), renderEntity->GetAxis(), renderEntity->GetIndex() );
+		combatModel->Link( gameLocal.clip, this, 0, renderEntity->GetOrigin(), renderEntity->GetAxis(), renderEntity );
 	}
 	headEnt = head.GetEntity();
 	if ( headEnt ) {

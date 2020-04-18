@@ -403,7 +403,7 @@ idActor::idActor( void ) {
 
 	scriptThread		= NULL;		// initialized by ConstructScriptObject, which is called by idEntity::Spawn
 
-	use_combat_bbox		= true;
+	use_combat_bbox		= false;
 	head				= NULL;
 
 	team				= 0;
@@ -497,8 +497,7 @@ void idActor::Spawn( void ) {
 	spawnArgs.GetInt( "team", "0", team );
 	spawnArgs.GetVector( "offsetModel", "0 0 0", modelOffset );
 
-//	spawnArgs.GetBool( "use_combat_bbox", "0", use_combat_bbox );	
-	use_combat_bbox = true;
+	spawnArgs.GetBool( "use_combat_bbox", "0", use_combat_bbox );	
 
 	viewAxis = GetPhysics()->GetAxis();
 
@@ -1525,12 +1524,12 @@ void idActor::SetCombatModel( void ) {
 	idAFAttachment *headEnt;
 
 	if ( !use_combat_bbox ) {
-		//if ( combatModel ) {
-		//	combatModel->Unlink();
-		//	combatModel->LoadModel( modelDefHandle );
-		//} else {
-		//	combatModel = new idClipModel( modelDefHandle );
-		//}
+		if ( combatModel ) {
+			combatModel->Unlink();
+			combatModel->LoadModel( renderEntity );
+		} else {
+			combatModel = new idClipModel(renderEntity);
+		}
 
 		headEnt = head.GetEntity();
 		if ( headEnt ) {
@@ -1561,7 +1560,7 @@ void idActor::LinkCombat( void ) {
 	}
 
 	if ( combatModel ) {
-		combatModel->Link( gameLocal.clip, this, 0, renderEntity->GetOrigin(), renderEntity->GetAxis(), renderEntity->GetIndex() );
+		combatModel->Link( gameLocal.clip, this, 0, renderEntity->GetOrigin(), renderEntity->GetAxis(), renderEntity );
 	}
 	headEnt = head.GetEntity();
 	if ( headEnt ) {
