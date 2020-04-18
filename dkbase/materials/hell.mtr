@@ -1,0 +1,19 @@
+models/hell/block6_5kout/initialshadinggroup
+{
+	qer_editorimage models/hell/block6_Base_Color.png
+	bumpmap			models/hell/block6_Base_Color.png
+	diffusemap		models/hell/block6_Normal_DirectX.png
+	specularmap		models/hell/block6_spec.png
+}
+
+models/hell/wall/hellwall/initialshadinggroup1
+{
+	qer_editorimage 	models/hell/wall/block5_Base_Color.png
+	bumpmap			models/hell/wall/block5_Normal_DirectX.png
+	diffusemap		models/hell/wall/block5_Base_Color.png
+	specularmap		models/hell/wall/block5_spec.png
+
+	{
+		map models/hell/wall/block5_Emissive.png
+	}
+}

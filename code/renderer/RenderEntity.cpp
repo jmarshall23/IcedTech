@@ -169,6 +169,9 @@ void idRenderEntityLocal::UpdateRenderEntity( bool forceUpdate ) {
 	// based on the model bounds, add references in each area
 	// that may contain the updated surface
 	R_CreateEntityRefs(this);
+
+	parmsDirty = false;
+	modelChanged = false;
 }
 
 /*

@@ -7,7 +7,7 @@ Version 2
 {
 "classname" "func_static"
 "name" "func_static_1"
-"origin" "0 0 0"
+"origin" "0 0 -100"
 "model" "models/sky/sky.mdr"
 "material_override" "textures/skies/mars"
 }
@@ -16,7 +16,7 @@ Version 2
 {
 "classname" "func_static"
 "name" "func_static_2"
-"origin" "0 0 0"
+"origin" "0 0 -100"
 "model" "models/sky/lava.mdr"
 "material_override" "textures/skies/lava"
 }

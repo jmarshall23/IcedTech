@@ -267,6 +267,7 @@ entityDef func_static {
 	"noclipmodel"				"0"
 	"model"					""
 	"material_override"			""
+	"angle"					"0"
 }
 
 entityDef func_shaking {

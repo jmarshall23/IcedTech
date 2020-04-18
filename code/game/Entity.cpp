@@ -244,8 +244,8 @@ void idGameEdit::ParseSpawnArgsToRenderEntity( const idDict *args, idRenderEntit
 	{
 		renderEntity->SetLightChannel(LIGHT_CHANNEL_WORLD, true);
 
-		idStr litChannel = args->GetString("litchannel", "");
-		if (litChannel.Length() > 0) {
+		if (args->FindKey("litchannel")) {
+			idStr litChannel = args->GetString("litchannel", "");
 			renderEntity->ClearLightChannel(); // If we have light channels set, we have to opt into any channel we want to use.
 
 			idParser litChannelParser;
