@@ -1172,12 +1172,16 @@ void rvmBotAIBotActionBase::BotGetRandomPointNearPosition(idVec3 point, idVec3 &
 	while (index < MAX_RANDOM_NAVCHECKS)
 	{
 		trace_t trace;
-	
+
+		point.z += pm_normalheight.GetInteger();
 		gameLocal.GetRandomPointNearPosition(point, randomPoint, radius);
+		randomPoint.z += pm_normalheight.GetInteger();
 		gameLocal.Trace(trace, point, randomPoint, CONTENTS_SOLID, 0);
 
-		if (trace.fraction == 1.0f)
+		if (trace.fraction == 1.0f) {
+			randomPoint.z -= pm_normalheight.GetInteger();
 			return;
+		}
 
 		index++;
 	}
