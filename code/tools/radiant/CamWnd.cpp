@@ -1243,9 +1243,13 @@ void CCamWnd::BuildEntityRenderState( entity_t *ent, bool update) {
 	}
 
 	spawnArgs = ent->epairs;
-	if (ent->eclass->defArgs.FindKey("model")) {
+
+// jmarshall - we have default keys in the decls now, so we need to verify the entityDef actually has a value.
+	const idKeyValue* modelKv = ent->eclass->defArgs.FindKey("model");
+	if (modelKv != NULL && strlen(modelKv->GetValue()) > 0) {
 		spawnArgs.Set("model", ent->eclass->defArgs.GetString("model"));
 	}
+// jmarshall end
 
 	// any entity can have a model
 	name = ValueForKey( ent, "name" );
@@ -1323,6 +1327,7 @@ void CCamWnd::BuildEntityRenderState( entity_t *ent, bool update) {
 				
 			}
 			
+			ent->modelDef->UpdateRenderEntity();
 		}
 	}
 
