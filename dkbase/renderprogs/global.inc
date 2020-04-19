@@ -133,6 +133,19 @@ static const half4 matrixCoCg1YtoRGB1X = half4(  1.0, -1.0,  0.0,        1.0 );
 static const half4 matrixCoCg1YtoRGB1Y = half4(  0.0,  1.0, -0.50196078, 1.0 ); // -0.5 * 256.0 / 255.0
 static const half4 matrixCoCg1YtoRGB1Z = half4( -1.0, -1.0,  1.00392156, 1.0 ); // +1.0 * 256.0 / 255.0
 
+static float Square( float x )
+{
+	return x*x;
+}
+
+static half AttenuationPointLight( float3 fragmentInWorldSpace, float4 curLightPosInWorldSpace, float4 curLightExtents ) {
+	half falloffPower = curLightPosInWorldSpace.w;
+	half3 perAxis = 1.0f - saturate( abs( fragmentInWorldSpace - curLightPosInWorldSpace.xyz ) / curLightExtents.xyz );			
+	half attenuation = pow( perAxis.x * perAxis.y * perAxis.z, falloffPower );
+	
+	return attenuation;
+}
+
 static int2 ComputeMipMapLevel(isampler2D pageOffsetTexture, float3 modelVertexPos, float3 cameraPos, float maxMip)
 {
 	float dist = distance(modelVertexPos, cameraPos);

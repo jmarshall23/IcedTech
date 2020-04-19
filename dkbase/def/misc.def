@@ -56,7 +56,8 @@ entityDef light {
 	"start_off"					"0"
 	"count"						"1"
 	"break"						"0"
-	"light_radius"				"300 300 300"
+	"light"						"300"
+	"_color"						"255 255 255"
 }
 
 entityDef speaker {

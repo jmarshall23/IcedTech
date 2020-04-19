@@ -47,6 +47,9 @@ RB_Interaction_DrawInteraction
 void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	viewLight_t* vLight = backEnd.vLight;
 
+	idVec4 lightRadius(vLight->lightDef->GetLightRadius().x, vLight->lightDef->GetLightRadius().y, vLight->lightDef->GetLightRadius().z, 1.0);
+	Draw_SetVertexParm(RENDERPARM_OVERBRIGHT, lightRadius.ToFloatPtr());
+
 	// load all the vertex program parameters
 	idVec4 lightOrigin(vLight->lightDef->parms.origin.x, vLight->lightDef->parms.origin.y, vLight->lightDef->parms.origin.z, 1.0);
 	Draw_SetVertexParm(RENDERPARM_LIGHTORIGIN, lightOrigin.ToFloatPtr());
@@ -131,12 +134,12 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	din->bumpImage->Bind();
 
 	// texture 2 will be the light falloff texture
-	GL_SelectTextureNoClient( 1 );
-	din->lightFalloffImage->Bind();
-
-	// texture 3 will be the light projection texture
-	GL_SelectTextureNoClient( 2 );
-	din->lightImage->Bind();
+	//GL_SelectTextureNoClient( 1 );
+	//din->lightFalloffImage->Bind();
+	//
+	//// texture 3 will be the light projection texture
+	//GL_SelectTextureNoClient( 2 );
+	//din->lightImage->Bind();
 
 	// texture 4 is the per-surface diffuse map
 	GL_SelectTextureNoClient( 3 );
