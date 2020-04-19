@@ -22,8 +22,8 @@ entityDef weapon_machinegun {
 	"editor_rotatable"			"1"
 	
 	"viewmodel_offsetX"			"2"
-	"viewmodel_offsetY"			"-10"
-	"viewmodel_offsetZ"			"-10"
+	"viewmodel_offsetY"			"-5"
+	"viewmodel_offsetZ"			"-8"
 	
 	
 	"modelindex"				"MODELINDEX_NAILGUN"
@@ -99,7 +99,7 @@ entityDef moveable_item_machinegun {
 }
 
 model worldmodel_machinegun {
-	mesh		 				models/md5/weapons/machinegun_world/worldmachinegun.md5mesh
+	mesh		 				models/weapons/machinegun/machinegun.md5mesh
 
 	anim raise					models/md5/weapons/machinegun_world/machinegun_idle.md5anim	
 	anim idle 					models/md5/weapons/machinegun_world/machinegun_idle.md5anim

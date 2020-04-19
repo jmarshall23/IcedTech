@@ -204,6 +204,11 @@ bool OSPathToRelativePath( const char *osPath, idStr &qpath, const char *game ) 
 
 		base = s = (char *)strstr( osPath, game );
 
+		// Legacy data.
+		if (base == NULL) {
+			base = s = (char*)strstr(osPath, "base");
+		}
+
 		while( s = strstr( s, game ) ) {
 			s += strlen( game );
 			if ( s[0] == '/' || s[0] == '\\' ) {

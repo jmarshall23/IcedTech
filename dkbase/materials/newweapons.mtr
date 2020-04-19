@@ -1,12 +1,3 @@
-models/weapons/machinegun/machinegun
-{
-	qer_editorimage		models/weapons/machinegun/machinegun_d.tga
-	bumpmap			models/weapons/machinegun/machinegun_normal.tga
-	diffusemap		models/weapons/machinegun/machinegun_d.tga
-	specularmap		models/weapons/machinegun/machinegun_spec.tga
-	emissivemap		models/weapons/machinegun/machinegun_e.tga
-} 
-
 models/weapons/plasmagun/plasmagun_world/Heavy_plasmagun
 {
 	qer_editorimage		models/weapons/plasmagun/plasmagun.tga
@@ -30,12 +21,12 @@ models/weapons/plasmagun/plasmagun/laser_beam
 	
 }
 
-models/weapons/shotgun/shotgun_world/Shotgun
+models/weapons/machinegun/machinegun_diffuse
 {
-	qer_editorimage		models/weapons/shotgun/Shotgun_diffuse.tga
-	bumpmap			models/weapons/shotgun/Shotgun_normal.tga
-	diffusemap		models/weapons/shotgun/Shotgun_diffuse.tga
-	specularmap		models/weapons/shotgun/Shotgun_spec_gloss.tga
+	qer_editorimage		models/weapons/machinegun/machinegun_diffuse.tga
+	bumpmap			models/weapons/machinegun/machinegun_normal.tga
+	diffusemap		models/weapons/machinegun/machinegun_diffuse.tga
+	specularmap		models/weapons/machinegun/machinegun_spec_gloss.tga
 }
 
 models/weapons/rocketlauncher/rocketlauncher_world/RocketLauncher_Material
