@@ -40,6 +40,7 @@ struct idRenderLightParms {
 	bool					pointLight;			// otherwise a projection light (should probably invert the sense of this, because points are way more common)
 	bool					parallel;			// lightCenter gives the direction to the light at infinity
 	idVec3					lightRadius;		// xyz radius for point lights
+	idVec3					lightColor;
 	idVec3					lightCenter;		// offset the lighting direction for shading and
 												// shadows, relative to origin
 	bool					ambientLight;		// light is ambient only
@@ -62,8 +63,6 @@ struct idRenderLightParms {
 	int						lightId;
 
 
-	const idMaterial* shader;				// NULL = either lights/defaultPointLight or lights/defaultProjectedLight
-	float					shaderParms[MAX_ENTITY_SHADER_PARMS];		// can be used in any way by shader
 	idSoundEmitter* referenceSound;		// for shader sound tables, allowing effects to vary with sounds
 };
 
@@ -88,6 +87,12 @@ public:
 
 	virtual bool			IsEnabled(void) { return parms.isEnabled; }
 	virtual void			SetEnabled(bool isEnabled) { parms.isEnabled = isEnabled; parmsDirty = true; }
+
+	virtual idVec3			GetLightColor(void) { return parms.lightColor; }
+	virtual void			SetLightColor(idVec3 lightColor) {
+		parms.lightColor = lightColor;
+		parmsDirty = true;
+	}
 
 	virtual idMat3			GetAxis(void) { return parms.axis; }
 	virtual void			SetAxis(idMat3 axis) {
@@ -203,21 +208,9 @@ public:
 		parmsDirty = true;
 	}
 
-	virtual const idMaterial* GetShader(void) { return parms.shader; }
-	virtual void			  SetShader(const idMaterial* material) { 
-		parms.shader = material; 
-		parmsDirty = true;
-	}
-
-	virtual float			GetShaderParam(int index) { return parms.shaderParms[index]; }
-	virtual void			SetShaderParam(int index, float value) { 
-		parms.shaderParms[index] = value; 
-		parmsDirty = true;
-	}
-
 	virtual idSoundEmitter* GetReferenceSound(void) { return parms.referenceSound; }
-	virtual void			SetReferenceSound(idSoundEmitter* referenceSound) { 
-		parms.referenceSound = referenceSound; 
+	virtual void			SetReferenceSound(idSoundEmitter* referenceSound) {
+		parms.referenceSound = referenceSound;
 		parmsDirty = true;
 	}
 public:
@@ -250,10 +243,6 @@ public:
 	idPlane					lightProject[4];
 	idRenderMatrix			baseLightProject;		// global xyz1 to projected light strq
 	idRenderMatrix			inverseBaseLightProject;// transforms the zero-to-one cube to exactly cover the light in world space
-
-
-	const idMaterial* lightShader;			// guaranteed to be valid, even if parms.shader isn't
-	idImage* falloffImage;
 
 	idVec3					globalLightOrigin;		// accounting for lightCenter and parallel
 

@@ -221,14 +221,11 @@ idRenderLightParms::idRenderLightParms()
 	end.Zero();
 	prelightModel = NULL;
 	lightId = 0;
-	shader = NULL;
 	referenceSound = NULL;
 	dynamicShadows = false;
 	name = "";
 	classType = RENDER_CLASS_WORLD;
 
-	for (int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++)
-		shaderParms[i] = 0;
 }
 
 /*
@@ -257,8 +254,6 @@ idRenderLightLocal::idRenderLightLocal() {
 	lastModifiedFrameNum	= 0;
 	currentOcclusionQuery   = NULL;
 	archived				= false;
-	lightShader				= NULL;
-	falloffImage			= NULL;
 	globalLightOrigin		= vec3_zero;
 	frustumTris				= NULL;
 	numShadowFrustums		= 0;

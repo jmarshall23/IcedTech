@@ -227,14 +227,11 @@ void idProjectile::Create( idEntity *owner, const idVec3 &start, const idVec3 &d
 		float radius = spawnArgs.GetFloat("light_radius");
 		spawnArgs.GetVector("light_color", "1 1 1", light_color);
 
-		renderLight->SetShader(declManager->FindMaterial( shaderName, false ));
+		//renderLight->SetShader(declManager->FindMaterial( shaderName, false ));
 		renderLight->SetPointLight(true);
 		
 		renderLight->SetLightRadius(idVec3(radius, radius, radius));
-		renderLight->SetShaderParam(0, light_color[0]);
-		renderLight->SetShaderParam(1, light_color[1]);
-		renderLight->SetShaderParam(2, light_color[2]);
-		renderLight->SetShaderParam(3, 1.0f);
+		renderLight->SetLightColor(light_color);		
 	}
 
 	spawnArgs.GetVector( "light_offset", "0 0 0", lightOffset );

@@ -489,7 +489,7 @@ Down
 
 
 	// FIXME: we want to skip the sampling as well as the generation when not casting shadows
-	if (r_shadows.GetBool() && vLight->lightShader->LightCastsShadows()) {
+	if (r_shadows.GetBool() && !vLight->lightDef->parms.noShadows) {
 		//
 		// set polygon offset for the rendering
 		//

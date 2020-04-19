@@ -824,8 +824,7 @@ static void BuildLightShadows( uEntity_t *e, mapLight_t *light ) {
 
 	// if the light is no-shadows, don't add any surfaces
 	// to the beam tree at all
-	if ( !light->def.parms.noShadows
-		&& light->def.lightShader->LightCastsShadows() ) {
+	if ( !light->def.parms.noShadows ) {
 		for ( i = 0 ; i < e->numAreas ; i++ ) {
 			for ( group = e->areas[i].groups ; group ; group = group->nextGroup ) {
 				// if the surface doesn't cast shadows, skip it
@@ -920,9 +919,7 @@ static void CarveGroupsByLight( uEntity_t *e, mapLight_t *light ) {
 		for ( group = area->groups ; group ; group = nextGroup ) {
 			nextGroup = group->nextGroup;
 			// if the surface doesn't get lit, don't carve it up
-			if ( ( light->def.lightShader->IsFogLight() && !group->material->ReceivesFog() )
-				|| ( !light->def.lightShader->IsFogLight() && !group->material->ReceivesLighting() ) 
-				|| !group->bounds.IntersectsBounds( light->def.frustumTris->bounds ) ) {
+			if ( !group->bounds.IntersectsBounds( light->def.frustumTris->bounds ) ) {
 
 				group->nextGroup = carvedGroups;
 				carvedGroups = group;
@@ -936,8 +933,7 @@ static void CarveGroupsByLight( uEntity_t *e, mapLight_t *light ) {
 
 			// if the group doesn't face the light,
 			// it won't get carved at all
-			if ( !light->def.lightShader->LightEffectsBackSides() &&
-				!group->material->ReceivesLightingOnBackSides() &&
+			if (!group->material->ReceivesLightingOnBackSides() &&
 				dmapGlobals.mapPlanes[ group->planeNum ].Distance( light->def.parms.origin ) <= 0  ) {
 
 				group->nextGroup = carvedGroups;

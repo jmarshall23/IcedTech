@@ -157,29 +157,11 @@ void idGameEdit::ParseSpawnArgsToRenderLight( const idDict *args, idRenderLight 
 
 	// check for other attributes
 	args->GetVector( "_color", "1 1 1", color );
-	renderLight->SetShaderParam(SHADERPARM_RED, color[0]);
-	renderLight->SetShaderParam(SHADERPARM_GREEN, color[1]);
-	renderLight->SetShaderParam(SHADERPARM_BLUE, color[2]);
-	renderLight->SetShaderParam(SHADERPARM_TIMESCALE, args->GetFloat("shaderParm3", "1"));
-
-	if(args->FindKey("shaderParm4") == NULL) {
-		renderLight->SetShaderParam(SHADERPARM_TIMEOFFSET, -MS2SEC(gameLocal.time));
-	}
-	else {
-		renderLight->SetShaderParam(SHADERPARM_TIMEOFFSET, args->GetFloat("shaderParm4", "0"));
-	}
-
-	renderLight->SetShaderParam(5, args->GetFloat("shaderParm5", "0"));
-	renderLight->SetShaderParam(6, args->GetFloat("shaderParm6", "0"));
-	renderLight->SetShaderParam(SHADERPARM_MODE, args->GetFloat("shaderParm7", "0"));
+	renderLight->SetLightColor(color);
 	renderLight->SetNoShadows(args->GetBool("noshadows", "0"));
 	renderLight->SetNoSpecular(args->GetBool("nospecular", "0"));
 	renderLight->SetParallelLight(args->GetBool("parallel", "0"));
 	renderLight->SetAmbientLight(args->GetBool("ambient", "0"));
-		
-	// allow this to be NULL
-	args->GetString("texture", "lights/squarelight1", &texture);
-	renderLight->SetShader(declManager->FindMaterial( texture, false ));
 }
 
 /*
@@ -345,7 +327,7 @@ void idLight::Spawn( void ) {
 	localLightAxis = renderLight->GetAxis() * GetPhysics()->GetAxis().Transpose();
 
 	// set the base color from the shader parms
-	baseColor.Set(renderLight->GetShaderParam(SHADERPARM_RED), renderLight->GetShaderParam(SHADERPARM_GREEN), renderLight->GetShaderParam(SHADERPARM_BLUE));
+	baseColor = renderLight->GetLightColor();
 
 	// set the number of light levels
 	spawnArgs.GetInt( "levels", "1", levels );
@@ -364,7 +346,7 @@ void idLight::Spawn( void ) {
 
 	// also put the light texture on the model, so light flares
 	// can get the current intensity of the light
-	renderEntity->SetReferenceShader(renderLight->GetShader());
+//	renderEntity->SetReferenceShader(renderLight->GetShader());
 
 	spawnArgs.GetBool( "start_off", "0", start_off );
 	if ( start_off ) {
@@ -443,9 +425,7 @@ void idLight::SetLightLevel( void ) {
 
 	intensity = ( float )currentLevel / ( float )levels;
 	color = baseColor * intensity;
-	renderLight->SetShaderParam( SHADERPARM_RED, color[ 0 ]);
-	renderLight->SetShaderParam( SHADERPARM_GREEN, color[ 1 ]);
-	renderLight->SetShaderParam( SHADERPARM_BLUE, color[ 2 ]);
+	renderLight->SetLightColor(color);
 	renderEntity->SetShaderParms( SHADERPARM_RED, color[ 0 ]);
 	renderEntity->SetShaderParms( SHADERPARM_GREEN, color[ 1 ]);
 	renderEntity->SetShaderParms( SHADERPARM_BLUE, color[ 2 ]);
@@ -459,9 +439,7 @@ idLight::GetColor
 ================
 */
 void idLight::GetColor( idVec3 &out ) const {
-	out[ 0 ] = renderLight->GetShaderParam( SHADERPARM_RED );
-	out[ 1 ] = renderLight->GetShaderParam( SHADERPARM_GREEN );
-	out[ 2 ] = renderLight->GetShaderParam( SHADERPARM_BLUE );
+	out = renderLight->GetLightColor();
 }
 
 /*
@@ -470,10 +448,7 @@ idLight::GetColor
 ================
 */
 void idLight::GetColor( idVec4 &out ) const {
-	out[ 0 ] = renderLight->GetShaderParam( SHADERPARM_RED);
-	out[ 1 ] = renderLight->GetShaderParam( SHADERPARM_GREEN);
-	out[ 2 ] = renderLight->GetShaderParam( SHADERPARM_BLUE);
-	out[ 3 ] = renderLight->GetShaderParam( SHADERPARM_ALPHA );
+	out = renderLight->GetLightColor().ToVec4();
 }
 
 /*
@@ -493,7 +468,7 @@ idLight::SetColor
 */
 void idLight::SetColor( const idVec4 &color ) {
 	baseColor = color.ToVec3();
-	renderLight->SetShaderParam(SHADERPARM_ALPHA, color[3]);
+	//renderLight->SetShaderParam(SHADERPARM_ALPHA, color[3]);
 	renderEntity->SetShaderParms(SHADERPARM_ALPHA, color[ 3 ]);
 	SetLightLevel();
 }
@@ -505,8 +480,8 @@ idLight::SetShader
 */
 void idLight::SetShader( const char *shadername ) {
 	// allow this to be NULL
-	renderLight->SetShader(declManager->FindMaterial( shadername, false ));
-	PresentLightDefChange();
+	//renderLight->SetShader(declManager->FindMaterial( shadername, false ));
+	//PresentLightDefChange();
 }
 
 /*
@@ -515,12 +490,12 @@ idLight::SetLightParm
 ================
 */
 void idLight::SetLightParm( int parmnum, float value ) {
-	if ( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) ) {
-		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
-	}
-
-	renderLight->SetShaderParam(parmnum, value);
-	PresentLightDefChange();
+	//if ( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) ) {
+	//	gameLocal.Error( "shader parm index (%d) out of range", parmnum );
+	//}
+	//
+	//renderLight->SetShaderParam(parmnum, value);
+	//PresentLightDefChange();
 }
 
 /*
@@ -529,10 +504,7 @@ idLight::SetLightParms
 ================
 */
 void idLight::SetLightParms( float parm0, float parm1, float parm2, float parm3 ) {
-	renderLight->SetShaderParam(SHADERPARM_RED, parm0);
-	renderLight->SetShaderParam(SHADERPARM_GREEN, parm1);
-	renderLight->SetShaderParam(SHADERPARM_BLUE, parm2);
-	renderLight->SetShaderParam(SHADERPARM_ALPHA, parm3);
+	renderLight->SetLightColor(idVec3(parm0, parm1, parm2));
 	renderEntity->SetShaderParms( SHADERPARM_RED, parm0);
 	renderEntity->SetShaderParms( SHADERPARM_GREEN, parm1);
 	renderEntity->SetShaderParms( SHADERPARM_BLUE, parm2);
@@ -569,7 +541,7 @@ idLight::On
 void idLight::On( void ) {
 	currentLevel = levels;
 	// offset the start time of the shader to sync it to the game time
-	renderLight->SetShaderParam(SHADERPARM_TIMEOFFSET, -MS2SEC( gameLocal.time ));
+	//renderLight->SetShaderParam(SHADERPARM_TIMEOFFSET, -MS2SEC( gameLocal.time ));
 	if ( ( soundWasPlaying || refSound.waitfortrigger ) && refSound.shader ) {
 		StartSoundShader( refSound.shader, SND_CHANNEL_ANY, 0, false, NULL );
 		soundWasPlaying = false;
@@ -677,11 +649,11 @@ void idLight::BecomeBroken( idEntity *activator ) {
 
 	// offset the start time of the shader to sync it to the game time
 	renderEntity->SetShaderParms( SHADERPARM_TIMEOFFSET, -MS2SEC( gameLocal.time ));
-	renderLight->SetShaderParam(SHADERPARM_TIMEOFFSET, -MS2SEC( gameLocal.time ));
+//	renderLight->SetShaderParam(SHADERPARM_TIMEOFFSET, -MS2SEC( gameLocal.time ));
 
 	// set the state parm
 	renderEntity->SetShaderParms( SHADERPARM_MODE, 1);
-	renderLight->SetShaderParam( SHADERPARM_MODE, 1);
+//	renderLight->SetShaderParam( SHADERPARM_MODE, 1);
 
 	// if the light has a sound, either start the alternate (broken) sound, or stop the sound
 	const char *parm = spawnArgs.GetString( "snd_broken" );
@@ -851,11 +823,11 @@ idLight::Event_GetLightParm
 ================
 */
 void idLight::Event_GetLightParm( int parmnum ) {
-	if ( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) ) {
-		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
-	}
-
-	idThread::ReturnFloat( renderLight->GetShaderParam( parmnum ) );
+//	if ( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) ) {
+//		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
+//	}
+//
+//	idThread::ReturnFloat( renderLight->GetShaderParam( parmnum ) );
 }
 
 /*
@@ -1055,15 +1027,10 @@ void idLight::WriteToSnapshot( idBitMsgDelta &msg ) const {
 	msg.WriteFloat( lightRadius[1], 5, 10 );
 	msg.WriteFloat( lightRadius[2], 5, 10 );
 
-	msg.WriteLong( PackColor( idVec4( renderLight->GetShaderParam(SHADERPARM_RED),
-									  renderLight->GetShaderParam(SHADERPARM_GREEN),
-									  renderLight->GetShaderParam(SHADERPARM_BLUE),
-									  renderLight->GetShaderParam(SHADERPARM_ALPHA) ) ) );
-
-	msg.WriteFloat( renderLight->GetShaderParam(SHADERPARM_TIMESCALE), 5, 10 );
-	msg.WriteLong( renderLight->GetShaderParam(SHADERPARM_TIMEOFFSET) );
-	//msg.WriteByte( renderLight.shaderParms[SHADERPARM_DIVERSITY] );
-	msg.WriteShort( renderLight->GetShaderParam(SHADERPARM_MODE) );
+	idVec3 lightColor = renderLight->GetLightColor();
+	msg.WriteFloat(lightColor[0]);
+	msg.WriteFloat(lightColor[1]);
+	msg.WriteFloat(lightColor[2]);
 
 	WriteColorToSnapshot( msg );
 }
@@ -1109,16 +1076,12 @@ void idLight::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 	lightRadius[2] = msg.ReadFloat( 5, 10 );
 	renderLight->SetLightRadius(lightRadius);
 
-	UnpackColor( msg.ReadLong(), shaderColor );
-	renderLight->SetShaderParam(SHADERPARM_RED, shaderColor[0]);
-	renderLight->SetShaderParam(SHADERPARM_GREEN, shaderColor[1]);
-	renderLight->SetShaderParam(SHADERPARM_BLUE, shaderColor[2]);
-	renderLight->SetShaderParam(SHADERPARM_ALPHA, shaderColor[3]);
+	idVec3 lightColor;
 
-	renderLight->SetShaderParam(SHADERPARM_TIMESCALE, msg.ReadFloat( 5, 10 ));
-	renderLight->SetShaderParam(SHADERPARM_TIMEOFFSET, msg.ReadLong());
-	//renderLight.shaderParms[SHADERPARM_DIVERSITY] = msg.ReadFloat();
-	renderLight->SetShaderParam(SHADERPARM_MODE, msg.ReadShort());
+	lightColor.x = msg.ReadFloat();
+	lightColor.y = msg.ReadFloat();
+	lightColor.z = msg.ReadFloat();
+	renderLight->SetLightColor(lightColor);
 
 	ReadColorFromSnapshot( msg );
 

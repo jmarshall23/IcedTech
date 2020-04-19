@@ -239,6 +239,25 @@ void idVec3::Lerp( const idVec3 &v1, const idVec3 &v2, const float l ) {
 	}
 }
 
+// jmarshall
+/*
+=============
+idVec3::ToVec4
+=============
+*/
+
+idVec4 idVec3::ToVec4(void) const {
+	idVec4 v;
+
+	v.x = x;
+	v.y = y;
+	v.z = z;
+	v.w = 0;
+
+	return v;
+}
+// jmarshall end
+
 /*
 =============
 SLerp

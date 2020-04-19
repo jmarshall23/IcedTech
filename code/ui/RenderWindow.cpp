@@ -116,9 +116,7 @@ void idRenderWindow::PreRender() {
 
 void idRenderWindow::Render( int time ) {
 	rLight->SetOrigin(lightOrigin.ToVec3());
-	rLight->SetShaderParam(SHADERPARM_RED, lightColor.x());
-	rLight->SetShaderParam(SHADERPARM_GREEN, lightColor.y());
-	rLight->SetShaderParam(SHADERPARM_BLUE, lightColor.z());
+	rLight->SetLightColor(lightColor.ToVec3());
 	rLight->UpdateRenderLight();
 	if ( worldEntity->GetRenderModel() ) {
 		if (updateAnimation) {

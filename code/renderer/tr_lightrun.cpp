@@ -121,33 +121,7 @@ designers can easily test different color schemes
 ====================
 */
 void R_ModulateLights_f( const idCmdArgs &args ) {
-	if ( !tr.primaryWorld ) {
-		return;
-	}
-	if ( args.Argc() != 4 ) {
-		common->Printf( "usage: modulateLights <redFloat> <greenFloat> <blueFloat>\n" );
-		return;
-	}
-
-	float	modulate[3];
-	int i;
-	for ( i = 0 ; i < 3 ; i++ ) {
-		modulate[i] = atof( args.Argv( i+1 ) );
-	}
-
-	int count = 0;
-	for ( i = 0 ; i < tr.primaryWorld->lightDefs.Num() ; i++ ) {
-		idRenderLightLocal	*light;
-
-		light = tr.primaryWorld->lightDefs[i];
-		if ( light ) {
-			count++;
-			for ( int j = 0 ; j < 3 ; j++ ) {
-				light->parms.shaderParms[j] *= modulate[j];
-			}
-		}
-	}
-	common->Printf( "modulated %i lights\n", count );
+	
 }
 
 
@@ -475,34 +449,6 @@ Fills everything in based on light->parms
 */
 void R_DeriveLightData( idRenderLightLocal *light ) {
 	int i;
-
-	// decide which light shader we are going to use
-	if ( light->parms.shader ) {
-		light->lightShader = light->parms.shader;
-	}
-	if ( !light->lightShader ) {
-		if ( light->parms.pointLight ) {
-			light->lightShader = declManager->FindMaterial( "lights/defaultPointLight" );
-		} else {
-			light->lightShader = declManager->FindMaterial( "lights/defaultProjectedLight" );
-		}
-	}
-
-	// get the falloff image
-	light->falloffImage = light->lightShader->LightFalloffImage();
-	if ( !light->falloffImage ) {
-		// use the falloff from the default shader of the correct type
-		const idMaterial	*defaultShader;
-
-		if ( light->parms.pointLight ) {
-			defaultShader = declManager->FindMaterial( "lights/defaultPointLight" );
-			light->falloffImage = defaultShader->LightFalloffImage();
-		} else {
-			// projected lights by default don't diminish with distance
-			defaultShader = declManager->FindMaterial( "lights/defaultProjectedLight" );
-			light->falloffImage = defaultShader->LightFalloffImage();
-		}
-	}
 
 	// set the projection
 	if ( !light->parms.pointLight ) {

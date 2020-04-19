@@ -377,10 +377,7 @@ void idGLDrawableView::addLight( void ) {
 	gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, viewLight.renderLight );
 
 	viewLight.origin = viewLight.renderLight->GetOrigin();
-	viewLight.shader = declManager->FindMaterial( "lights/defaultPointLight", false );
-	viewLight.color.x = viewLight.renderLight->GetShaderParam(SHADERPARM_RED);
-	viewLight.color.y = viewLight.renderLight->GetShaderParam(SHADERPARM_GREEN);
-	viewLight.color.z = viewLight.renderLight->GetShaderParam(SHADERPARM_BLUE);
+	viewLight.color = viewLight.renderLight->GetLightColor();
 	viewLight.radius = 300.f;
 	viewLight.allowMove = true;
 
@@ -465,11 +462,7 @@ void idGLDrawableView::UpdateLights( void ) {
 	for ( i = 0; i < viewLights.Num(); i++ ) {
 		lightInfo_t	*vLight = &viewLights[i];
 
-		vLight->renderLight->SetShader(vLight->shader);
-
-		vLight->renderLight->SetShaderParam(SHADERPARM_RED, vLight->color.x);
-		vLight->renderLight->SetShaderParam(SHADERPARM_GREEN, vLight->color.y);
-		vLight->renderLight->SetShaderParam(SHADERPARM_BLUE, vLight->color.z);
+		vLight->renderLight->SetLightColor(vLight->color);
 
 		vLight->renderLight->SetLightRadius(idVec3(vLight->radius, vLight->radius, vLight->radius));
 		vLight->renderLight->SetOrigin(vLight->origin);
@@ -604,9 +597,6 @@ void idGLDrawableView::setGlobalParm( int parmNum, float value ) {
 
 void idGLDrawableView::setLightShader( const int lightId, const idStr shaderName ) {
 
-	if ( lightId < viewLights.Num() ) {
-		viewLights[ lightId ].shader = declManager->FindMaterial( shaderName, false );
-	}
 }
 
 void idGLDrawableView::setLightColor( const int lightId, const idVec3 &value ) {

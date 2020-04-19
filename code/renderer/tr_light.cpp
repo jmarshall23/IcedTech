@@ -76,11 +76,6 @@ Returns false if the cache couldn't be allocated, in which case the surface shou
 bool R_CreateLightingCache( const idRenderEntityLocal *ent, const idRenderLightLocal *light, srfTriangles_t *tri ) {
 	idVec3		localLightOrigin;
 
-	// fogs and blends don't need light vectors
-	if ( light->lightShader->IsFogLight() || light->lightShader->IsBlendLight() ) {
-		return true;
-	}
-
 	// not needed if we have vertex programs
 	if ( tr.backEndRendererHasVertexPrograms ) {
 		return true;
@@ -514,9 +509,6 @@ viewLight_t *R_SetLightDefViewLight( idRenderLightLocal *light ) {
 	vLight->lightProject[3] = light->lightProject[3];
 	vLight->fogPlane = light->frustum[5];
 	vLight->frustumTris = light->frustumTris;
-	vLight->falloffImage = light->falloffImage;
-	vLight->lightShader = light->lightShader;
-	vLight->shaderRegisters = NULL;		// allocated and evaluated in R_AddLightSurfaces
 
 	// link the view light
 	vLight->next = tr.viewDef->viewLights;
@@ -579,7 +571,7 @@ void idRenderWorldLocal::CreateLightDefInteractions( idRenderLightLocal *ldef ) 
 			// if the entity isn't viewed
 		if (tr.viewDef && edef->viewCount != tr.viewCount) {
 			// if the light doesn't cast shadows, skip
-			if (!ldef->lightShader->LightCastsShadows()) {
+			if (ldef->parms.noShadows) {
 				continue;
 			}
 			// if we are suppressing its shadow in this view, skip
@@ -829,11 +821,6 @@ void R_AddLightSurfaces( void ) {
 		vLight = *ptr;
 		light = vLight->lightDef;
 
-		const idMaterial	*lightShader = light->lightShader;
-		if ( !lightShader ) {
-			common->Error( "R_AddLightSurfaces: NULL lightShader" );
-		}
-
 		// see if we are suppressing the light in this view
 		if ( !r_skipSuppress.GetBool() ) {
 			if ( light->parms.suppressLightInViewID
@@ -844,59 +831,6 @@ void R_AddLightSurfaces( void ) {
 			}
 			if ( light->parms.allowLightInViewID 
 			&& light->parms.allowLightInViewID != tr.viewDef->renderView.viewID ) {
-				*ptr = vLight->next;
-				light->viewCount = -1;
-				continue;
-			}
-		}
-
-		// evaluate the light shader registers
-		float *lightRegs =(float *)R_FrameAlloc( lightShader->GetNumRegisters() * sizeof( float ) );
-		vLight->shaderRegisters = lightRegs;
-		lightShader->EvaluateRegisters( lightRegs, light->parms.shaderParms, tr.viewDef, light->parms.referenceSound );
-
-		// if this is a purely additive light and no stage in the light shader evaluates
-		// to a positive light value, we can completely skip the light
-		if ( !lightShader->IsFogLight() && !lightShader->IsBlendLight() ) {
-			int lightStageNum;
-			for ( lightStageNum = 0 ; lightStageNum < lightShader->GetNumStages() ; lightStageNum++ ) {
-				const shaderStage_t	*lightStage = lightShader->GetStage( lightStageNum );
-
-				// ignore stages that fail the condition
-				if ( !lightRegs[ lightStage->conditionRegister ] ) {
-					continue;
-				}
-
-				const int *registers = lightStage->color.registers;
-
-				// snap tiny values to zero to avoid lights showing up with the wrong color
-				if ( lightRegs[ registers[0] ] < 0.001f ) {
-					lightRegs[ registers[0] ] = 0.0f;
-				}
-				if ( lightRegs[ registers[1] ] < 0.001f ) {
-					lightRegs[ registers[1] ] = 0.0f;
-				}
-				if ( lightRegs[ registers[2] ] < 0.001f ) {
-					lightRegs[ registers[2] ] = 0.0f;
-				}
-
-				// FIXME:	when using the following values the light shows up bright red when using nvidia drivers/hardware
-				//			this seems to have been fixed ?
-				//lightRegs[ registers[0] ] = 1.5143074e-005f;
-				//lightRegs[ registers[1] ] = 1.5483369e-005f;
-				//lightRegs[ registers[2] ] = 1.7014690e-005f;
-
-				if ( lightRegs[ registers[0] ] > 0.0f ||
-						lightRegs[ registers[1] ] > 0.0f ||
-							lightRegs[ registers[2] ] > 0.0f ) {
-					break;
-				}
-			}
-			if ( lightStageNum == lightShader->GetNumStages() ) {
-				// we went through all the stages and didn't find one that adds anything
-				// remove the light from the viewLights list, and change its frame marker
-				// so interaction generation doesn't think the light is visible and
-				// create a shadow for it
 				*ptr = vLight->next;
 				light->viewCount = -1;
 				continue;
@@ -942,19 +876,6 @@ void R_AddLightSurfaces( void ) {
 		// will be deferred until we walk through the viewEntities
 		tr.viewDef->renderWorld->CreateLightDefInteractions( light );
 		tr.pc.c_viewLights++;
-
-		// fog lights will need to draw the light frustum triangles, so make sure they
-		// are in the vertex cache
-		if ( lightShader->IsFogLight() ) {
-			if ( !light->frustumTris->ambientCache ) {
-				if ( !R_CreateAmbientCache( light->frustumTris, false ) ) {
-					// skip if we are out of vertex memory
-					continue;
-				}
-			}
-			// touch the surface so it won't get purged
-			vertexCache.Touch( light->frustumTris->ambientCache );
-		}
 	}
 }
 
@@ -1516,9 +1437,9 @@ void R_RemoveUnecessaryViewLights( void ) {
 			const drawSurf_t	*surf;
 			idScreenRect	surfRect;
 
-			if ( !vLight->lightShader->LightCastsShadows() ) {
-				continue;
-			}
+			//if ( !vLight->lightShader->LightCastsShadows() ) {
+			//	continue;
+			//}
 
 			surfRect.Clear();
 

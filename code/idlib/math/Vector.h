@@ -325,6 +325,9 @@ public:
 
 	void 			Set( const float x, const float y, const float z );
 	void			Zero( void );
+// jmarshall
+	idVec4			ToVec4(void) const;
+// jmarshall end
 
 	float			operator[]( const int index ) const;
 	float &			operator[]( const int index );
@@ -367,7 +370,7 @@ public:
 
 	float			ToYaw( void ) const;
 	float			ToPitch( void ) const;
-	idAngles		ToAngles( void ) const;
+	idAngles		ToAngles( void ) const; 
 	idPolar3		ToPolar( void ) const;
 	idMat3			ToMat3( void ) const;		// vector should be normalized
 	const idVec2 &	ToVec2( void ) const;

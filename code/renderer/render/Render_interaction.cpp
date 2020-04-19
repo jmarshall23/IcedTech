@@ -235,7 +235,7 @@ void RB_Interaction_CreateDrawInteractions(idInteraction* interaction) {
 
 	// texture 0 is the normalization cube map for the vector towards the light
 	GL_SelectTextureNoClient( 0 );
-	if ( backEnd.vLight->lightShader->IsAmbientLight() ) {
+	if ( backEnd.vLight->lightDef->GetAmbientLight() ) {
 		globalImages->ambientNormalMap->Bind();
 	} else {
 		globalImages->normalCubeMapImage->Bind();
@@ -341,7 +341,6 @@ RB_Interaction_DrawInteractions
 */
 void RB_Interaction_DrawInteractions( void ) {
 	viewLight_t		*vLight;
-	const idMaterial	*lightShader;
 
 	GL_SelectTexture( 0 );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -361,16 +360,6 @@ void RB_Interaction_DrawInteractions( void ) {
 		if(vLight->lightDef->parms.classType != backEnd.currentClassDrawType) {
 			continue;
 		}
-
-		// do fogging later
-		if ( vLight->lightShader->IsFogLight() ) {
-			continue;
-		}
-		if ( vLight->lightShader->IsBlendLight() ) {
-			continue;
-		}
-
-		lightShader = vLight->lightShader;
 
 		// clear the stencil buffer if needed
 		//if ( vLight->globalShadows || vLight->localShadows ) {

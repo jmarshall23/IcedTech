@@ -433,17 +433,15 @@ void	idRenderWorldLocal::WriteRenderLight( qhandle_t handle, const idRenderLight
 	session->writeDemo->WriteVec3( light->end );
 	session->writeDemo->WriteInt( (int&)light->prelightModel );
 	session->writeDemo->WriteInt( light->lightId );
-	session->writeDemo->WriteInt( (int&)light->shader );
-	for ( int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++)
-		session->writeDemo->WriteFloat( light->shaderParms[i] );
+//	session->writeDemo->WriteInt( (int&)light->shader );
+//	for ( int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++)
+//		session->writeDemo->WriteFloat( light->shaderParms[i] );
 	session->writeDemo->WriteInt( (int&)light->referenceSound );
 
 	if ( light->prelightModel ) {
 		session->writeDemo->WriteHashString( light->prelightModel->Name() );
 	}
-	if ( light->shader ) {
-		session->writeDemo->WriteHashString( light->shader->GetName() );
-	}
+
 	if ( light->referenceSound ) {
 		int	index = light->referenceSound->Index();
 		session->writeDemo->WriteInt( index );
@@ -485,16 +483,16 @@ void	idRenderWorldLocal::ReadRenderLight( ) {
 	session->readDemo->ReadVec3( light.end );
 	session->readDemo->ReadInt( (int&)light.prelightModel );
 	session->readDemo->ReadInt( light.lightId );
-	session->readDemo->ReadInt( (int&)light.shader );
-	for ( int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++)
-		session->readDemo->ReadFloat( light.shaderParms[i] );
+	//session->readDemo->ReadInt( (int&)light.shader );
+	//for ( int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++)
+	//	session->readDemo->ReadFloat( light.shaderParms[i] );
 	session->readDemo->ReadInt( (int&)light.referenceSound );
 	if ( light.prelightModel ) {
 		light.prelightModel = renderModelManager->FindModel( session->readDemo->ReadHashString() );
 	}
-	if ( light.shader ) {
-		light.shader = declManager->FindMaterial( session->readDemo->ReadHashString() );
-	}
+	//if ( light.shader ) {
+	//	light.shader = declManager->FindMaterial( session->readDemo->ReadHashString() );
+	//}
 	if ( light.referenceSound ) {
 		int	index;
 		session->readDemo->ReadInt( index );

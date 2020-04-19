@@ -1093,91 +1093,6 @@ static void RB_T_BlendLight( const drawSurf_t *surf ) {
 	RB_DrawElementsWithCounters( tri );
 }
 
-
-/*
-=====================
-RB_BlendLight
-
-Dual texture together the falloff and projection texture with a blend
-mode to the framebuffer, instead of interacting with the surface texture
-=====================
-*/
-static void RB_BlendLight( const drawSurf_t *drawSurfs,  const drawSurf_t *drawSurfs2 ) {
-	const idMaterial	*lightShader;
-	const shaderStage_t	*stage;
-	int					i;
-	const float	*regs;
-
-	if ( !drawSurfs ) {
-		return;
-	}
-	if ( r_skipBlendLights.GetBool() ) {
-		return;
-	}
-	RB_LogComment( "---------- RB_BlendLight ----------\n" );
-
-	lightShader = backEnd.vLight->lightShader;
-	regs = backEnd.vLight->shaderRegisters;
-
-	// texture 1 will get the falloff texture
-	GL_SelectTexture( 1 );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	glEnable( GL_TEXTURE_GEN_S );
-	glTexCoord2f( 0, 0.5 );
-	backEnd.vLight->falloffImage->Bind();
-
-	// texture 0 will get the projected texture
-	GL_SelectTexture( 0 );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	glEnable( GL_TEXTURE_GEN_S );
-	glEnable( GL_TEXTURE_GEN_T );
-	glEnable( GL_TEXTURE_GEN_Q );
-
-	for ( i = 0 ; i < lightShader->GetNumStages() ; i++ ) {
-		stage = lightShader->GetStage(i);
-
-		if ( !regs[ stage->conditionRegister ] ) {
-			continue;
-		}
-
-		GL_State( GLS_DEPTHMASK | stage->drawStateBits | GLS_DEPTHFUNC_EQUAL );
-
-		GL_SelectTexture( 0 );
-		stage->texture.image->Bind();
-
-		if ( stage->texture.hasMatrix ) {
-			RB_LoadShaderTextureMatrix( regs, &stage->texture );
-		}
-
-		// get the modulate values from the light, including alpha, unlike normal lights
-		backEnd.lightColor[0] = regs[ stage->color.registers[0] ];
-		backEnd.lightColor[1] = regs[ stage->color.registers[1] ];
-		backEnd.lightColor[2] = regs[ stage->color.registers[2] ];
-		backEnd.lightColor[3] = regs[ stage->color.registers[3] ];
-		glColor4fv( backEnd.lightColor );
-
-		RB_RenderDrawSurfChainWithFunction( drawSurfs, RB_T_BlendLight );
-		RB_RenderDrawSurfChainWithFunction( drawSurfs2, RB_T_BlendLight );
-
-		if ( stage->texture.hasMatrix ) {
-			GL_SelectTexture( 0 );
-			glMatrixMode( GL_TEXTURE );
-			glLoadIdentity();
-			glMatrixMode( GL_MODELVIEW );
-		}
-	}
-
-	GL_SelectTexture( 1 );
-	glDisable( GL_TEXTURE_GEN_S );
-	globalImages->BindNull();
-
-	GL_SelectTexture( 0 );
-	glDisable( GL_TEXTURE_GEN_S );
-	glDisable( GL_TEXTURE_GEN_T );
-	glDisable( GL_TEXTURE_GEN_Q );
-}
-
-
 //========================================================================
 
 static idPlane	fogPlanes[4];
@@ -1225,115 +1140,7 @@ RB_FogPass
 ==================
 */
 static void RB_FogPass( const drawSurf_t *drawSurfs,  const drawSurf_t *drawSurfs2 ) {
-	const srfTriangles_t*frustumTris;
-	drawSurf_t			ds;
-	const idMaterial	*lightShader;
-	const shaderStage_t	*stage;
-	const float			*regs;
-
-	RB_LogComment( "---------- RB_FogPass ----------\n" );
-
-	// create a surface for the light frustom triangles, which are oriented drawn side out
-	frustumTris = backEnd.vLight->frustumTris;
-
-	// if we ran out of vertex cache memory, skip it
-	if ( !frustumTris->ambientCache ) {
-		return;
-	}
-	memset( &ds, 0, sizeof( ds ) );
-	ds.space = &backEnd.viewDef->worldSpace;
-	ds.geo = frustumTris;
-	ds.scissorRect = backEnd.viewDef->scissor;
-
-	// find the current color and density of the fog
-	lightShader = backEnd.vLight->lightShader;
-	regs = backEnd.vLight->shaderRegisters;
-	// assume fog shaders have only a single stage
-	stage = lightShader->GetStage(0);
-
-	backEnd.lightColor[0] = regs[ stage->color.registers[0] ];
-	backEnd.lightColor[1] = regs[ stage->color.registers[1] ];
-	backEnd.lightColor[2] = regs[ stage->color.registers[2] ];
-	backEnd.lightColor[3] = regs[ stage->color.registers[3] ];
-
-	glColor3fv( backEnd.lightColor );
-
-	// calculate the falloff planes
-	float	a;
-
-	// if they left the default value on, set a fog distance of 500
-	if ( backEnd.lightColor[3] <= 1.0 ) {
-		a = -0.5f / DEFAULT_FOG_DISTANCE;
-	} else {
-		// otherwise, distance = alpha color
-		a = -0.5f / backEnd.lightColor[3];
-	}
-
-	GL_State( GLS_DEPTHMASK | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_EQUAL );
-
-	// texture 0 is the falloff image
-	GL_SelectTexture( 0 );
-	globalImages->fogImage->Bind();
-	//GL_Bind( tr.whiteImage );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	glEnable( GL_TEXTURE_GEN_S );
-	glEnable( GL_TEXTURE_GEN_T );
-	glTexCoord2f( 0.5f, 0.5f );		// make sure Q is set
-
-	fogPlanes[0][0] = a * backEnd.viewDef->worldSpace.modelViewMatrix[2];
-	fogPlanes[0][1] = a * backEnd.viewDef->worldSpace.modelViewMatrix[6];
-	fogPlanes[0][2] = a * backEnd.viewDef->worldSpace.modelViewMatrix[10];
-	fogPlanes[0][3] = a * backEnd.viewDef->worldSpace.modelViewMatrix[14];
-
-	fogPlanes[1][0] = a * backEnd.viewDef->worldSpace.modelViewMatrix[0];
-	fogPlanes[1][1] = a * backEnd.viewDef->worldSpace.modelViewMatrix[4];
-	fogPlanes[1][2] = a * backEnd.viewDef->worldSpace.modelViewMatrix[8];
-	fogPlanes[1][3] = a * backEnd.viewDef->worldSpace.modelViewMatrix[12];
-
-
-	// texture 1 is the entering plane fade correction
-	GL_SelectTexture( 1 );
-	globalImages->fogEnterImage->Bind();
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	glEnable( GL_TEXTURE_GEN_S );
-	glEnable( GL_TEXTURE_GEN_T );
-
-	// T will get a texgen for the fade plane, which is always the "top" plane on unrotated lights
-	fogPlanes[2][0] = 0.001f * backEnd.vLight->fogPlane[0];
-	fogPlanes[2][1] = 0.001f * backEnd.vLight->fogPlane[1];
-	fogPlanes[2][2] = 0.001f * backEnd.vLight->fogPlane[2];
-	fogPlanes[2][3] = 0.001f * backEnd.vLight->fogPlane[3];
-
-	// S is based on the view origin
-	float s = backEnd.viewDef->renderView.vieworg * fogPlanes[2].Normal() + fogPlanes[2][3];
-
-	fogPlanes[3][0] = 0;
-	fogPlanes[3][1] = 0;
-	fogPlanes[3][2] = 0;
-	fogPlanes[3][3] = FOG_ENTER + s;
-
-	glTexCoord2f( FOG_ENTER + s, FOG_ENTER );
-
-
-	// draw it
-	RB_RenderDrawSurfChainWithFunction( drawSurfs, RB_T_BasicFog );
-	RB_RenderDrawSurfChainWithFunction( drawSurfs2, RB_T_BasicFog );
-
-	// the light frustum bounding planes aren't in the depth buffer, so use depthfunc_less instead
-	// of depthfunc_equal
-	GL_State( GLS_DEPTHMASK | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_LESS );
-	GL_Cull( CT_BACK_SIDED );
-	RB_RenderDrawSurfChainWithFunction( &ds, RB_T_BasicFog );
-	GL_Cull( CT_FRONT_SIDED );
-
-	GL_SelectTexture( 1 );
-	glDisable( GL_TEXTURE_GEN_S );
-	glDisable( GL_TEXTURE_GEN_T );
-	globalImages->BindNull();
-
-	GL_SelectTexture( 0 );
-	glDisable( GL_TEXTURE_GEN_S );
-	glDisable( GL_TEXTURE_GEN_T );
+	
 }
 
 
@@ -1357,10 +1164,6 @@ void RB_STD_FogAllLights( void ) {
 
 	for ( vLight = backEnd.viewDef->viewLights ; vLight ; vLight = vLight->next ) {
 		backEnd.vLight = vLight;
-
-		if ( !vLight->lightShader->IsFogLight() && !vLight->lightShader->IsBlendLight() ) {
-			continue;
-		}
 
 #if 0 // _D3XP disabled that
 		if ( r_ignore.GetInteger() ) {

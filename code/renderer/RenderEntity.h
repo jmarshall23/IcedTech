@@ -23,6 +23,9 @@ public:
 	virtual bool			HasLightChannel(int lightChannel) = 0;
 	virtual void			ClearLightChannel(void) = 0;
 
+	virtual idVec3			GetLightColor(void) = 0;
+	virtual void			SetLightColor(idVec3 lightColor) = 0;
+
 	virtual bool			IsEnabled(void) = 0;
 	virtual void			SetEnabled(bool isEnabled) = 0;
 
@@ -85,12 +88,6 @@ public:
 
 	virtual int				GetLightId(void) = 0;
 	virtual void			SetLightId(int lightId) = 0;
-
-	virtual const idMaterial* GetShader(void) = 0;
-	virtual void			  SetShader(const idMaterial* material) = 0;
-
-	virtual float			GetShaderParam(int index) = 0;
-	virtual void			SetShaderParam(int index, float value) = 0;
 
 	virtual idSoundEmitter* GetReferenceSound(void) = 0;
 	virtual void			SetReferenceSound(idSoundEmitter* referenceSound) = 0;

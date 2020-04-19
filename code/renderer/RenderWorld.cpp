@@ -64,7 +64,7 @@ void R_ListRenderLightDefs_f( const idCmdArgs &args ) {
 		// count up the references
 		int	rCount = 0;
 
-		common->Printf( "%4i: %3i intr %2i refs %s\n", i, iCount, rCount, ldef->lightShader->GetName());
+		common->Printf( "%4i: %3i intr %2i\n", i, iCount, rCount);
 		active++;
 	}
 

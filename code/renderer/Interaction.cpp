@@ -456,7 +456,7 @@ idInteraction::HasShadows
 ===============
 */
 ID_INLINE bool idInteraction::HasShadows( void ) const {
-	return ( !lightDef->parms.noShadows && !entityDef->parms.noShadow && lightDef->lightShader->LightCastsShadows() );
+	return ( !lightDef->parms.noShadows && !entityDef->parms.noShadow );
 }
 
 /*
@@ -591,7 +591,6 @@ The results of this are cached and valid until the light or entity change.
 ====================
 */
 void idInteraction::CreateInteraction( const idRenderModel *model ) {
-	const idMaterial *	lightShader = lightDef->lightShader;
 	const idMaterial*	shader;
 	bool				interactionGenerated;
 	idBounds			bounds;
@@ -677,11 +676,6 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 		// when the ambient surface isn't in view, and we can get shared vertex
 		// and shadow data from the source surface
 		sint->ambientTris = tri;
-
-		// "invisible ink" lights and shaders
-		if ( shader->Spectrum() != lightShader->Spectrum() ) {
-			continue;
-		}
 
 		// generate a lighted surface and add it
 		if ( shader->ReceivesLighting() ) {

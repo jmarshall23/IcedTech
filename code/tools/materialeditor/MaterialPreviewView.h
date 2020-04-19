@@ -86,7 +86,6 @@ protected:
 	typedef struct {
 		idRenderLight		*renderLight;
 		idVec3				origin;
-		const idMaterial	*shader;
 		float				radius;
 		idVec3				color;
 		bool				allowMove;
