@@ -132,7 +132,13 @@ void idGameEdit::ParseSpawnArgsToRenderLight( const idDict *args, idRenderLight 
 		renderLight->SetUp(args->GetVector("light_up", "0 0 0"));
 		renderLight->SetRight(args->GetVector("light_right", "0 0 0"));
 		renderLight->SetStart(args->GetVector("light_start", "0 0 0"));
-		renderLight->SetEnd(args->GetVector("light_end", "0 0 0"));
+
+		if (args->FindKey("light_end") != NULL) {
+			renderLight->SetEnd(args->GetVector("light_end", "0 0 0"));
+		}
+		else {
+			renderLight->SetEnd(renderLight->GetTarget());
+		}
 	}
 
 	// get the rotation matrix in either full form, or single angle form
