@@ -54,11 +54,12 @@ void rvmToolShowFrameRate::Render( void ) {
 
 	bool toolActive = false;
 
-	metrics = session->GetGameRenderMetrics();	
+	metrics = session->GetGameRenderMetrics();
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.FramePadding = ImVec2(0, 0);
-	
+	ImGui::SetNextWindowSize( ImVec2( 350, 200 ) );
+    ImGui::SetNextWindowPos( ImVec2( renderSystem->GetScreenWidth() - 400, 20 ) );
 	ImGui::Begin("Framerate", &toolActive, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize);
 #ifdef _DEBUG
 	ImGui::Text("Frame Metrics(Debug Build)");
@@ -68,7 +69,7 @@ void rvmToolShowFrameRate::Render( void ) {
 		ImGui::LabelText(va("%d fps", fps), "FPS");
 		ImGui::LabelText(va("%d ms", time_gameFrame), "Game");
 		ImGui::LabelText(va("%d ms", metrics->gpuTime), "GPU");
-		
+
 
 		if (com_showFPS.GetInteger() >= 2) {
 			ImGui::LabelText(va("%d ms", metrics->frontendMsec), "Render_Frontend");
@@ -82,7 +83,4 @@ void rvmToolShowFrameRate::Render( void ) {
 			ImGui::LabelText(va("%d ms", metrics->frontendMsec + metrics->backendMsec), "Render_Total");
 		}
 	ImGui::End();
-
-	ImVec2 xy(renderSystem->GetScreenWidth() - ImGui::GetWindowSize().x, 20);
-	ImGui::SetWindowPos("Framerate", xy);
 }
