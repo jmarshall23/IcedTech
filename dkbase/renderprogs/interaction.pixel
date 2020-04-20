@@ -117,6 +117,11 @@ float SampleShadowMapPCF(float2 uv, float scenedepth) {
 	return factor / numSamples;
 }
 
+#ifdef ID_SPOTLIGHT
+float CalculateShadows(float3 vertexPos, float3 lightPos) {
+	return 1;
+}
+#else // Pointlight
 float CalculateShadows(float3 vertexPos, float3 lightPos) {
 	float3 vertToLight = vertexPos - lightPos;
 	float3 cubeInfo = ComputeSampleCube(vertToLight);
@@ -133,6 +138,7 @@ float CalculateShadows(float3 vertexPos, float3 lightPos) {
 	
 	return SampleShadowMapPCF(uv, scenedepth);
 }
+#endif
 
 float3 ShadowCubeDebugColor(float3 vertexPos, float3 lightPos) {
 	float3 vertToLight = vertexPos - lightPos;
@@ -206,6 +212,15 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	half3 lightVector = normalize( fragment.texcoord0.xyz );
 	half3 diffuseMap = YCoCG.xyz; //ConvertYCoCgToRGB( YCoCG );
 
+	half3 worldSpaceLightVector = normalize(fragment.texcoord5.xyz - rpLightOrigin.xyz);
+#ifdef ID_SPOTLIGHT
+	float cosAngle = rpLightOrigin.w;
+	if(dot(worldSpaceLightVector, -float3(rpOverbright.y, rpOverbright.z, rpOverbright.w)) <= cosAngle ) {
+		discard;
+	}
+#endif	
+	
+
 	half3 localNormal;
 	localNormal.xy = bumpMap.wy - 0.5;
 	localNormal.z = sqrt( abs( dot( localNormal.xy, localNormal.xy ) - 0.25 ) );
@@ -260,7 +275,13 @@ void main( PS_IN fragment, out PS_OUT result ) {
 
 	float shadow = CalculateShadows(fragment.texcoord5.xyz, rpLightOrigin.xyz);
 
+#ifdef ID_SPOTLIGHT
+	float d = distance(fragment.texcoord5.xyz, rpLightOrigin.xyz);
+	float attenuation = AttenuationSpotLight(d, rpOverbright.x, 1.0);
+#else // Pointlight.
 	float attenuation = AttenuationPointLight( fragment.texcoord5.xyz, float4(rpLightOrigin.xyz, 1.0), rpOverbright);
+#endif
+	
 #if 1
 	result.color.xyz = attenuation * (( diffuseColor + (pbr * (reflection.xyz * 10)) ) * lightColor * shadow); // * fragment.color.xyz;
 #else

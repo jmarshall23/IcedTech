@@ -781,6 +781,9 @@ int	c_clippedLight, c_unclippedLight;
 
 idScreenRect	R_CalcLightScissorRectangle( viewLight_t *vLight ) {
 	idScreenRect	r;
+	srfTriangles_t* tri;
+	idPlane			eye, clip;
+	idVec3			ndc;
 
 	if (vLight->lightDef->parms.pointLight) {
 		idBounds bounds;
@@ -789,7 +792,54 @@ idScreenRect	R_CalcLightScissorRectangle( viewLight_t *vLight ) {
 		return R_ScreenRectFromViewFrustumBounds(bounds);
 	}
 
-	common->FatalError("R_CalcLightScissorRectangle: Implement spotlight and parralel!");
+	r.Clear();
+
+	tri = vLight->lightDef->frustumTris;
+	for (int i = 0; i < tri->numVerts; i++) {
+		R_TransformModelToClip(tri->verts[i].xyz, tr.viewDef->worldSpace.modelViewMatrix,
+			tr.viewDef->projectionMatrix, eye, clip);
+
+		// if it is near clipped, clip the winding polygons to the view frustum
+		if (clip[3] <= 1) {
+			c_clippedLight++;
+			if (r_useClippedLightScissors.GetInteger()) {
+				return R_ClippedLightScissorRectangle(vLight);
+			}
+			else {
+				r.x1 = r.y1 = 0;
+				r.x2 = (tr.viewDef->viewport.x2 - tr.viewDef->viewport.x1) - 1;
+				r.y2 = (tr.viewDef->viewport.y2 - tr.viewDef->viewport.y1) - 1;
+				return r;
+			}
+		}
+
+		R_TransformClipToDevice(clip, tr.viewDef, ndc);
+
+		float windowX = 0.5f * (1.0f + ndc[0]) * (tr.viewDef->viewport.x2 - tr.viewDef->viewport.x1);
+		float windowY = 0.5f * (1.0f + ndc[1]) * (tr.viewDef->viewport.y2 - tr.viewDef->viewport.y1);
+
+		if (windowX > tr.viewDef->scissor.x2) {
+			windowX = tr.viewDef->scissor.x2;
+		}
+		else if (windowX < tr.viewDef->scissor.x1) {
+			windowX = tr.viewDef->scissor.x1;
+		}
+		if (windowY > tr.viewDef->scissor.y2) {
+			windowY = tr.viewDef->scissor.y2;
+		}
+		else if (windowY < tr.viewDef->scissor.y1) {
+			windowY = tr.viewDef->scissor.y1;
+		}
+
+		r.AddPoint(windowX, windowY);
+	}
+
+	// add the fudge boundary
+	r.Expand();
+
+	c_unclippedLight++;
+
+	return r;
 }
 
 /*

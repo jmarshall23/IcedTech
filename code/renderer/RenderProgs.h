@@ -174,6 +174,8 @@ public:
 	void	BindShader_TextureTexGenVertexColor() { BindShader_Builtin( BUILTIN_TEXTURE_TEXGEN_VERTEXCOLOR ); };
 	void	BindShader_Interaction()  { BindShader_Builtin( BUILTIN_INTERACTION ); }
 	void	BindShader_InteractionSkinned()  { BindShader_Builtin( BUILTIN_INTERACTION_SKINNED ); }
+	void	BindShader_Interaction_Spot() { BindShader_Builtin(BUILTIN_INTERACTION_SPOT); }
+	void	BindShader_Interaction_Spot_Skinned() { BindShader_Builtin(BUILTIN_INTERACTION_SPOT_SKINNED); }
 	void	BindShader_InteractionAmbient()  { BindShader_Builtin( BUILTIN_INTERACTION_AMBIENT ); }
 	void	BindShader_InteractionAmbientSkinned()  { BindShader_Builtin( BUILTIN_INTERACTION_AMBIENT_SKINNED ); }
 	void	BindShader_SimpleShade() { BindShader_Builtin( BUILTIN_SIMPLESHADE ); }
@@ -240,6 +242,8 @@ protected:
 		BUILTIN_TEXTURE_TEXGEN_VERTEXCOLOR,
 		BUILTIN_INTERACTION,
 		BUILTIN_INTERACTION_SKINNED,
+		BUILTIN_INTERACTION_SPOT,
+		BUILTIN_INTERACTION_SPOT_SKINNED,
 		BUILTIN_INTERACTION_AMBIENT,
 		BUILTIN_INTERACTION_AMBIENT_SKINNED,
 		BUILTIN_ENVIRONMENT,

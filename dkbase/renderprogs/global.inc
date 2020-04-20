@@ -138,6 +138,12 @@ static float Square( float x )
 	return x*x;
 }
 
+static float AttenuationSpotLight( float lightDist, float maxLightDist, float falloffPower ) {
+	float attenuation = 1.0f - saturate( lightDist / maxLightDist );
+	falloffPower = max( falloffPower, 0.0f );
+	return pow( attenuation, falloffPower );
+}
+
 static half AttenuationPointLight( float3 fragmentInWorldSpace, float4 curLightPosInWorldSpace, float4 curLightExtents ) {
 	half falloffPower = curLightPosInWorldSpace.w;
 	half3 perAxis = 1.0f - saturate( abs( fragmentInWorldSpace - curLightPosInWorldSpace.xyz ) / curLightExtents.xyz );			

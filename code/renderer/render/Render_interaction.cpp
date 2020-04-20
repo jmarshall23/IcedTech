@@ -47,11 +47,38 @@ RB_Interaction_DrawInteraction
 void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	viewLight_t* vLight = backEnd.vLight;
 
-	idVec4 lightRadius(vLight->lightDef->GetLightRadius().x, vLight->lightDef->GetLightRadius().y, vLight->lightDef->GetLightRadius().z, 1.0);
-	Draw_SetVertexParm(RENDERPARM_OVERBRIGHT, lightRadius.ToFloatPtr());
+	float lightOriginAlpha = 1.0f;
+
+	if (vLight->lightDef->GetPointLight())
+	{
+		idVec4 lightRadius(vLight->lightDef->GetLightRadius().x, vLight->lightDef->GetLightRadius().y, vLight->lightDef->GetLightRadius().z, 1.0);
+		Draw_SetVertexParm(RENDERPARM_OVERBRIGHT, lightRadius.ToFloatPtr());
+	}
+	else
+	{
+		float maxLightDistance = idMath::Distance(vLight->lightDef->parms.start, vLight->lightDef->parms.target);
+		idVec3 lightTarget = vLight->lightDef->parms.target + vLight->lightDef->parms.origin;
+		idVec3 lightRight = vLight->lightDef->parms.target + vLight->lightDef->parms.right;
+		idVec3 lightUp = vLight->lightDef->parms.target - vLight->lightDef->parms.up;
+
+
+		idVec3 spotLightDir = vLight->lightDef->parms.origin - lightTarget;
+		spotLightDir.Normalize();
+
+		idVec3 rightDir = vLight->lightDef->parms.origin - lightRight;
+		rightDir.Normalize();
+
+		idVec3 leftUp = vLight->lightDef->parms.origin - lightUp;
+		leftUp.Normalize();
+
+		lightOriginAlpha = leftUp * rightDir; // Cosine angle.
+		
+		idVec4 lightRadius(maxLightDistance, spotLightDir.x, spotLightDir.y, spotLightDir.z);
+		Draw_SetVertexParm(RENDERPARM_OVERBRIGHT, lightRadius.ToFloatPtr());
+	}
 
 	// load all the vertex program parameters
-	idVec4 lightOrigin(vLight->lightDef->parms.origin.x, vLight->lightDef->parms.origin.y, vLight->lightDef->parms.origin.z, 1.0);
+	idVec4 lightOrigin(vLight->lightDef->parms.origin.x, vLight->lightDef->parms.origin.y, vLight->lightDef->parms.origin.z, lightOriginAlpha);
 	Draw_SetVertexParm(RENDERPARM_LIGHTORIGIN, lightOrigin.ToFloatPtr());
 	Draw_SetVertexParm(RENDERPARM_LOCALLIGHTORIGIN, din->localLightOrigin.ToFloatPtr() );
 	Draw_SetVertexParm(RENDERPARM_LOCALVIEWORIGIN, din->localViewOrigin.ToFloatPtr() );
@@ -206,6 +233,8 @@ RB_Interaction_CreateDrawInteractions
 =============
 */
 void RB_Interaction_CreateDrawInteractions(idInteraction* interaction) {
+	viewLight_t* vLight = backEnd.vLight;
+
 	if (!interaction) {
 		return;
 	}
@@ -258,11 +287,23 @@ void RB_Interaction_CreateDrawInteractions(idInteraction* interaction) {
 			continue;
 		}
 
-		if (surf->skinning.HasSkinning()) {
-			renderProgManager.BindShader_InteractionSkinned();
+		if (vLight->lightDef->GetPointLight())
+		{
+			if (surf->skinning.HasSkinning()) {
+				renderProgManager.BindShader_InteractionSkinned();
+			}
+			else {
+				renderProgManager.BindShader_Interaction();
+			}
 		}
-		else {
-			renderProgManager.BindShader_Interaction();
+		else // Spotlight
+		{
+			if(surf->skinning.HasSkinning()) {
+				renderProgManager.BindShader_Interaction_Spot_Skinned();
+			}
+			else {
+				renderProgManager.BindShader_Interaction_Spot();
+			}
 		}
 
 		const srfTriangles_t* tri = surf->ambientTris;

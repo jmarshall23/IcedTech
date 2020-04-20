@@ -88,6 +88,8 @@ void idRenderProgManager::Init() {
 		{ BUILTIN_TEXTURE_TEXGEN_VERTEXCOLOR, "texture_color_texgen.vfp", "texture_color_texgen.vfp", "" },
 		{ BUILTIN_INTERACTION, "interaction.vfp", "interaction.vfp", "" },
 		{ BUILTIN_INTERACTION_SKINNED, "interaction.vfp", "interaction_skinned.vfp", "#define ID_GPU_SKIN\n" },
+		{ BUILTIN_INTERACTION_SPOT, "interaction.vfp", "interaction_spot.vfp", "#define ID_SPOTLIGHT\n" },
+		{ BUILTIN_INTERACTION_SPOT_SKINNED, "interaction.vfp", "interaction_spot_skinned.vfp", "#define ID_GPU_SKIN\n#define ID_SPOTLIGHT\n" },
 		{ BUILTIN_INTERACTION_AMBIENT, "interaction.vfp", "interaction.vfp", "#define ID_AMBIENT_LIGHT\n" },
 		{ BUILTIN_INTERACTION_AMBIENT_SKINNED, "interaction.vfp", "interaction_skinned.vfp", "#define ID_GPU_SKIN\n#define ID_AMBIENT_LIGHT\n" },
 		{ BUILTIN_ENVIRONMENT, "environment.vfp", "environment.vfp", "" },
