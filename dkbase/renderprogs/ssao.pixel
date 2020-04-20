@@ -331,7 +331,7 @@ void main( PS_IN fragment, out PS_OUT result )
 		return;
 	}
 	float4 _depthTest = texture2D(samp1, fragment.texcoord0);
-	if(_depthTest == 1.0) {
+	if(_depthTest == float4(1.0)) {
 		result.color = float4(1.0, 1.0, 1.0, 1.0);
 		return;
 	}
