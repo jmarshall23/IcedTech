@@ -61,10 +61,6 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 		idVec3 lightRight = vLight->lightDef->parms.target + vLight->lightDef->parms.right;
 		idVec3 lightUp = vLight->lightDef->parms.target - vLight->lightDef->parms.up;
 
-
-		idVec3 spotLightDir = vLight->lightDef->parms.origin - lightTarget;
-		spotLightDir.Normalize();
-
 		idVec3 rightDir = vLight->lightDef->parms.origin - lightRight;
 		rightDir.Normalize();
 
@@ -72,6 +68,9 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 		leftUp.Normalize();
 
 		lightOriginAlpha = leftUp * rightDir; // Cosine angle.
+
+		idVec3 spotLightDir = vLight->lightDef->parms.origin - lightTarget;
+		//spotLightDir.Normalize();
 		
 		idVec4 lightRadius(maxLightDistance, spotLightDir.x, spotLightDir.y, spotLightDir.z);
 		Draw_SetVertexParm(RENDERPARM_OVERBRIGHT, lightRadius.ToFloatPtr());
@@ -160,13 +159,12 @@ void	RB_Interaction_DrawInteraction( const drawInteraction_t *din ) {
 	GL_SelectTextureNoClient( 0 );
 	din->bumpImage->Bind();
 
-	// texture 2 will be the light falloff texture
-	//GL_SelectTextureNoClient( 1 );
-	//din->lightFalloffImage->Bind();
-	//
-	//// texture 3 will be the light projection texture
-	//GL_SelectTextureNoClient( 2 );
-	//din->lightImage->Bind();
+	idImage* iesTexture = vLight->lightDef->GetIESTexture();
+	if(iesTexture) {
+		// texture 2 will be the IES texture.
+		GL_SelectTextureNoClient( 1 );
+		iesTexture->Bind();
+	}
 
 	// texture 4 is the per-surface diffuse map
 	GL_SelectTextureNoClient( 3 );
@@ -298,11 +296,23 @@ void RB_Interaction_CreateDrawInteractions(idInteraction* interaction) {
 		}
 		else // Spotlight
 		{
-			if(surf->skinning.HasSkinning()) {
-				renderProgManager.BindShader_Interaction_Spot_Skinned();
+			idImage* iesTexture = vLight->lightDef->GetIESTexture();
+
+			if (iesTexture == NULL) {
+				if (surf->skinning.HasSkinning()) {
+					renderProgManager.BindShader_Interaction_Spot_Skinned();
+				}
+				else {
+					renderProgManager.BindShader_Interaction_Spot();
+				}
 			}
 			else {
-				renderProgManager.BindShader_Interaction_Spot();
+				if (surf->skinning.HasSkinning()) {
+					renderProgManager.BindShader_Interaction_Spot_IES_Skinned();
+				}
+				else {
+					renderProgManager.BindShader_Interaction_Spot_IES();
+				}
 			}
 		}
 

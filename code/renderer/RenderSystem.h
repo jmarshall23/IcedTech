@@ -268,6 +268,9 @@ public:
 	// Returns the specified image.
 	virtual idImage			*FindImage(const char *name, bool isCubemap) = 0;
 
+	// Loads a IES image.
+	virtual idImage*		FindIESImage(const char* name) = 0;
+
 	// Runs the virtual texture feedback job.
 	virtual void			RunFeedbackJob(idRenderTexture *feedbackRT) = 0;
 

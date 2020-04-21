@@ -252,6 +252,9 @@ public:
 	// look for a loaded image, whatever the parameters
 	idImage *			GetImage( const char *name ) const;
 
+	// load a IES texture.
+	idImage*			LoadIESImage(const char* name) const;
+
 	// look for a loaded image, whatever the parameters
 	idImage *			GetImageWithParameters( const char *name, textureFilter_t filter, textureRepeat_t repeat, textureUsage_t usage, cubeFiles_t cubeMap ) const;
 

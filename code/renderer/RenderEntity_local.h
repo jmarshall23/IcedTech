@@ -54,6 +54,8 @@ struct idRenderLightParms {
 	idVec3					start;
 	idVec3					end;
 
+	idImage*				iesTexture;
+
 	// Dmap will generate an optimized shadow volume named _prelight_<lightName>
 	// for the light against all the _area* models in the map.  The renderer will
 	// ignore this value if the light has been moved after initial creation
@@ -87,6 +89,9 @@ public:
 
 	virtual bool			IsEnabled(void) { return parms.isEnabled; }
 	virtual void			SetEnabled(bool isEnabled) { parms.isEnabled = isEnabled; parmsDirty = true; }
+
+	virtual idImage*		GetIESTexture(void) { return parms.iesTexture; }
+	virtual void			SetIESTexture(idImage* image) { parms.iesTexture = image; parmsDirty = true; }
 
 	virtual idVec3			GetLightColor(void) { return parms.lightColor; }
 	virtual void			SetLightColor(idVec3 lightColor) {

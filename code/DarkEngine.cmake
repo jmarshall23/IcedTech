@@ -150,6 +150,7 @@ set(src_engine
 	./renderer/Image.h
 	./renderer/ImageManager.cpp
 	./renderer/ImageOpts.h
+	./renderer/Image_ies.cpp
 	./renderer/Image_files.cpp
 	./renderer/Image_GL.cpp
 	./renderer/Image_intrinsic.cpp
@@ -419,6 +420,9 @@ set(src_external
 	./external/png/pngwutil.c
 	./external/png/png.h
 	./external/png/pngconf.h
+
+	./external/iesloader/ies_loader.cpp
+	./external/iesloader/ies_loader.h
 
 
 	./external/recast/Include/Recast.h

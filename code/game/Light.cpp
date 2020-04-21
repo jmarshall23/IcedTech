@@ -80,6 +80,7 @@ which should be used by dmap and the editor
 void idGameEdit::ParseSpawnArgsToRenderLight( const idDict *args, idRenderLight *renderLight ) {
 	const char	*texture;
 	idVec3	color;
+	const char* temp;
 
 	renderLight->SetLightChannel(LIGHT_CHANNEL_WORLD, true);
 
@@ -109,6 +110,12 @@ void idGameEdit::ParseSpawnArgsToRenderLight( const idDict *args, idRenderLight 
 				renderLight->SetLightChannel(litChannelParser.ParseInt(), true);
 			}
 		}
+	}
+
+	temp = args->GetString("ies");
+	if (temp[0] != '\0') {
+		idImage* image = renderSystem->FindIESImage(temp);		
+		renderLight->SetIESTexture(image);
 	}
 
 	if (args->FindKey("light_target") == NULL) {

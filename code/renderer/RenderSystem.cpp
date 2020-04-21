@@ -1186,3 +1186,12 @@ idRenderSystemLocal::WriteTGA
 void idRenderSystemLocal::WriteTGA(const char* filename, const byte* data, int width, int height, bool flipVertical, const char* basePath) {
 	R_WriteTGA(filename, data, width, height, flipVertical, basePath);
 }
+
+/*
+===============
+idRenderSystemLocal::WriteTGA
+===============
+*/
+idImage* idRenderSystemLocal::FindIESImage(const char* name) {
+	return globalImages->LoadIESImage(name);
+}

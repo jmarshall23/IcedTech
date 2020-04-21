@@ -89,6 +89,9 @@ public:
 	virtual int				GetLightId(void) = 0;
 	virtual void			SetLightId(int lightId) = 0;
 
+	virtual idImage*		GetIESTexture(void) = 0;
+	virtual void			SetIESTexture(idImage* image) = 0;
+
 	virtual idSoundEmitter* GetReferenceSound(void) = 0;
 	virtual void			SetReferenceSound(idSoundEmitter* referenceSound) = 0;
 };

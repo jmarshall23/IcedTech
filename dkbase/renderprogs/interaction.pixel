@@ -28,8 +28,12 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "global.inc"
 
+#define PI 3.1415926538
+
 uniform sampler2D		samp0 : register(s0); // texture 1 is the per-surface bump map
-//uniform sampler2D		samp1 : register(s1); // texture 2 is the light falloff texture
+#ifdef ID_IES
+uniform sampler2D		samp1 : register(s1); // texture 2 is the light IES profile
+#endif
 //uniform sampler2D		samp2 : register(s2); // texture 3 is the light projection texture
 uniform sampler2D		samp3 : register(s3); // texture 4 is the per-surface diffuse map
 uniform sampler2D		samp4 : register(s4); // texture 5 is the per-surface specular map
@@ -116,6 +120,15 @@ float SampleShadowMapPCF(float2 uv, float scenedepth) {
 	
 	return factor / numSamples;
 }
+
+#ifdef ID_IES
+float getPhotometricAttenuation(float3 L, float3 lightDir) {
+	//float angle = (1 - acos(dot(L, lightDir)) / PI);
+    //return tex2Dlod(samp1, float4(angle, 0, 0, 0)).r;
+	float angle = acos(dot(L, lightDir)) / PI;
+	return tex2Dlod(samp1, float4(angle, 0, 0, 0)).r;
+}
+#endif
 
 #ifdef ID_SPOTLIGHT
 float CalculateShadows(float3 vertexPos, float3 lightPos) {
@@ -215,9 +228,11 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	half3 worldSpaceLightVector = normalize(fragment.texcoord5.xyz - rpLightOrigin.xyz);
 #ifdef ID_SPOTLIGHT
 	float cosAngle = rpLightOrigin.w;
-	if(dot(worldSpaceLightVector, -float3(rpOverbright.y, rpOverbright.z, rpOverbright.w)) <= cosAngle ) {
+	float spotFalloff = dot(worldSpaceLightVector, -normalize(float3(rpOverbright.y, rpOverbright.z, rpOverbright.w)));
+
+	spotFalloff = spotFalloff - cosAngle;
+	if(spotFalloff < 0)
 		discard;
-	}
 #endif	
 	
 
@@ -277,7 +292,11 @@ void main( PS_IN fragment, out PS_OUT result ) {
 
 #ifdef ID_SPOTLIGHT
 	float d = distance(fragment.texcoord5.xyz, rpLightOrigin.xyz);
-	float attenuation = AttenuationSpotLight(d, rpOverbright.x, 1.0);
+	float attenuation = AttenuationSpotLight(d, rpOverbright.x, 1.0) * spotFalloff * length(rpDiffuseModifier.xyz);
+	
+	#ifdef ID_IES
+		attenuation *= getPhotometricAttenuation(worldSpaceLightVector, -normalize(float3(rpOverbright.y, rpOverbright.z, rpOverbright.w)));
+	#endif
 #else // Pointlight.
 	float attenuation = AttenuationPointLight( fragment.texcoord5.xyz, float4(rpLightOrigin.xyz, 1.0), rpOverbright);
 #endif
@@ -285,7 +304,7 @@ void main( PS_IN fragment, out PS_OUT result ) {
 #if 1
 	result.color.xyz = attenuation * (( diffuseColor + (pbr * (reflection.xyz * 10)) ) * lightColor * shadow); // * fragment.color.xyz;
 #else
-	result.color.xyz = float3(shadow, shadow, shadow);
+	result.color.xyz = float3(attenuation, attenuation, attenuation);
 	//result.color.xyz = ( diffuseColor + pbr ) * lightColor * ShadowCubeDebugUVColor(fragment.texcoord5.xyz, rpLightOrigin.xyz);
 #endif
 	result.color.w = 1.0;

@@ -666,7 +666,7 @@ public:
 	virtual void			RunFeedbackJob(idRenderTexture *feedbackRT);
 	virtual void			ReadRenderTexture(idRenderTexture* renderTexture, byte* buffer);
 	virtual void			WriteTGA(const char* filename, const byte* data, int width, int height, bool flipVertical, const char* basePath);
-
+	virtual idImage*		FindIESImage(const char* name);
 	virtual void			RenderToolGui(rvmToolGui* toolGui);
 public:
 	// internal functions

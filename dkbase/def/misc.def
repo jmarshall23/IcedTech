@@ -58,6 +58,7 @@ entityDef light {
 	"break"						"0"
 	"light"						"300"
 	"_color"						"255 255 255"
+	"ies"						""
 }
 
 entityDef speaker {

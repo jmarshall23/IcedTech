@@ -86,10 +86,20 @@ void idRenderProgManager::Init() {
 		{ BUILTIN_TEXTURE_VERTEXCOLOR, "texture_color.vfp", "texture_color.vfp", "" },
 		{ BUILTIN_TEXTURE_VERTEXCOLOR_SKINNED, "texture_color_skinned.vfp", "texture_color_skinned.vfp", "" },
 		{ BUILTIN_TEXTURE_TEXGEN_VERTEXCOLOR, "texture_color_texgen.vfp", "texture_color_texgen.vfp", "" },
+
+		// Point lights
 		{ BUILTIN_INTERACTION, "interaction.vfp", "interaction.vfp", "" },
 		{ BUILTIN_INTERACTION_SKINNED, "interaction.vfp", "interaction_skinned.vfp", "#define ID_GPU_SKIN\n" },
+
+		// Spot lights.
 		{ BUILTIN_INTERACTION_SPOT, "interaction.vfp", "interaction_spot.vfp", "#define ID_SPOTLIGHT\n" },
 		{ BUILTIN_INTERACTION_SPOT_SKINNED, "interaction.vfp", "interaction_spot_skinned.vfp", "#define ID_GPU_SKIN\n#define ID_SPOTLIGHT\n" },
+		
+		// IES Spotlights.
+		{ BUILTIN_INTERACTION_SPOT_IES, "interaction.vfp", "interaction_spot_ies.vfp", "#define ID_SPOTLIGHT\n #define ID_IES\n" },
+		{ BUILTIN_INTERACTION_SPOT_IES_SKINNED, "interaction.vfp", "interaction_spot_ies_skinned.vfp", "#define ID_GPU_SKIN\n#define ID_SPOTLIGHT\n#define ID_IES\n" },
+		
+	
 		{ BUILTIN_INTERACTION_AMBIENT, "interaction.vfp", "interaction.vfp", "#define ID_AMBIENT_LIGHT\n" },
 		{ BUILTIN_INTERACTION_AMBIENT_SKINNED, "interaction.vfp", "interaction_skinned.vfp", "#define ID_GPU_SKIN\n#define ID_AMBIENT_LIGHT\n" },
 		{ BUILTIN_ENVIRONMENT, "environment.vfp", "environment.vfp", "" },

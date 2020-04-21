@@ -48,6 +48,7 @@ int BitsForFormat( textureFormat_t format ) {
 		case FMT_DXT1:		return 4;
 		case FMT_DXT5:		return 8;
 		case FMT_DEPTH:		return 32;
+		case FMT_R32:		return 32;
 		case FMT_X16:		return 16;
 		case FMT_Y16_X16:	return 32;
 		case FMT_RG16:		return 16;

@@ -176,6 +176,8 @@ public:
 	void	BindShader_InteractionSkinned()  { BindShader_Builtin( BUILTIN_INTERACTION_SKINNED ); }
 	void	BindShader_Interaction_Spot() { BindShader_Builtin(BUILTIN_INTERACTION_SPOT); }
 	void	BindShader_Interaction_Spot_Skinned() { BindShader_Builtin(BUILTIN_INTERACTION_SPOT_SKINNED); }
+	void	BindShader_Interaction_Spot_IES() { BindShader_Builtin(BUILTIN_INTERACTION_SPOT_IES); }
+	void	BindShader_Interaction_Spot_IES_Skinned() { BindShader_Builtin(BUILTIN_INTERACTION_SPOT_IES_SKINNED); }
 	void	BindShader_InteractionAmbient()  { BindShader_Builtin( BUILTIN_INTERACTION_AMBIENT ); }
 	void	BindShader_InteractionAmbientSkinned()  { BindShader_Builtin( BUILTIN_INTERACTION_AMBIENT_SKINNED ); }
 	void	BindShader_SimpleShade() { BindShader_Builtin( BUILTIN_SIMPLESHADE ); }
@@ -244,6 +246,8 @@ protected:
 		BUILTIN_INTERACTION_SKINNED,
 		BUILTIN_INTERACTION_SPOT,
 		BUILTIN_INTERACTION_SPOT_SKINNED,
+		BUILTIN_INTERACTION_SPOT_IES,
+		BUILTIN_INTERACTION_SPOT_IES_SKINNED,
 		BUILTIN_INTERACTION_AMBIENT,
 		BUILTIN_INTERACTION_AMBIENT_SKINNED,
 		BUILTIN_ENVIRONMENT,
