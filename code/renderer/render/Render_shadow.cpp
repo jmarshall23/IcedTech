@@ -15,6 +15,7 @@ static const int CULL_OCCLUDER_AND_RECEIVER = 2;	// the surface doesn't effect t
 idCVar r_shadow_polyOfsFactor("r_shadow_polyOfsFactor", "2", CVAR_RENDERER | CVAR_FLOAT, "polygonOffset factor for drawing shadow buffer");
 idCVar r_shadow_polyOfsUnits("r_shadow_polyOfsUnits", "3000", CVAR_RENDERER | CVAR_FLOAT, "polygonOffset units for drawing shadow buffer");
 idCVar r_shadowOccluderFacing("r_shadowOccluderFacing", "1", CVAR_INTEGER, "0 = front side, 1 = back side culling for shadows");
+idCVar r_shadowEnableCache("r_shadowEnableCache", "1", CVAR_RENDERER | CVAR_BOOL, "enable shadow map caching");
 
 /*
 ==================
@@ -126,6 +127,9 @@ void RB_Shadow_RenderOccluders(viewLight_t* vLight) {
 		if (inter->numSurfaces < 1) {
 			continue;
 		}
+
+		if(inter->hasSkinning)
+			continue;
 
 		// no need to check for current on this, because each interaction is always
 		// a different space
@@ -444,6 +448,16 @@ Down
 	memcpy(unflippedLightMatrix, viewMatrix, sizeof(unflippedLightMatrix));
 	myGlMultMatrix(viewMatrix, s_flipMatrix, lightMatrix);
 
+	// Store the shadow matrix for sampling in the shader.
+	idRenderMatrix inverseLightMatrix;
+	idRenderMatrix::Transpose(*(idRenderMatrix *)lightMatrix, inverseLightMatrix);
+	if (side == -1) {
+		idRenderMatrix::Multiply(lightProjectionMatrix, inverseLightMatrix, vLight->lightDef->shadowMatrix[0]);
+	}
+	else {
+		idRenderMatrix::Multiply(lightProjectionMatrix, inverseLightMatrix, vLight->lightDef->shadowMatrix[side]);
+	}
+
 	// create frustum planes
 	idPlane	globalFrustum[6];
 
@@ -526,7 +540,7 @@ RB_DrawPointlightShadow
 void RB_DrawPointlightShadow(viewLight_t *vLight) {
 	// Check to see if this shadow has been cached.
 	int cachedShadowMapId = renderShadowSystem.CheckShadowCache(vLight);
-	if (cachedShadowMapId >= 0) {
+	if (cachedShadowMapId != -1) {
 		vLight->shadowMapSlice = cachedShadowMapId;
 		return;
 	}
@@ -572,18 +586,19 @@ RB_DrawSpotlightShadow
 void RB_DrawSpotlightShadow(viewLight_t* vLight) {
 	// Check to see if this shadow has been cached.
 	int cachedShadowMapId = renderShadowSystem.CheckShadowCache(vLight);
-	if (cachedShadowMapId > 0) {
+	if (cachedShadowMapId != -1) {
 		vLight->shadowMapSlice = cachedShadowMapId;
 		return;
 	}
 
-	int shadowMapId = renderShadowSystem.FindNextAvailableShadowMap(vLight, 6); // TODO having 6 here is WRONG but we need the cache system to handle variable length slices first!
+	int shadowMapId = renderShadowSystem.FindNextAvailableShadowMap(vLight, 1);
 	if (shadowMapId == -1) {
 		common->DWarning("Too many realtime shadow casting lights in the scene!\n");
 		return;
 	}
 
 	vLight->shadowMapSlice = shadowMapId;
+	backEnd.currentShadowMapSlice = shadowMapId;
 
 	rvmRenderShadowAtlasEntry_t* shadowMapEntry = renderShadowSystem.GetShadowAtlasEntry(shadowMapId);
 
@@ -595,6 +610,9 @@ void RB_DrawSpotlightShadow(viewLight_t* vLight) {
 
 	glViewport(entryX, entryY, entrySize, entrySize);
 	glScissor(entryX, entryY, entrySize, entrySize);
+
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glStencilFunc(GL_ALWAYS, 0, 255);
 
 	RB_RenderShadowBuffer(vLight, -1);
 
@@ -608,9 +626,14 @@ RB_Draw_ShadowMaps
 */
 void RB_Draw_ShadowMaps(void) {
 	viewLight_t		*vLight;
+	rvmDeviceDebugMarker deviceDebugMarker("ShadowMaps");
 
 	glDisable(GL_VERTEX_PROGRAM_ARB);
 	glDisable(GL_FRAGMENT_PROGRAM_ARB);
+
+	if(!r_shadowEnableCache.GetBool()) {
+		renderShadowSystem.NukeShadowMapCache();
+	}
 
 	// Bind our shadow map atlas.
 	renderShadowSystem.GetShadowMapDepthAtlasRT()->MakeCurrent();

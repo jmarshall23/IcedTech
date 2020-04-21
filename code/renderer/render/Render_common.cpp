@@ -1312,6 +1312,15 @@ void RB_SetMVP(const idRenderMatrix & mvp) {
 
 /*
 ================
+RB_SetShadowMatrix
+================
+*/
+void RB_SetShadowMatrix(const idRenderMatrix& mvp) {
+	RB_SetVertexParms(RENDERPARM_SHADOWMATRIX_X, mvp[0], 4);
+}
+
+/*
+================
 RB_SetModelMatrix
 ================
 */

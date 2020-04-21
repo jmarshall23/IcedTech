@@ -610,6 +610,7 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 	//	MakeEmpty();
 	//	return;
 	//}
+	hasSkinning = false;
 	bounds += entityDef->parms.origin;
 	if(!bounds.IntersectsBounds(lightDef->globalLightBounds)) {
 		MakeEmpty();
@@ -669,6 +670,7 @@ void idInteraction::CreateInteraction( const idRenderModel *model ) {
 			sint->skinning.jointBuffer = staticRenderModel->jointBuffer;
 			sint->skinning.numInvertedJoints = staticRenderModel->numInvertedJoints;
 			sint->skinning.jointsInverted = staticRenderModel->jointsInverted;
+			hasSkinning = true;
 		}
 // jmarshall end
 

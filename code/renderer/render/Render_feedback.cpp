@@ -198,6 +198,8 @@ void RB_STD_DrawFeedbackPass(drawSurf_t	 **drawSurfs, int numDrawSurfs) {
 		return;
 	}
 
+	rvmDeviceDebugMarker deviceDebugMarker("FeedBack");
+
 	RB_LogComment("---------- RB_STD_DrawFeedbackPass ----------\n");
 
 	// enable the second texture for mirror plane clipping if needed

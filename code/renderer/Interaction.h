@@ -109,6 +109,9 @@ public:
 	// What light channels affect this interaction.
 	int						lightChannel;
 
+	// If the interaction has skinning.
+	bool					hasSkinning;
+
 	// Class interaction for this interaction.
 	renderClassWorldType_t	interactionClass;
 

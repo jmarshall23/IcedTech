@@ -57,7 +57,7 @@ entityDef light {
 	"count"						"1"
 	"break"						"0"
 	"light"						"300"
-	"_color"						"255 255 255"
+	"_color"						"1 1 1"
 	"ies"						""
 }
 

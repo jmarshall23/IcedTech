@@ -844,6 +844,9 @@ void R_RenderView( viewDef_t *parms ) {
 		viewLight_t* vLight;
 		idRenderLightLocal* light = renderWorld->lightDefs[i];
 
+		if (r_singleLight.GetInteger() != -1 && r_singleLight.GetInteger() != i)
+			continue;
+
 		if (light == NULL)
 			continue;
 

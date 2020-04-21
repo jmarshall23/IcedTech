@@ -268,6 +268,10 @@ public:
 
 	idBounds				globalLightBounds;
 
+
+	// Shadow Matrixes 
+	idRenderMatrix			shadowMatrix[6];
+
 	struct doublePortal_s* foggedPortals;
 };
 

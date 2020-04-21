@@ -930,6 +930,8 @@ extern idCVar r_debugRenderToTexture;
 extern idCVar r_occlusionQueryDelay;
 extern idCVar r_occlusionQueryTimeOut;
 
+extern idCVar r_enableGPUMarkers;
+
 /*
 ====================================================================
 
@@ -1244,6 +1246,7 @@ void RB_SetVertexParm(renderParm_t rp, const float * value);
 void RB_SetVertexParms(renderParm_t rp, const float * value, int num);
 void RB_SetFragmentParm(renderParm_t rp, const float * value);
 void RB_SetMVP(const idRenderMatrix & mvp);
+void RB_SetShadowMatrix(const idRenderMatrix& mvp);
 void RB_SetModelMatrix(const idRenderMatrix& modelMatrix);
 void RB_SetModelMatrix(const float* modelMatrix);
 void RB_STD_DrawFeedbackPass(drawSurf_t	 **drawSurfs, int numDrawSurfs);
@@ -1614,5 +1617,27 @@ void R_ExtractInteractionTextureMatrix(const textureStage_t *texture, const floa
 
 // Render Jobs
 void R_FeedbackJobThread(void *ThreadData);
+
+//
+// rvmDeviceDebugMarker
+//
+class rvmDeviceDebugMarker {
+public:
+	rvmDeviceDebugMarker(const char *name, int id = 1) {
+		if (!r_enableGPUMarkers.GetBool())
+			return;
+
+		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, id, -1, name);
+		this->id = id;
+	}
+	~rvmDeviceDebugMarker() {
+		if (!r_enableGPUMarkers.GetBool())
+			return;
+
+		glPopDebugGroup();
+	}
+private:
+	int id;
+};
 
 #endif /* !__TR_LOCAL_H__ */

@@ -314,6 +314,9 @@ void RB_Interaction_CreateDrawInteractions(idInteraction* interaction) {
 					renderProgManager.BindShader_Interaction_Spot_IES();
 				}
 			}
+
+			// Spot lights need the shadow matrix.
+			RB_SetShadowMatrix(vLight->lightDef->shadowMatrix[0]);
 		}
 
 		const srfTriangles_t* tri = surf->ambientTris;
@@ -392,6 +395,7 @@ RB_Interaction_DrawInteractions
 */
 void RB_Interaction_DrawInteractions( void ) {
 	viewLight_t		*vLight;
+	rvmDeviceDebugMarker deviceDebugMarker("Interaction");
 
 	GL_SelectTexture( 0 );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );

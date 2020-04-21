@@ -129,6 +129,11 @@ enum renderParm_t {
 	RENDERPARM_SHADOWMAPINFO,
 	RENDERPARM_LIGHTORIGIN,
 
+	RENDERPARM_SHADOWMATRIX_X,
+	RENDERPARM_SHADOWMATRIX_Y,
+	RENDERPARM_SHADOWMATRIX_Z,
+	RENDERPARM_SHADOWMATRIX_W,
+
 	RENDERPARM_TOTAL,
 	RENDERPARM_USER = 128,
 };
@@ -188,8 +193,8 @@ public:
 
 	void	BindShader_Depth() { BindShader_Builtin( BUILTIN_DEPTH ); }
 	void	BindShader_DepthSkinned() { BindShader_Builtin( BUILTIN_DEPTH_SKINNED ); }
-	void	BindShader_Shadow() { BindShader( builtinShaders[BUILTIN_SHADOW], -1 ); }
-	void	BindShader_ShadowSkinned() { BindShader( builtinShaders[BUILTIN_SHADOW_SKINNED], -1 ); }
+	void	BindShader_Shadow() { BindShader_Builtin( BUILTIN_SHADOW ); }
+	void	BindShader_ShadowSkinned() { BindShader_Builtin( BUILTIN_SHADOW_SKINNED ); }
 	void	BindShader_ShadowDebug() { BindShader_Builtin( BUILTIN_SHADOW_DEBUG ); }
 	void	BindShader_ShadowDebugSkinned() { BindShader_Builtin( BUILTIN_SHADOW_DEBUG_SKINNED ); }
 

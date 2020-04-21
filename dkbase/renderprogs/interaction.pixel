@@ -131,15 +131,40 @@ float getPhotometricAttenuation(float3 L, float3 lightDir) {
 #endif
 
 #ifdef ID_SPOTLIGHT
-float CalculateShadows(float3 vertexPos, float3 lightPos) {
-	return 1;
+float2 ShowSpotLightCoords(float3 vertexPos, float3 lightPos) {
+	float4 shadowTexCoords;
+	float4 _vertexPos = float4(vertexPos.x, vertexPos.y, vertexPos.z, 1.0);
+
+	shadowTexCoords.x = dot4(_vertexPos, rpShadowMatrixX);	
+	shadowTexCoords.y = dot4(_vertexPos, rpShadowMatrixY);
+	shadowTexCoords.z = dot4(_vertexPos, rpShadowMatrixZ);
+	shadowTexCoords.w = dot4(_vertexPos, rpShadowMatrixW);
+
+	float2 initialuv = shadowTexCoords.xy / shadowTexCoords.w;
+
+	return initialuv;
 }
-#else // Pointlight
+#endif
+
 float CalculateShadows(float3 vertexPos, float3 lightPos) {
 	float3 vertToLight = vertexPos - lightPos;
+#ifdef ID_SPOTLIGHT
+	float4 shadowTexCoords;
+	float4 _vertexPos = float4(vertexPos.x, vertexPos.y, vertexPos.z, 1.0);
+
+	shadowTexCoords.x = dot4(_vertexPos, rpShadowMatrixX);	
+	shadowTexCoords.y = dot4(_vertexPos, rpShadowMatrixY);
+	shadowTexCoords.z = dot4(_vertexPos, rpShadowMatrixZ);
+	shadowTexCoords.w = dot4(_vertexPos, rpShadowMatrixW);
+
+	float2 initialuv = shadowTexCoords.xy / shadowTexCoords.w;
+	initialuv = initialuv * 0.5 + 0.5;
+	float slice = 0;	
+#else
 	float3 cubeInfo = ComputeSampleCube(vertToLight);
 	float2 initialuv = cubeInfo.xy;
 	float slice = cubeInfo.z;
+#endif
 
 	initialuv *= rpShadowMapInfo.y;
 	
@@ -148,10 +173,9 @@ float CalculateShadows(float3 vertexPos, float3 lightPos) {
 	float2 uv = initialuv + sliceOffset;
 	
 	float scenedepth = distance(vertexPos, lightPos);
-	
 	return SampleShadowMapPCF(uv, scenedepth);
 }
-#endif
+
 
 float3 ShadowCubeDebugColor(float3 vertexPos, float3 lightPos) {
 	float3 vertToLight = vertexPos - lightPos;
@@ -304,7 +328,12 @@ void main( PS_IN fragment, out PS_OUT result ) {
 #if 1
 	result.color.xyz = attenuation * (( diffuseColor + (pbr * (reflection.xyz * 10)) ) * lightColor * shadow); // * fragment.color.xyz;
 #else
+#ifdef ID_SPOTLIGHT
+	float2 shadowCoords = ShowSpotLightCoords(fragment.texcoord5.xyz, rpLightOrigin.xyz);
+	result.color.xyz = float3(shadowCoords.x, shadowCoords.y, 0);
+#else
 	result.color.xyz = float3(attenuation, attenuation, attenuation);
+#endif
 	//result.color.xyz = ( diffuseColor + pbr ) * lightColor * ShadowCubeDebugUVColor(fragment.texcoord5.xyz, rpLightOrigin.xyz);
 #endif
 	result.color.w = 1.0;
