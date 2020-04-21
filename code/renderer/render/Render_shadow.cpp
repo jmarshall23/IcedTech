@@ -97,7 +97,7 @@ void RB_Shadow_CullInteractions(viewLight_t* vLight, idPlane frustumPlanes[6]) {
 		}
 
 		// If this entity requires dynamic shadows, and this is a static light, then don't render the realtime entity.
-		if(entityDef->parms.hasDynamicShadows && !vLight->lightDef->parms.dynamicShadows) {
+		if(entityDef->parms.hasDynamicShadows && vLight->lightDef->GetLightRenderType() != LIGHT_RENDER_DYNAMIC) {
 			culled = CULL_OCCLUDER_AND_RECEIVER;
 		}
 
@@ -128,7 +128,7 @@ void RB_Shadow_RenderOccluders(viewLight_t* vLight) {
 			continue;
 		}
 
-		if(inter->hasSkinning)
+		if(inter->hasSkinning && vLight->lightDef->GetLightRenderType() == LIGHT_RENDER_STATIC)
 			continue;
 
 		// no need to check for current on this, because each interaction is always
@@ -538,17 +538,25 @@ RB_DrawPointlightShadow
 ===================
 */
 void RB_DrawPointlightShadow(viewLight_t *vLight) {
+	int shadowMapId = -1;
+	
 	// Check to see if this shadow has been cached.
 	int cachedShadowMapId = renderShadowSystem.CheckShadowCache(vLight);
-	if (cachedShadowMapId != -1) {
+	if (cachedShadowMapId != -1 && vLight->lightDef->GetLightRenderType() == LIGHT_RENDER_STATIC) {
 		vLight->shadowMapSlice = cachedShadowMapId;
 		return;
 	}
 
-	int shadowMapId = renderShadowSystem.FindNextAvailableShadowMap(vLight, 6);
-	if(shadowMapId == -1) {
-		common->DWarning("Too many realtime shadow casting lights in the scene!\n");
-		return;
+	// If this is a dynamic light and we are re-rendering, just use the same shadow map we had previously.
+	if(cachedShadowMapId != -1) {
+		shadowMapId = cachedShadowMapId;
+	}
+	else {
+		shadowMapId = renderShadowSystem.FindNextAvailableShadowMap(vLight, 6);
+		if (shadowMapId == -1) {
+			common->DWarning("Too many realtime shadow casting lights in the scene!\n");
+			return;
+		}
 	}
 
 	vLight->shadowMapSlice = shadowMapId;
@@ -584,17 +592,25 @@ RB_DrawSpotlightShadow
 ===================
 */
 void RB_DrawSpotlightShadow(viewLight_t* vLight) {
+	int shadowMapId = -1;
+
 	// Check to see if this shadow has been cached.
 	int cachedShadowMapId = renderShadowSystem.CheckShadowCache(vLight);
-	if (cachedShadowMapId != -1) {
+	if (cachedShadowMapId != -1 && vLight->lightDef->GetLightRenderType() == LIGHT_RENDER_STATIC) {
 		vLight->shadowMapSlice = cachedShadowMapId;
 		return;
 	}
 
-	int shadowMapId = renderShadowSystem.FindNextAvailableShadowMap(vLight, 1);
-	if (shadowMapId == -1) {
-		common->DWarning("Too many realtime shadow casting lights in the scene!\n");
-		return;
+	// If this is a dynamic light and we are re-rendering, just use the same shadow map we had previously.
+	if (cachedShadowMapId != -1) {
+		shadowMapId = cachedShadowMapId;
+	}
+	else {
+		shadowMapId = renderShadowSystem.FindNextAvailableShadowMap(vLight, 1);
+		if (shadowMapId == -1) {
+			common->DWarning("Too many realtime shadow casting lights in the scene!\n");
+			return;
+		}
 	}
 
 	vLight->shadowMapSlice = shadowMapId;

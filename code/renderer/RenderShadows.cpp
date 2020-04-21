@@ -181,9 +181,6 @@ int rvmRenderShadowSystem::CheckShadowCache(viewLight_t* vLight) {
 	if (vLight->lightDef->parms.uniqueLightId == -1)
 		return -1;
 
-	if (vLight->lightDef->parms.dynamicShadows)
-		return -1;
-
 	int numEntriesPerAxis = r_shadowMapAtlasSize.GetInteger() / r_shadowMapAtlasSliceSize.GetInteger();
 	for (int i = 0; i < numEntriesPerAxis * numEntriesPerAxis; i++) {
 		if(shadowAtlasEntries[i].uniqueLightId == vLight->lightDef->parms.uniqueLightId) {

@@ -222,7 +222,7 @@ idRenderLightParms::idRenderLightParms()
 	prelightModel = NULL;
 	lightId = 0;
 	referenceSound = NULL;
-	dynamicShadows = false;
+	lightRenderType = LIGHT_RENDER_STATIC;
 	name = "";
 	classType = RENDER_CLASS_WORLD;
 

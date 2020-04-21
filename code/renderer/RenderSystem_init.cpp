@@ -227,6 +227,8 @@ idCVar r_debugContext("r_debugContext", "0", CVAR_INTEGER, "");
 idCVar r_occlusionQueryDelay("r_occlusionQueryDelay", "60", CVAR_INTEGER, "");
 idCVar r_occlusionQueryTimeOut("r_occlusionQueryTimeOut", "2", CVAR_INTEGER, "Occlusion Query Timeout in Seconds");
 
+idCVar r_enableGPUMarkers("r_enableGPUMarkers", "0", CVAR_RENDERER | CVAR_ROM | CVAR_BOOL, "enables debug markers");
+
 /*
 =================
 R_CheckExtension

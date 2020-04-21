@@ -9,6 +9,8 @@ struct idRenderLightParms {
 
 	idStr name;	
 
+	rvmLightRenderType_t	lightRenderType;
+
 	bool					isEnabled;
 
 	renderClassWorldType_t	classType;
@@ -19,8 +21,6 @@ struct idRenderLightParms {
 	int						lightChannel;
 
 	int						uniqueLightId;		// light id that is unique to this light
-
-	bool					dynamicShadows;		// if this light has dynamic shadows or not.
 
 	// if non-zero, the light will not show up in the specific view,
 	// which may be used if we want to have slightly different muzzle
@@ -84,6 +84,12 @@ public:
 	virtual void			SetName(const char* name) { parms.name = name; }
 	virtual const char*		GetName(void) { return parms.name.c_str(); }
 
+	virtual rvmLightRenderType_t GetLightRenderType(void) { return parms.lightRenderType; }
+	virtual void			SetLightRenderType(rvmLightRenderType_t lightRenderType) {
+		parms.lightRenderType = lightRenderType;
+		parmsDirty = true;
+	}
+
 	virtual renderClassWorldType_t GetRenderClassType() { return parms.classType; }
 	virtual void			SetRenderClassType(renderClassWorldType_t type) { parmsDirty = true; parms.classType = type; }
 
@@ -114,12 +120,6 @@ public:
 	virtual int				GetUniqueLightId(void) { return parms.uniqueLightId; }
 	virtual void			SetUniqueLightId(int uniqueLightId) { 
 		parms.uniqueLightId = uniqueLightId; 
-		parmsDirty = true;
-	}
-
-	virtual bool			GetDynamicShadows(void) { return parms.dynamicShadows; }
-	virtual void			SetDynamicShadows(bool dynamicShadows) {
-		parms.dynamicShadows = dynamicShadows; 
 		parmsDirty = true;
 	}
 

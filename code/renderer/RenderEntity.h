@@ -5,6 +5,14 @@ struct renderLight_t;
 class idSoundEmitter;
 
 //
+// rvmLightRenderType_t
+//
+enum rvmLightRenderType_t {
+	LIGHT_RENDER_STATIC = 0, // Light renders in real time, but shadows are always cached.
+	LIGHT_RENDER_DYNAMIC     // Light renders in real time, and shadows are updated every frame.
+};
+
+//
 // idRenderLight
 //
 class idRenderLight {
@@ -18,6 +26,9 @@ public:
 
 	virtual renderClassWorldType_t GetRenderClassType() = 0;
 	virtual void			SetRenderClassType(renderClassWorldType_t type) = 0;
+
+	virtual rvmLightRenderType_t GetLightRenderType(void) = 0;
+	virtual void			SetLightRenderType(rvmLightRenderType_t lightRenderType) = 0;
 
 	virtual void			SetLightChannel(int lightChannel, bool enabled) = 0;
 	virtual bool			HasLightChannel(int lightChannel) = 0;
@@ -40,9 +51,6 @@ public:
 
 	virtual int				GetUniqueLightId(void) = 0;
 	virtual void			SetUniqueLightId(int uniqueLightId) = 0;
-
-	virtual bool			GetDynamicShadows(void) = 0;
-	virtual void			SetDynamicShadows(bool dynamicShadows) = 0;
 
 	virtual int				GetSurpressLightInViewID(void) = 0;
 	virtual void			SetSurpressLightInViewID(int suppressLightInViewID) = 0;

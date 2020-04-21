@@ -59,6 +59,7 @@ entityDef light {
 	"light"						"300"
 	"_color"						"1 1 1"
 	"ies"						""
+	"realtime"					"0"
 }
 
 entityDef speaker {

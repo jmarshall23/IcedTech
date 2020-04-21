@@ -95,9 +95,6 @@ void idGameEdit::ParseSpawnArgsToRenderLight( const idDict *args, idRenderLight 
 	renderLight->SetName(name);
 	renderLight->SetUniqueLightId(idStr::Hash(name));
 
-	// Wether or not this light is going to cast dynamic shadows.
-	renderLight->SetDynamicShadows(args->GetBool("dynamicshadow"));
-
 	// Setup the lighting channels.
 	{
 		idStr litChannel = args->GetString("litchannel", "");
@@ -110,6 +107,10 @@ void idGameEdit::ParseSpawnArgsToRenderLight( const idDict *args, idRenderLight 
 				renderLight->SetLightChannel(litChannelParser.ParseInt(), true);
 			}
 		}
+	}
+
+	if(args->GetBool("realtime", "0")) {
+		renderLight->SetLightRenderType(LIGHT_RENDER_DYNAMIC);
 	}
 
 	temp = args->GetString("ies");
