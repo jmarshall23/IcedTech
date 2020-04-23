@@ -1685,28 +1685,29 @@ void idAsyncClient::SetupConnection( void ) {
 		// do not make the protocol depend on PB
 		msg.WriteShort( 0 );
 		clientPort.SendPacket( serverAddress, msg.GetData(), msg.GetSize() );
-		
-		if ( idAsyncNetwork::LANServer.GetBool() ) {
-			common->Printf( "net_LANServer is set, connecting in LAN mode\n" );
-		} else {
-			// emit a cd key authorization request
-			// modified at protocol 1.37 for XP key addition
-			msg.BeginWriting();
-			msg.WriteShort( CONNECTIONLESS_MESSAGE_ID );
-			msg.WriteString( "clAuth" );
-			msg.WriteLong( ASYNC_PROTOCOL_VERSION );
-			msg.WriteNetadr( serverAddress );
-			// if we don't have a com_guid, this will request a direct reply from auth with it
-			msg.WriteByte( cvarSystem->GetCVarString( "com_guid" )[0] ? 1 : 0 );
-			// send the main key, and flag an extra byte to add XP key
-			msg.WriteString( session->GetCDKey( false ) );
-			const char *xpkey = session->GetCDKey( true );
-			msg.WriteByte( xpkey ? 1 : 0 );
-			if ( xpkey ) {
-				msg.WriteString( xpkey );
-			}
-			clientPort.SendPacket( idAsyncNetwork::GetMasterAddress(), msg.GetData(), msg.GetSize() );
-		}
+// jmarshall - remove Doom 3 CDKEY auth check.	
+		//if ( idAsyncNetwork::LANServer.GetBool() ) {
+		//	common->Printf( "net_LANServer is set, connecting in LAN mode\n" );
+		//} else {
+		//	// emit a cd key authorization request
+		//	// modified at protocol 1.37 for XP key addition
+		//	msg.BeginWriting();
+		//	msg.WriteShort( CONNECTIONLESS_MESSAGE_ID );
+		//	msg.WriteString( "clAuth" );
+		//	msg.WriteLong( ASYNC_PROTOCOL_VERSION );
+		//	msg.WriteNetadr( serverAddress );
+		//	// if we don't have a com_guid, this will request a direct reply from auth with it
+		//	msg.WriteByte( cvarSystem->GetCVarString( "com_guid" )[0] ? 1 : 0 );
+		//	// send the main key, and flag an extra byte to add XP key
+		//	msg.WriteString( session->GetCDKey( false ) );
+		//	const char *xpkey = session->GetCDKey( true );
+		//	msg.WriteByte( xpkey ? 1 : 0 );
+		//	if ( xpkey ) {
+		//		msg.WriteString( xpkey );
+		//	}
+		//	clientPort.SendPacket( idAsyncNetwork::GetMasterAddress(), msg.GetData(), msg.GetSize() );
+		//}
+// jmarshall end
 	} else {
 		return;
 	}

@@ -1549,26 +1549,29 @@ void idAsyncServer::ProcessChallengeMessage( const netadr_t from, const idBitMsg
 
 	serverPort.SendPacket( from, outMsg.GetData(), outMsg.GetSize() );
 
-	if ( Sys_IsLANAddress( from ) ) {
-		// no CD Key check for LAN clients
-		challenges[i].authState = CDK_OK;
-	} else {
-		if ( idAsyncNetwork::LANServer.GetBool() ) {
-			common->Printf( "net_LANServer is enabled. Client %s is not a LAN address, will be rejected\n", Sys_NetAdrToString( from ) );
-			challenges[ i ].authState = CDK_ONLYLAN;
-		} else {
-			// emit a cd key confirmation request
-			outMsg.BeginWriting();
-			outMsg.WriteShort( CONNECTIONLESS_MESSAGE_ID );
-			outMsg.WriteString( "srvAuth" );
-			outMsg.WriteLong( ASYNC_PROTOCOL_VERSION );
-			outMsg.WriteNetadr( from );
-			outMsg.WriteLong( -1 ); // this identifies "challenge" auth vs "connect" auth
-			// protocol 1.37 addition
-			outMsg.WriteByte( fileSystem->RunningD3XP() );
-			serverPort.SendPacket( idAsyncNetwork::GetMasterAddress(), outMsg.GetData(), outMsg.GetSize() );
-		}
-	}
+// jmarshall - remove Doom 3 CDKEY auth check.
+	//if ( Sys_IsLANAddress( from ) ) {
+	//	// no CD Key check for LAN clients
+	//	challenges[i].authState = CDK_OK;
+	//} else {
+	//	if ( idAsyncNetwork::LANServer.GetBool() ) {
+	//		common->Printf( "net_LANServer is enabled. Client %s is not a LAN address, will be rejected\n", Sys_NetAdrToString( from ) );
+	//		challenges[ i ].authState = CDK_ONLYLAN;
+	//	} else {
+	//		// emit a cd key confirmation request
+	//		outMsg.BeginWriting();
+	//		outMsg.WriteShort( CONNECTIONLESS_MESSAGE_ID );
+	//		outMsg.WriteString( "srvAuth" );
+	//		outMsg.WriteLong( ASYNC_PROTOCOL_VERSION );
+	//		outMsg.WriteNetadr( from );
+	//		outMsg.WriteLong( -1 ); // this identifies "challenge" auth vs "connect" auth
+	//		// protocol 1.37 addition
+	//		outMsg.WriteByte( fileSystem->RunningD3XP() );
+	//		serverPort.SendPacket( idAsyncNetwork::GetMasterAddress(), outMsg.GetData(), outMsg.GetSize() );
+	//	}
+	//}
+	challenges[i].authState = CDK_OK;
+// jmarshall end
 }
 
 /*
