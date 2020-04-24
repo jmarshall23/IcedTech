@@ -2460,11 +2460,11 @@ void idCommonLocal::Frame( void ) {
 			// we don't have vsync on, or the monitor is running at 120hz while
 			// com_engineHz is 60, so sleep a bit and check again
 			Sys_Sleep(0);
-		}
-
-		NetworkFrame(numGameFrames);
+		}		
 
 		if ( IsMultiplayer() ) {
+			NetworkFrame(numGameFrames);
+
 			if ( !IsDedicatedServer() ) {
 				session->GuiFrameEvents();
 				session->UpdateScreen( false );
