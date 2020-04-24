@@ -30,8 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "snd_local.h"
 
-float com_engineHz_latched = 60.0f;
-
 idCVar s_lockListener( "s_lockListener", "0", CVAR_BOOL, "lock listener updates" );
 idCVar s_constantAmplitude( "s_constantAmplitude", "-1", CVAR_FLOAT, "" );
 idCVar s_maxEmitterChannels( "s_maxEmitterChannels", "48", CVAR_INTEGER, "Can be set lower than the absolute max of MAX_HARDWARE_VOICES" );
@@ -376,7 +374,7 @@ void idSoundWorldLocal::Update() {
 		}
 	}
 
-	const float secondsPerFrame = 1.0f / com_engineHz_latched;
+	const float secondsPerFrame = 1.0f / common->Get_com_engineHz_latched();
 
 	// ------------------
 	// In the very common case of having more sounds that would contribute to the

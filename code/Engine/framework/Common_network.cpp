@@ -349,7 +349,7 @@ int idCommonLocal::ServerGetClientPing(int clientNum) {
 idCommonLocal::RunNetworkThink
 ==================
 */
-void idCommonLocal::RunNetworkThink(void) {
+void idCommonLocal::RunNetworkThink(int numGameFrames) {
 	if(!IsMultiplayer()) {
 		return;
 	}
@@ -365,7 +365,9 @@ void idCommonLocal::RunNetworkThink(void) {
 	}
 
 	// advance game
-	gameReturn_t ret = game->RunFrame(&userCmds[0]);
+	for (int i = 0; i < numGameFrames; i++) {
+		gameReturn_t ret = game->RunFrame(&userCmds[0]);
+	}
 }
 
 /*

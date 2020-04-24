@@ -2227,9 +2227,9 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 		}
 	} else do {
 		// update the game time
+		previousTime = FRAME_TO_MSEC(framenum);
 		framenum++;
-		previousTime = time;
-		time += msec;
+		time = FRAME_TO_MSEC(framenum);
 		realClientTime = time;
 
 #ifdef GAME_DLL

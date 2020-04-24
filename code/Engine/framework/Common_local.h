@@ -72,6 +72,9 @@ public:
 	virtual void				ServerSendReliableMessage(int clientNum, const idBitMsg& msg);
 	virtual void				ClientSendReliableMessage(const idBitMsg& msg);
 	virtual int					ClientGetTimeSinceLastPacket(void);
+	virtual float				Get_com_engineHz_latched(void);
+	virtual int64_t				Get_com_engineHz_numerator(void);
+	virtual int64_t				Get_com_engineHz_denominator(void);
 #ifdef ID_DEDICATED
 	virtual bool				IsDedicatedServer(void) { return true; }
 #else
@@ -152,7 +155,7 @@ private:
 
 	static void					SpawnServer_f(const idCmdArgs& args);
 	void						SpawnServer(void);
-	void						RunNetworkThink(void);
+	void						RunNetworkThink(int numGameFrames);
 
 	void						NewClient(int clientNum, void* peer);
 
@@ -164,6 +167,9 @@ private:
 	int							localClientNum;
 
 	usercmd_t*					userCmds;
+
+	int							gameFrame;			// Frame number of the local game
+	double						gameTimeResidual;	// left over msec from the last game frame
 };
 
 extern idCommonLocal			commonLocal;

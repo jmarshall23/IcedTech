@@ -292,6 +292,10 @@ public:
 
 								// Returns the local client number.
 	virtual int					GetLocalClientNum(void) = 0;
+
+	virtual float				Get_com_engineHz_latched(void) = 0;
+	virtual int64_t				Get_com_engineHz_numerator(void ) = 0;
+	virtual int64_t				Get_com_engineHz_denominator(void) = 0;
 };
 
 //
@@ -335,6 +339,23 @@ ID_INLINE rvmNetworkPacket::~rvmNetworkPacket() {
 	}
 }
 
-extern idCommon *		common;
+extern idCommon* common;
+
+// Returns the msec the frame starts on
+ID_INLINE int FRAME_TO_MSEC(int64_t frame) {
+	return (int)((frame * common->Get_com_engineHz_numerator()) / common->Get_com_engineHz_denominator());
+}
+// Rounds DOWN to the nearest frame
+ID_INLINE int MSEC_TO_FRAME_FLOOR(int msec) {
+	return (int)((((int64_t)msec * common->Get_com_engineHz_denominator()) + (common->Get_com_engineHz_denominator() - 1)) / common->Get_com_engineHz_numerator());
+}
+// Rounds UP to the nearest frame
+ID_INLINE int MSEC_TO_FRAME_CEIL(int msec) {
+	return (int)((((int64_t)msec * common->Get_com_engineHz_denominator()) + (common->Get_com_engineHz_numerator() - 1)) / common->Get_com_engineHz_numerator());
+}
+// Aligns msec so it starts on a frame bondary
+ID_INLINE int MSEC_ALIGN_TO_FRAME(int msec) {
+	return FRAME_TO_MSEC(MSEC_TO_FRAME_CEIL(msec));
+}
 
 #endif /* !__COMMON_H__ */
