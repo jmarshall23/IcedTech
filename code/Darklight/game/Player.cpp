@@ -806,14 +806,14 @@ bool idInventory::Give( idPlayer *owner, const idDict &spawnArgs, const char *st
 			// don't pickup "no ammo" weapon types twice
 			// not for D3 SP .. there is only one case in the game where you can get a no ammo
 			// weapon when you might already have it, in that case it is more conistent to pick it up
-			if ( gameLocal.isMultiplayer && weaponDecl && ( weapons & ( 1 << i ) ) && !weaponDecl->dict.GetInt( "ammoRequired" ) ) {
+			if ( common->IsMultiplayer() && weaponDecl && ( weapons & ( 1 << i ) ) && !weaponDecl->dict.GetInt( "ammoRequired" ) ) {
 				continue;
 			}
 
 			if ( !gameLocal.world->spawnArgs.GetBool( "no_Weapons" ) || ( weaponName == "weapon_fists" ) || ( weaponName == "weapon_soulcube" ) ) {
-				if ( ( weapons & ( 1 << i ) ) == 0 || gameLocal.isMultiplayer ) {
+				if ( ( weapons & ( 1 << i ) ) == 0 || common->IsMultiplayer() ) {
 					if ( owner->GetUserInfo()->GetBool( "ui_autoSwitch" ) && idealWeapon ) {
-						assert( !gameLocal.isClient );
+						assert( !common->IsClient() );
 						*idealWeapon = i;
 					} 
 					if ( owner->hud && updateHud && lastGiveTime + 1000 < gameLocal.time ) {
@@ -1141,7 +1141,7 @@ void idPlayer::SetupWeaponEntity( void ) {
 		// get rid of old weapon
 		weapon.GetEntity()->Clear();
 		currentWeapon = -1;
-	} else if ( !gameLocal.isClient ) {
+	} else if ( !common->IsClient() ) {
 		weapon = static_cast<idWeapon *>( gameLocal.SpawnEntityType( idWeapon::Type, NULL ) );
 		weapon.GetEntity()->SetOwner( this );
 		currentWeapon = -1;
@@ -1242,7 +1242,7 @@ void idPlayer::Init( void ) {
 	oldViewYaw = 0.0f;
 
 	// set the pm_ cvars
-	if ( !gameLocal.isMultiplayer || gameLocal.isServer ) {
+	if ( !common->IsMultiplayer() || common->IsServer() ) {
 		kv = spawnArgs.MatchPrefix( "pm_", NULL );
 		while( kv ) {
 			cvarSystem->SetCVarString( kv->GetKey(), kv->GetValue() );
@@ -1289,7 +1289,7 @@ void idPlayer::Init( void ) {
 		cursor->SetStateString( "guicursor", "0" );
 	}
 
-	if ( ( gameLocal.isMultiplayer || g_testDeath.GetBool() ) && skin ) {
+	if ( ( common->IsMultiplayer() || g_testDeath.GetBool() ) && skin ) {
 		SetSkin( skin );
 		renderEntity->SetShaderParms(6, 0.0f);
 	} else if ( spawnArgs.GetString( "spawn_skin", NULL, &value ) ) {
@@ -1436,7 +1436,7 @@ void idPlayer::Spawn( void ) {
 	// allow thinking during cinematics
 	cinematic = true;
 
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		// always start in spectating state waiting to be spawned in
 		// do this before SetClipModel to get the right bounding box
 		spectating = true;
@@ -1453,10 +1453,10 @@ void idPlayer::Spawn( void ) {
 	skin = renderEntity->GetCustomSkin();
 
 	// only the local player needs guis
-	if ( !gameLocal.isMultiplayer || entityNumber == gameLocal.localClientNum ) {
+	if ( !common->IsMultiplayer() || entityNumber == gameLocal.localClientNum ) {
 
 		// load HUD
-		//if ( gameLocal.isMultiplayer ) {
+		//if ( common->IsMultiplayer() ) {
 		//	hud = uiManager->FindGui( "guis/mphud.gui", true, false, true );
 		//} else if ( spawnArgs.GetString( "hud", "", temp ) ) {
 		//	hud = uiManager->FindGui( temp, true, false, true );
@@ -1469,7 +1469,7 @@ void idPlayer::Spawn( void ) {
 
 		// load cursor
 		//if ( spawnArgs.GetString( "cursor", "", temp ) ) {
-		//	cursor = uiManager->FindGui( temp, true, gameLocal.isMultiplayer, gameLocal.isMultiplayer );
+		//	cursor = uiManager->FindGui( temp, true, common->IsMultiplayer(), common->IsMultiplayer() );
 		//}
 		//if ( cursor ) {
 		//	cursor->Activate( true, gameLocal.time );
@@ -1491,7 +1491,7 @@ void idPlayer::Spawn( void ) {
 
 	// initialize user info related settings
 	// on server, we wait for the userinfo broadcast, as this controls when the player is initially spawned in game
-	if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
+	if ( common->IsClient() || entityNumber == gameLocal.localClientNum ) {
 		UserInfoChanged( false );
 	}
 
@@ -1516,10 +1516,10 @@ void idPlayer::Spawn( void ) {
 		headEnt->GetRenderEntity()->SetNoSelfShadow(true);
 	}
 
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		Init();
 		Hide();	// properly hidden if starting as a spectator
-		if ( !gameLocal.isClient ) {
+		if ( !common->IsClient() ) {
 			// set yourself ready to spawn. idMultiplayerGame will decide when/if appropriate and call SpawnFromSpawnSpot
 			SetupWeaponEntity();
 			SpawnFromSpawnSpot();
@@ -1534,7 +1534,7 @@ void idPlayer::Spawn( void ) {
 	// trigger playtesting item gives, if we didn't get here from a previous level
 	// the devmap key will be set on the first devmap, but cleared on any level
 	// transitions
-	if ( !gameLocal.isMultiplayer && gameLocal.serverInfo.FindKey( "devmap" ) ) {
+	if ( !common->IsMultiplayer() && gameLocal.serverInfo.FindKey( "devmap" ) ) {
 		// fire a trigger with the name "devmap"
 		idEntity *ent = gameLocal.FindEntity( "devmap" );
 		if ( ent ) {
@@ -1585,7 +1585,7 @@ void idPlayer::Spawn( void ) {
 	inventory.pdaOpened = false;
 	inventory.selPDA = 0;
 
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		if ( g_skill.GetInteger() < 2 ) {
 			if ( health < 25 ) {
 				health = 25;
@@ -2088,7 +2088,7 @@ void idPlayer::Restart( void ) {
 	idActor::Restart();
 	
 	// client needs to setup the animation script object again
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		Init();
 	} else {
 		// choose a random spot and prepare the point of view in case player is left spectating
@@ -2106,7 +2106,7 @@ idPlayer::ServerSpectate
 ================
 */
 void idPlayer::ServerSpectate( bool spectate ) {
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 
 	if ( spectating != spectate ) {
 		Spectate( spectate );
@@ -2181,7 +2181,7 @@ when called here with spectating set to true, just place yourself and init
 void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_angles ) {
 	idVec3 spec_origin;
 
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 
 	respawning = true;
 
@@ -2233,7 +2233,7 @@ void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_a
 		Show();
 	}
 
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		if ( !spectating ) {
 			// we may be called twice in a row in some situations. avoid a double fx and 'fly to the roof'
 			if (lastTeleFX < gameLocal.time - 1000) {
@@ -2307,7 +2307,7 @@ Restores any inventory and player stats when changing levels.
 ===============
 */
 void idPlayer::RestorePersistantInfo( void ) {
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		gameLocal.persistentPlayerInfo[entityNumber].Clear();
 	}
 
@@ -2315,7 +2315,7 @@ void idPlayer::RestorePersistantInfo( void ) {
 
 	inventory.RestoreInventory( this, spawnArgs );
 	health = spawnArgs.GetInt( "health", "100" );
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		idealWeapon = spawnArgs.GetInt( "current_weapon", "1" );
 	}
 }
@@ -2344,7 +2344,7 @@ void idPlayer::UpdateSkinSetup( bool restart ) {
 		} else {
 			baseSkinName = "skins/characters/player/marine_mp_red";
 		}
-		if ( !gameLocal.isClient && team != latchedTeam ) {
+		if ( !common->IsClient() && team != latchedTeam ) {
 			gameLocal.mpGame.SwitchToTeam( entityNumber, latchedTeam, team );
 		}
 		latchedTeam = team;
@@ -2419,7 +2419,7 @@ bool idPlayer::UserInfoChanged( bool canModify ) {
 	userInfo = GetUserInfo();
 	showWeaponViewModel = userInfo->GetBool( "ui_showGun" );
 
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		return false;
 	}
 
@@ -2932,7 +2932,7 @@ bool idPlayer::GiveItem( idItem *item ) {
 	bool				gave;
 	int					numPickup;
 
-	if ( gameLocal.isMultiplayer && spectating ) {
+	if ( common->IsMultiplayer() && spectating ) {
 		return false;
 	}
 
@@ -2993,7 +2993,7 @@ float idPlayer::PowerUpModifier( int type ) {
 		}
 	}
 
-	if ( gameLocal.isMultiplayer && !gameLocal.isClient ) {
+	if ( common->IsMultiplayer() && !common->IsClient() ) {
 		if ( PowerUpActive( MEGAHEALTH ) ) {
 			if ( healthPool <= 0 ) {
 				GiveHealthPool( 100 );
@@ -3026,7 +3026,7 @@ bool idPlayer::GivePowerUp( int powerup, int time ) {
 
 	if ( powerup >= 0 && powerup < MAX_POWERUPS ) {
 
-		if ( gameLocal.isServer ) {
+		if ( common->IsServer() ) {
 			idBitMsg	msg;
 			byte		msgBuf[MAX_EVENT_PARAM_SIZE];
 
@@ -3050,7 +3050,7 @@ bool idPlayer::GivePowerUp( int powerup, int time ) {
 				if ( baseSkinName.Length() ) {
 					powerUpSkin = declManager->FindSkin( baseSkinName + "_berserk" );
 				}
-				if ( !gameLocal.isClient ) {
+				if ( !common->IsClient() ) {
 					idealWeapon = 0;
 				}
 				break;
@@ -3104,7 +3104,7 @@ idPlayer::ClearPowerup
 */
 void idPlayer::ClearPowerup( int i ) {
 
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 		idBitMsg	msg;
 		byte		msgBuf[MAX_EVENT_PARAM_SIZE];
 
@@ -3139,7 +3139,7 @@ idPlayer::UpdatePowerUps
 void idPlayer::UpdatePowerUps( void ) {
 	int i;
 
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		for ( i = 0; i < MAX_POWERUPS; i++ ) {
 			if ( PowerUpActive( i ) && inventory.powerupEndTime[i] <= gameLocal.time ) {
 				ClearPowerup( i );
@@ -3156,7 +3156,7 @@ void idPlayer::UpdatePowerUps( void ) {
 	}
 
 	if ( healthPool && gameLocal.time > nextHealthPulse && !pfl.dead && health > 0 ) {
-		assert( !gameLocal.isClient );	// healthPool never be set on client
+		assert( !common->IsClient() );	// healthPool never be set on client
 		int amt = ( healthPool > 5 ) ? 5 : healthPool;
 		health += amt;
 		if ( health > inventory.maxHealth ) {
@@ -3170,7 +3170,7 @@ void idPlayer::UpdatePowerUps( void ) {
 	}
 #ifndef ID_DEMO_BUILD
 	if ( !gameLocal.inCinematic && influenceActive == 0 && g_skill.GetInteger() == 3 && gameLocal.time > nextHealthTake && !pfl.dead && health > g_healthTakeLimit.GetInteger() ) {
-		assert( !gameLocal.isClient );	// healthPool never be set on client
+		assert( !common->IsClient() );	// healthPool never be set on client
 		health -= g_healthTakeAmt.GetInteger();
 		if ( health < g_healthTakeLimit.GetInteger() ) {
 			health = g_healthTakeLimit.GetInteger();
@@ -3202,7 +3202,7 @@ idPlayer::GiveInventoryItem
 ===============
 */
 bool idPlayer::GiveInventoryItem( idDict *item ) {
-	if ( gameLocal.isMultiplayer && spectating ) {
+	if ( common->IsMultiplayer() && spectating ) {
 		return false;
 	}
 	inventory.items.Append( new idDict( *item ) );
@@ -3343,7 +3343,7 @@ idPlayer::GivePDA
 */
 void idPlayer::GivePDA( const char *pdaName, idDict *item )
 {
-	if ( gameLocal.isMultiplayer && spectating ) {
+	if ( common->IsMultiplayer() && spectating ) {
 		return;
 	}
 
@@ -3475,7 +3475,7 @@ idPlayer::Reload
 ===============
 */
 void idPlayer::Reload( void ) {
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 
@@ -3497,7 +3497,7 @@ void idPlayer::NextBestWeapon( void ) {
 	const char *weap;
 	int w = MAX_WEAPONS;
 
-	if ( gameLocal.isClient || !weaponEnabled ) {
+	if ( common->IsClient() || !weaponEnabled ) {
 		return;
 	}
 
@@ -3530,7 +3530,7 @@ void idPlayer::NextWeapon( void ) {
 		return;
 	}
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 
@@ -3580,7 +3580,7 @@ void idPlayer::PrevWeapon( void ) {
 		return;
 	}
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 
@@ -3633,7 +3633,7 @@ void idPlayer::SelectWeapon( int num, bool force ) {
 		return;
 	}
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 
@@ -3682,7 +3682,7 @@ void idPlayer::DropWeapon( bool died ) {
 	idVec3 forward, up;
 	int inclip, ammoavailable;
 
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 	
 	if ( spectating || weaponGone || weapon.GetEntity() == NULL ) {
 		return;
@@ -3745,7 +3745,7 @@ steal the target player's current weapon
 =================
 */
 void idPlayer::StealWeapon( idPlayer *player ) {
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 
 	// make sure there's something to steal
 	idWeapon *player_weapon = static_cast< idWeapon * >( player->weapon.GetEntity() );
@@ -3832,7 +3832,7 @@ void idPlayer::Weapon_Combat( void ) {
 
 	if ( idealWeapon != currentWeapon ) {
 		if ( weaponCatchup ) {
-			assert( gameLocal.isClient );
+			assert( common->IsClient() );
 
 			currentWeapon = idealWeapon;
 			weaponGone = false;
@@ -3979,7 +3979,7 @@ void idPlayer::Weapon_GUI( void ) {
 	}
 
 	// disable click prediction for the GUIs. handy to check the state sync does the right thing
-	if ( gameLocal.isClient && !net_clientPredictGUI.GetBool() ) {
+	if ( common->IsClient() && !net_clientPredictGUI.GetBool() ) {
 		return;
 	}
 
@@ -3996,7 +3996,7 @@ void idPlayer::Weapon_GUI( void ) {
 				focusGUIent->UpdateVisuals();
 			}
 		}
-		if ( gameLocal.isClient ) {
+		if ( common->IsClient() ) {
 			// we predict enough, but don't want to execute commands
 			return;
 		}
@@ -4020,7 +4020,7 @@ void idPlayer::UpdateWeapon( void ) {
 
 	assert( !spectating );
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		// clients need to wait till the weapon and it's world model entity
 		// are present and synchronized ( weapon.worldModel idEntityPtr to idAnimatedEntity )
 		if ( !weapon.GetEntity()->IsWorldModelReady() ) {
@@ -4141,10 +4141,10 @@ idPlayer::UpdateSpectating
 */
 void idPlayer::UpdateSpectating( void ) {
 	assert( spectating );
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 	assert( IsHidden() );
 	idPlayer *player;
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		return;
 	}
 	player = gameLocal.GetClientByNum( spectator );
@@ -4270,7 +4270,7 @@ idPlayer::Collide
 bool idPlayer::Collide( const trace_t &collision, const idVec3 &velocity ) {
 	idEntity *other;
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return false;
 	}
 
@@ -4359,7 +4359,7 @@ void idPlayer::UpdateFocus( void ) {
 
 	// only update the focus character when attack button isn't pressed so players
 	// can still chainsaw NPC's
-	if ( gameLocal.isMultiplayer || ( !focusCharacter && ( usercmd.buttons & BUTTON_ATTACK ) ) ) {
+	if ( common->IsMultiplayer() || ( !focusCharacter && ( usercmd.buttons & BUTTON_ATTACK ) ) ) {
 		allowFocus = false;
 	} else {
 		allowFocus = true;
@@ -4384,7 +4384,7 @@ void idPlayer::UpdateFocus( void ) {
 	end = start + viewAngles.ToForward() * 500.0f;
 
 	// player identification -> names to the hud
-	if ( gameLocal.isMultiplayer && entityNumber == gameLocal.localClientNum ) {
+	if ( common->IsMultiplayer() && entityNumber == gameLocal.localClientNum ) {
 		idVec3 end = start + viewAngles.ToForward() * 768.0f;
 		gameLocal.clip.TracePoint( trace, start, end, MASK_SHOT_BOUNDINGBOX, this );
 		int iclient = -1;
@@ -4673,7 +4673,7 @@ void idPlayer::CrashLand( const idVec3 &oldOrigin, const idVec3 &oldVelocity ) {
 // jmarshall: Disable fall damage.
 #if 0
 	// allow falling a bit further for multiplayer
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		fatalDelta	= 75.0f;
 		hardDelta	= 50.0f;
 	} else {
@@ -4743,13 +4743,13 @@ void idPlayer::BobCycle( const idVec3 &pushVelocity ) {
 
 	// do not evaluate the bob for other clients
 	// when doing a spectate follow, don't do any weapon bobbing
-	if ( gameLocal.isClient && entityNumber != gameLocal.localClientNum ) {
+	if ( common->IsClient() && entityNumber != gameLocal.localClientNum ) {
 		viewBobAngles.Zero();
 		viewBob.Zero();
 		return;
 	}
 
-	if ( !physicsObj.HasGroundContacts() || ( gameLocal.isMultiplayer && spectating ) ) {
+	if ( !physicsObj.HasGroundContacts() || ( common->IsMultiplayer() && spectating ) ) {
 		// airborne
 		bobCycle = 0;
 		bobFoot = 0;
@@ -5465,7 +5465,7 @@ void idPlayer::Spectate( bool spectate ) {
 
 	spectating = spectate;
 
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 		msg.Init( msgBuf, sizeof( msgBuf ) );
 		msg.WriteBits( spectating, 1 );
 		ServerSendEvent( EVENT_SPECTATE, &msg, false, -1 );
@@ -5556,7 +5556,7 @@ idPlayer::PerformImpulse
 */
 void idPlayer::PerformImpulse( int impulse ) {
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		idBitMsg	msg;
 		byte		msgBuf[MAX_EVENT_PARAM_SIZE];
 
@@ -5586,7 +5586,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 			break;
 		}
 		case IMPULSE_17: {
-			if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
+			if ( common->IsClient() || entityNumber == gameLocal.localClientNum ) {
 				gameLocal.mpGame.ToggleReady();
 			}
 			break;
@@ -5598,7 +5598,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 		case IMPULSE_19: {
 			// when we're not in single player, IMPULSE_19 is used for showScores
 			// otherwise it opens the pda
-			if ( !gameLocal.isMultiplayer ) {
+			if ( !common->IsMultiplayer() ) {
 				if ( objectiveSystemOpen ) {
 					TogglePDA();
 				} else if ( weapon_pda >= 0 ) {
@@ -5608,25 +5608,25 @@ void idPlayer::PerformImpulse( int impulse ) {
 			break;
 		}
 		case IMPULSE_20: {
-			if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
+			if ( common->IsClient() || entityNumber == gameLocal.localClientNum ) {
 				gameLocal.mpGame.ToggleTeam();
 			}
 			break;
 		}
 		case IMPULSE_22: {
-			if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
+			if ( common->IsClient() || entityNumber == gameLocal.localClientNum ) {
 				gameLocal.mpGame.ToggleSpectate();
 			}
 			break;
 		}
 		case IMPULSE_28: {
-			if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
+			if ( common->IsClient() || entityNumber == gameLocal.localClientNum ) {
 				gameLocal.mpGame.CastVote( gameLocal.localClientNum, true );
 			}
 			break;
 		}
 		case IMPULSE_29: {
-			if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
+			if ( common->IsClient() || entityNumber == gameLocal.localClientNum ) {
 				gameLocal.mpGame.CastVote( gameLocal.localClientNum, false );
 			}
 			break;
@@ -5672,7 +5672,7 @@ void idPlayer::EvaluateControls( void ) {
 	}
 
 	// in MP, idMultiplayerGame decides spawns
-	if ( forceRespawn && !gameLocal.isMultiplayer && !g_testDeath.GetBool() ) {
+	if ( forceRespawn && !common->IsMultiplayer() && !g_testDeath.GetBool() ) {
 		// in single player, we let the session handle restarting the level or loading a game
 		gameLocal.sessionCommand = "died";
 	}
@@ -5708,7 +5708,7 @@ void idPlayer::AdjustSpeed( void ) {
 		bobFrac = 0.0f;
 // jmarshall: always run. 
 	} else if ( !physicsObj.OnLadder() /*&& ( usercmd.buttons & BUTTON_RUN )*/ && ( usercmd.forwardmove || usercmd.rightmove ) && ( usercmd.upmove >= 0 ) ) {
-		if ( !gameLocal.isMultiplayer && !physicsObj.IsCrouching() && !PowerUpActive( ADRENALINE ) ) {
+		if ( !common->IsMultiplayer() && !physicsObj.IsCrouching() && !PowerUpActive( ADRENALINE ) ) {
 			stamina -= MS2SEC( gameLocal.msec );
 		}
 		if ( stamina < 0 ) {
@@ -6042,7 +6042,7 @@ void idPlayer::UpdateHud( void ) {
 		hud->SetStateString( "projectilepct", "Hit % 0.0" );
 	}
 
-	if ( isLagged && gameLocal.isMultiplayer && gameLocal.localClientNum == entityNumber ) {
+	if ( isLagged && common->IsMultiplayer() && gameLocal.localClientNum == entityNumber ) {
 		hud->SetStateString( "hudLag", "1" );
 	} else {
 		hud->SetStateString( "hudLag", "0" );
@@ -6055,7 +6055,7 @@ idPlayer::UpdateDeathSkin
 ==============
 */
 void idPlayer::UpdateDeathSkin( bool state_hitch ) {
-	if ( !( gameLocal.isMultiplayer || g_testDeath.GetBool() ) ) {
+	if ( !( common->IsMultiplayer() || g_testDeath.GetBool() ) ) {
 		return;
 	}
 	if ( health <= 0 ) {
@@ -6222,7 +6222,7 @@ void idPlayer::Think( void ) {
 		}
 
 		// not done on clients for various reasons. don't do it on server and save the sound channel for other things
-		if ( !gameLocal.isMultiplayer ) {
+		if ( !common->IsMultiplayer() ) {
 			SetCurrentHeartRate();
 			float scale = g_damageScale.GetFloat();
 			if ( g_useDynamicProtection.GetBool() && scale < 1.0f && gameLocal.time - lastDmgTime > 500 ) {
@@ -6278,7 +6278,7 @@ void idPlayer::Think( void ) {
 
 	UpdateDeathSkin( false );
 
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		DrawPlayerIcons();
 	}
 
@@ -6296,7 +6296,7 @@ void idPlayer::Think( void ) {
 		}
 	}
 // jmarshall
-	//if ( gameLocal.isMultiplayer || g_showPlayerShadow.GetBool() ) {
+	//if ( common->IsMultiplayer() || g_showPlayerShadow.GetBool() ) {
 	//	renderEntity.suppressShadowInViewID	= 0;
 	//	if ( headRenderEnt ) {
 	//		headRenderEnt->suppressShadowInViewID = 0;
@@ -6414,7 +6414,7 @@ idPlayer::Killed
 void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location ) {
 	float delay;
 
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 
 	// stop taking knockback once dead
 	fl.noknockback = true;
@@ -6475,7 +6475,7 @@ void idPlayer::Killed( idEntity *inflictor, idEntity *attacker, int damage, cons
 		LookAtKiller( inflictor, attacker );
 	}
 
-	if ( gameLocal.isMultiplayer || g_testDeath.GetBool() ) {
+	if ( common->IsMultiplayer() || g_testDeath.GetBool() ) {
 		idPlayer *killer = NULL;
 		// no gibbing in MP. Event_Gib will early out in MP
 		if ( attacker->IsType( idPlayer::Type ) ) {
@@ -6527,7 +6527,7 @@ callback function for when another entity received damage from this entity.  dam
 ================
 */
 void idPlayer::DamageFeedback( idEntity *victim, idEntity *inflictor, int &damage ) {
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 	damage *= PowerUpModifier( BERSERK );
 	if ( damage && ( victim != this ) && victim->IsType( idActor::Type ) ) {
 		SetLastHitTime( gameLocal.time );
@@ -6552,7 +6552,7 @@ void idPlayer::CalcDamagePoints( idEntity *inflictor, idEntity *attacker, const 
 	damage = GetDamageForLocation( damage, location );
 
 	idPlayer *player = attacker->IsType( idPlayer::Type ) ? static_cast<idPlayer*>(attacker) : NULL;
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		if ( inflictor != gameLocal.world ) {
 			switch ( g_skill.GetInteger() ) {
 				case 0: 
@@ -6577,7 +6577,7 @@ void idPlayer::CalcDamagePoints( idEntity *inflictor, idEntity *attacker, const 
 
 	// always give half damage if hurting self
 	if ( attacker == this ) {
-		if ( gameLocal.isMultiplayer ) {
+		if ( common->IsMultiplayer() ) {
 			// only do this in mp so single player plasma and rocket splash is very dangerous in close quarters
 			damage *= damageDef->GetFloat( "selfDamageScale", "0.5" );
 		} else {
@@ -6600,7 +6600,7 @@ void idPlayer::CalcDamagePoints( idEntity *inflictor, idEntity *attacker, const 
 	if ( !damageDef->GetBool( "noArmor" ) ) {
 		float armor_protection;
 
-		armor_protection = ( gameLocal.isMultiplayer ) ? g_armorProtectionMP.GetFloat() : g_armorProtection.GetFloat();
+		armor_protection = ( common->IsMultiplayer() ) ? g_armorProtectionMP.GetFloat() : g_armorProtection.GetFloat();
 
 		armorSave = ceil( damage * armor_protection );
 		if ( armorSave >= inventory.armor ) {
@@ -6660,7 +6660,7 @@ void idPlayer::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &di
 	float		attackerPushScale;
 
 	// damage is only processed on server
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 	
@@ -6745,7 +6745,7 @@ void idPlayer::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &di
 	// do the damage
 	if ( damage > 0 ) {
 
-		if ( !gameLocal.isMultiplayer ) {
+		if ( !common->IsMultiplayer() ) {
 			float scale = g_damageScale.GetFloat();
 			if ( g_useDynamicProtection.GetBool() && g_skill.GetInteger() < 2 ) {
 				if ( gameLocal.time > lastDmgTime + 500 && scale > 0.25f ) {
@@ -6816,7 +6816,7 @@ void idPlayer::Teleport( const idVec3 &origin, const idAngles &angles, idEntity 
 	}
 
 	SetOrigin( origin + idVec3( 0, 0, CM_CLIP_EPSILON ) );
-	if ( !gameLocal.isMultiplayer && GetFloorPos( 16.0f, org ) ) {
+	if ( !common->IsMultiplayer() && GetFloorPos( 16.0f, org ) ) {
 		SetOrigin( org );
 	}
 
@@ -6831,7 +6831,7 @@ void idPlayer::Teleport( const idVec3 &origin, const idAngles &angles, idEntity 
 	idealLegsYaw = 0.0f;
 	oldViewYaw = viewAngles.yaw;
 
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		playerView.Flash( colorWhite, 140 );
 	}
 
@@ -6839,8 +6839,8 @@ void idPlayer::Teleport( const idVec3 &origin, const idAngles &angles, idEntity 
 
 	teleportEntity = destination;
 
-	if ( !gameLocal.isClient && !noclip ) {
-		if ( gameLocal.isMultiplayer ) {
+	if ( !common->IsClient() && !noclip ) {
+		if ( common->IsMultiplayer() ) {
 			// kill anything at the new position or mark for kill depending on immediate or delayed teleport
 			gameLocal.KillBox( this, destination != NULL );
 		} else {
@@ -6878,7 +6878,7 @@ float idPlayer::DefaultFov( void ) const {
 	float fov;
 
 	fov = g_fov.GetFloat();
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		if ( fov < 90.0f ) {
 			return 90.0f;
 		} else if ( fov > 110.0f ) {
@@ -7064,7 +7064,7 @@ void idPlayer::CalculateViewWeaponPos( idVec3 &origin, idMat3 &axis ) {
 	angles.pitch	= xyspeed * bobfracsin * 0.005f;
 
 	// gun angles from turning
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		idAngles offset = GunTurningOffset();
 		offset *= g_mpWeaponAngleScale.GetFloat();
 		angles += offset;
@@ -7172,7 +7172,7 @@ idVec3 idPlayer::GetEyePosition( void ) const {
 	idVec3 org;
  
 	// use the smoothed origin if spectating another player in multiplayer
-	if ( gameLocal.isClient && entityNumber != gameLocal.localClientNum ) {
+	if ( common->IsClient() && entityNumber != gameLocal.localClientNum ) {
 		org = smoothedOrigin;
 	} else {
 		org = GetPhysics()->GetOrigin();
@@ -7392,7 +7392,7 @@ void idPlayer::SetLastHitTime( int time ) {
 		// level start and inits
 		return;
 	}
-	if ( gameLocal.isMultiplayer && ( time - lastSndHitTime ) > 10 ) {
+	if ( common->IsMultiplayer() && ( time - lastSndHitTime ) > 10 ) {
 		lastSndHitTime = time;
 		StartSound( "snd_hit_feedback", SND_CHANNEL_ANY, SSF_PRIVATE_SOUND, false, NULL );
 	}
@@ -7616,7 +7616,7 @@ void idPlayer::Event_SelectWeapon( const char *weaponName ) {
 	int i;
 	int weaponNum;
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		gameLocal.Warning( "Cannot switch weapons from script in multiplayer" );
 		return;
 	}
@@ -7664,7 +7664,7 @@ idPlayer::Event_OpenPDA
 ==================
 */
 void idPlayer::Event_OpenPDA( void ) {
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		TogglePDA();
 	}
 }
@@ -7705,7 +7705,7 @@ void idPlayer::Event_ExitTeleporter( void ) {
 
 	pushVel = exitEnt->spawnArgs.GetFloat( "push", "300" );
 
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 		ServerSendEvent( EVENT_EXIT_TELEPORTER, NULL, false, -1 );
 	}
 
@@ -7820,13 +7820,13 @@ void idPlayer::ClientPredictionThink( void ) {
 	// this may use firstPersonView, or a thirdPerson / camera view
 	CalculateRenderView();
 
-	if(gameLocal.isMultiplayer && !spectating) {
+	if(common->IsMultiplayer() && !spectating) {
 		if(weapon.IsValid()) {
 			weapon->Think();
 		}
 	}
 
-	if ( !gameLocal.inCinematic && weapon.GetEntity() && ( health > 0 ) && !( gameLocal.isMultiplayer && spectating ) ) {
+	if ( !gameLocal.inCinematic && weapon.GetEntity() && ( health > 0 ) && !( common->IsMultiplayer() && spectating ) ) {
 		UpdateWeapon();
 	}
 
@@ -7852,7 +7852,7 @@ void idPlayer::ClientPredictionThink( void ) {
 		}
 	}
 
-	if ( gameLocal.isMultiplayer || g_showPlayerShadow.GetBool() ) {
+	if ( common->IsMultiplayer() || g_showPlayerShadow.GetBool() ) {
 		renderEntity->SetSuppressShadowInViewID(0);
 		if ( headRenderEnt ) {
 			headRenderEnt->SetSuppressShadowInViewID(0);
@@ -7876,7 +7876,7 @@ void idPlayer::ClientPredictionThink( void ) {
 		UpdateAnimation();
 	}
 
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		DrawPlayerIcons();
 	}
 
@@ -7904,7 +7904,7 @@ bool idPlayer::GetPhysicsToVisualTransform( idVec3 &origin, idMat3 &axis ) {
 
 	// smoothen the rendered origin and angles of other clients
 	// smooth self origin if snapshots are telling us prediction is off
-	if ( gameLocal.isClient && gameLocal.framenum >= smoothedFrame && ( entityNumber != gameLocal.localClientNum || selfSmooth ) ) {
+	if ( common->IsClient() && gameLocal.framenum >= smoothedFrame && ( entityNumber != gameLocal.localClientNum || selfSmooth ) ) {
 		// render origin and axis
 		idMat3 renderAxis = viewAxis * GetPhysics()->GetAxis();
 		idVec3 renderOrigin = GetPhysics()->GetOrigin() + modelOffset * renderAxis;
@@ -8447,7 +8447,7 @@ idPlayer::UpdatePlayerIcons
 ===============
 */
 void idPlayer::UpdatePlayerIcons( void ) {
-	int time = networkSystem->ServerGetClientTimeSinceLastPacket( entityNumber );
+	int time = common->ServerGetClientTimeSinceLastPacket( entityNumber );
 	if ( time > cvarSystem->GetCVarInteger( "net_clientMaxPrediction" ) ) {
 		isLagged = true;
 	} else {

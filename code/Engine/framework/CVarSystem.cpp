@@ -305,7 +305,7 @@ idInternalCVar::Set
 void idInternalCVar::Set( const char *newValue, bool force, bool fromServer ) {
 	if ( session && session->IsMultiplayer() && !fromServer ) {
 #ifndef ID_TYPEINFO
-		if ( ( flags & CVAR_NETWORKSYNC ) && idAsyncNetwork::client.IsActive() ) {
+		if ( ( flags & CVAR_NETWORKSYNC ) && common->IsClient() ) {
 			common->Printf( "%s is a synced over the network and cannot be changed on a multiplayer client.\n", nameString.c_str() );
 #if ID_ALLOW_CHEATS
 			common->Printf( "ID_ALLOW_CHEATS override!\n" );

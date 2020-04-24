@@ -916,7 +916,7 @@ void idAFEntity_Gibbable::SpawnGibs( const idVec3 &dir, const char *damageDefNam
 
 	BaseSpawn();
 
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 
 	const idDict *damageDef = gameLocal.FindEntityDefDict( damageDefName );
 	if ( !damageDef ) {

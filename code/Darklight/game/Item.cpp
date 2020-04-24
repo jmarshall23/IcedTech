@@ -329,7 +329,7 @@ void idItem::Spawn( void ) {
 		PostEventMS( &EV_Touch, 0, ent, NULL );
 	}
 
-	if ( spawnArgs.GetBool( "spin" ) || gameLocal.isMultiplayer ) {
+	if ( spawnArgs.GetBool( "spin" ) || common->IsMultiplayer() ) {
 		spin = true;
 		BecomeActive( TH_THINK );
 	}
@@ -394,7 +394,7 @@ bool idItem::Pickup( idPlayer *player ) {
 		return false;
 	}
 
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 		ServerSendEvent( EVENT_PICKUP, NULL, false, -1 );
 	}
 
@@ -421,7 +421,7 @@ bool idItem::Pickup( idPlayer *player ) {
 	bool dropped = spawnArgs.GetBool( "dropped" );
 	bool no_respawn = spawnArgs.GetBool( "no_respawn" );
 
-	if ( gameLocal.isMultiplayer && respawn == 0.0f ) {
+	if ( common->IsMultiplayer() && respawn == 0.0f ) {
 		respawn = 20.0f;
 	}
 
@@ -577,7 +577,7 @@ idItem::Event_Respawn
 ================
 */
 void idItem::Event_Respawn( void ) {
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 		ServerSendEvent( EVENT_RESPAWN, NULL, false, -1 );
 	}
 	BecomeActive( TH_THINK );
@@ -601,7 +601,7 @@ idItem::Event_RespawnFx
 ================
 */
 void idItem::Event_RespawnFx( void ) {
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 		ServerSendEvent( EVENT_RESPAWNFX, NULL, false, -1 );
 	}
 	const char *sfx = spawnArgs.GetString( "fxRespawn" );

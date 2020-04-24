@@ -85,7 +85,7 @@ public:
 	// Sets the user info for a client.
 	// if canModify is true, the game can modify the user info in the returned dictionary pointer, server will forward the change back
 	// canModify is never true on network client
-	virtual const idDict *		SetUserInfo( int clientNum, const idDict &userInfo, bool isClient, bool canModify ) = 0;
+	virtual const idDict *		SetUserInfo( int clientNum, const idDict &userInfo, bool canModify ) = 0;
 
 	// Retrieve the game's userInfo dict for a client.
 	virtual const idDict *		GetUserInfo( int clientNum ) = 0;
@@ -103,7 +103,7 @@ public:
 	virtual void				SetPersistentPlayerInfo( int clientNum, const idDict &playerInfo ) = 0;
 
 	// Loads a map and spawns all the entities.
-	virtual void				InitFromNewMap( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, bool isServer, bool isClient, int randseed, bool buildReflections ) = 0;
+	virtual void				InitFromNewMap( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, int randseed, bool buildReflections ) = 0;
 
 	// Loads a map from a savegame file.
 	virtual bool				InitFromSaveGame( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, idFile *saveGameFile ) = 0;
@@ -200,6 +200,14 @@ public:
 
 	// Resets the game render targets to be the proper resolution of the screen.
 	virtual void				ResetGameRenderTargets(void) = 0;
+// jmarshall end
+
+// jmarshall
+	// Processes a incoming packet on the server.
+	virtual void				ServerProcessPacket(int clientNum, const idBitMsg& msg) = 0;
+
+	// Processes a incoming packet on the client.
+	virtual void				ClientProcessPacket(int clientNum, const idBitMsg& msg) = 0;
 // jmarshall end
 
 	virtual void				GetMapLoadingGUI( char gui[ MAX_STRING_CHARS ] ) = 0;
@@ -336,7 +344,7 @@ extern idGameEdit *				gameEdit;
 ===============================================================================
 */
 // jmarshall
-const int GAME_API_VERSION		= 4009;
+const int GAME_API_VERSION		= 4010;
 // jmarshall end
 
 typedef struct {
@@ -347,7 +355,6 @@ typedef struct {
 	idCmdSystem *				cmdSystem;				// console command system
 	idCVarSystem *				cvarSystem;				// console variable system
 	idFileSystem *				fileSystem;				// file system
-	idNetworkSystem *			networkSystem;			// network system
 	idRenderSystem *			renderSystem;			// render system
 	idSoundSystem *				soundSystem;			// sound system
 	idRenderModelManager *		renderModelManager;		// render model manager

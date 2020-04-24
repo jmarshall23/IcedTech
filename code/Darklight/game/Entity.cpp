@@ -543,7 +543,7 @@ void idEntity::Spawn( void ) {
 	}
 
 #if 0
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		// common->DPrintf( "NET: DBG %s - %s is synced: %s\n", spawnArgs.GetString( "classname", "" ), GetType()->classname, fl.networkSync ? "true" : "false" );
 		if ( spawnArgs.GetString( "classname", "" )[ 0 ] == '\0' && !fl.networkSync ) {
 			common->DPrintf( "NET: WRN %s entity, no classname, and no networkSync?\n", GetType()->classname );
@@ -603,14 +603,14 @@ idEntity::~idEntity
 */
 idEntity::~idEntity( void ) {
 
-	if ( gameLocal.GameState() != GAMESTATE_SHUTDOWN && !gameLocal.isClient && fl.networkSync && entityNumber >= MAX_CLIENTS ) {
+	if ( gameLocal.GameState() != GAMESTATE_SHUTDOWN && !common->IsClient() && fl.networkSync && entityNumber >= MAX_CLIENTS ) {
 		idBitMsg	msg;
 		byte		msgBuf[ MAX_GAME_MESSAGE_SIZE ];
 
 		msg.Init( msgBuf, sizeof( msgBuf ) );
 		msg.WriteByte( GAME_RELIABLE_MESSAGE_DELETE_ENT );
 		msg.WriteBits( gameLocal.GetSpawnId( this ), 32 );
-		networkSystem->ServerSendReliableMessage( -1, msg );
+		common->ServerSendReliableMessage( -1, msg );
 	}
 
 	DeconstructScriptObject();
@@ -1635,7 +1635,7 @@ bool idEntity::StartSoundShader( const idSoundShader *shader, const s_channelTyp
 		return true;
 	}
 
-	if ( gameLocal.isServer && broadcast ) {
+	if ( common->IsServer() && broadcast ) {
 		idBitMsg	msg;
 		byte		msgBuf[MAX_EVENT_PARAM_SIZE];
 
@@ -1681,7 +1681,7 @@ void idEntity::StopSound( const s_channelType channel, bool broadcast ) {
 		return;
 	}
 
-	if ( gameLocal.isServer && broadcast ) {
+	if ( common->IsServer() && broadcast ) {
 		idBitMsg	msg;
 		byte		msgBuf[MAX_EVENT_PARAM_SIZE];
 
@@ -2739,7 +2739,7 @@ bool idEntity::RunPhysics( void ) {
 		// restore the positions of any pushed entities
 		gameLocal.push.RestorePushedEntityPositions();
 
-		if ( gameLocal.isClient ) {
+		if ( common->IsClient() ) {
 			return false;
 		}
 
@@ -2757,7 +2757,7 @@ bool idEntity::RunPhysics( void ) {
 		ent->physics->SetPushed( endTime - startTime );
 	}
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return true;
 	}
 
@@ -4896,7 +4896,7 @@ void idEntity::ServerSendEvent( int eventId, const idBitMsg *msg, bool saveEvent
 	idBitMsg	outMsg;
 	byte		msgBuf[MAX_GAME_MESSAGE_SIZE];
 
-	if ( !gameLocal.isServer ) {
+	if ( !common->IsServer() ) {
 		return;
 	}
 
@@ -4919,9 +4919,9 @@ void idEntity::ServerSendEvent( int eventId, const idBitMsg *msg, bool saveEvent
 	}
 
 	if ( excludeClient != -1 ) {
-		networkSystem->ServerSendReliableMessageExcluding( excludeClient, outMsg );
+		common->ServerSendReliableMessageExcluding( excludeClient, outMsg );
 	} else {
-		networkSystem->ServerSendReliableMessage( -1, outMsg );
+		common->ServerSendReliableMessage( -1, outMsg );
 	}
 
 	if ( saveEvent ) {
@@ -4938,7 +4938,7 @@ void idEntity::ClientSendEvent( int eventId, const idBitMsg *msg ) const {
 	idBitMsg	outMsg;
 	byte		msgBuf[MAX_GAME_MESSAGE_SIZE];
 
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		return;
 	}
 
@@ -4960,7 +4960,7 @@ void idEntity::ClientSendEvent( int eventId, const idBitMsg *msg ) const {
 		outMsg.WriteBits( 0, idMath::BitsForInteger( MAX_EVENT_PARAM_SIZE ) );
 	}
 
-	networkSystem->ClientSendReliableMessage( outMsg );
+	common->ClientSendReliableMessage( outMsg );
 }
 
 /*
@@ -5315,7 +5315,7 @@ void idAnimatedEntity::AddDamageEffect( const trace_t &collision, const idVec3 &
 
 	AddLocalDamageEffect( jointNum, localOrigin, localNormal, localDir, def, collision.c.material );
 
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 		idBitMsg	msg;
 		byte		msgBuf[MAX_EVENT_PARAM_SIZE];
 
@@ -5387,7 +5387,7 @@ void idAnimatedEntity::AddLocalDamageEffect( jointHandle_t jointNum, const idVec
 	}
 
 	// can't see wounds on the player model in single player mode
-	if ( !( IsType( idPlayer::Type ) && !gameLocal.isMultiplayer ) ) {
+	if ( !( IsType( idPlayer::Type ) && !common->IsMultiplayer() ) ) {
 		// place a wound overlay on the model
 		key = va( "mtr_wound_%s", materialType );
 		decal = spawnArgs.RandomPrefix( key, gameLocal.random );

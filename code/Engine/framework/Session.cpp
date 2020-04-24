@@ -71,7 +71,7 @@ Session_RescanSI_f
 */
 void Session_RescanSI_f( const idCmdArgs &args ) {
 	sessLocal.mapSpawnData.serverInfo = *cvarSystem->MoveCVarsToDict( CVAR_SERVERINFO );
-	if ( game && idAsyncNetwork::server.IsActive() ) {
+	if ( game && common->IsServer() ) {
 		game->SetServerInfo( sessLocal.mapSpawnData.serverInfo );
 	}
 }
@@ -202,86 +202,6 @@ static void Sess_WritePrecache_f( const idCmdArgs &args ) {
 }
 
 /*
-===============
-idSessionLocal::MaybeWaitOnCDKey
-===============
-*/
-bool idSessionLocal::MaybeWaitOnCDKey( void ) {
-	if ( authEmitTimeout > 0 ) {
-		authWaitBox = true;
-		sessLocal.MessageBox( MSG_WAIT, common->GetLanguageDict()->GetString( "#str_07191" ), NULL, true, NULL, NULL, true );
-		return true;
-	}
-	return false;
-}
-
-/*
-===================
-Session_PromptKey_f
-===================
-*/
-static void Session_PromptKey_f( const idCmdArgs &args ) {
-	const char	*retkey;
-	bool		valid[ 2 ];
-	static bool recursed = false;
-
-	if ( recursed ) {
-		common->Warning( "promptKey recursed - aborted" );
-		return;
-	}
-	recursed = true;
-
-	do {
-		// in case we're already waiting for an auth to come back to us ( may happen exceptionally )
-		if ( sessLocal.MaybeWaitOnCDKey() ) {
-			if ( sessLocal.CDKeysAreValid( true ) ) {
-				recursed = false;
-				return;
-			}
-		}
-		// the auth server may have replied and set an error message, otherwise use a default
-		const char *prompt_msg = sessLocal.GetAuthMsg();
-		if ( prompt_msg[ 0 ] == '\0' ) {
-			prompt_msg = common->GetLanguageDict()->GetString( "#str_04308" );
-		}
-		retkey = sessLocal.MessageBox( MSG_CDKEY, prompt_msg, common->GetLanguageDict()->GetString( "#str_04305" ), true, NULL, NULL, true );
-		if ( retkey ) {
-			if ( sessLocal.CheckKey( retkey, false, valid ) ) {
-				// if all went right, then we may have sent an auth request to the master ( unless the prompt is used during a net connect )
-				bool canExit = true;
-				if ( sessLocal.MaybeWaitOnCDKey() ) {
-					// wait on auth reply, and got denied, prompt again
-					if ( !sessLocal.CDKeysAreValid( true ) ) {
-						// server says key is invalid - MaybeWaitOnCDKey was interrupted by a CDKeysAuthReply call, which has set the right error message
-						// the invalid keys have also been cleared in the process
-						sessLocal.MessageBox( MSG_OK, sessLocal.GetAuthMsg(), common->GetLanguageDict()->GetString( "#str_04310" ), true, NULL, NULL, true );
-						canExit = false;
-					}
-				}
-				if ( canExit ) {
-					// make sure that's saved on file
-					sessLocal.WriteCDKey();
-					sessLocal.MessageBox( MSG_OK, common->GetLanguageDict()->GetString( "#str_04307" ), common->GetLanguageDict()->GetString( "#str_04305" ), true, NULL, NULL, true );
-					break;
-				}
-			} else {
-				// offline check sees key invalid
-				// build a message about keys being wrong. do not attempt to change the current key state though
-				// ( the keys may be valid, but user would have clicked on the dialog anyway, that kind of thing )
-				idStr msg;
-				idAsyncNetwork::BuildInvalidKeyMsg( msg, valid );
-				sessLocal.MessageBox( MSG_OK, msg, common->GetLanguageDict()->GetString( "#str_04310" ), true, NULL, NULL, true );
-			}
-		} else if ( args.Argc() == 2 && idStr::Icmp( args.Argv(1), "force" ) == 0 ) {
-			// cancelled in force mode
-			cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "quit\n" );
-			cmdSystem->ExecuteCommandBuffer();
-		}
-	} while ( retkey );
-	recursed = false;
-}
-
-/*
 ===============================================================================
 
 SESSION LOCAL
@@ -384,10 +304,10 @@ void idSessionLocal::Stop() {
 	UnloadMap();
 
 	// disconnect async client
-	idAsyncNetwork::client.DisconnectFromServer();
+	common->DisconnectFromServer();
 
 	// kill async server
-	idAsyncNetwork::server.Kill();
+	common->KillServer();
 
 	if ( sw ) {
 		sw->StopAllSounds();
@@ -452,7 +372,7 @@ idSessionLocal::IsMultiplayer
 ===============
 */
 bool	idSessionLocal::IsMultiplayer() {
-	return idAsyncNetwork::IsActive();
+	return common->IsMultiplayer();
 }
 
 /*
@@ -1169,11 +1089,11 @@ void idSessionLocal::StartNewGame( const char *mapName, bool devmap ) {
 		}
 	}
 #endif
-	if ( idAsyncNetwork::server.IsActive() ) {
+	if ( common->IsServer() ) {
 		common->Printf("Server running, use si_map / serverMapRestart\n");
 		return;
 	}
-	if ( idAsyncNetwork::client.IsActive() ) {
+	if ( common->IsClient() ) {
 		common->Printf("Client running, disconnect from server first\n");
 		return;
 	}
@@ -1608,7 +1528,7 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 	Sys_GrabMouseCursor( false );
 
 	// if net play, we get the number of clients during mapSpawnInfo processing
-	if ( !idAsyncNetwork::IsActive() ) {
+	if ( !common->IsMultiplayer() ) {
 		numClients = 1;
 	} 
 	
@@ -1629,7 +1549,7 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 
 	// set the user info
 	for ( i = 0; i < numClients; i++ ) {
-		game->SetUserInfo( i, mapSpawnData.userInfo[i], idAsyncNetwork::client.IsActive(), false );
+		game->SetUserInfo( i, mapSpawnData.userInfo[i], false );
 		game->SetPersistentPlayerInfo( i, mapSpawnData.persistentPlayerInfo[i] );
 	}
 
@@ -1642,14 +1562,14 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 			savegameFile = NULL;
 
 			game->SetServerInfo( mapSpawnData.serverInfo );
-			game->InitFromNewMap( fullMapName + ".map", rw, sw, idAsyncNetwork::server.IsActive(), idAsyncNetwork::client.IsActive(), Sys_Milliseconds(), false );
+			game->InitFromNewMap( fullMapName + ".map", rw, sw, Sys_Milliseconds(), false );
 		}
 	} else {
 		game->SetServerInfo( mapSpawnData.serverInfo );
-		game->InitFromNewMap( fullMapName + ".map", rw, sw, idAsyncNetwork::server.IsActive(), idAsyncNetwork::client.IsActive(), Sys_Milliseconds(), false );
+		game->InitFromNewMap( fullMapName + ".map", rw, sw, Sys_Milliseconds(), false );
 	}
 
-	if ( !idAsyncNetwork::IsActive() && !loadingSaveGame ) {
+	if ( !common->IsMultiplayer() && !loadingSaveGame ) {
 		// spawn players
 		for ( i = 0; i < numClients; i++ ) {
 			game->SpawnPlayer( i, false, NULL );
@@ -1667,7 +1587,7 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 	}
 	uiManager->EndLevelLoad();
 
-	if ( !idAsyncNetwork::IsActive() && !loadingSaveGame ) {
+	if ( !common->IsMultiplayer() && !loadingSaveGame ) {
 		// run a few frames to allow everything to settle
 		for ( i = 0; i < 10; i++ ) {
 			game->RunFrame( mapSpawnData.mapSpawnUsercmd );
@@ -2365,9 +2285,6 @@ void idSessionLocal::PacifierUpdate() {
 	Sys_GenerateEvents();
 
 	UpdateScreen();
-
-	idAsyncNetwork::client.PacifierUpdate();
-	idAsyncNetwork::server.PacifierUpdate();
 }
 
 /*
@@ -2700,14 +2617,14 @@ void idSessionLocal::Frame() {
 
 	// in message box / GUIFrame, idSessionLocal::Frame is used for GUI interactivity
 	// but we early exit to avoid running game frames
-	if ( idAsyncNetwork::IsActive() ) {
+	if ( common->IsMultiplayer() ) {
 		return;
 	}
 
 	// check for user info changes
 	if ( cvarSystem->GetModifiedFlags() & CVAR_USERINFO ) {
 		mapSpawnData.userInfo[0] = *cvarSystem->MoveCVarsToDict( CVAR_USERINFO );
-		game->SetUserInfo( 0, mapSpawnData.userInfo[0], false, false );
+		game->SetUserInfo( 0, mapSpawnData.userInfo[0], false );
 		cvarSystem->ClearModifiedFlags( CVAR_USERINFO );
 	}
 
@@ -2932,8 +2849,6 @@ void idSessionLocal::Init() {
 
 	cmdSystem->AddCommand( "rescanSI", Session_RescanSI_f, CMD_FL_SYSTEM, "internal - rescan serverinfo cvars and tell game" );
 
-	cmdSystem->AddCommand( "promptKey", Session_PromptKey_f, CMD_FL_SYSTEM, "prompt and sets the CD Key" );
-
 	cmdSystem->AddCommand( "hitch", Session_Hitch_f, CMD_FL_SYSTEM|CMD_FL_CHEAT, "hitches the game" );
 
 	// the same idRenderWorld will be used for all games
@@ -2952,7 +2867,7 @@ void idSessionLocal::Init() {
 #endif
 	guiMainMenu_MapList = uiManager->AllocListGUI();
 	guiMainMenu_MapList->Config( guiMainMenu, "mapList" );
-	idAsyncNetwork::client.serverList.GUIConfig( guiMainMenu, "serverList" );
+	//idAsyncNetwork::client.serverList.GUIConfig( guiMainMenu, "serverList" );
 	guiRestartMenu = uiManager->FindGui( "guis/restart.gui", true, false, true, false);
 	guiGameOver = uiManager->FindGui( "guis/gameover.gui", true, false, true, false);
 	guiMsg = uiManager->FindGui( "guis/msg.gui", true, false, true, false);
@@ -2979,19 +2894,17 @@ idSessionLocal::GetLocalClientNum
 ===============
 */
 int idSessionLocal::GetLocalClientNum() {
-	if ( idAsyncNetwork::client.IsActive() ) {
-		return idAsyncNetwork::client.GetLocalClientNum();
-	} else if ( idAsyncNetwork::server.IsActive() ) {
-		if ( idAsyncNetwork::serverDedicated.GetInteger() == 0 ) {
-			return 0;
-		} else if ( idAsyncNetwork::server.IsClientInGame( idAsyncNetwork::serverDrawClient.GetInteger() ) ) {
-			return idAsyncNetwork::serverDrawClient.GetInteger();
-		} else {
+	if ( common->IsClient() ) {
+		return common->GetLocalClientNum();
+	} else if ( common->IsServer() ) {
+		if ( common->IsDedicatedServer() ) {
 			return -1;
-		}
-	} else {
-		return 0;
-	}
+		} else {
+			return common->GetLocalClientNum();
+		} 
+	} 
+
+	return 0;
 }
 
 /*
@@ -3138,21 +3051,7 @@ we toggled some key state to CDKEY_CHECKING. send a standalone auth packet to va
 ===============
 */
 void idSessionLocal::EmitGameAuth( void ) {
-	// make sure the auth reply is empty, we use it to indicate an auth reply
-	authMsg.Empty();
-	if ( idAsyncNetwork::client.SendAuthCheck( cdkey_state == CDKEY_CHECKING ? cdkey : NULL, xpkey_state == CDKEY_CHECKING ? xpkey : NULL ) ) {		
-		authEmitTimeout = Sys_Milliseconds() + CDKEY_AUTH_TIMEOUT;
-		common->DPrintf( "authing with the master..\n" );
-	} else {
-		// net is not available
-		common->DPrintf( "sendAuthCheck failed\n" );
-		if ( cdkey_state == CDKEY_CHECKING ) {
-			cdkey_state = CDKEY_OK;
-		}
-		if ( xpkey_state == CDKEY_CHECKING ) {
-			xpkey_state = CDKEY_OK;
-		}
-	}	
+	cdkey_state = CDKEY_OK;
 }
 
 /*
@@ -3363,4 +3262,139 @@ idSessionLocal::GetAuthMsg
 */
 const char *idSessionLocal::GetAuthMsg( void ) {
 	return authMsg.c_str();
+}
+
+/*
+==================
+idSessionLocal::ExecuteServerMapChange(void)
+==================
+*/
+void idSessionLocal::ExecuteServerMapChange(void) {
+	int			i;
+	idBitMsg	msg;
+//	byte		msgBuf[MAX_MESSAGE_SIZE];
+	idStr		mapName;
+	findFile_t	ff;
+	bool		addonReload = false;
+	char		bestGameType[MAX_STRING_CHARS];
+
+	// reset any pureness
+	fileSystem->ClearPureChecksums();
+
+	// make sure the map/gametype combo is good
+	game->GetBestGameType(cvarSystem->GetCVarString("si_map"), cvarSystem->GetCVarString("si_gametype"), bestGameType);
+	cvarSystem->SetCVarString("si_gametype", bestGameType);
+
+	// initialize map settings
+	cmdSystem->BufferCommandText(CMD_EXEC_NOW, "rescanSI");
+
+	sprintf(mapName, "maps/%s", sessLocal.mapSpawnData.serverInfo.GetString("si_map"));
+	mapName.SetFileExtension(".map");
+	ff = fileSystem->FindFile(mapName, false);
+	switch (ff) {
+	case FIND_NO:
+		common->Printf("Can't find map %s\n", mapName.c_str());
+		cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "disconnect\n");
+		return;
+	case FIND_ADDON:
+		// NOTE: we have no problem with addon dependencies here because if the map is in
+		// an addon pack that's already on search list, then all it's deps are assumed to be on search as well
+		common->Printf("map %s is in an addon pak - reloading\n", mapName.c_str());
+		addonReload = true;
+		break;
+	default:
+		break;
+	}
+
+	// if we are asked to do a full reload, the strategy is completely different
+	//if (!serverReloadingEngine && (addonReload || idAsyncNetwork::serverReloadEngine.GetInteger() != 0)) {
+	//	if (idAsyncNetwork::serverReloadEngine.GetInteger() != 0) {
+	//		common->Printf("net_serverReloadEngine enabled - doing a full reload\n");
+	//	}
+	//	// tell the clients to reconnect
+	//	// FIXME: shouldn't they wait for the new pure list, then reload?
+	//	// in a lot of cases this is going to trigger two reloadEngines for the clients
+	//	// one to restart, the other one to set paks right ( with addon for instance )
+	//	// can fix by reconnecting without reloading and waiting for the server to tell..
+	//	for (i = 0; i < MAX_ASYNC_CLIENTS; i++) {
+	//		if (clients[i].clientState >= SCS_PUREWAIT && i != localClientNum) {
+	//			msg.Init(msgBuf, sizeof(msgBuf));
+	//			msg.WriteByte(SERVER_RELIABLE_MESSAGE_RELOAD);
+	//			SendReliableMessage(i, msg);
+	//			clients[i].clientState = SCS_ZOMBIE; // so we don't bother sending a disconnect
+	//		}
+	//	}
+	//	cmdSystem->BufferCommandText(CMD_EXEC_NOW, "reloadEngine");
+	//	serverReloadingEngine = true; // don't get caught in endless loop
+	//	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "spawnServer\n");
+	//	// decrease feature
+	//	if (idAsyncNetwork::serverReloadEngine.GetInteger() > 0) {
+	//		idAsyncNetwork::serverReloadEngine.SetInteger(idAsyncNetwork::serverReloadEngine.GetInteger() - 1);
+	//	}
+	//	return;
+	//}
+//	serverReloadingEngine = false;
+
+	//serverTime = 0;
+	//
+	//// initialize game id and time
+	//gameInitId ^= Sys_Milliseconds();	// NOTE: make sure the gameInitId is always a positive number because negative numbers have special meaning
+	//gameFrame = 0;
+	//gameTime = 0;
+	//gameTimeResidual = 0;
+	//memset(userCmds, 0, sizeof(userCmds));
+	//
+	//if (idAsyncNetwork::serverDedicated.GetInteger() == 0) {
+	//	InitLocalClient(0);
+	//}
+	//else {
+	//	localClientNum = -1;
+	//}
+	//
+	//// re-initialize all connected clients for the new map
+	//for (i = 0; i < MAX_ASYNC_CLIENTS; i++) {
+	//	if (clients[i].clientState >= SCS_PUREWAIT && i != localClientNum) {
+	//
+	//		InitClient(i, clients[i].clientId, clients[i].clientRate);
+	//
+	//		SendGameInitToClient(i);
+	//
+	//		if (sessLocal.mapSpawnData.serverInfo.GetBool("si_pure")) {
+	//			clients[i].clientState = SCS_PUREWAIT;
+	//		}
+	//	}
+	//}
+
+	// setup the game pak checksums
+	// since this is not dependant on si_pure we catch anything bad before loading map
+	//if (sessLocal.mapSpawnData.serverInfo.GetInt("si_pure")) {
+	//	if (!fileSystem->UpdateGamePakChecksums()) {
+	//		session->MessageBox(MSG_OK, common->GetLanguageDict()->GetString("#str_04337"), common->GetLanguageDict()->GetString("#str_04338"), true);
+	//		cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "disconnect\n");
+	//		return;
+	//	}
+	//}
+
+	// load map
+	ExecuteMapChange();
+
+	//if (localClientNum >= 0) {
+	//	BeginLocalClient();
+	//}
+	//else {
+	//	game->SetLocalClient(-1);
+	//}
+	//
+	//if (sessLocal.mapSpawnData.serverInfo.GetInt("si_pure")) {
+	//	// lock down the pak list
+	//	fileSystem->UpdatePureServerChecksums();
+	//	// tell the clients so they can work out their pure lists
+	//	for (i = 0; i < MAX_ASYNC_CLIENTS; i++) {
+	//		if (clients[i].clientState == SCS_PUREWAIT) {
+	//			if (!SendReliablePureToClient(i)) {
+	//				clients[i].clientState = SCS_CONNECTED;
+	//			}
+	//		}
+	//	}
+	//}
 }

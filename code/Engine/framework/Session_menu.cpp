@@ -278,14 +278,6 @@ void idSessionLocal::SetMainMenuSkin( void ) {
 
 /*
 ===============
-idSessionLocal::SetPbMenuGuiVars
-===============
-*/
-void idSessionLocal::SetPbMenuGuiVars( void ) {
-}
-
-/*
-===============
 idSessionLocal::SetMainMenuGuiVars
 ===============
 */
@@ -328,8 +320,6 @@ void idSessionLocal::SetMainMenuGuiVars( void ) {
 #else
 	guiMainMenu->SetStateString( "driver_prompt", "0" );
 #endif
-
-	SetPbMenuGuiVars();
 }
 
 /*
@@ -614,64 +604,6 @@ void idSessionLocal::HandleMainMenuCommands( const char *menuCommand ) {
 				cvarSystem->SetCVarString( "fs_game", modsList[ choice ] );
 				cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "reloadEngine menu\n" );
 			}
-		}
-
-		if ( !idStr::Icmp( cmd, "UpdateServers" ) ) {
-			if ( guiActive->State().GetBool( "lanSet" ) ) {
-				cmdSystem->BufferCommandText( CMD_EXEC_NOW, "LANScan" );
-			} else {
-				idAsyncNetwork::GetNETServers();
-			}
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "RefreshServers" ) ) {
-			if ( guiActive->State().GetBool( "lanSet" ) ) {
-				cmdSystem->BufferCommandText( CMD_EXEC_NOW, "LANScan" );
-			} else {
-				idAsyncNetwork::client.serverList.NetScan( );
-			}
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "FilterServers" ) ) {
-			idAsyncNetwork::client.serverList.ApplyFilter( );
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "sortServerName" ) ) {
-			idAsyncNetwork::client.serverList.SetSorting( SORT_SERVERNAME );
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "sortGame" ) ) {
-			idAsyncNetwork::client.serverList.SetSorting( SORT_GAME );
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "sortPlayers" ) ) {
-			idAsyncNetwork::client.serverList.SetSorting( SORT_PLAYERS );
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "sortPing" ) ) {
-			idAsyncNetwork::client.serverList.SetSorting( SORT_PING );
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "sortGameType" ) ) {
-			idAsyncNetwork::client.serverList.SetSorting( SORT_GAMETYPE );
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "sortMap" ) ) {
-			idAsyncNetwork::client.serverList.SetSorting( SORT_MAP );
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "serverList" ) ) {
-			idAsyncNetwork::client.serverList.GUIUpdateSelected();
-			continue;
 		}
 
 		if ( !idStr::Icmp( cmd, "LANConnect" ) ) {
@@ -1007,45 +939,6 @@ void idSessionLocal::HandleMainMenuCommands( const char *menuCommand ) {
 		if ( !idStr::Icmp( cmd, "systemCvars" ) ) {
 			guiActive->HandleNamedEvent( "cvar read render" );
 			guiActive->HandleNamedEvent( "cvar read sound" );
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "SetCDKey" ) ) {
-			// we can't do this from inside the HandleMainMenuCommands code, otherwise the message box stuff gets confused
-			cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "promptKey\n" );
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "CheckUpdate" ) ) {
-			idAsyncNetwork::client.SendVersionCheck();
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "CheckUpdate2" ) ) {
-			idAsyncNetwork::client.SendVersionCheck( true );
-			continue;
-		}
-
-		if ( !idStr::Icmp( cmd, "checkKeys" ) ) {
-#if ID_ENFORCE_KEY
-			// not a strict check so you silently auth in the background without bugging the user
-			if ( !session->CDKeysAreValid( false ) ) {
-				cmdSystem->BufferCommandText( CMD_EXEC_NOW, "promptKey force" );
-				cmdSystem->ExecuteCommandBuffer();
-			}			
-#endif
-			continue;
-		}
-
-		// triggered from mainmenu or mpmain
-		if ( !idStr::Icmp( cmd, "punkbuster" ) ) {
-			idStr vcmd;
-			if ( args.Argc() - icmd >= 1 ) {
-				vcmd = args.Argv( icmd++ );
-			}
-			// filtering PB based on enabled/disabled
-			idAsyncNetwork::client.serverList.ApplyFilter( );
-			SetPbMenuGuiVars();
 			continue;
 		}
 	}

@@ -1742,7 +1742,7 @@ idThread::Event_IsClient
 ================
 */
 void idThread::Event_IsClient( void ) { 
-	idThread::ReturnFloat( gameLocal.isClient );
+	idThread::ReturnFloat( common->IsClient() );
 }
 
 /*
@@ -1751,7 +1751,7 @@ idThread::Event_IsMultiplayer
 ================
 */
 void idThread::Event_IsMultiplayer( void ) { 
-	idThread::ReturnFloat( gameLocal.isMultiplayer );
+	idThread::ReturnFloat( common->IsMultiplayer() );
 }
 
 /*

@@ -7,6 +7,18 @@
 // writes si_version to the config file - in a kinda obfuscated way
 //#define ID_WRITE_VERSION
 
+//
+// rvmNetworkType_t
+//
+enum rvmNetworkType_t {
+	NETWORK_TYPE_NONE = 0,
+	NETWORK_TYPE_SERVER,
+	NETWORK_TYPE_CLIENT
+};
+
+struct rvmNetworkServerState_t;
+struct rvmNetworkClient_t;
+
 class idCommonLocal : public idCommon {
 public:
 	idCommonLocal(void);
@@ -53,11 +65,26 @@ public:
 	virtual void				BeginLoadScreen(void);
 	virtual void				EndLoadScreen(void);
 
+	virtual int					AllocateClientSlotForBot(int maxPlayersOnServer);
+	virtual int					ServerSetBotUserCommand(int clientNum, int frameNum, const usercmd_t& cmd);
+	virtual void				ServerSendReliableMessageExcluding(int clientNum, const idBitMsg& msg);
+	virtual int					ServerSetBotUserName(int clientNum, const char* playerName);
+	virtual void				ServerSendReliableMessage(int clientNum, const idBitMsg& msg);
+	virtual void				ClientSendReliableMessage(const idBitMsg& msg);
+	virtual int					ClientGetTimeSinceLastPacket(void);
 #ifdef ID_DEDICATED
 	virtual bool				IsDedicatedServer(void) { return true; }
 #else
 	virtual bool				IsDedicatedServer(void) { return false; }
 #endif
+	virtual bool				IsClient(void);
+	virtual bool				IsServer(void);
+	virtual bool				IsMultiplayer(void);
+	virtual void				DisconnectFromServer(void);
+	virtual void				KillServer(void);
+	virtual int					ServerGetClientTimeSinceLastPacket(int clientNum);
+	virtual int					ServerGetClientPing(int clientNum);
+	virtual int					GetLocalClientNum(void);
 
 	void						InitGame(void);
 	void						ShutdownGame(bool reloading);
@@ -117,4 +144,26 @@ private:
 #ifdef ID_WRITE_VERSION
 	idCompressor* config_compressor;
 #endif
+
+// New network code.
+private:
+	void						InitNetwork(void);
+	void						ShutdownNetwork(void);
+
+	static void					SpawnServer_f(const idCmdArgs& args);
+	void						SpawnServer(void);
+	void						RunNetworkThink(void);
+
+	void						NewClient(int clientNum, void* peer);
+
+	rvmNetworkType_t			networkType;
+	rvmNetworkServerState_t*	serverState;
+
+	idList<rvmNetworkClient_t*> networkClients;
+
+	int							localClientNum;
+
+	usercmd_t*					userCmds;
 };
+
+extern idCommonLocal			commonLocal;

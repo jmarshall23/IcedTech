@@ -16,13 +16,14 @@ set(src_engine
 	./engine/cm/CollisionModel_load.cpp
 
 	# Framework
-	./engine/framework/async
 	./engine/framework/BuildDefines.h
 	./engine/framework/BuildVersion.h
 	./engine/framework/CmdSystem.cpp
 	./engine/framework/CmdSystem.h
 	./engine/framework/Common.cpp
 	./engine/framework/Common_loadscreen.cpp
+	./engine/framework/Common_network.cpp
+	./engine/framework/Common_network.h
 	./engine/framework/Common.h
 	./engine/framework/Compressor.cpp
 	./engine/framework/Compressor.h
@@ -72,18 +73,6 @@ set(src_engine
 	./engine/framework/Unzip.h
 	./engine/framework/UsercmdGen.cpp
 	./engine/framework/UsercmdGen.h
-	./engine/framework/async/AsyncClient.cpp
-	./engine/framework/async/AsyncClient.h
-	./engine/framework/async/AsyncNetwork.cpp
-	./engine/framework/async/AsyncNetwork.h
-	./engine/framework/async/AsyncServer.cpp
-	./engine/framework/async/AsyncServer.h
-	./engine/framework/async/MsgChannel.cpp
-	./engine/framework/async/MsgChannel.h
-	./engine/framework/async/NetworkSystem.cpp
-	./engine/framework/async/NetworkSystem.h
-	./engine/framework/async/ServerScan.cpp
-	./engine/framework/async/ServerScan.h
 	
 	#NavMesh
 	./engine/navigation/Nav_File.cpp
@@ -400,6 +389,23 @@ set(src_external
 	./engine/external/glew/glew.h
 	./engine/external/glew/qgllib.h
 	./engine/external/glew/wglew.h
+
+	./engine/external/enet/callbacks.c
+	./engine/external/enet/callbacks.h
+	./engine/external/enet/compress.c
+	./engine/external/enet/enet.h
+	./engine/external/enet/host.c
+	./engine/external/enet/list.c
+	./engine/external/enet/list.h
+	./engine/external/enet/packet.c
+	./engine/external/enet/peer.c
+	./engine/external/enet/protocol.c
+	./engine/external/enet/protocol.h
+	./engine/external/enet/time.h
+	./engine/external/enet/types.h
+	./engine/external/enet/utility.h
+	./engine/external/enet/win32.c
+	./engine/external/enet/win32.h
 
 	./engine/external/png/png.c
 	./engine/external/png/pngerror.c

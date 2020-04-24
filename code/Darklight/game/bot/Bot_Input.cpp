@@ -110,7 +110,7 @@ rvmBot::BotInputFrame
 ========================
 */
 void rvmBot::BotInputFrame(void) {
-	usercmd_t &botcmd = gameLocal.usercmds[entityNumber];
+	usercmd_t& botcmd = gameLocal.usercmds[entityNumber];
 
 	Bot_ResetUcmd(botcmd);
 
@@ -121,5 +121,5 @@ void rvmBot::BotInputFrame(void) {
 	BotInputToUserCommand(&bs.botinput, &botcmd, gameLocal.time);
 
 	// Send the bot's user cmd off to the engine so other clients can predict this bot.
-	networkSystem->ServerSetBotUserCommand(entityNumber, gameLocal.framenum, botcmd);
+	common->ServerSetBotUserCommand(entityNumber, gameLocal.framenum, botcmd);
 }

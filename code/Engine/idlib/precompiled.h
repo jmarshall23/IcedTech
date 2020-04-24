@@ -161,9 +161,6 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 // sound engine
 #include "../sound/sound.h"
 
-// asynchronous networking
-#include "../framework/async/NetworkSystem.h"
-
 // user interfaces
 #include "../ui/ListGUI.h"
 #include "../ui/UserInterface.h"
@@ -194,9 +191,6 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 #include "../framework/Console.h"
 #include "../framework/DemoFile.h"
 #include "../framework/Session.h"
-
-// asynchronous networking
-#include "../framework/async/AsyncNetwork.h"
 
 // The editor entry points are always declared, but may just be
 // stubbed out on non-windows platforms.

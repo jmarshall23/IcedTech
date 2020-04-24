@@ -390,7 +390,7 @@ void idProjectile::Launch( const idVec3 &start, const idVec3 &dir, const idVec3 
 
 	thruster.SetPosition( &physicsObj, 0, idVec3( GetPhysics()->GetBounds()[ 0 ].x, 0, 0 ) );
 
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		if ( fuse <= 0 ) {
 			// run physics for 1 second
 			RunPhysics();
@@ -502,7 +502,7 @@ bool idProjectile::Collide( const trace_t &collision, const idVec3 &velocity ) {
 	}
 
 	// predict the explosion
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		if ( ClientPredictionCollide( this, spawnArgs, collision, velocity, !spawnArgs.GetBool( "net_instanthit" ) ) ) {
 			Explode( collision, NULL );
 			return true;
@@ -540,7 +540,7 @@ bool idProjectile::Collide( const trace_t &collision, const idVec3 &velocity ) {
 	}
 
 	// MP: projectiles open doors
-	if ( gameLocal.isMultiplayer && ent->IsType( idDoor::Type ) && !static_cast< idDoor * >(ent)->IsOpen() && !ent->spawnArgs.GetBool( "no_touch" ) ) {
+	if ( common->IsMultiplayer() && ent->IsType( idDoor::Type ) && !static_cast< idDoor * >(ent)->IsOpen() && !ent->spawnArgs.GetBool( "no_touch" ) ) {
 		ent->ProcessEvent( &EV_Activate , this );
 	}
 
@@ -658,7 +658,7 @@ idProjectile::AddDefaultDamageEffect
 void idProjectile::AddDefaultDamageEffect( const trace_t &collision, const idVec3 &velocity ) {
 	DefaultDamageEffect( this, spawnArgs, collision, velocity );
 
-	if ( gameLocal.isServer && fl.networkSync ) {
+	if ( common->IsServer() && fl.networkSync ) {
 		idBitMsg	msg;
 		byte		msgBuf[MAX_EVENT_PARAM_SIZE];
 		int			excludeClient;
@@ -741,7 +741,7 @@ void idProjectile::Fizzle( void ) {
 
 	state = FIZZLED;
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 
@@ -792,7 +792,7 @@ void idProjectile::Explode( const trace_t &collision, idEntity *ignore ) {
 	gameLocal.AlertBots(owner->Cast<idPlayer>(), collision.endpos);
 
 	// Spawn Debris
-	if (gameLocal.isServer && collision.c.material != NULL && collision.c.entityNum == ENTITYNUM_WORLD) {
+	if (common->IsServer() && collision.c.material != NULL && collision.c.entityNum == ENTITYNUM_WORLD) {
 		idVec3 reflectedDir = idMath::ReflectVector(dir, collision.c.normal);
 		gameLocal.SpawnDebris(collision.endpos, reflectedDir.ToMat3(), collision.c.material->GetName());
 	}
@@ -892,7 +892,7 @@ void idProjectile::Explode( const trace_t &collision, idEntity *ignore ) {
 
 	state = EXPLODED;
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 

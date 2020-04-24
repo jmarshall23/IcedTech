@@ -103,8 +103,6 @@ idGameLocal::InitLocalClient
 ================
 */
 void idGameLocal::InitLocalClient( int clientNum ) {
-	isServer = false;
-	isClient = true;
 	localClientNum = clientNum;
 	clientSmoothing = net_clientSmoothing.GetFloat();
 }
@@ -179,7 +177,7 @@ void idGameLocal::ServerSendDeclRemapToClient( int clientNum, declType_t type, i
 	outMsg.WriteByte( type );
 	outMsg.WriteLong( index );
 	outMsg.WriteString( decl->GetName() );
-	networkSystem->ServerSendReliableMessage( clientNum, outMsg );
+	common->ServerSendReliableMessage( clientNum, outMsg );
 }
 
 /*
@@ -314,7 +312,7 @@ void idGameLocal::ServerClientBegin( int clientNum, bool isBot, const char* botN
 	outMsg.Init( msgBuf, sizeof( msgBuf ) );
 	outMsg.BeginWriting();
 	outMsg.WriteByte( GAME_RELIABLE_MESSAGE_INIT_DECL_REMAP );
-	networkSystem->ServerSendReliableMessage( clientNum, outMsg );
+	common->ServerSendReliableMessage( clientNum, outMsg );
 
 	// spawn the player
 	SpawnPlayer( clientNum, isBot, botName );
@@ -328,7 +326,7 @@ void idGameLocal::ServerClientBegin( int clientNum, bool isBot, const char* botN
 	outMsg.WriteByte( GAME_RELIABLE_MESSAGE_SPAWN_PLAYER );
 	outMsg.WriteByte( clientNum );
 	outMsg.WriteLong( spawnIds[ clientNum ] );
-	networkSystem->ServerSendReliableMessage( -1, outMsg );
+	common->ServerSendReliableMessage( -1, outMsg );
 }
 
 /*
@@ -345,7 +343,7 @@ void idGameLocal::ServerClientDisconnect( int clientNum ) {
 	outMsg.BeginWriting();
 	outMsg.WriteByte( GAME_RELIABLE_MESSAGE_DELETE_ENT );
 	outMsg.WriteBits( ( spawnIds[ clientNum ] << GENTITYNUM_BITS ) | clientNum, 32 ); // see GetSpawnId
-	networkSystem->ServerSendReliableMessage( -1, outMsg );
+	common->ServerSendReliableMessage( -1, outMsg );
 
 	// free snapshots stored for this client
 	FreeSnapshotsOlderThanSequence( clientNum, 0x7FFFFFFF );
@@ -391,7 +389,7 @@ void idGameLocal::ServerWriteInitialReliableMessages( int clientNum ) {
 		outMsg.WriteByte( GAME_RELIABLE_MESSAGE_SPAWN_PLAYER );
 		outMsg.WriteByte( i );
 		outMsg.WriteLong( spawnIds[ i ] );
-		networkSystem->ServerSendReliableMessage( clientNum, outMsg );
+		common->ServerSendReliableMessage( clientNum, outMsg );
 	}
 
 	// send all saved events
@@ -407,7 +405,7 @@ void idGameLocal::ServerWriteInitialReliableMessages( int clientNum ) {
 			outMsg.WriteData( event->paramsBuf, event->paramsSize );
 		}
 
-		networkSystem->ServerSendReliableMessage( clientNum, outMsg );
+		common->ServerSendReliableMessage( clientNum, outMsg );
 	}
 
 	// update portals for opened doors
@@ -419,7 +417,7 @@ void idGameLocal::ServerWriteInitialReliableMessages( int clientNum ) {
 	for ( i = 0; i < numPortals; i++ ) {
 		outMsg.WriteBits( gameRenderWorld->GetPortalState( (qhandle_t) (i+1) ) , NUM_RENDER_PORTAL_BITS );
 	}
-	networkSystem->ServerSendReliableMessage( clientNum, outMsg );
+	common->ServerSendReliableMessage( clientNum, outMsg );
 
 	mpGame.ServerWriteInitialReliableMessages( clientNum );
 }
@@ -770,7 +768,7 @@ void idGameLocal::ServerSendChatMessage( int to, const char *name, const char *t
 	outMsg.WriteByte( GAME_RELIABLE_MESSAGE_CHAT );
 	outMsg.WriteString( name );
 	outMsg.WriteString( text, -1, false );
-	networkSystem->ServerSendReliableMessage( to, outMsg );
+	common->ServerSendReliableMessage( to, outMsg );
 
 	if ( to == -1 || to == localClientNum ) {
 		mpGame.AddChatLine( "%s^0: %s\n", name, text );
@@ -1481,7 +1479,7 @@ gameReturn_t idGameLocal::ClientPrediction( int clientNum, const usercmd_t *clie
 	}
 
 	// check for local client lag
-	if ( networkSystem->ClientGetTimeSinceLastPacket() >= net_clientMaxPrediction.GetInteger() ) {
+	if ( common->ClientGetTimeSinceLastPacket() >= net_clientMaxPrediction.GetInteger() ) {
 		player->isLagged = true;
 	} else {
 		player->isLagged = false;
@@ -1778,13 +1776,4 @@ void idGameLocal::RunBotFrame(void) {
 	{
 		registeredBots[i]->BotInputFrame();
 	}
-}
-
-/*
-================
-idGameLocal::RunClientFrame
-================
-*/
-void idGameLocal::RunClientFrame(void) {
-
 }

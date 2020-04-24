@@ -192,6 +192,8 @@ set(src_game
 	./Darklight/game/Game_local.cpp
 	./Darklight/game/Game_local.h
 	./Darklight/game/Game_network.cpp
+	./Darklight/game/Game_packet_server.cpp
+	./Darklight/game/Game_packet_client.cpp
 	./Darklight/game/Game_parallel.cpp
 	./Darklight/game/Game_render.cpp
 	./Darklight/game/IK.cpp

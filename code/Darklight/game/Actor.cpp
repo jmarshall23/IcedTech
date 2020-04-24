@@ -649,7 +649,7 @@ void idActor::SetupHead( void ) {
 	int					i;
 	const idKeyValue	*sndKV;
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 
@@ -2074,7 +2074,7 @@ idActor::Gib
 */
 void idActor::Gib( const idVec3 &dir, const char *damageDefName ) {
 	// no gibbing in multiplayer - by self damage or by moving objects
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		return;
 	}
 	// only gib once

@@ -37,6 +37,9 @@ If you have questions concerning this license or the applicable additional terms
 ==============================================================
 */
 
+#define MAX_ASYNC_CLIENTS		8
+struct usercmd_t;
+
 typedef enum {
 	EDITOR_NONE					= 0,
 	EDITOR_RADIANT				= BIT(1),
@@ -244,7 +247,93 @@ public:
 
 								// Ends the load screen.
 	virtual void				EndLoadScreen(void) = 0;
+
+								// Allocates a client slot for a bot.
+	virtual int					AllocateClientSlotForBot(int maxPlayersOnServer) = 0;
+
+								// Sets the current bot user command.
+	virtual int					ServerSetBotUserCommand(int clientNum, int frameNum, const usercmd_t& cmd) = 0;
+
+								// Sets the bot user name.
+	virtual int					ServerSetBotUserName(int clientNum, const char* playerName) = 0;
+
+								// Sends a reliable message to this client or all the clients if passed -1.
+	virtual void				ServerSendReliableMessage(int clientNum, const idBitMsg& msg) = 0;
+
+								// Sends a message to all clients except for clientNum
+	virtual void				ServerSendReliableMessageExcluding(int clientNum, const idBitMsg& msg) = 0;
+
+								// Sends a reliable message to the server.
+	virtual void				ClientSendReliableMessage(const idBitMsg& msg) = 0;
+
+								// On the client, returns the last time since the last packet.
+	virtual int					ClientGetTimeSinceLastPacket(void) = 0;
+
+								// Returns true if we are the local client.
+	virtual bool				IsClient(void) = 0;
+
+								// Returns true if we are the server.
+	virtual bool				IsServer(void) = 0;
+
+								// Returns true if this is a multiplayer game.
+	virtual bool				IsMultiplayer(void) = 0;
+
+								// Disconnects from the server.
+	virtual void				DisconnectFromServer(void) = 0;
+
+								// Kills the server.
+	virtual void				KillServer(void) = 0;
+
+								// Returns the last time we recieved a packet from this client.
+	virtual int					ServerGetClientTimeSinceLastPacket(int clientNum) = 0;
+
+								// Returns the ping of the requested client.
+	virtual int					ServerGetClientPing(int clientNum) = 0;
+
+								// Returns the local client number.
+	virtual int					GetLocalClientNum(void) = 0;
 };
+
+//
+// rvmNetworkPacket
+//
+class rvmNetworkPacket {
+public:
+	rvmNetworkPacket(bool isRead, int maxMessageSize = 256);
+	~rvmNetworkPacket();
+
+	idBitMsg	msg;
+private:
+	byte*		net_buffer;
+};
+
+/*
+==================
+rvmNetworkPacket::rvmNetworkPacket
+==================
+*/
+ID_INLINE rvmNetworkPacket::rvmNetworkPacket(bool isRead, int maxMessageSize) {
+	net_buffer = new byte[maxMessageSize];
+
+	if(isRead) {
+		msg.Init((const byte *)net_buffer, maxMessageSize);
+	}
+	else {
+		msg.Init(net_buffer, maxMessageSize);
+	}
+}
+
+/*
+==================
+rvmNetworkPacket::~rvmNetworkPacket
+==================
+*/
+ID_INLINE rvmNetworkPacket::~rvmNetworkPacket() {
+	if(net_buffer) {
+		delete net_buffer;
+		net_buffer = NULL;
+	}
+}
 
 extern idCommon *		common;
 

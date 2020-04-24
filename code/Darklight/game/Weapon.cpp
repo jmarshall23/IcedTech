@@ -169,7 +169,7 @@ idWeapon::Spawn
 void idWeapon::Spawn( void ) {
 	BaseSpawn();
 
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		// setup the world model
 		worldModel = static_cast< idAnimatedEntity * >( gameLocal.SpawnEntityType( idAnimatedEntity::Type, NULL ) );
 		worldModel.GetEntity()->fl.networkSync = true;
@@ -1496,7 +1496,7 @@ idWeapon::WeaponStolen
 ================
 */
 void idWeapon::WeaponStolen( void ) {
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 	if ( projectileEnt ) {
 		projectileEnt = NULL;
 	}
@@ -1778,7 +1778,7 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 		// deal with the third-person visible world model
 		// don't show shadows of the world model in first person
 // jmarshall - hide view/world weapons(how did this work in the vanilla game?). 
-		if ( /*gameLocal.isMultiplayer || g_showPlayerShadow.GetBool() ||*/ pm_thirdPerson.GetBool() ) {
+		if ( /*common->IsMultiplayer() || g_showPlayerShadow.GetBool() ||*/ pm_thirdPerson.GetBool() ) {
 			worldModel.GetEntity()->GetRenderEntity()->SetSuppressShadowInViewID(0);
 		}
 		else {
@@ -1835,7 +1835,7 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 	//	gameRenderWorld->UpdateLightDef( worldMuzzleFlashHandle, &worldMuzzleFlash );
 	//
 	//	// wake up monsters with the flashlight
-	//	if ( !gameLocal.isMultiplayer && lightOn && !owner->fl.notarget ) {
+	//	if ( !common->IsMultiplayer() && lightOn && !owner->fl.notarget ) {
 	//		AlertMonsters();
 	//	}
 	//}
@@ -1853,7 +1853,7 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 
 	UpdateSound();
 
-	//if(gameLocal.isClient) {
+	//if(common->IsClient()) {
 	//	gameRenderWorld->DebugBox(idVec4(255, 255, 255, 255), idBox(renderEntity->GetOrigin(), idVec3(10, 10, 10), mat3_identity));
 	//}
 }
@@ -2301,7 +2301,7 @@ idWeapon::Event_UseAmmo
 ===============
 */
 void idWeapon::Event_UseAmmo( int amount ) {
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 
@@ -2322,7 +2322,7 @@ idWeapon::Event_AddToClip
 void idWeapon::Event_AddToClip( int amount ) {
 	int ammoAvail;
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 
@@ -2392,7 +2392,7 @@ idWeapon::Event_NetReload
 */
 void idWeapon::Event_NetReload( void ) {
 	assert( owner );
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 		ServerSendEvent( EVENT_RELOAD, NULL, false, -1 );
 	}
 }
@@ -2404,7 +2404,7 @@ idWeapon::Event_NetEndReload
 */
 void idWeapon::Event_NetEndReload( void ) {
 	assert( owner );
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 		ServerSendEvent( EVENT_ENDRELOAD, NULL, false, -1 );
 	}
 }
@@ -2545,7 +2545,7 @@ void idWeapon::Event_SetSkin( const char *skinname ) {
 		worldModel.GetEntity()->SetSkin( skinDecl );
 	}
 
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 		idBitMsg	msg;
 		byte		msgBuf[MAX_EVENT_PARAM_SIZE];
 
@@ -2624,7 +2624,7 @@ idWeapon::Event_CreateProjectile
 ================
 */
 void idWeapon::Event_CreateProjectile( void ) {
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		projectileEnt = NULL;
 		gameLocal.SpawnEntityDef( projectileDict, &projectileEnt, false );
 		if ( projectileEnt ) {
@@ -2668,7 +2668,7 @@ void idWeapon::Event_LaunchProjectiles( int num_projectiles, float spread, float
 	}
 
 	// avoid all ammo considerations on an MP client
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 
 		// check if we're out of ammo or the clip is empty
 		int ammoAvail = owner->inventory.HasAmmo( ammoType, ammoRequired );
@@ -2731,7 +2731,7 @@ void idWeapon::Event_LaunchProjectiles( int num_projectiles, float spread, float
 		kick_endtime = gameLocal.realClientTime + muzzle_kick_maxtime;
 	}
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 
 		// predict instant hit projectiles
 		if ( projectileDict.GetBool( "net_instanthit" ) ) {
@@ -2832,7 +2832,7 @@ void idWeapon::Event_Melee( void ) {
 		gameLocal.Error( "No meleeDef on '%s'", weaponDef->dict.GetString( "classname" ) );
 	}
 
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		idVec3 start = playerViewOrigin;
 		idVec3 end = start + playerViewAxis[0] * ( meleeDistance * owner->PowerUpModifier( MELEE_DISTANCE ) );
 		gameLocal.clip.TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL, owner );
@@ -2866,7 +2866,7 @@ void idWeapon::Event_Melee( void ) {
 			ent->ApplyImpulse( this, tr.c.id, tr.c.point, impulse );
 
 			// weapon stealing - do this before damaging so weapons are not dropped twice
-			if ( gameLocal.isMultiplayer
+			if ( common->IsMultiplayer()
 				&& weaponDef && weaponDef->dict.GetBool( "stealing" )
 				&& ent->IsType( idPlayer::Type )
 				&& !owner->PowerUpActive( BERSERK )
@@ -2980,7 +2980,7 @@ void idWeapon::Event_EjectBrass( void ) {
 		return;
 	}
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 

@@ -477,13 +477,13 @@ Cmd_Kill_f
 void Cmd_Kill_f( const idCmdArgs &args ) {
 	idPlayer	*player;
 
-	if ( gameLocal.isMultiplayer ) {
-		if ( gameLocal.isClient ) {
+	if ( common->IsMultiplayer() ) {
+		if ( common->IsClient() ) {
 			idBitMsg	outMsg;
 			byte		msgBuf[ MAX_GAME_MESSAGE_SIZE ];
 			outMsg.Init( msgBuf, sizeof( msgBuf ) );
 			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_KILL );
-			networkSystem->ClientSendReliableMessage( outMsg );
+			common->ClientSendReliableMessage( outMsg );
 		} else {
 			player = gameLocal.GetClientByCmdArgs( args );
 			if ( !player ) {
@@ -541,7 +541,7 @@ static void Cmd_Say( bool team, const idCmdArgs &args ) {
 	idStr text;
 	const char *cmd = team ? "sayTeam" : "say" ;
 
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		gameLocal.Printf( "%s can only be used in a multiplayer game\n", cmd );
 		return;
 	}
@@ -565,7 +565,7 @@ static void Cmd_Say( bool team, const idCmdArgs &args ) {
 
 	// here we need to special case a listen server to use the real client name instead of "server"
 	// "server" will only appear on a dedicated server
-	if ( gameLocal.isClient || cvarSystem->GetCVarInteger( "net_serverDedicated" ) == 0 ) {
+	if ( common->IsClient() || cvarSystem->GetCVarInteger( "net_serverDedicated" ) == 0 ) {
 		player = gameLocal.localClientNum >= 0 ? static_cast<idPlayer *>( gameLocal.entities[ gameLocal.localClientNum ] ) : NULL;
 		if ( player ) {
 			name = player->GetUserInfo()->GetString( "ui_name", "player" );
@@ -574,14 +574,14 @@ static void Cmd_Say( bool team, const idCmdArgs &args ) {
 		name = "server";
 	}
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		idBitMsg	outMsg;
 		byte		msgBuf[ 256 ];
 		outMsg.Init( msgBuf, sizeof( msgBuf ) );
 		outMsg.WriteByte( team ? GAME_RELIABLE_MESSAGE_TCHAT : GAME_RELIABLE_MESSAGE_CHAT );
 		outMsg.WriteString( name );
 		outMsg.WriteString( text, -1, false );
-		networkSystem->ClientSendReliableMessage( outMsg );
+		common->ClientSendReliableMessage( outMsg );
 	} else {
 		gameLocal.mpGame.ProcessChatMessage( gameLocal.localClientNum, team, name, text, NULL );
 	}
@@ -622,12 +622,12 @@ Cmd_Kick_f
 static void Cmd_Kick_f( const idCmdArgs &args ) {
 	idPlayer *player;
 
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		gameLocal.Printf( "kick can only be used in a multiplayer game\n" );
 		return;
 	}
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		gameLocal.Printf( "You have no such power. This is a server command\n" );
 		return;
 	}
@@ -2270,12 +2270,12 @@ Cmd_AddBot_f
 void Cmd_AddBot_f(const idCmdArgs &args) {
 	int clientNum;
 
-	if(!gameLocal.isServer) {
+	if(!common->IsServer()) {
 		common->Warning("You can't add a bot, your not the server admin\n");
 		return;
 	}
 
-	clientNum = networkSystem->AllocateClientSlotForBot(8);
+	clientNum = common->AllocateClientSlotForBot(8);
 	if (clientNum == -1) {
 		return;
 	}

@@ -648,7 +648,7 @@ void idLight::BecomeBroken( idEntity *activator ) {
 		GetPhysics()->SetContents( 0 );
 	}
 
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 
 		ServerSendEvent( EVENT_BECOMEBROKEN, NULL, true, -1 );
 

@@ -212,7 +212,7 @@ void idMultiplayerGame::SpawnPlayer( int clientNum ) {
 	bool ingame = playerState[ clientNum ].ingame;
 
 	memset( &playerState[ clientNum ], 0, sizeof( playerState[ clientNum ] ) );
-	if ( !gameLocal.isClient ) {		
+	if ( !common->IsClient() ) {		
 		idPlayer *p = static_cast< idPlayer * >( gameLocal.entities[ clientNum ] );
 		p->spawnedTime = gameLocal.time;
 		if ( gameLocal.gameType == GAME_TDM ) {
@@ -967,7 +967,7 @@ idMultiplayerGame::PlayerDeath
 void idMultiplayerGame::PlayerDeath( idPlayer *dead, idPlayer *killer, bool telefrag ) {
 
 	// don't do PrintMessageEvent and shit
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 
 	if ( killer ) {
 		if ( gameLocal.gameType == GAME_LASTMAN ) {
@@ -1083,7 +1083,7 @@ void idMultiplayerGame::NewState( gameState_t news, idPlayer *player ) {
 	int			i;
 
 	assert( news != gameState );
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 	gameLocal.DPrintf( "%s -> %s\n", GameStateStrings[ gameState ], GameStateStrings[ news ] );
 	switch( news ) {
 		case GAMEON: {
@@ -1091,7 +1091,7 @@ void idMultiplayerGame::NewState( gameState_t news, idPlayer *player ) {
 			outMsg.Init( msgBuf, sizeof( msgBuf ) );
 			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_RESTART );
 			outMsg.WriteBits( 0, 1 );
-			networkSystem->ServerSendReliableMessage( -1, outMsg );
+			common->ServerSendReliableMessage( -1, outMsg );
 
 			PlayGlobalSound( -1, SND_FIGHT );
 			matchStartedTime = gameLocal.time;
@@ -1157,7 +1157,7 @@ void idMultiplayerGame::NewState( gameState_t news, idPlayer *player ) {
 			outMsg.Init( msgBuf, sizeof( msgBuf ) );
 			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_WARMUPTIME );
 			outMsg.WriteLong( warmupEndTime );
-			networkSystem->ServerSendReliableMessage( -1, outMsg );
+			common->ServerSendReliableMessage( -1, outMsg );
 
 			break;
 		}
@@ -1226,7 +1226,7 @@ void idMultiplayerGame::UpdateTourneyLine( void ) {
 	int i, j, imax, max, globalmax = -1;
 	idPlayer *p;
 
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 	if ( gameLocal.gameType != GAME_TOURNEY ) {
 		return;
 	}
@@ -1255,7 +1255,7 @@ void idMultiplayerGame::UpdateTourneyLine( void ) {
 		outMsg.Init( msgBuf, sizeof( msgBuf ) );
 		outMsg.WriteByte( GAME_RELIABLE_MESSAGE_TOURNEYLINE );
 		outMsg.WriteByte( j );
-		networkSystem->ServerSendReliableMessage( imax, outMsg );
+		common->ServerSendReliableMessage( imax, outMsg );
 
 		globalmax = max;
 	}
@@ -1421,8 +1421,8 @@ void idMultiplayerGame::Run() {
 	idPlayer *player;
 	int gameReviewPause;
 
-	assert( gameLocal.isMultiplayer );
-	assert( !gameLocal.isClient );
+	assert( common->IsMultiplayer() );
+	assert( !common->IsClient() );
 
 	pureReady = true;
 
@@ -1443,7 +1443,7 @@ void idMultiplayerGame::Run() {
 	// don't update the ping every frame to save bandwidth
 	if ( gameLocal.time > pingUpdateTime ) {
 		for ( i = 0; i < gameLocal.numClients; i++ ) {
-			playerState[i].ping = networkSystem->ServerGetClientPing( i );
+			playerState[i].ping = common->ServerGetClientPing( i );
 		}
 		pingUpdateTime = gameLocal.time + 1000;
 	}
@@ -1515,7 +1515,7 @@ void idMultiplayerGame::Run() {
 			outMsg.Init(msgBuf, sizeof(msgBuf));
 			outMsg.WriteByte(GAME_RELIABLE_MESSAGE_WARMUPTIMELEFT);
 			outMsg.WriteLong(warmupTimeLeft);
-			networkSystem->ServerSendReliableMessage(-1, outMsg);
+			common->ServerSendReliableMessage(-1, outMsg);
 			break;
 		}
 		case GAMEON: {
@@ -1980,7 +1980,7 @@ bool idMultiplayerGame::Draw( int clientNum ) {
 			outMsg.Init( msgBuf, sizeof( msgBuf ) );
 			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_MENU );
 			outMsg.WriteBits( 1, 1 );
-			networkSystem->ClientSendReliableMessage( outMsg );
+			common->ClientSendReliableMessage( outMsg );
 
 			bCurrentMenuMsg = true;
 		}
@@ -2007,7 +2007,7 @@ bool idMultiplayerGame::Draw( int clientNum ) {
 			outMsg.Init( msgBuf, sizeof( msgBuf ) );
 			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_MENU );
 			outMsg.WriteBits( 0, 1 );
-			networkSystem->ClientSendReliableMessage( outMsg );
+			common->ClientSendReliableMessage( outMsg );
 
 			bCurrentMenuMsg = false;
 		}
@@ -2319,7 +2319,7 @@ void idMultiplayerGame::PlayGlobalSound( int to, snd_evt_t evt, const char *shad
 		}
 	}
 
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		idBitMsg outMsg;
 		byte msgBuf[1024];
 		outMsg.Init( msgBuf, sizeof( msgBuf ) );
@@ -2336,7 +2336,7 @@ void idMultiplayerGame::PlayGlobalSound( int to, snd_evt_t evt, const char *shad
 			outMsg.WriteByte( evt );
 		}
 
-		networkSystem->ServerSendReliableMessage( to, outMsg );
+		common->ServerSendReliableMessage( to, outMsg );
 	}
 }
 
@@ -2404,7 +2404,7 @@ void idMultiplayerGame::PrintMessageEvent( int to, msg_evt_t evt, int parm1, int
 			gameLocal.DPrintf( "PrintMessageEvent: unknown message type %d\n", evt );
 			return;
 	}
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		idBitMsg outMsg;
 		byte msgBuf[1024];
 		outMsg.Init( msgBuf, sizeof( msgBuf ) );
@@ -2412,7 +2412,7 @@ void idMultiplayerGame::PrintMessageEvent( int to, msg_evt_t evt, int parm1, int
 		outMsg.WriteByte( evt );
 		outMsg.WriteByte( parm1 );
 		outMsg.WriteByte( parm2 );
-		networkSystem->ServerSendReliableMessage( to, outMsg );
+		common->ServerSendReliableMessage( to, outMsg );
 	}
 }
 
@@ -2580,7 +2580,7 @@ idMultiplayerGame::ForceReady_f
 ================
 */
 void idMultiplayerGame::ForceReady_f( const idCmdArgs &args ) {
-	if ( !gameLocal.isMultiplayer || gameLocal.isClient ) {
+	if ( !common->IsMultiplayer() || common->IsClient() ) {
 		common->Printf( "forceReady: multiplayer server only\n" );
 		return;
 	}
@@ -2593,7 +2593,7 @@ idMultiplayerGame::DropWeapon
 ================
 */
 void idMultiplayerGame::DropWeapon( int clientNum ) {
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 	idEntity *ent = gameLocal.entities[ clientNum ];
 	if ( !ent || !ent->IsType( idPlayer::Type ) ) {
 		return;
@@ -2607,7 +2607,7 @@ idMultiplayerGame::DropWeapon_f
 ================
 */
 void idMultiplayerGame::DropWeapon_f( const idCmdArgs &args ) {
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		common->Printf( "clientDropWeapon: only valid in multiplayer\n" );
 		return;
 	}
@@ -2615,7 +2615,7 @@ void idMultiplayerGame::DropWeapon_f( const idCmdArgs &args ) {
 	byte		msgBuf[128];
 	outMsg.Init( msgBuf, sizeof( msgBuf ) );
 	outMsg.WriteByte( GAME_RELIABLE_MESSAGE_DROPWEAPON );
-	networkSystem->ClientSendReliableMessage( outMsg );
+	common->ClientSendReliableMessage( outMsg );
 }
 
 /*
@@ -2636,7 +2636,7 @@ void idMultiplayerGame::MessageMode( const idCmdArgs &args ) {
 	const char *mode;
 	int imode;
 
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		common->Printf( "clientMessageMode: only valid in multiplayer\n" );
 		return;
 	}
@@ -2708,12 +2708,12 @@ void idMultiplayerGame::ClientStartVote( int clientNum, const char *_voteString 
 	idBitMsg	outMsg;
 	byte		msgBuf[ MAX_GAME_MESSAGE_SIZE ];
 
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		outMsg.Init( msgBuf, sizeof( msgBuf ) );
 		outMsg.WriteByte( GAME_RELIABLE_MESSAGE_STARTVOTE );
 		outMsg.WriteByte( clientNum );
 		outMsg.WriteString( _voteString );
-		networkSystem->ServerSendReliableMessage( -1, outMsg );
+		common->ServerSendReliableMessage( -1, outMsg );
 	}
 
 	voteString = _voteString;
@@ -2724,7 +2724,7 @@ void idMultiplayerGame::ClientStartVote( int clientNum, const char *_voteString 
 	} else {
 		voted = false;
 	}
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		// the the vote value to something so the vote line is displayed
 		vote = VOTE_RESTART;
 		yesVotes = 1;
@@ -2741,13 +2741,13 @@ void idMultiplayerGame::ClientUpdateVote( vote_result_t status, int yesCount, in
 	idBitMsg	outMsg;
 	byte		msgBuf[ MAX_GAME_MESSAGE_SIZE ];
 
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		outMsg.Init( msgBuf, sizeof( msgBuf ) );
 		outMsg.WriteByte( GAME_RELIABLE_MESSAGE_UPDATEVOTE );
 		outMsg.WriteByte( status );
 		outMsg.WriteByte( yesCount );
 		outMsg.WriteByte( noCount );
-		networkSystem->ServerSendReliableMessage( -1, outMsg );
+		common->ServerSendReliableMessage( -1, outMsg );
 	}
 
 	if ( vote == VOTE_NONE ) {
@@ -2759,7 +2759,7 @@ void idMultiplayerGame::ClientUpdateVote( vote_result_t status, int yesCount, in
 		case VOTE_FAILED:
 			AddChatLine( common->GetLanguageDict()->GetString( "#str_04278" ) );
 			gameSoundWorld->PlayShaderDirectly( GlobalSoundStrings[ SND_VOTE_FAILED ] );
-			if ( gameLocal.isClient ) {
+			if ( common->IsClient() ) {
 				vote = VOTE_NONE;
 			}
 			break;
@@ -2768,20 +2768,20 @@ void idMultiplayerGame::ClientUpdateVote( vote_result_t status, int yesCount, in
 			gameSoundWorld->PlayShaderDirectly( GlobalSoundStrings[ SND_VOTE_PASSED ] );
 			break;
 		case VOTE_RESET:
-			if ( gameLocal.isClient ) {
+			if ( common->IsClient() ) {
 				vote = VOTE_NONE;
 			}
 			break;
 		case VOTE_ABORTED:
 			AddChatLine( common->GetLanguageDict()->GetString( "#str_04276" ) );
-			if ( gameLocal.isClient ) {
+			if ( common->IsClient() ) {
 				vote = VOTE_NONE;
 			}
 			break;
 		default:
 			break;
 	}
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		yesVotes = yesCount;
 		noVotes = noCount;
 	}
@@ -2801,7 +2801,7 @@ void idMultiplayerGame::ClientCallVote( vote_flags_t voteIndex, const char *vote
 	outMsg.WriteByte( GAME_RELIABLE_MESSAGE_CALLVOTE );
 	outMsg.WriteByte( voteIndex );
 	outMsg.WriteString( voteValue );
-	networkSystem->ClientSendReliableMessage( outMsg );
+	common->ClientSendReliableMessage( outMsg );
 }
 
 /*
@@ -2817,11 +2817,11 @@ void idMultiplayerGame::CastVote( int clientNum, bool castVote ) {
 		voted = true;
 	}
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		outMsg.Init( msgBuf, sizeof( msgBuf ) );
 		outMsg.WriteByte( GAME_RELIABLE_MESSAGE_CASTVOTE );
 		outMsg.WriteByte( castVote );
-		networkSystem->ClientSendReliableMessage( outMsg );
+		common->ClientSendReliableMessage( outMsg );
 		return;
 	}
 
@@ -2859,7 +2859,7 @@ void idMultiplayerGame::ServerCallVote( int clientNum, const idBitMsg &msg ) {
 	char			value[ MAX_STRING_CHARS ];
 
 	assert( clientNum != -1 );
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 
 	voteIndex = (vote_flags_t)msg.ReadByte( );
 	msg.ReadString( value, sizeof( value ) );
@@ -3054,7 +3054,7 @@ idMultiplayerGame::MapRestart
 void idMultiplayerGame::MapRestart( void ) {
 	int clientNum;
 
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 	if ( gameState != WARMUP ) {
 		NewState( WARMUP );
 		nextState = INACTIVE;
@@ -3085,9 +3085,9 @@ void idMultiplayerGame::SwitchToTeam( int clientNum, int oldteam, int newteam ) 
 
 	assert( gameLocal.gameType == GAME_TDM );
 	assert( oldteam != newteam );
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 
-	if ( !gameLocal.isClient && newteam >= 0 && IsInGame( clientNum ) ) {
+	if ( !common->IsClient() && newteam >= 0 && IsInGame( clientNum ) ) {
 		PrintMessageEvent( -1, MSG_JOINTEAM, clientNum, newteam );
 	}
 	// assign the right teamFragCount
@@ -3132,7 +3132,7 @@ void idMultiplayerGame::ProcessChatMessage( int clientNum, bool team, const char
 	idPlayer	*p;
 	idStr		prefixed_name;
 
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 
 	if ( clientNum >= 0 ) {
 		p = static_cast< idPlayer * >( gameLocal.entities[ clientNum ] );
@@ -3173,7 +3173,7 @@ void idMultiplayerGame::ProcessChatMessage( int clientNum, bool team, const char
 	outMsg.WriteString( text, -1, false );
 	if ( !send_to ) {
 		AddChatLine( "%s^0: %s\n", prefixed_name.c_str(), text );
-		networkSystem->ServerSendReliableMessage( -1, outMsg );
+		common->ServerSendReliableMessage( -1, outMsg );
 		if ( sound ) {
 			PlayGlobalSound( -1, SND_COUNT, sound );
 		}
@@ -3190,7 +3190,7 @@ void idMultiplayerGame::ProcessChatMessage( int clientNum, bool team, const char
 				if ( i == gameLocal.localClientNum ) {
 					AddChatLine( "%s^0: %s\n", prefixed_name.c_str(), text );
 				} else {
-					networkSystem->ServerSendReliableMessage( i, outMsg );
+					common->ServerSendReliableMessage( i, outMsg );
 				}
 			} else if ( send_to == 2 && static_cast< idPlayer * >( ent )->team == p->team ) {
 				if ( sound ) {
@@ -3199,7 +3199,7 @@ void idMultiplayerGame::ProcessChatMessage( int clientNum, bool team, const char
 				if ( i == gameLocal.localClientNum ) {
 					AddChatLine( "%s^0: %s\n", prefixed_name.c_str(), text );
 				} else {
-					networkSystem->ServerSendReliableMessage( i, outMsg );
+					common->ServerSendReliableMessage( i, outMsg );
 				}
 			}
 		}
@@ -3215,7 +3215,7 @@ void idMultiplayerGame::Precache( void ) {
 	int			i;
 	idFile		*f;
 
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		return;
 	}
 	gameLocal.FindEntityDefDict( "player_doommarine", false );;
@@ -3258,7 +3258,7 @@ idMultiplayerGame::ToggleSpectate
 */
 void idMultiplayerGame::ToggleSpectate( void ) {
 	bool spectating;
-	assert( gameLocal.isClient || gameLocal.localClientNum == 0 );
+	assert( common->IsClient() || gameLocal.localClientNum == 0 );
 
 	spectating = ( idStr::Icmp( cvarSystem->GetCVarString( "ui_spectate" ), "Spectate" ) == 0 );
 	if ( spectating ) {
@@ -3281,7 +3281,7 @@ idMultiplayerGame::ToggleReady
 */
 void idMultiplayerGame::ToggleReady( void ) {
 	bool ready;
-	assert( gameLocal.isClient || gameLocal.localClientNum == 0 );
+	assert( common->IsClient() || gameLocal.localClientNum == 0 );
 
 	ready = ( idStr::Icmp( cvarSystem->GetCVarString( "ui_ready" ), "Ready" ) == 0 );
 	if ( ready ) {
@@ -3298,7 +3298,7 @@ idMultiplayerGame::ToggleTeam
 */
 void idMultiplayerGame::ToggleTeam( void ) {
 	bool team;
-	assert( gameLocal.isClient || gameLocal.localClientNum == 0 );
+	assert( common->IsClient() || gameLocal.localClientNum == 0 );
 	
 	team = ( idStr::Icmp( cvarSystem->GetCVarString( "ui_team" ), "Red" ) == 0 );
 	if ( team ) {
@@ -3348,11 +3348,11 @@ idMultiplayerGame::EnterGame
 ================
 */
 void idMultiplayerGame::EnterGame( int clientNum ) {
-	assert( !gameLocal.isClient );
+	assert( !common->IsClient() );
 
 	if ( !playerState[ clientNum ].ingame ) {
 		playerState[ clientNum ].ingame = true;
-		if ( gameLocal.isMultiplayer ) {
+		if ( common->IsMultiplayer() ) {
 			// can't use PrintMessageEvent as clients don't know the nickname yet
 			gameLocal.ServerSendChatMessage( -1, common->GetLanguageDict()->GetString( "#str_02047" ), va( common->GetLanguageDict()->GetString( "#str_07177" ), gameLocal.userInfo[ clientNum ].GetString( "ui_name" ) ) );
 		}
@@ -3399,7 +3399,7 @@ void idMultiplayerGame::VoiceChat( const idCmdArgs &args, bool team ) {
 	const idKeyValue	*keyval;
 	int					index;
 
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		common->Printf( "clientVoiceChat: only valid in multiplayer\n" );
 		return;
 	}
@@ -3433,7 +3433,7 @@ void idMultiplayerGame::VoiceChat( const idCmdArgs &args, bool team ) {
 	outMsg.WriteByte( GAME_RELIABLE_MESSAGE_VCHAT );
 	outMsg.WriteLong( index );
 	outMsg.WriteBits( team ? 1 : 0, 1 );
-	networkSystem->ClientSendReliableMessage( outMsg );
+	common->ClientSendReliableMessage( outMsg );
 }
 
 /*
@@ -3508,20 +3508,20 @@ void idMultiplayerGame::ServerWriteInitialReliableMessages( int clientNum ) {
 		}
 	}
 	outMsg.WriteShort( MAX_CLIENTS );
-	networkSystem->ServerSendReliableMessage( clientNum, outMsg );
+	common->ServerSendReliableMessage( clientNum, outMsg );
 
 	// we send SI in connectResponse messages, but it may have been modified already
 	outMsg.BeginWriting( );
 	outMsg.WriteByte( GAME_RELIABLE_MESSAGE_SERVERINFO );
 	outMsg.WriteDeltaDict( gameLocal.serverInfo, NULL );
-	networkSystem->ServerSendReliableMessage( clientNum, outMsg );
+	common->ServerSendReliableMessage( clientNum, outMsg );
 
 	// warmup time
 	if ( gameState == COUNTDOWN ) {
 		outMsg.BeginWriting();
 		outMsg.WriteByte( GAME_RELIABLE_MESSAGE_WARMUPTIME );
 		outMsg.WriteLong( warmupEndTime );
-		networkSystem->ServerSendReliableMessage( clientNum, outMsg );
+		common->ServerSendReliableMessage( clientNum, outMsg );
 	}
 }
 

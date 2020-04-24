@@ -38,7 +38,6 @@ idCommon *					common = NULL;
 idCmdSystem *				cmdSystem = NULL;
 idCVarSystem *				cvarSystem = NULL;
 idFileSystem *				fileSystem = NULL;
-idNetworkSystem *			networkSystem = NULL;
 idRenderSystem *			renderSystem = NULL;
 idSoundSystem *				soundSystem = NULL;
 idRenderModelManager *		renderModelManager = NULL;
@@ -95,7 +94,6 @@ extern "C" gameExport_t *GetGameAPI( gameImport_t *import ) {
 		cmdSystem					= import->cmdSystem;
 		cvarSystem					= import->cvarSystem;
 		fileSystem					= import->fileSystem;
-		networkSystem				= import->networkSystem;
 		renderSystem				= import->renderSystem;
 		soundSystem					= import->soundSystem;
 		renderModelManager			= import->renderModelManager;
@@ -137,7 +135,6 @@ void TestGameAPI( void ) {
 	testImport.cmdSystem				= ::cmdSystem;
 	testImport.cvarSystem				= ::cvarSystem;
 	testImport.fileSystem				= ::fileSystem;
-	testImport.networkSystem			= ::networkSystem;
 	testImport.renderSystem				= ::renderSystem;
 	testImport.soundSystem				= ::soundSystem;
 	testImport.renderModelManager		= ::renderModelManager;
@@ -231,9 +228,6 @@ void idGameLocal::Clear( void ) {
 	influenceActive = false;
 
 	localClientNum = 0;
-	isMultiplayer = false;
-	isServer = false;
-	isClient = false;
 	realClientTime = 0;
 	isNewFrame = true;
 	clientSmoothing = 0.1f;
@@ -530,7 +524,7 @@ void idGameLocal::SaveGame( idFile *f ) {
 	savegame.WriteBool( inCinematic );
 	savegame.WriteBool( skipCinematic );
 
-	savegame.WriteBool( isMultiplayer );
+	savegame.WriteBool( common->IsMultiplayer() );
 	savegame.WriteInt( gameType );
 
 	savegame.WriteInt( framenum );
@@ -540,8 +534,8 @@ void idGameLocal::SaveGame( idFile *f ) {
 	savegame.WriteInt( vacuumAreaNum );
 
 	savegame.WriteInt( entityDefBits );
-	savegame.WriteBool( isServer );
-	savegame.WriteBool( isClient );
+	savegame.WriteBool( common->IsServer() );
+	savegame.WriteBool( common->IsClient() );
 
 	savegame.WriteInt( localClientNum );
 
@@ -759,11 +753,9 @@ void idGameLocal::SetLocalClient( int clientNum ) {
 idGameLocal::SetUserInfo
 ============
 */
-const idDict* idGameLocal::SetUserInfo( int clientNum, const idDict &userInfo, bool isClient, bool canModify ) {
+const idDict* idGameLocal::SetUserInfo( int clientNum, const idDict &userInfo, bool canModify ) {
 	int i;
 	bool modifiedInfo = false;
-
-	this->isClient = isClient;
 
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS ) {
 		idGameLocal::userInfo[ clientNum ] = userInfo;
@@ -797,7 +789,7 @@ const idDict* idGameLocal::SetUserInfo( int clientNum, const idDict &userInfo, b
 			modifiedInfo |= static_cast<idPlayer *>( entities[ clientNum ] )->UserInfoChanged( canModify );
 		}
 
-		if ( !isClient ) {
+		if ( !common->IsClient() ) {
 			// now mark this client in game
 			mpGame.EnterGame( clientNum );
 		}
@@ -835,12 +827,12 @@ void idGameLocal::SetServerInfo( const idDict &_serverInfo ) {
 	serverInfo = _serverInfo;
 	UpdateServerInfoFlags();
 
-	if ( !isClient ) {
+	if ( !common->IsClient() ) {
 		// Let our clients know the server info changed
 		outMsg.Init( msgBuf, sizeof( msgBuf ) );
 		outMsg.WriteByte( GAME_RELIABLE_MESSAGE_SERVERINFO );
 		outMsg.WriteDeltaDict( gameLocal.serverInfo, NULL );
-		networkSystem->ServerSendReliableMessage( -1, outMsg );
+		common->ServerSendReliableMessage( -1, outMsg );
 	}
 }
 
@@ -909,7 +901,7 @@ void idGameLocal::LoadMap( const char *mapName, int randseed ) {
 	firstFreeIndex	= MAX_CLIENTS;
 
 	// reset the random number generator.
-	random.SetSeed( isMultiplayer ? randseed : 0 );
+	random.SetSeed( common->IsMultiplayer() ? randseed : 0 );
 
 	camera			= NULL;
 	world			= NULL;
@@ -1025,7 +1017,7 @@ void idGameLocal::MapRestart( ) {
 	int			i;
 	const idKeyValue *keyval, *keyval2;
 
-	if ( isClient ) {
+	if ( common->IsClient() ) {
 		LocalMapRestart();
 	} else {
 		newInfo = *cvarSystem->MoveCVarsToDict( CVAR_SERVERINFO );
@@ -1049,7 +1041,7 @@ void idGameLocal::MapRestart( ) {
 			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_RESTART );
 			outMsg.WriteBits( 1, 1 );
 			outMsg.WriteDeltaDict( serverInfo, NULL );
-			networkSystem->ServerSendReliableMessage( -1, outMsg );
+			common->ServerSendReliableMessage( -1, outMsg );
 
 			LocalMapRestart();
 			mpGame.MapRestart();
@@ -1063,7 +1055,7 @@ idGameLocal::MapRestart_f
 ===================
 */
 void idGameLocal::MapRestart_f( const idCmdArgs &args ) {
-	if ( !gameLocal.isMultiplayer || gameLocal.isClient ) {
+	if ( !common->IsMultiplayer() || common->IsClient() ) {
 		common->Printf( "server is not running - use spawnServer\n" );
 		cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "spawnServer\n" );
 		return;
@@ -1128,7 +1120,7 @@ idGameLocal::NextMap_f
 ===================
 */
 void idGameLocal::NextMap_f( const idCmdArgs &args ) {
-	if ( !gameLocal.isMultiplayer || gameLocal.isClient ) {
+	if ( !common->IsMultiplayer() || common->IsClient() ) {
 		common->Printf( "server is not running\n" );
 		return;
 	}
@@ -1145,7 +1137,7 @@ idGameLocal::MapPopulate
 */
 void idGameLocal::MapPopulate( void ) {
 
-	if ( isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		cvarSystem->SetCVarBool( "r_skipSpecular", false );
 	}
 
@@ -1176,11 +1168,7 @@ void idGameLocal::MapPopulate( void ) {
 idGameLocal::InitFromNewMap
 ===================
 */
-void idGameLocal::InitFromNewMap( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, bool isServer, bool isClient, int randseed, bool buildReflections) {
-
-	this->isServer = isServer;
-	this->isClient = isClient;
-	this->isMultiplayer = isServer || isClient;
+void idGameLocal::InitFromNewMap( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, int randseed, bool buildReflections) {
 	this->isBuildingReflections = buildReflections;
 
 	if ( mapFileName.Length() ) {
@@ -1359,7 +1347,7 @@ bool idGameLocal::InitFromSaveGame( const char *mapName, idRenderWorld *renderWo
 	savegame.ReadBool( inCinematic );
 	savegame.ReadBool( skipCinematic );
 
-	savegame.ReadBool( isMultiplayer );
+	//savegame.ReadBool( common->IsMultiplayer() );
 	savegame.ReadInt( (int &)gameType );
 
 	savegame.ReadInt( framenum );
@@ -1369,8 +1357,8 @@ bool idGameLocal::InitFromSaveGame( const char *mapName, idRenderWorld *renderWo
 	savegame.ReadInt( vacuumAreaNum );
 
 	savegame.ReadInt( entityDefBits );
-	savegame.ReadBool( isServer );
-	savegame.ReadBool( isClient );
+	//savegame.ReadBool( common->IsServer() );
+	//savegame.ReadBool( common->IsClient() );
 
 	savegame.ReadInt( localClientNum );
 
@@ -1876,7 +1864,7 @@ void idGameLocal::SpawnPlayer( int clientNum, bool isBot, const char* botName) {
 	}
 	else
 	{
-		args.Set("classname", isMultiplayer ? "player_doommarine_mp" : "player_doommarine");
+		args.Set("classname", common->IsMultiplayer() ? "player_doommarine_mp" : "player_doommarine");
 	}
 // jmarshall end
 
@@ -2213,8 +2201,8 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 	const renderView_t *view;
 
 #ifdef _DEBUG
-	if ( isMultiplayer ) {
-		assert( !isClient );
+	if ( common->IsMultiplayer() ) {
+		assert( !common->IsClient() );
 	}
 #endif
 
@@ -2227,7 +2215,7 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 
 	player = GetLocalPlayer();
 
-	if ( !isMultiplayer && g_stopTime.GetBool() ) {
+	if ( !common->IsMultiplayer() && g_stopTime.GetBool() ) {
 		// clear any debug lines from a previous frame
 		gameRenderWorld->DebugClearLines( time + 1 );
 
@@ -2289,7 +2277,7 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 		UpdateGravity();
 
 		// run the frame for the bots.
-		if (gameLocal.isServer) {
+		if (common->IsServer()) {
 			RunBotFrame();
 		}
 
@@ -2368,7 +2356,7 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 		FreePlayerPVS();
 
 		// do multiplayer related stuff
-		if ( isMultiplayer ) {
+		if ( common->IsMultiplayer() ) {
 			mpGame.Run();
 		}
 
@@ -2383,7 +2371,7 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 		ret.consistencyHash = 0;
 		ret.sessionCommand[0] = 0;
 
-		if ( !isMultiplayer && player ) {
+		if ( !common->IsMultiplayer() && player ) {
 			ret.health = player->health;
 			ret.heartRate = player->heartRate;
 			ret.stamina = idMath::FtoiFast( player->stamina );
@@ -2521,7 +2509,7 @@ makes rendering and sound system calls
 ================
 */
 bool idGameLocal::Draw( int clientNum ) {
-	if ( isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		return mpGame.Draw( clientNum );
 	}
 
@@ -2543,7 +2531,7 @@ idGameLocal::HandleESC
 ================
 */
 escReply_t idGameLocal::HandleESC( idUserInterface **gui ) {
-	if ( isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		*gui = StartMenu();
 		// we may set the gui back to NULL to hide it
 		return ESC_GUI;
@@ -2565,7 +2553,7 @@ idGameLocal::StartMenu
 ================
 */
 idUserInterface* idGameLocal::StartMenu( void ) {
-	if ( !isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		return NULL;
 	}
 	return mpGame.StartMenu();
@@ -2577,7 +2565,7 @@ idGameLocal::HandleGuiCommands
 ================
 */
 const char* idGameLocal::HandleGuiCommands( const char *menuCommand ) {
-	if ( !isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		return NULL;
 	}
 	return mpGame.HandleGuiCommands( menuCommand );
@@ -2833,7 +2821,7 @@ idGameLocal::CheatsOk
 bool idGameLocal::CheatsOk( bool requirePlayer ) {
 	idPlayer *player;
 
-	if ( isMultiplayer && !cvarSystem->GetCVarBool( "net_allowCheats" ) ) {
+	if ( common->IsMultiplayer() && !cvarSystem->GetCVarBool( "net_allowCheats" ) ) {
 		Printf( "Not allowed in multiplayer.\n" );
 		return false;
 	}
@@ -2917,7 +2905,7 @@ idEntity *idGameLocal::SpawnEntityType( const idTypeInfo &classdef, const idDict
 	idClass *obj;
 
 #if _DEBUG
-	if ( isClient ) {
+	if ( common->IsClient() ) {
 		assert( bIsClientReadSnapshot );
 	}
 #endif
@@ -3107,7 +3095,7 @@ idGameLocal::FindEntityDef
 */
 const idDeclEntityDef *idGameLocal::FindEntityDef( const char *name, bool makeDefault ) const {
 	const idDecl *decl = NULL;
-	if ( isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		decl = declManager->FindType( DECL_ENTITYDEF, va( "%s_mp", name ), false );
 	}
 	if ( !decl ) {
@@ -3135,7 +3123,7 @@ bool idGameLocal::InhibitEntitySpawn( idDict &spawnArgs ) {
 	
 	bool result = false;
 
-	if ( isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		spawnArgs.GetBool( "not_multiplayer", "0", result );
 	} else if ( g_skill.GetInteger() == 0 ) {
 		spawnArgs.GetBool( "not_easy", "0", result );
@@ -3155,7 +3143,7 @@ bool idGameLocal::InhibitEntitySpawn( idDict &spawnArgs ) {
 	}
 #endif
 
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		name = spawnArgs.GetString( "classname" );
 		if ( idStr::Icmp( name, "weapon_bfg" ) == 0 || idStr::Icmp( name, "weapon_soulcube" ) == 0 ) {
 			result = true;
@@ -3516,7 +3504,7 @@ void idGameLocal::KillBox( idEntity *ent, bool catch_teleport ) {
 			hit->Damage( ent, ent, vec3_origin, "damage_telefrag", 1.0f, INVALID_JOINT );
 		}
 
-		if ( !gameLocal.isMultiplayer ) {
+		if ( !common->IsMultiplayer() ) {
 			// let the mapper know about it
 			Warning( "'%s' telefragged '%s'", ent->name.c_str(), hit->name.c_str() );
 		}
@@ -3636,7 +3624,7 @@ void idGameLocal::RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEnt
 		}
 
 		// don't damage a dead player
-		if ( isMultiplayer && ent->entityNumber < MAX_CLIENTS && ent->IsType( idPlayer::Type ) && static_cast< idPlayer * >( ent )->health < 0 ) {
+		if ( common->IsMultiplayer() && ent->entityNumber < MAX_CLIENTS && ent->IsType( idPlayer::Type ) && static_cast< idPlayer * >( ent )->health < 0 ) {
 			continue;
 		}
 
@@ -4091,12 +4079,12 @@ void idGameLocal::SetPortalState( qhandle_t portal, int blockingBits ) {
 	idBitMsg outMsg;
 	byte msgBuf[ MAX_GAME_MESSAGE_SIZE ];
 
-	if ( !gameLocal.isClient ) {
+	if ( !common->IsClient() ) {
 		outMsg.Init( msgBuf, sizeof( msgBuf ) );
 		outMsg.WriteByte( GAME_RELIABLE_MESSAGE_PORTAL );
 		outMsg.WriteLong( portal );
 		outMsg.WriteBits( blockingBits, NUM_RENDER_PORTAL_BITS );
-		networkSystem->ServerSendReliableMessage( -1, outMsg );
+		common->ServerSendReliableMessage( -1, outMsg );
 	}
 	gameRenderWorld->SetPortalState( portal, blockingBits );
 }
@@ -4133,7 +4121,7 @@ void idGameLocal::RandomizeInitialSpawns( void ) {
 	int i, j;
 	idEntity *ent;
 
-	if ( !isMultiplayer || isClient ) {
+	if ( !common->IsMultiplayer() || common->IsClient() ) {
 		return;
 	}
 	spawnSpots.Clear();
@@ -4185,7 +4173,7 @@ idEntity *idGameLocal::SelectInitialSpawnPoint( idPlayer *player ) {
 	float			dist;
 	bool			alone;
 
-	if ( !isMultiplayer || !spawnSpots.Num() ) {
+	if ( !common->IsMultiplayer() || !spawnSpots.Num() ) {
 		spot.ent = FindEntityUsingDef( NULL, "info_player_start" );
 		if ( !spot.ent ) {
 			Error( "No info_player_start on map.\n" );

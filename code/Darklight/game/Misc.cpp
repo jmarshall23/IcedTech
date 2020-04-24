@@ -197,7 +197,7 @@ void idPlayerStart::TeleportPlayer( idPlayer *player ) {
 		player->StartSound( "snd_teleport_enter", SND_CHANNEL_ANY, 0, false, NULL );
 		player->SetPrivateCameraView( static_cast<idCamera*>(ent) );
 		// the player entity knows where to spawn from the previous Teleport call
-		if ( !gameLocal.isClient ) {
+		if ( !common->IsClient() ) {
 			player->PostEventSec( &EV_Player_ExitTeleporter, f );
 		}
 	} else {
@@ -205,7 +205,7 @@ void idPlayerStart::TeleportPlayer( idPlayer *player ) {
 		player->Teleport( GetPhysics()->GetOrigin(), GetPhysics()->GetAxis().ToAngles(), NULL );
 
 		// multiplayer hijacked this entity, so only push the player in multiplayer
-		if ( gameLocal.isMultiplayer ) {
+		if ( common->IsMultiplayer() ) {
 			player->GetPhysics()->SetLinearVelocity( GetPhysics()->GetAxis()[0] * pushVel );
 		}
 	}
@@ -232,7 +232,7 @@ void idPlayerStart::Event_TeleportPlayer( idEntity *activator ) {
 
 		} else {
 
-			if ( gameLocal.isServer ) {
+			if ( common->IsServer() ) {
 				idBitMsg	msg;
 				byte		msgBuf[MAX_EVENT_PARAM_SIZE];
 

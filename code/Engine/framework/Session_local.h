@@ -152,6 +152,8 @@ public:
 	void				CompleteWipe();
 	void				ClearWipe();
 
+	void				ExecuteServerMapChange(void);
+
 	void				ShowLoadingGui();
 
 	void				ScrubSaveGameFileName( idStr &saveFileName ) const;
@@ -309,9 +311,6 @@ public:
 	void				ExecuteMapChange( bool noFadeWipe = false );
 	void				UnloadMap();
 
-	// return true if we actually waiting on an auth reply
-	bool				MaybeWaitOnCDKey( void );
-
 	//------------------
 	// Session_menu.cpp
 
@@ -338,7 +337,6 @@ public:
 	void				SetMainMenuGuiVars( void );
 	void				SetModsMenuGuiVars( void );
 	void				SetMainMenuSkin( void );
-	void				SetPbMenuGuiVars( void );
 	
 private:
 	bool				BoxDialogSanityCheck( void );

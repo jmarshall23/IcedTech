@@ -96,7 +96,7 @@ void rvmBot::Spawn(void) {
 
 	BaseSpawn();
 
-	if (gameLocal.isServer)
+	if (common->IsServer())
 	{
 		weapon_machinegun = SlotForWeapon("weapon_machinegun");
 		weapon_shotgun = SlotForWeapon("weapon_shotgun");
@@ -188,7 +188,7 @@ rvmBot::SpawnToPoint
 void rvmBot::SpawnToPoint(const idVec3& spawn_origin, const idAngles& spawn_angles) {
 	idPlayer::SpawnToPoint(spawn_origin, spawn_angles);
 
-	if (gameLocal.isServer) {
+	if (common->IsServer()) {
 		bs.ltg_time = 0;
 		bs.action = NULL;
 		bs.lastaction = NULL;
@@ -360,7 +360,7 @@ void rvmBot::Think(void) {
 	if (!hasSpawned)
 		return;
 
-	if(gameLocal.isServer)
+	if(common->IsServer())
 	{
 		ServerThink();
 	}

@@ -150,7 +150,7 @@ void idSound::Event_Trigger( idEntity *activator ) {
 			PostEventSec( &EV_Speaker_Timer, wait + gameLocal.random.CRandomFloat() * random );
 		}
 	} else {
-		if ( gameLocal.isMultiplayer ) {
+		if ( common->IsMultiplayer() ) {
 			if ( refSound.referenceSound && ( gameLocal.time < playingUntilTime ) ) {
 				DoSound( false );
 			} else {

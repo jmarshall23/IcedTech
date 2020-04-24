@@ -124,7 +124,10 @@ idCommonLocal::idCommonLocal( void ) {
 	com_refreshOnPrint = false;
 	com_errorEntered = 0;
 	com_shuttingDown = false;
+	networkType = NETWORK_TYPE_NONE;
+	serverState = NULL;
 	isEditorRunning = false;
+	localClientNum = 0;
 
 	logFile = NULL;
 
@@ -1468,7 +1471,7 @@ void Com_ReloadEngine_f( const idCmdArgs &args ) {
 	}
 	commonLocal.ShutdownGame( true );
 	commonLocal.InitGame();
-	if ( !menu && !idAsyncNetwork::serverDedicated.GetBool() ) {
+	if ( !menu && !common->IsDedicatedServer() ) {
 		Sys_ShowConsole( 0, false );
 	}
 	common->Printf( "============= ReloadEngine end ===============\n" );
@@ -2346,10 +2349,10 @@ void idCommonLocal::Frame( void ) {
 
 		com_frameTime = com_ticNumber * USERCMD_MSEC;
 
-		idAsyncNetwork::RunFrame();
+		RunNetworkThink();
 
-		if ( idAsyncNetwork::IsActive() ) {
-			if ( idAsyncNetwork::serverDedicated.GetInteger() != 1 ) {
+		if ( IsMultiplayer() ) {
+			if ( !IsDedicatedServer() ) {
 				session->GuiFrameEvents();
 				session->UpdateScreen( false );
 // jmarshall
@@ -2386,7 +2389,7 @@ void idCommonLocal::GUIFrame( bool execCmd, bool network ) {
 	eventLoop->RunEventLoop( execCmd );	// and execute any commands
 	com_frameTime = com_ticNumber * USERCMD_MSEC;
 	if ( network ) {
-		idAsyncNetwork::RunFrame();
+		RunNetworkThink();
 	}
 	session->Frame();
 	session->UpdateScreen( false );	
@@ -2432,7 +2435,6 @@ void idCommonLocal::LoadGameDLL( void ) {
 	gameImport.cmdSystem				= ::cmdSystem;
 	gameImport.cvarSystem				= ::cvarSystem;
 	gameImport.fileSystem				= ::fileSystem;
-	gameImport.networkSystem			= ::networkSystem;
 	gameImport.renderSystem				= ::renderSystem;
 	gameImport.soundSystem				= ::soundSystem;
 	gameImport.renderModelManager		= ::renderModelManager;
@@ -2633,7 +2635,7 @@ void idCommonLocal::Init( int argc, const char **argv, const char *cmdline ) {
 		// override cvars from command line
 		StartupVariable( NULL, false );
 
-		if ( !idAsyncNetwork::serverDedicated.GetInteger() && Sys_AlreadyRunning() ) {
+		if ( !common->IsDedicatedServer() && Sys_AlreadyRunning() ) {
 			Sys_Quit();
 		}
 
@@ -2691,9 +2693,6 @@ idCommonLocal::Shutdown
 void idCommonLocal::Shutdown( void ) {
 
 	com_shuttingDown = true;
-
-	idAsyncNetwork::server.Kill();
-	idAsyncNetwork::client.Shutdown();
 
 	// game specific shut down
 	ShutdownGame( false );
@@ -2815,15 +2814,13 @@ void idCommonLocal::InitGame( void ) {
 	// start the sound system, but don't do any hardware operations yet
 	soundSystem->Init();
 
-	// init async network
-	idAsyncNetwork::Init();
+	// init network system
+	InitNetwork();
 
 #ifdef	ID_DEDICATED
-	idAsyncNetwork::server.InitPort();
 	cvarSystem->SetCVarBool( "s_noSound", true );
 #else
-	if ( idAsyncNetwork::serverDedicated.GetInteger() == 1 ) {
-		idAsyncNetwork::server.InitPort();
+	if ( common->IsDedicatedServer() ) {
 		cvarSystem->SetCVarBool( "s_noSound", true );
 	} else {
 		// init OpenGL, which will open a window and connect sound and input hardware
@@ -2874,7 +2871,7 @@ void idCommonLocal::ShutdownGame( bool reloading ) {
 	// shutdown the script debugger
 	// DebuggerServerShutdown();
 
-	idAsyncNetwork::client.Shutdown();
+	DisconnectFromServer();
 
 	// shut down the session
 	session->Shutdown();
@@ -2882,8 +2879,8 @@ void idCommonLocal::ShutdownGame( bool reloading ) {
 	// shut down the user interfaces
 	uiManager->Shutdown();
 
-	// shut down async networking
-	idAsyncNetwork::Shutdown();
+	// shut down networking
+	ShutdownNetwork();
 
 	// shut down the user command input code
 	usercmdGen->Shutdown();

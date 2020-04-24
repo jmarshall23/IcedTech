@@ -157,7 +157,7 @@ typedef struct entityNetEvent_s {
 } entityNetEvent_t;
 
 enum {
-	GAME_RELIABLE_MESSAGE_INIT_DECL_REMAP,
+	GAME_RELIABLE_MESSAGE_INIT_DECL_REMAP = 0,
 	GAME_RELIABLE_MESSAGE_REMAP_DECL,
 	GAME_RELIABLE_MESSAGE_SPAWN_PLAYER,
 	GAME_RELIABLE_MESSAGE_DELETE_ENT,
@@ -363,12 +363,9 @@ public:
 	idStr					mapMusicPath;
 
 	gameType_t				gameType;
-	bool					isMultiplayer;			// set if the game is run in multiplayer mode
-	bool					isServer;				// set if the game is run for a dedicated or listen server
-	bool					isClient;				// set if the game is run for a client
 	bool					isBuildingReflections;
 													// discriminates between the RunFrame path and the ClientPrediction path
-													// NOTE: on a listen server, isClient is false
+													// NOTE: on a listen server, common->IsClient() is false
 	int						localClientNum;			// number of the local client. MP: -1 on a dedicated
 	idLinkList<idEntity>	snapshotEntities;		// entities from the last snapshot
 	int						realClientTime;			// real client time
@@ -389,13 +386,13 @@ public:
 	virtual void			Shutdown( void );
 	virtual void			SetLocalClient( int clientNum );
 	virtual void			ThrottleUserInfo( void );
-	virtual const idDict *	SetUserInfo( int clientNum, const idDict &userInfo, bool isClient, bool canModify );
+	virtual const idDict *	SetUserInfo( int clientNum, const idDict &userInfo, bool canModify );
 	virtual const idDict *	GetUserInfo( int clientNum );
 	virtual void			SetServerInfo( const idDict &serverInfo );
 
 	virtual const idDict &	GetPersistentPlayerInfo( int clientNum );
 	virtual void			SetPersistentPlayerInfo( int clientNum, const idDict &playerInfo );
-	virtual void			InitFromNewMap( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, bool isServer, bool isClient, int randSeed, bool buildReflections);
+	virtual void			InitFromNewMap( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, int randSeed, bool buildReflections);
 	virtual bool			InitFromSaveGame( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, idFile *saveGameFile );
 	virtual void			SaveGame( idFile *saveGameFile );
 	virtual void			MapShutdown( void );
@@ -423,6 +420,11 @@ public:
 
 	virtual void			GetClientStats( int clientNum, char *data, const int len );
 	virtual void			SwitchTeam( int clientNum, int team );
+
+// jmarshall 
+	virtual void			ServerProcessPacket(int clientNum, const idBitMsg& msg);
+	virtual void			ClientProcessPacket(int clientNum, const idBitMsg& msg);
+// jmarshall end
 
 	virtual bool			DownloadRequest( const char *IP, const char *guid, const char *paks, char urls[ MAX_STRING_CHARS ] );
 
@@ -712,6 +714,8 @@ private:
 	int						clientSpawnCount;
 
 	idParallelJobList		*clientPhysicsJob;
+private:
+	void					ClientNetSendUserCmd(void);
 private:
 	const idDeclEntityDef* debrisEntityDef[DEBRIS_MODEL_COUNT];
 	
