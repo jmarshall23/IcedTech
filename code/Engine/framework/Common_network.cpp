@@ -354,6 +354,15 @@ void idCommonLocal::RunNetworkThink(int numGameFrames) {
 		return;
 	}
 
+	// if the console is down, we don't need to hold
+	// the mouse cursor
+	if (console->Active() || common->IsEditorRunning()) {
+		Sys_GrabMouseCursor(false);
+	}
+	else {
+		Sys_GrabMouseCursor(true);
+	}
+
 	if (IsServer()) {
 		ENetEvent ev;
 		enet_host_service(serverState->server, &ev, 0);
