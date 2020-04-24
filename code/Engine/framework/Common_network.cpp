@@ -346,10 +346,10 @@ int idCommonLocal::ServerGetClientPing(int clientNum) {
 
 /*
 ==================
-idCommonLocal::RunNetworkThink
+idCommonLocal::NetworkFrame
 ==================
 */
-void idCommonLocal::RunNetworkThink(int numGameFrames) {
+void idCommonLocal::NetworkFrame(int numGameFrames) {
 	if(!IsMultiplayer()) {
 		return;
 	}

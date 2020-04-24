@@ -2462,7 +2462,7 @@ void idCommonLocal::Frame( void ) {
 			Sys_Sleep(0);
 		}
 
-		RunNetworkThink(numGameFrames);
+		NetworkFrame(numGameFrames);
 
 		if ( IsMultiplayer() ) {
 			if ( !IsDedicatedServer() ) {
@@ -2502,7 +2502,7 @@ void idCommonLocal::GUIFrame( bool execCmd, bool network ) {
 	eventLoop->RunEventLoop( execCmd );	// and execute any commands
 	com_frameTime = com_ticNumber * USERCMD_MSEC;
 	if ( network ) {
-		RunNetworkThink(1);
+		NetworkFrame(1);
 	}
 	session->Frame();
 	session->UpdateScreen( false );	

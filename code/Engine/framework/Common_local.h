@@ -155,7 +155,7 @@ private:
 
 	static void					SpawnServer_f(const idCmdArgs& args);
 	void						SpawnServer(void);
-	void						RunNetworkThink(int numGameFrames);
+	void						NetworkFrame(int numGameFrames);
 
 	void						NewClient(int clientNum, void* peer);
 
