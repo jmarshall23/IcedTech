@@ -18,6 +18,46 @@ enum rvmNetworkType_t {
 
 struct rvmNetworkServerState_t;
 struct rvmNetworkClient_t;
+//
+// rvmNetworkPacketQueue_t
+//
+class rvmNetworkPacketQueue_t{
+public:
+	rvmNetworkPacketQueue_t(const idBitMsg& msg);
+	~rvmNetworkPacketQueue_t();
+
+	int clientNum;
+	idBitMsg _msg;	
+
+	idListNode<rvmNetworkPacketQueue_t> listNode;
+private:
+	byte* packetData;
+	int packetDataLen;
+};
+
+/*
+==================
+rvmNetworkPacketQueue_t::rvmNetworkPacketQueue_t
+==================
+*/
+ID_INLINE rvmNetworkPacketQueue_t::rvmNetworkPacketQueue_t(const idBitMsg &msg) {
+	clientNum = -1;
+	packetData = new byte[msg.GetSize()];
+	packetDataLen = msg.GetSize();
+
+	memcpy(packetData, msg.GetData(), packetDataLen);
+
+	_msg.Init(packetData, packetDataLen);
+	_msg.SetSize(packetDataLen);
+}
+
+ID_INLINE rvmNetworkPacketQueue_t::~rvmNetworkPacketQueue_t() {
+	clientNum = -1;
+	if(packetData != NULL) {
+		delete packetData;
+	}
+}
+
 
 class idCommonLocal : public idCommon {
 public:
@@ -88,6 +128,9 @@ public:
 	virtual int					ServerGetClientTimeSinceLastPacket(int clientNum);
 	virtual int					ServerGetClientPing(int clientNum);
 	virtual int					GetLocalClientNum(void);
+
+	virtual void				SetUserInfoKey(int clientNum, const char* key, const char* value);
+	virtual void				BindUserInfo(int clientNum);
 
 	void						InitGame(void);
 	void						ShutdownGame(bool reloading);
@@ -163,6 +206,9 @@ private:
 	rvmNetworkServerState_t*	serverState;
 
 	idList<rvmNetworkClient_t*> networkClients;
+
+	idLinkedList<rvmNetworkPacketQueue_t, &rvmNetworkPacketQueue_t::listNode> serverPacketQueue;
+	idLinkedList<rvmNetworkPacketQueue_t, &rvmNetworkPacketQueue_t::listNode> clientPacketQueue;
 
 	int							localClientNum;
 

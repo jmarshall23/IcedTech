@@ -46,3 +46,4 @@ ID_INLINE rvmNetworkClient_t::rvmNetworkClient_t() {
 	peer = NULL;
 	addrType = NA_BAD;
 }
+

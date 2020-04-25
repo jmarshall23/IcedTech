@@ -296,6 +296,17 @@ public:
 	virtual float				Get_com_engineHz_latched(void) = 0;
 	virtual int64_t				Get_com_engineHz_numerator(void ) = 0;
 	virtual int64_t				Get_com_engineHz_denominator(void) = 0;
+
+	virtual void				SetUserInfoKey(int clientNum, const char* key, const char* value) = 0;
+	virtual void				BindUserInfo(int clientNum) = 0;
+};
+
+//
+// rvmNetworkPacketType
+//
+enum rvmNetworkPacketType {
+	NETWORK_PACKET_READ = 0,
+	NETWORK_PACKET_WRITE
 };
 
 //
@@ -303,7 +314,7 @@ public:
 //
 class rvmNetworkPacket {
 public:
-	rvmNetworkPacket(bool isRead, int maxMessageSize = 256);
+	rvmNetworkPacket(rvmNetworkPacketType packetType, int maxMessageSize = 256);
 	~rvmNetworkPacket();
 
 	idBitMsg	msg;
@@ -316,10 +327,10 @@ private:
 rvmNetworkPacket::rvmNetworkPacket
 ==================
 */
-ID_INLINE rvmNetworkPacket::rvmNetworkPacket(bool isRead, int maxMessageSize) {
+ID_INLINE rvmNetworkPacket::rvmNetworkPacket(rvmNetworkPacketType packetType, int maxMessageSize) {
 	net_buffer = new byte[maxMessageSize];
 
-	if(isRead) {
+	if(packetType == NETWORK_PACKET_READ) {
 		msg.Init((const byte *)net_buffer, maxMessageSize);
 	}
 	else {

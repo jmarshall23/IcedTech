@@ -152,7 +152,7 @@ public:
 	virtual bool				GetRandomBotName(int clientNum, idStr& botName) = 0;
 
 	// Spawns the player entity to be used by the client.
-	virtual void				ServerClientBegin( int clientNum, bool isBot, const char *botName) = 0;
+	virtual void				ServerBotBegin(int clientNum, const char* botName) = 0;
 
 	// Disconnects a client and removes the player entity from the game.
 	virtual void				ServerClientDisconnect( int clientNum ) = 0;
@@ -208,6 +208,12 @@ public:
 
 	// Processes a incoming packet on the client.
 	virtual void				ClientProcessPacket(int clientNum, const idBitMsg& msg) = 0;
+
+	// New client joined the game.
+	virtual void				ServerNewClient(int clientNum) = 0;
+
+	// Called when a map is finished loading.
+	virtual void				MapLoadFinished(void) = 0;
 // jmarshall end
 
 	virtual void				GetMapLoadingGUI( char gui[ MAX_STRING_CHARS ] ) = 0;

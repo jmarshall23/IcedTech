@@ -37,6 +37,16 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
+enum rvmNetworkOpCodes {
+	NET_OPCODE_GETUSERINFO			= 0x0001,
+	NET_OPCODE_SENDUSERINFO			= 0x0002,
+	NET_OPCODE_MAPCHANGE			= 0x0003,
+	NET_OPCODE_CLIENTLOADED			= 0x0004,
+	NET_OPCODE_INIT_DECL_REMAP		= 0x0005,
+	NET_OPCODE_SPAWNPLAYER			= 0x0006,
+	NET_OPCODE_CHATMESSAGE			= 0x0007,
+};
+
 #define LAGO_IMG_WIDTH 64
 #define LAGO_IMG_HEIGHT 64
 #define LAGO_WIDTH	64
@@ -396,6 +406,7 @@ public:
 	virtual bool			InitFromSaveGame( const char *mapName, idRenderWorld *renderWorld, idSoundWorld *soundWorld, idFile *saveGameFile );
 	virtual void			SaveGame( idFile *saveGameFile );
 	virtual void			MapShutdown( void );
+	virtual void			ServerBotBegin(int clientNum, const char* botName);
 	virtual void			CacheDictionaryMedia( const idDict *dict );
 	virtual void			SpawnPlayer( int clientNum, bool isBot, const char * botName);
 	virtual gameReturn_t	RunFrame( const usercmd_t *clientCmds );
@@ -406,8 +417,7 @@ public:
 	virtual const char *	HandleGuiCommands( const char *menuCommand );
 	virtual void			HandleMainMenuCommands( const char *menuCommand, idUserInterface *gui );
 	virtual allowReply_t	ServerAllowClient( int numClients, const char *IP, const char *guid, const char *password, char reason[MAX_STRING_CHARS] );
-	virtual void			ServerClientConnect( int clientNum, const char *guid );
-	virtual void			ServerClientBegin( int clientNum, bool isBot, const char* botName);
+	virtual void			ServerClientConnect( int clientNum, const char *guid );	
 	virtual void			ServerClientDisconnect( int clientNum );
 	virtual void			ServerWriteInitialReliableMessages( int clientNum );
 	virtual void			ServerWriteSnapshot( int clientNum, int sequence, idBitMsg &msg, byte *clientInPVS, int numPVSClients );
@@ -420,6 +430,8 @@ public:
 
 	virtual void			GetClientStats( int clientNum, char *data, const int len );
 	virtual void			SwitchTeam( int clientNum, int team );
+
+	virtual void			ServerNewClient(int clientNum);
 
 // jmarshall 
 	virtual void			ServerProcessPacket(int clientNum, const idBitMsg& msg);
@@ -434,6 +446,8 @@ public:
 	virtual bool			GetRandomBotName(int clientNum, idStr& botName);
 	virtual void			ResetGameRenderTargets(void);
 // jmarshall end
+
+	virtual void			MapLoadFinished(void);
 
 	// ---------------------- Public idGameLocal Interface -------------------
 
@@ -461,6 +475,8 @@ public:
 	void					RegisterBot(rvmBot* bot) { registeredBots.AddUnique(bot); }
 	void					UnRegisterBot(rvmBot* bot) { registeredBots.Remove(bot); }
 // jmarshall end
+
+	void					ServerClientBegin(int clientNum, bool isBot, const char* botName);
 
 	void					AlertBots(idPlayer *player, idVec3 alert_position);
 

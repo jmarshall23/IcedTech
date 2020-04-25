@@ -4554,3 +4554,7 @@ void idGameLocal::AlertBots(idPlayer* player, idVec3 alert_position) {
 }
 
 // jmarshall end
+
+void idGameLocal::ServerBotBegin(int clientNum, const char* botName) {
+	ServerClientBegin(clientNum, true, botName);
+}

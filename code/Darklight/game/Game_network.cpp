@@ -296,38 +296,6 @@ void idGameLocal::ServerClientConnect( int clientNum, const char *guid ) {
 	Printf( "client %d connected.\n", clientNum );
 }
 
-/*
-================
-idGameLocal::ServerClientBegin
-================
-*/
-void idGameLocal::ServerClientBegin( int clientNum, bool isBot, const char* botName) {
-	idBitMsg	outMsg;
-	byte		msgBuf[MAX_GAME_MESSAGE_SIZE];
-
-	// initialize the decl remap
-	InitClientDeclRemap( clientNum );
-
-	// send message to initialize decl remap at the client (this is always the very first reliable game message)
-	outMsg.Init( msgBuf, sizeof( msgBuf ) );
-	outMsg.BeginWriting();
-	outMsg.WriteByte( GAME_RELIABLE_MESSAGE_INIT_DECL_REMAP );
-	common->ServerSendReliableMessage( clientNum, outMsg );
-
-	// spawn the player
-	SpawnPlayer( clientNum, isBot, botName );
-	if ( clientNum == localClientNum ) {
-		mpGame.EnterGame( clientNum );
-	}
-
-	// send message to spawn the player at the clients
-	outMsg.Init( msgBuf, sizeof( msgBuf ) );
-	outMsg.BeginWriting();
-	outMsg.WriteByte( GAME_RELIABLE_MESSAGE_SPAWN_PLAYER );
-	outMsg.WriteByte( clientNum );
-	outMsg.WriteLong( spawnIds[ clientNum ] );
-	common->ServerSendReliableMessage( -1, outMsg );
-}
 
 /*
 ================
@@ -751,27 +719,6 @@ void idGameLocal::ServerProcessEntityNetworkEventQueue( void ) {
 		entityNetEvent_t* freedEvent = eventQueue.Dequeue();
 		assert( freedEvent == event );
 		eventQueue.Free( event );
-	}
-}
-
-/*
-================
-idGameLocal::ServerSendChatMessage
-================
-*/
-void idGameLocal::ServerSendChatMessage( int to, const char *name, const char *text ) {
-	idBitMsg outMsg;
-	byte msgBuf[ MAX_GAME_MESSAGE_SIZE ];
-
-	outMsg.Init( msgBuf, sizeof( msgBuf ) );
-	outMsg.BeginWriting();
-	outMsg.WriteByte( GAME_RELIABLE_MESSAGE_CHAT );
-	outMsg.WriteString( name );
-	outMsg.WriteString( text, -1, false );
-	common->ServerSendReliableMessage( to, outMsg );
-
-	if ( to == -1 || to == localClientNum ) {
-		mpGame.AddChatLine( "%s^0: %s\n", name, text );
 	}
 }
 
@@ -1298,10 +1245,6 @@ void idGameLocal::ClientProcessReliableMessage( int clientNum, const idBitMsg &m
 
 	id = msg.ReadByte();
 	switch( id ) {
-		case GAME_RELIABLE_MESSAGE_INIT_DECL_REMAP: {
-			InitClientDeclRemap( clientNum );
-			break;
-		}
 		case GAME_RELIABLE_MESSAGE_REMAP_DECL: {
 			int type, index;
 			char name[MAX_STRING_CHARS];

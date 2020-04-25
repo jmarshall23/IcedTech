@@ -90,13 +90,31 @@ void idCommonLocal::SpawnServer(void) {
 		localClientNum = 0;
 		game->SetLocalClient(localClientNum);
 
+		// Allocate a new client and begin the connection process.
 		NewClient(0, NULL);		
-		game->SetUserInfo(localClientNum, sessLocal.mapSpawnData.userInfo[localClientNum], false);
-		game->ServerClientBegin(localClientNum, false, "");		
+		game->ServerNewClient(localClientNum);
 	}
 	else {
 		localClientNum = -1;
 	}
+}
+
+/*
+====================
+idCommonLocal::BindUserInfo
+====================
+*/
+void idCommonLocal::BindUserInfo(int clientNum) {
+	game->SetUserInfo(clientNum, sessLocal.mapSpawnData.userInfo[clientNum], false);
+}
+
+/*
+====================
+idCommonLocal::InitNetwork
+====================
+*/
+void idCommonLocal::SetUserInfoKey(int clientNum, const char* key, const char* value) {
+	sessLocal.mapSpawnData.userInfo[clientNum].Set(key, value);
 }
 
 /*
@@ -167,7 +185,7 @@ int idCommonLocal::AllocateClientSlotForBot(int maxPlayersOnServer) {
 			sessLocal.mapSpawnData.userInfo[i].Set("ui_name", botName);
 
 			game->SetUserInfo(i, sessLocal.mapSpawnData.userInfo[i], false);
-			game->ServerClientBegin(i, true, botName);
+			game->ServerBotBegin(i, botName);
 			networkClients[i]->addrType = NA_BOT;			
 			return i;
 		}
@@ -219,9 +237,9 @@ void idCommonLocal::ServerSendReliableMessage(int clientNum, const idBitMsg& msg
 			}
 
 			if (networkClients[i]->addrType == NA_LOOPBACK) {
-				idBitMsg clientMsg;
-				clientMsg.Init(msg.GetData(), msg.GetSize());
-				game->ClientProcessPacket(i, clientMsg);
+				rvmNetworkPacketQueue_t* newPacket = new rvmNetworkPacketQueue_t(msg);
+				newPacket->clientNum = i;
+				clientPacketQueue.AddToEnd(newPacket);
 				continue;
 			}
 
@@ -237,7 +255,14 @@ void idCommonLocal::ServerSendReliableMessage(int clientNum, const idBitMsg& msg
 		return;
 	}
 
-	if (networkClients[clientNum]->addrType == NA_BOT || networkClients[clientNum]->addrType == NA_LOOPBACK) {
+	if (networkClients[clientNum]->addrType == NA_LOOPBACK) {
+		rvmNetworkPacketQueue_t* newPacket = new rvmNetworkPacketQueue_t(msg);
+		newPacket->clientNum = clientNum;
+		clientPacketQueue.AddToEnd(newPacket);
+		return;
+	}
+
+	if (networkClients[clientNum]->addrType == NA_BOT) {
 		return;
 	}
 
@@ -270,9 +295,9 @@ idCommonLocal::ClientSendReliableMessage
 */
 void idCommonLocal::ClientSendReliableMessage(const idBitMsg& msg) {
 	if(!IsDedicatedServer() && IsServer() && localClientNum != -1) {
-		idBitMsg serverMsg;
-		serverMsg.Init(msg.GetData(), msg.GetSize());
-		game->ServerProcessPacket(localClientNum, serverMsg);
+		rvmNetworkPacketQueue_t* newPacket = new rvmNetworkPacketQueue_t(msg);
+		newPacket->clientNum = -1;
+		serverPacketQueue.AddToEnd(newPacket);
 		return;
 	}
 }
@@ -366,7 +391,52 @@ void idCommonLocal::NetworkFrame(int numGameFrames) {
 	if (IsServer()) {
 		ENetEvent ev;
 		enet_host_service(serverState->server, &ev, 0);
+
+		if (ev.type == ENET_EVENT_TYPE_CONNECT) {
+			common->Printf("Incoming client detected...\n");
+
+			for (int i = 0; i < net_maxPlayers.GetInteger(); i++) {
+				if (networkClients[i] != NULL)
+					continue;
+
+				networkClients[i] = new rvmNetworkClient_t();
+				networkClients[i]->peer = ev.peer;
+				networkClients[i]->address = ev.peer->address;
+				networkClients[i]->addrType = NA_IP;
+				networkClients[i]->client = NULL;
+
+				NewClient(i, networkClients[i]->peer);
+				game->ServerNewClient(i);
+			}
+		}
 	}
+
+	// Run the server commands.
+	rvmNetworkPacketQueue_t* serverPacket = serverPacketQueue.GetFirst();
+	while (true) {
+		if (serverPacket == NULL)
+			break;
+
+		game->ServerProcessPacket(serverPacket->clientNum, serverPacket->_msg);
+
+		rvmNetworkPacketQueue_t* oldPacket = serverPacket;
+		serverPacket = serverPacket->listNode.GetNext();
+		serverPacketQueue.Remove(oldPacket);
+	}
+
+	// Run the client commands.
+	rvmNetworkPacketQueue_t* clientPacket = clientPacketQueue.GetFirst();
+	while (true) {
+		if (clientPacket == NULL)
+			break;
+
+		game->ClientProcessPacket(localClientNum, clientPacket->_msg);
+
+		rvmNetworkPacketQueue_t* oldPacket = clientPacket;
+		clientPacket = clientPacket->listNode.GetNext();
+		clientPacketQueue.Remove(oldPacket);
+	}
+		
 
 	if (!IsDedicatedServer() && IsServer() && localClientNum != -1) {
 		usercmd_t cmd = usercmdGen->GetDirectUsercmd();
