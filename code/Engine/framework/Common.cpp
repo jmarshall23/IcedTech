@@ -2742,9 +2742,6 @@ void idCommonLocal::Init( int argc, const char **argv, const char *cmdline ) {
 		// get architecture info
 		Sys_Init();
 
-		// initialize networking
-		Sys_InitNetworking();
-
 		// override cvars from command line
 		StartupVariable( NULL, false );
 

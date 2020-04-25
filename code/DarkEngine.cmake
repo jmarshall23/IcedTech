@@ -232,7 +232,6 @@ set(src_engine
 	./engine/sys/win32/win_input.cpp
 	./engine/sys/win32/win_local.h
 	./engine/sys/win32/win_main.cpp
-	./engine/sys/win32/win_net.cpp
 	./engine/sys/win32/win_qgl.cpp
 	./engine/sys/win32/win_shared.cpp
 	./engine/sys/win32/win_snd.cpp
