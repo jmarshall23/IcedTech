@@ -299,6 +299,8 @@ public:
 
 	virtual void				SetUserInfoKey(int clientNum, const char* key, const char* value) = 0;
 	virtual void				BindUserInfo(int clientNum) = 0;
+
+	virtual void				ExecuteClientMapChange(const char* mapName, const char* gameType) = 0;
 };
 
 //

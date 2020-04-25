@@ -21,9 +21,11 @@ set(src_engine
 	./engine/framework/CmdSystem.cpp
 	./engine/framework/CmdSystem.h
 	./engine/framework/Common.cpp
+	./engine/framework/Common_client.cpp
 	./engine/framework/Common_loadscreen.cpp
 	./engine/framework/Common_network.cpp
 	./engine/framework/Common_network.h
+	./engine/framework/Common_server.cpp
 	./engine/framework/Common.h
 	./engine/framework/Compressor.cpp
 	./engine/framework/Compressor.h

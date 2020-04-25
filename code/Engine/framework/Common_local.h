@@ -115,6 +115,8 @@ public:
 	virtual float				Get_com_engineHz_latched(void);
 	virtual int64_t				Get_com_engineHz_numerator(void);
 	virtual int64_t				Get_com_engineHz_denominator(void);
+	virtual void				ExecuteClientMapChange(const char* mapName, const char* gameType);
+
 #ifdef ID_DEDICATED
 	virtual bool				IsDedicatedServer(void) { return true; }
 #else

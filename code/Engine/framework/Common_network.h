@@ -47,3 +47,4 @@ ID_INLINE rvmNetworkClient_t::rvmNetworkClient_t() {
 	addrType = NA_BAD;
 }
 
+extern idCVar net_maxPlayers;

@@ -27,7 +27,13 @@ void idGameLocal::ClientProcessPacket(int clientNum, const idBitMsg& msg) {
 			{
 				// We only need to change maps if we are a client, if we are a server, we already in the map.
 				if(common->IsClient()) {
-				
+					char mapName[256];
+					char gameType[256];
+
+					msg.ReadString(mapName, sizeof(mapName));
+					msg.ReadString(gameType, sizeof(gameType));
+
+					common->ExecuteClientMapChange(mapName, gameType);
 				}
 				else {
 					MapLoadFinished();
