@@ -88,8 +88,8 @@ public:
 	};
 
 	virtual void	ClientPredictionThink( void );
-	virtual void	WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void	ReadFromSnapshot( const idBitMsgDelta &msg );
+	virtual void	WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void	ReadFromSnapshot( const idBitMsg &msg );
 	virtual bool	ClientReceiveEvent( int event, int time, const idBitMsg &msg );
 
 private:

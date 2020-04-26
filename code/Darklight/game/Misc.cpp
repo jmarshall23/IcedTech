@@ -1341,7 +1341,7 @@ void idStaticEntity::Event_Activate( idEntity *activator ) {
 idStaticEntity::WriteToSnapshot
 ================
 */
-void idStaticEntity::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idStaticEntity::WriteToSnapshot( idBitMsg &msg ) const {
 	GetPhysics()->WriteToSnapshot( msg );
 	WriteBindToSnapshot( msg );
 	WriteColorToSnapshot( msg );
@@ -1354,7 +1354,7 @@ void idStaticEntity::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idStaticEntity::ReadFromSnapshot
 ================
 */
-void idStaticEntity::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idStaticEntity::ReadFromSnapshot( const idBitMsg &msg ) {
 	bool hidden;
 
 	GetPhysics()->ReadFromSnapshot( msg );
@@ -1369,7 +1369,7 @@ void idStaticEntity::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 			Show();
 		}
 	}
-	if ( msg.HasChanged() ) {
+	{
 		UpdateVisuals();
 	}
 }
@@ -1454,7 +1454,7 @@ void idFuncEmitter::Event_Activate( idEntity *activator ) {
 idFuncEmitter::WriteToSnapshot
 ================
 */
-void idFuncEmitter::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idFuncEmitter::WriteToSnapshot( idBitMsg &msg ) const {
 	msg.WriteBits( hidden ? 1 : 0, 1 );
 	msg.WriteFloat( renderEntity->GetShaderParms( SHADERPARM_PARTICLE_STOPTIME ));
 	msg.WriteFloat( renderEntity->GetShaderParms( SHADERPARM_TIMEOFFSET  ));
@@ -1465,11 +1465,11 @@ void idFuncEmitter::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idFuncEmitter::ReadFromSnapshot
 ================
 */
-void idFuncEmitter::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idFuncEmitter::ReadFromSnapshot( const idBitMsg &msg ) {
 	hidden = msg.ReadBits( 1 ) != 0;
 	renderEntity->SetShaderParms(SHADERPARM_PARTICLE_STOPTIME, msg.ReadFloat());
 	renderEntity->SetShaderParms(SHADERPARM_TIMEOFFSET, msg.ReadFloat());
-	if ( msg.HasChanged() ) {
+	{
 		UpdateVisuals();
 	}
 }

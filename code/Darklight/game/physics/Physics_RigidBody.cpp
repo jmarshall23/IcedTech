@@ -1459,7 +1459,7 @@ const int	RB_FORCE_MANTISSA_BITS		= RB_FORCE_TOTAL_BITS - 1 - RB_FORCE_EXPONENT_
 idPhysics_RigidBody::WriteToSnapshot
 ================
 */
-void idPhysics_RigidBody::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idPhysics_RigidBody::WriteToSnapshot( idBitMsg &msg ) const {
 	idCQuat quat, localQuat;
 
 	quat = current.i.orientation.ToCQuat();
@@ -1500,7 +1500,7 @@ void idPhysics_RigidBody::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPhysics_RigidBody::ReadFromSnapshot
 ================
 */
-void idPhysics_RigidBody::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idPhysics_RigidBody::ReadFromSnapshot( const idBitMsg &msg ) {
 	idCQuat quat, localQuat;
 
 	current.atRest = msg.ReadLong();

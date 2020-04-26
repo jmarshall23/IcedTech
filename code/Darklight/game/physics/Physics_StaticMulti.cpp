@@ -995,7 +995,7 @@ int idPhysics_StaticMulti::GetAngularEndTime( void ) const {
 idPhysics_StaticMulti::WriteToSnapshot
 ================
 */
-void idPhysics_StaticMulti::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idPhysics_StaticMulti::WriteToSnapshot( idBitMsg &msg ) const {
 	int i;
 	idCQuat quat, localQuat;
 
@@ -1025,7 +1025,7 @@ void idPhysics_StaticMulti::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPhysics_StaticMulti::ReadFromSnapshot
 ================
 */
-void idPhysics_StaticMulti::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idPhysics_StaticMulti::ReadFromSnapshot( const idBitMsg &msg ) {
 	int i, num;
 	idCQuat quat, localQuat;
 

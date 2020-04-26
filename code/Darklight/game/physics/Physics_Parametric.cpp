@@ -1032,7 +1032,7 @@ int idPhysics_Parametric::GetAngularEndTime( void ) const {
 idPhysics_Parametric::WriteToSnapshot
 ================
 */
-void idPhysics_Parametric::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idPhysics_Parametric::WriteToSnapshot( idBitMsg &msg ) const {
 	msg.WriteLong( current.time );
 	msg.WriteLong( current.atRest );
 	msg.WriteFloat( current.origin[0] );
@@ -1102,7 +1102,7 @@ void idPhysics_Parametric::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPhysics_Parametric::ReadFromSnapshot
 ================
 */
-void idPhysics_Parametric::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idPhysics_Parametric::ReadFromSnapshot( const idBitMsg &msg ) {
 	extrapolation_t linearType, angularType;
 	float startTime, duration, accelTime, decelTime;
 	idVec3 linearStartValue, linearSpeed, linearBaseSpeed, startPos, endPos;

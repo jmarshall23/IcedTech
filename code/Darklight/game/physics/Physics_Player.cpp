@@ -2026,7 +2026,7 @@ const int	PLAYER_MOVEMENT_FLAGS_BITS		= 8;
 idPhysics_Player::WriteToSnapshot
 ================
 */
-void idPhysics_Player::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idPhysics_Player::WriteToSnapshot( idBitMsg &msg ) const {
 	msg.WriteFloat( current.origin[0] );
 	msg.WriteFloat( current.origin[1] );
 	msg.WriteFloat( current.origin[2] );
@@ -2050,7 +2050,7 @@ void idPhysics_Player::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPhysics_Player::ReadFromSnapshot
 ================
 */
-void idPhysics_Player::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idPhysics_Player::ReadFromSnapshot( const idBitMsg &msg ) {
 	current.origin[0] = msg.ReadFloat();
 	current.origin[1] = msg.ReadFloat();
 	current.origin[2] = msg.ReadFloat();

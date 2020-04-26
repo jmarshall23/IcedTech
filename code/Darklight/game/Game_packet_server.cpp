@@ -31,14 +31,30 @@ void idGameLocal::ServerProcessPacket(int clientNum, const idBitMsg& msg) {
 			}
 			break;
 		case NET_OPCODE_CLIENTLOADED:
-			{
-				ServerClientBegin(localClientNum, false, "");
+			{				
+				ServerClientBegin(clientNum, false, "");
+				
 			}
 			break;
 		default:
 			common->Warning("ServerProcessPacket: Unknown OpCode %d\n", opCode);
 			break;
 	}
+}
+
+/*
+====================
+idGameLocal::ServerToggleSpectate
+====================
+*/
+void idGameLocal::ServerToggleSpectate(int clientNum, bool spectate) {
+	entities[clientNum]->Cast<idPlayer>()->Spectate(spectate);
+
+	rvmNetworkPacket spectatePacket(clientNum);
+	spectatePacket.msg.WriteUShort(NET_OPCODE_SPECTATE);
+	spectatePacket.msg.WriteByte(clientNum);
+	spectatePacket.msg.WriteByte(spectate);
+	common->ServerSendReliableMessage(clientNum, spectatePacket.msg);
 }
 
 /*
@@ -79,6 +95,9 @@ void idGameLocal::ServerClientBegin(int clientNum, bool isBot, const char* botNa
 	spawnPlayerPacket.msg.WriteByte(clientNum);
 	spawnPlayerPacket.msg.WriteLong(spawnIds[clientNum]);
 	common->ServerSendReliableMessage(-1, spawnPlayerPacket.msg);
+
+	// Disable spectate on the client.
+	ServerToggleSpectate(clientNum, false);
 }
 
 /*
@@ -110,7 +129,9 @@ void idGameLocal::WriteNetworkSnapshots(void) {
 
 		rvmNetworkPacket snapshotPacket(i, 1024);
 		snapshotPacket.msg.WriteUShort(NET_OPCODE_SNAPSHOT);
-		ServerWriteSnapshot(i, 0, snapshotPacket.msg, NULL, 0);
+		ServerWriteSnapshot(i, 0, snapshotPacket.msg, NULL, snapShotSequence);		
 		common->ServerSendReliableMessage(i, snapshotPacket.msg);
 	}
+
+	snapShotSequence++;
 }

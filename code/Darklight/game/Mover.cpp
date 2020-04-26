@@ -1491,7 +1491,7 @@ void idMover::Event_IsRotating( void ) {
 idMover::WriteToSnapshot
 ================
 */
-void idMover::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idMover::WriteToSnapshot( idBitMsg &msg ) const {
 	physicsObj.WriteToSnapshot( msg );
 	msg.WriteBits( move.stage, 3 );
 	msg.WriteBits( rot.stage, 3 );
@@ -1504,7 +1504,7 @@ void idMover::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idMover::ReadFromSnapshot
 ================
 */
-void idMover::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idMover::ReadFromSnapshot( const idBitMsg &msg ) {
 	moveStage_t oldMoveStage = move.stage;
 	moveStage_t oldRotStage = rot.stage;
 
@@ -1514,7 +1514,7 @@ void idMover::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 	ReadBindFromSnapshot( msg );
 	ReadGUIFromSnapshot( msg );
 
-	if ( msg.HasChanged() ) {
+	{
 		if ( move.stage != oldMoveStage ) {
 			UpdateMoveSound( oldMoveStage );
 		}
@@ -3044,7 +3044,7 @@ idEntity *idMover_Binary::GetActivator( void ) const {
 idMover_Binary::WriteToSnapshot
 ================
 */
-void idMover_Binary::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idMover_Binary::WriteToSnapshot( idBitMsg &msg ) const {
 	physicsObj.WriteToSnapshot( msg );
 	msg.WriteBits( moverState, 3 );
 	WriteBindToSnapshot( msg );
@@ -3055,14 +3055,14 @@ void idMover_Binary::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idMover_Binary::ReadFromSnapshot
 ================
 */
-void idMover_Binary::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idMover_Binary::ReadFromSnapshot( const idBitMsg &msg ) {
 	moverState_t oldMoverState = moverState;
 
 	physicsObj.ReadFromSnapshot( msg );
 	moverState = (moverState_t) msg.ReadBits( 3 );
 	ReadBindFromSnapshot( msg );
 
-	if ( msg.HasChanged() ) {
+	{
 		if ( moverState != oldMoverState ) {
 			UpdateMoverSound( moverState );
 		}
@@ -4338,7 +4338,7 @@ void idMover_Periodic::Event_PartBlocked( idEntity *blockingEntity ) {
 idMover_Periodic::WriteToSnapshot
 ================
 */
-void idMover_Periodic::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idMover_Periodic::WriteToSnapshot( idBitMsg &msg ) const {
 	physicsObj.WriteToSnapshot( msg );
 	WriteBindToSnapshot( msg );
 }
@@ -4348,11 +4348,11 @@ void idMover_Periodic::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idMover_Periodic::ReadFromSnapshot
 ================
 */
-void idMover_Periodic::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idMover_Periodic::ReadFromSnapshot( const idBitMsg &msg ) {
 	physicsObj.ReadFromSnapshot( msg );
 	ReadBindFromSnapshot( msg );
 
-	if ( msg.HasChanged() ) {
+	{
 		UpdateVisuals();
 	}
 }

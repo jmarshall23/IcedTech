@@ -65,7 +65,15 @@ void idGameLocal::ClientProcessPacket(int clientNum, const idBitMsg& msg) {
 			}
 			break;
 		case NET_OPCODE_SNAPSHOT:
-			ClientReadSnapshot(localClientNum, 0, common->GetGameFrame(), gameLocal.time, 0, 0, msg);
+			ClientReadSnapshot(localClientNum, snapShotSequence, common->GetGameFrame(), gameLocal.time, 0, 0, msg);
+			snapShotSequence++;
+			break;
+		case NET_OPCODE_SPECTATE:
+			{
+				int _clientNum = msg.ReadByte();
+				bool _spectate = msg.ReadByte() != 0;
+				entities[_clientNum]->Cast<idPlayer>()->Spectate(_spectate);
+			}
 			break;
 		default:
 			common->Warning("ClientProcessPacket: Unknown OpCode %d\n", opCode);

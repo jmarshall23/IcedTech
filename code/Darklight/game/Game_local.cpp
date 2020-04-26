@@ -199,6 +199,7 @@ void idGameLocal::Clear( void ) {
 	pvs.Shutdown();
 	sessionCommand.Clear();
 	locationEntities = NULL;
+	snapShotSequence = 0;
 //	smokeParticles = NULL;
 	editEntities = NULL;
 	clientSpawnCount = INITIAL_SPAWN_COUNT;

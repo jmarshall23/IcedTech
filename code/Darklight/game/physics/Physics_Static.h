@@ -143,8 +143,8 @@ public:	// common physics interface
 	int						GetLinearEndTime( void ) const;
 	int						GetAngularEndTime( void ) const;
 
-	void					WriteToSnapshot( idBitMsgDelta &msg ) const;
-	void					ReadFromSnapshot( const idBitMsgDelta &msg );
+	void					WriteToSnapshot( idBitMsg &msg ) const;
+	void					ReadFromSnapshot( const idBitMsg &msg );
 
 protected:
 	idEntity *				self;					// entity using this physics object

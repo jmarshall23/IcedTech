@@ -482,10 +482,10 @@ public:
 	void					HideObjective( void );
 
 	virtual void			ClientPredictionThink( void );
-	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
-	void					WritePlayerStateToSnapshot( idBitMsgDelta &msg ) const;
-	void					ReadPlayerStateFromSnapshot( const idBitMsgDelta &msg );
+	virtual void			WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void			ReadFromSnapshot( const idBitMsg &msg );
+	void					WritePlayerStateToSnapshot( idBitMsg &msg ) const;
+	void					ReadPlayerStateFromSnapshot( const idBitMsg &msg );
 
 	virtual bool			ServerReceiveEvent( int event, int time, const idBitMsg &msg );
 

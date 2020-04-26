@@ -46,6 +46,7 @@ enum rvmNetworkOpCodes {
 	NET_OPCODE_SPAWNPLAYER			= 0x0006,
 	NET_OPCODE_CHATMESSAGE			= 0x0007,
 	NET_OPCODE_SNAPSHOT				= 0x0008,
+	NET_OPCODE_SPECTATE				= 0x0009,
 };
 
 #define LAGO_IMG_WIDTH 64
@@ -380,6 +381,7 @@ public:
 	int						localClientNum;			// number of the local client. MP: -1 on a dedicated
 	idLinkList<idEntity>	snapshotEntities;		// entities from the last snapshot
 	int						realClientTime;			// real client time
+	int						snapShotSequence;
 	bool					isNewFrame;				// true if this is a new game frame, not a rerun due to prediction
 	float					clientSmoothing;		// smoothing of other clients in the view
 	int						entityDefBits;			// bits required to store an entity def number
@@ -478,6 +480,7 @@ public:
 
 	void					ServerClientBegin(int clientNum, bool isBot, const char* botName);
 	void					ClientReadSnapshot(int clientNum, int sequence, const int gameFrame, const int gameTime, const int dupeUsercmds, const int aheadOfServer, const idBitMsg& msg);
+	void					ServerToggleSpectate(int clientNum, bool spectate);
 
 	void					AlertBots(idPlayer *player, idVec3 alert_position);
 
@@ -678,8 +681,8 @@ private:
 	void					ServerSendDeclRemapToClient( int clientNum, declType_t type, int index );
 	void					FreeSnapshotsOlderThanSequence( int clientNum, int sequence );
 	bool					ApplySnapshot( int clientNum, int sequence );
-	void					WriteGameStateToSnapshot( idBitMsgDelta &msg ) const;
-	void					ReadGameStateFromSnapshot( const idBitMsgDelta &msg );
+	void					WriteGameStateToSnapshot( idBitMsg &msg ) const;
+	void					ReadGameStateFromSnapshot( const idBitMsg &msg );
 	void					NetworkEventWarning( const entityNetEvent_t *event, const char *fmt, ... ) id_attribute((format(printf,3,4)));
 	void					ServerProcessEntityNetworkEventQueue( void );
 	void					ClientProcessEntityNetworkEventQueue( void );

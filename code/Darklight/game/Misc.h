@@ -267,8 +267,8 @@ public:
 	void				Fade( const idVec4 &to, float fadeTime );
 	virtual void		Think( void );
 
-	virtual void		WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void		ReadFromSnapshot( const idBitMsgDelta &msg );
+	virtual void		WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void		ReadFromSnapshot( const idBitMsg &msg );
 
 private:
 	void				Event_Activate( idEntity *activator );
@@ -303,8 +303,8 @@ public:
 	void				Spawn( void );
 	void				Event_Activate( idEntity *activator );
 
-	virtual void		WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void		ReadFromSnapshot( const idBitMsgDelta &msg );
+	virtual void		WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void		ReadFromSnapshot( const idBitMsg &msg );
 
 private:
 	bool				hidden;

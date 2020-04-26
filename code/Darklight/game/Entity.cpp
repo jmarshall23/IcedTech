@@ -4751,7 +4751,7 @@ void idEntity::ClientPredictionThink( void ) {
 idEntity::WriteBindToSnapshot
 ================
 */
-void idEntity::WriteBindToSnapshot( idBitMsgDelta &msg ) const {
+void idEntity::WriteBindToSnapshot( idBitMsg &msg ) const {
 	int bindInfo;
 
 	if ( bindMaster ) {
@@ -4775,7 +4775,7 @@ void idEntity::WriteBindToSnapshot( idBitMsgDelta &msg ) const {
 idEntity::ReadBindFromSnapshot
 ================
 */
-void idEntity::ReadBindFromSnapshot( const idBitMsgDelta &msg ) {
+void idEntity::ReadBindFromSnapshot( const idBitMsg &msg ) {
 	int bindInfo, bindEntityNum, bindPos;
 	bool bindOrientated;
 	idEntity *master;
@@ -4812,7 +4812,7 @@ void idEntity::ReadBindFromSnapshot( const idBitMsgDelta &msg ) {
 idEntity::WriteColorToSnapshot
 ================
 */
-void idEntity::WriteColorToSnapshot( idBitMsgDelta &msg ) const {
+void idEntity::WriteColorToSnapshot( idBitMsg &msg ) const {
 	idVec4 color;
 
 	color[0] = renderEntity->GetShaderParms( SHADERPARM_RED );
@@ -4827,7 +4827,7 @@ void idEntity::WriteColorToSnapshot( idBitMsgDelta &msg ) const {
 idEntity::ReadColorFromSnapshot
 ================
 */
-void idEntity::ReadColorFromSnapshot( const idBitMsgDelta &msg ) {
+void idEntity::ReadColorFromSnapshot( const idBitMsg &msg ) {
 	idVec4 color;
 
 	UnpackColor( msg.ReadLong(), color );
@@ -4842,7 +4842,7 @@ void idEntity::ReadColorFromSnapshot( const idBitMsgDelta &msg ) {
 idEntity::WriteGUIToSnapshot
 ================
 */
-void idEntity::WriteGUIToSnapshot( idBitMsgDelta &msg ) const {
+void idEntity::WriteGUIToSnapshot( idBitMsg &msg ) const {
 	// no need to loop over MAX_RENDERENTITY_GUI at this time
 	if ( renderEntity->GetGui(0)) {
 		msg.WriteByte(renderEntity->GetGui(0)->State().GetInt( "networkState" ) );
@@ -4856,7 +4856,7 @@ void idEntity::WriteGUIToSnapshot( idBitMsgDelta &msg ) const {
 idEntity::ReadGUIFromSnapshot
 ================
 */
-void idEntity::ReadGUIFromSnapshot( const idBitMsgDelta &msg ) {
+void idEntity::ReadGUIFromSnapshot( const idBitMsg &msg ) {
 	int state;
 	idUserInterface *gui;
 	state = msg.ReadByte( );
@@ -4873,7 +4873,7 @@ void idEntity::ReadGUIFromSnapshot( const idBitMsgDelta &msg ) {
 idEntity::WriteToSnapshot
 ================
 */
-void idEntity::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idEntity::WriteToSnapshot( idBitMsg &msg ) const {
 }
 
 /*
@@ -4881,7 +4881,7 @@ void idEntity::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idEntity::ReadFromSnapshot
 ================
 */
-void idEntity::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idEntity::ReadFromSnapshot( const idBitMsg &msg ) {
 }
 
 /*

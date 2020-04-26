@@ -445,7 +445,7 @@ const idMaterial *idMoveable::GetRenderModelMaterial( void ) const {
 idMoveable::WriteToSnapshot
 ================
 */
-void idMoveable::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idMoveable::WriteToSnapshot( idBitMsg &msg ) const {
 	physicsObj.WriteToSnapshot( msg );
 }
 
@@ -454,9 +454,9 @@ void idMoveable::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idMoveable::ReadFromSnapshot
 ================
 */
-void idMoveable::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idMoveable::ReadFromSnapshot( const idBitMsg &msg ) {
 	physicsObj.ReadFromSnapshot( msg );
-	if ( msg.HasChanged() ) {
+	 {
 		UpdateVisuals();
 	}
 }

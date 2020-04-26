@@ -825,7 +825,7 @@ void idPhysics_Base::DrawVelocity( int id, float linearScale, float angularScale
 idPhysics_Base::WriteToSnapshot
 ================
 */
-void idPhysics_Base::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idPhysics_Base::WriteToSnapshot( idBitMsg &msg ) const {
 }
 
 /*
@@ -833,5 +833,5 @@ void idPhysics_Base::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPhysics_Base::ReadFromSnapshot
 ================
 */
-void idPhysics_Base::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idPhysics_Base::ReadFromSnapshot( const idBitMsg &msg ) {
 }

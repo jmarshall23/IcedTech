@@ -7970,7 +7970,7 @@ bool idPlayer::GetPhysicsToSoundTransform( idVec3 &origin, idMat3 &axis ) {
 idPlayer::WriteToSnapshot
 ================
 */
-void idPlayer::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idPlayer::WriteToSnapshot( idBitMsg &msg ) const {
 	physicsObj.WriteToSnapshot( msg );
 	WriteBindToSnapshot( msg );
 	msg.WriteDeltaFloat( 0.0f, deltaViewAngles[0] );
@@ -7995,7 +7995,7 @@ void idPlayer::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPlayer::ReadFromSnapshot
 ================
 */
-void idPlayer::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idPlayer::ReadFromSnapshot( const idBitMsg &msg ) {
 	int		i, oldHealth, newIdealWeapon, weaponSpawnId;
 	bool	newHitToggle, stateHitch;
 
@@ -8111,7 +8111,7 @@ void idPlayer::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 		SetLastHitTime( gameLocal.realClientTime );
 	}
 
-	if ( msg.HasChanged() ) {
+	{
 		UpdateVisuals();
 	}
 }
@@ -8121,7 +8121,7 @@ void idPlayer::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 idPlayer::WritePlayerStateToSnapshot
 ================
 */
-void idPlayer::WritePlayerStateToSnapshot( idBitMsgDelta &msg ) const {
+void idPlayer::WritePlayerStateToSnapshot( idBitMsg &msg ) const {
 	int i;
 
 	msg.WriteByte( bobCycle );
@@ -8143,7 +8143,7 @@ void idPlayer::WritePlayerStateToSnapshot( idBitMsgDelta &msg ) const {
 idPlayer::ReadPlayerStateFromSnapshot
 ================
 */
-void idPlayer::ReadPlayerStateFromSnapshot( const idBitMsgDelta &msg ) {
+void idPlayer::ReadPlayerStateFromSnapshot( const idBitMsg &msg ) {
 	int i, ammo;
 
 	bobCycle = msg.ReadByte();

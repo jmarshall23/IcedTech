@@ -181,8 +181,8 @@ public:
 	int						LowAmmo(void) const;
 	int						AmmoRequired(void) const;
 
-	virtual void			WriteToSnapshot(idBitMsgDelta &msg) const;
-	virtual void			ReadFromSnapshot(const idBitMsgDelta &msg);
+	virtual void			WriteToSnapshot(idBitMsg &msg) const;
+	virtual void			ReadFromSnapshot(const idBitMsg &msg);
 
 	enum {
 		EVENT_RELOAD = idEntity::EVENT_MAXEVENTS,

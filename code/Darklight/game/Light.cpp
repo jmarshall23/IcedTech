@@ -1019,7 +1019,7 @@ void idLight::ClientPredictionThink( void ) {
 idLight::WriteToSnapshot
 ================
 */
-void idLight::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idLight::WriteToSnapshot( idBitMsg &msg ) const {
 
 	GetPhysics()->WriteToSnapshot( msg );
 	WriteBindToSnapshot( msg );
@@ -1054,7 +1054,7 @@ void idLight::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idLight::ReadFromSnapshot
 ================
 */
-void idLight::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idLight::ReadFromSnapshot( const idBitMsg &msg ) {
 	idVec4	shaderColor;
 	int		oldCurrentLevel = currentLevel;
 	idVec3	oldBaseColor = baseColor;
@@ -1099,7 +1099,7 @@ void idLight::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 
 	ReadColorFromSnapshot( msg );
 
-	if ( msg.HasChanged() ) {
+	{
 		if ( ( currentLevel != oldCurrentLevel ) || ( baseColor != oldBaseColor ) ) {
 			SetLightLevel();
 		} else {

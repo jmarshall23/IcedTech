@@ -7913,7 +7913,7 @@ const int	AF_FORCE_MANTISSA_BITS		= AF_FORCE_TOTAL_BITS - 1 - AF_FORCE_EXPONENT_
 idPhysics_AF::WriteToSnapshot
 ================
 */
-void idPhysics_AF::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idPhysics_AF::WriteToSnapshot( idBitMsg &msg ) const {
 	int i;
 	idCQuat quat;
 
@@ -7960,7 +7960,7 @@ void idPhysics_AF::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPhysics_AF::ReadFromSnapshot
 ================
 */
-void idPhysics_AF::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idPhysics_AF::ReadFromSnapshot( const idBitMsg &msg ) {
 	int i, num;
 	idCQuat quat;
 

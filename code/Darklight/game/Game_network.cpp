@@ -75,6 +75,8 @@ void idGameLocal::InitAsyncNetwork( void ) {
 	eventQueue.Init();
 	savedEventQueue.Init();
 
+	snapShotSequence = 0;
+
 	entityDefBits = -( idMath::BitsForInteger( declManager->GetNumDecls( DECL_ENTITYDEF ) ) + 1 );
 	localClientNum = 0; // on a listen server SetLocalUser will set this right
 	realClientTime = 0;
@@ -481,7 +483,7 @@ bool idGameLocal::ApplySnapshot( int clientNum, int sequence ) {
 idGameLocal::WriteGameStateToSnapshot
 ================
 */
-void idGameLocal::WriteGameStateToSnapshot( idBitMsgDelta &msg ) const {
+void idGameLocal::WriteGameStateToSnapshot( idBitMsg &msg ) const {
 	int i;
 
 	for( i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++ ) {
@@ -496,7 +498,7 @@ void idGameLocal::WriteGameStateToSnapshot( idBitMsgDelta &msg ) const {
 idGameLocal::ReadGameStateFromSnapshot
 ================
 */
-void idGameLocal::ReadGameStateFromSnapshot( const idBitMsgDelta &msg ) {
+void idGameLocal::ReadGameStateFromSnapshot( const idBitMsg &msg ) {
 	int i;
 
 	for( i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++ ) {
@@ -515,26 +517,27 @@ idGameLocal::ServerWriteSnapshot
 */
 void idGameLocal::ServerWriteSnapshot( int clientNum, int sequence, idBitMsg &msg, byte *clientInPVS, int numPVSClients ) {
 	int i, msgSize, msgWriteBit;
-	idPlayer *player, *spectated = NULL;
-	idEntity *ent;
-	pvsHandle_t pvsHandle;
-	idBitMsgDelta deltaMsg;
-	snapshot_t *snapshot;
-	entityState_t *base, *newBase;
-	int numSourceAreas, sourceAreas[ idEntity::MAX_PVS_AREAS ];
+	idPlayer* player, * spectated = NULL;
+	idEntity* ent;
+	//pvsHandle_t pvsHandle;
+	idBitMsg deltaMsg;
+	snapshot_t* snapshot;
+	entityState_t* base, * newBase;
+	int numSourceAreas, sourceAreas[idEntity::MAX_PVS_AREAS];
 
-	player = static_cast<idPlayer *>( entities[ clientNum ] );
-	if ( !player ) {
+	player = static_cast<idPlayer*>(entities[clientNum]);
+	if (!player) {
 		return;
 	}
-	if ( player->spectating && player->spectator != clientNum && entities[ player->spectator ] ) {
-		spectated = static_cast< idPlayer * >( entities[ player->spectator ] );
-	} else {
+	if (player->spectating && player->spectator != clientNum && entities[player->spectator]) {
+		spectated = static_cast<idPlayer*>(entities[player->spectator]);
+	}
+	else {
 		spectated = player;
 	}
-	
+
 	// free too old snapshots
-	FreeSnapshotsOlderThanSequence( clientNum, sequence - 64 );
+	FreeSnapshotsOlderThanSequence(clientNum, sequence - 64);
 
 	// allocate new snapshot
 	snapshot = snapshotAllocator.Alloc();
@@ -542,114 +545,50 @@ void idGameLocal::ServerWriteSnapshot( int clientNum, int sequence, idBitMsg &ms
 	snapshot->firstEntityState = NULL;
 	snapshot->next = clientSnapshots[clientNum];
 	clientSnapshots[clientNum] = snapshot;
-	memset( snapshot->pvs, 0, sizeof( snapshot->pvs ) );
+	memset(snapshot->pvs, 0, sizeof(snapshot->pvs));
 
 	// get PVS for this player
 	// don't use PVSAreas for networking - PVSAreas depends on animations (and md5 bounds), which are not synchronized
-	numSourceAreas = gameRenderWorld->BoundsInAreas( spectated->GetPlayerPhysics()->GetAbsBounds(), sourceAreas, idEntity::MAX_PVS_AREAS );
-	pvsHandle = gameLocal.pvs.SetupCurrentPVS( sourceAreas, numSourceAreas, PVS_NORMAL );
+	numSourceAreas = gameRenderWorld->BoundsInAreas(spectated->GetPlayerPhysics()->GetAbsBounds(), sourceAreas, idEntity::MAX_PVS_AREAS);
+	//	pvsHandle = gameLocal.pvs.SetupCurrentPVS( sourceAreas, numSourceAreas, PVS_NORMAL );
 
 #if ASYNC_WRITE_TAGS
 	idRandom tagRandom;
-	tagRandom.SetSeed( random.RandomInt() );
-	msg.WriteLong( tagRandom.GetSeed() );
+	tagRandom.SetSeed(random.RandomInt());
+	msg.WriteLong(tagRandom.GetSeed());
 #endif
 
-	// create the snapshot
-	for( ent = spawnedEntities.Next(); ent != NULL; ent = ent->spawnNode.Next() ) {
-
-		// if the entity is not in the player PVS
-		if ( !ent->PhysicsTeamInPVS( pvsHandle ) && ent->entityNumber != clientNum ) {
+	// Add all entities to the snapshot
+	for (idEntity* ent = spawnedEntities.Next(); ent != NULL; ent = ent->spawnNode.Next()) {
+		if (spawnIds[ent->entityNumber] == -1)
+			continue;
+		if (!ent->fl.networkSync) {
 			continue;
 		}
-
-		// add the entity to the snapshot pvs
-		snapshot->pvs[ ent->entityNumber >> 5 ] |= 1 << ( ent->entityNumber & 31 );
-
-		// if that entity is not marked for network synchronization
-		if ( !ent->fl.networkSync ) {
-			continue;
-		}
-
-		// save the write state to which we can revert when the entity didn't change at all
-		msg.SaveWriteState( msgSize, msgWriteBit );
 
 		// write the entity to the snapshot
-		msg.WriteBits( ent->entityNumber, GENTITYNUM_BITS );
+		msg.WriteBits(ent->entityNumber, GENTITYNUM_BITS);
 
-		base = clientEntityStates[clientNum][ent->entityNumber];
-		if ( base ) {
-			base->state.BeginReading();
-		}
-		newBase = entityStateAllocator.Alloc();
-		newBase->entityNumber = ent->entityNumber;
-		newBase->state.Init( newBase->stateBuf, sizeof( newBase->stateBuf ) );
-		newBase->state.BeginWriting();
+		msg.WriteBits(spawnIds[ent->entityNumber], 32 - GENTITYNUM_BITS);
+		msg.WriteBits(ent->GetType()->typeNum, idClass::GetTypeNumBits());
+		msg.WriteBits(ServerRemapDecl(-1, DECL_ENTITYDEF, ent->entityDefNumber), entityDefBits);
 
-		deltaMsg.Init( base ? &base->state : NULL, &newBase->state, &msg );
-
-		deltaMsg.WriteBits( spawnIds[ ent->entityNumber ], 32 - GENTITYNUM_BITS );
-		deltaMsg.WriteBits( ent->GetType()->typeNum, idClass::GetTypeNumBits() );
-		deltaMsg.WriteBits( ServerRemapDecl( -1, DECL_ENTITYDEF, ent->entityDefNumber ), entityDefBits );
+//		msg.WriteBits(ent->GetPredictedKey(), 32);
 
 		// write the class specific data to the snapshot
-		ent->WriteToSnapshot( deltaMsg );
-
-		if ( !deltaMsg.HasChanged() ) {
-			msg.RestoreWriteState( msgSize, msgWriteBit );
-			entityStateAllocator.Free( newBase );
-		} else {
-			newBase->next = snapshot->firstEntityState;
-			snapshot->firstEntityState = newBase;
-
-#if ASYNC_WRITE_TAGS
-			msg.WriteLong( tagRandom.RandomInt() );
-#endif
-		}
+		ent->WriteToSnapshot(msg);
 	}
 
-	msg.WriteBits( ENTITYNUM_NONE, GENTITYNUM_BITS );
+	msg.WriteBits(ENTITYNUM_NONE, GENTITYNUM_BITS);
 
-	// write the PVS to the snapshot
-#if ASYNC_WRITE_PVS
-	for ( i = 0; i < idEntity::MAX_PVS_AREAS; i++ ) {
-		if ( i < numSourceAreas ) {
-			msg.WriteLong( sourceAreas[ i ] );
-		} else {
-			msg.WriteLong( 0 );
-		}
+	// Write the player to the snapshot.
+	if (player->spectating && player->spectator != player->entityNumber && gameLocal.entities[player->spectator] && gameLocal.entities[player->spectator]->IsType(idPlayer::Type)) {
+		static_cast<idPlayer*>(gameLocal.entities[player->spectator])->WritePlayerStateToSnapshot(msg);
 	}
-	gameLocal.pvs.WritePVS( pvsHandle, msg );
-#endif
-	for ( i = 0; i < ENTITY_PVS_SIZE; i++ ) {
-		msg.WriteDeltaLong( clientPVS[clientNum][i], snapshot->pvs[i] );
+	else {
+		player->WritePlayerStateToSnapshot(msg);
 	}
-
-	// free the PVS
-	pvs.FreeCurrentPVS( pvsHandle );
-
-	// write the game and player state to the snapshot
-	base = clientEntityStates[clientNum][ENTITYNUM_NONE];	// ENTITYNUM_NONE is used for the game and player state
-	if ( base ) {
-		base->state.BeginReading();
-	}
-	newBase = entityStateAllocator.Alloc();
-	newBase->entityNumber = ENTITYNUM_NONE;
-	newBase->next = snapshot->firstEntityState;
-	snapshot->firstEntityState = newBase;
-	newBase->state.Init( newBase->stateBuf, sizeof( newBase->stateBuf ) );
-	newBase->state.BeginWriting();
-	deltaMsg.Init( base ? &base->state : NULL, &newBase->state, &msg );
-	if ( player->spectating && player->spectator != player->entityNumber && gameLocal.entities[ player->spectator ] && gameLocal.entities[ player->spectator ]->IsType( idPlayer::Type ) ) {
-		static_cast< idPlayer * >( gameLocal.entities[ player->spectator ] )->WritePlayerStateToSnapshot( deltaMsg );
-	} else {
-		player->WritePlayerStateToSnapshot( deltaMsg );
-	}
-	WriteGameStateToSnapshot( deltaMsg );
-
-	// copy the client PVS string
-	//memcpy( clientInPVS, snapshot->pvs, ( numPVSClients + 7 ) >> 3 );
-	//LittleRevBytes( clientInPVS, sizeof( int ), sizeof( clientInPVS ) / sizeof ( int ) );
+	WriteGameStateToSnapshot(msg);
 }
 
 /*
@@ -901,34 +840,32 @@ idGameLocal::ClientReadSnapshot
 */
 void idGameLocal::ClientReadSnapshot( int clientNum, int sequence, const int gameFrame, const int gameTime, const int dupeUsercmds, const int aheadOfServer, const idBitMsg &msg ) {
 	int				i, typeNum, entityDefNumber, numBitsRead;
-	idTypeInfo		*typeInfo;
-	idEntity		*ent;
-	idPlayer		*player, *spectated;
+	idTypeInfo* typeInfo;
+	idEntity* ent;
+	idPlayer* player, * spectated;
 	pvsHandle_t		pvsHandle;
 	idDict			args;
-	const char		*classname;
-	idBitMsgDelta	deltaMsg;
-	snapshot_t		*snapshot;
-	entityState_t	*base, *newBase;
+	const char* classname;
+	snapshot_t* snapshot;
+	entityState_t* base, * newBase;
 	int				spawnId;
-	int				numSourceAreas, sourceAreas[ idEntity::MAX_PVS_AREAS ];
-	idWeapon		*weap;
+	idWeapon* weap;
 
-	if ( net_clientLagOMeter.GetBool() && renderSystem ) {
-		UpdateLagometer( aheadOfServer, dupeUsercmds );
-		if ( !renderSystem->UploadImage( LAGO_IMAGE, (byte *)lagometer, LAGO_IMG_WIDTH, LAGO_IMG_HEIGHT ) ) {
-			common->Printf( "lagometer: UploadImage failed. turning off net_clientLagOMeter\n" );
-			net_clientLagOMeter.SetBool( false );
+	if (net_clientLagOMeter.GetBool() && renderSystem) {
+		UpdateLagometer(aheadOfServer, dupeUsercmds);
+		if (!renderSystem->UploadImage(LAGO_IMAGE, (byte*)lagometer, LAGO_IMG_WIDTH, LAGO_IMG_HEIGHT)) {
+			common->Printf("lagometer: UploadImage failed. turning off net_clientLagOMeter\n");
+			net_clientLagOMeter.SetBool(false);
 		}
 	}
 
-	InitLocalClient( clientNum );
+	InitLocalClient(clientNum);
 
 	// clear any debug lines from a previous frame
-	gameRenderWorld->DebugClearLines( time );
+	gameRenderWorld->DebugClearLines(time);
 
 	// clear any debug polygons from a previous frame
-	gameRenderWorld->DebugClearPolygons( time );
+	gameRenderWorld->DebugClearPolygons(time);
 
 	// update the game time
 	framenum = gameFrame;
@@ -950,44 +887,29 @@ void idGameLocal::ClientReadSnapshot( int clientNum, int sequence, const int gam
 
 #if ASYNC_WRITE_TAGS
 	idRandom tagRandom;
-	tagRandom.SetSeed( msg.ReadLong() );
+	tagRandom.SetSeed(msg.ReadLong());
 #endif
 
 	// read all entities from the snapshot
-	for ( i = msg.ReadBits( GENTITYNUM_BITS ); i != ENTITYNUM_NONE; i = msg.ReadBits( GENTITYNUM_BITS ) ) {
+	for (i = msg.ReadBits(GENTITYNUM_BITS); i != ENTITYNUM_NONE; i = msg.ReadBits(GENTITYNUM_BITS)) {
+		spawnId = msg.ReadBits(32 - GENTITYNUM_BITS);
+		typeNum = msg.ReadBits(idClass::GetTypeNumBits());
+		entityDefNumber = ClientRemapDecl(DECL_ENTITYDEF, msg.ReadBits(entityDefBits));
+	//	const int predictedKey = msg.ReadBits(32);
 
-		base = clientEntityStates[clientNum][i];
-		if ( base ) {
-			base->state.BeginReading();
-		}
-		newBase = entityStateAllocator.Alloc();
-		newBase->entityNumber = i;
-		newBase->next = snapshot->firstEntityState;
-		snapshot->firstEntityState = newBase;
-		newBase->state.Init( newBase->stateBuf, sizeof( newBase->stateBuf ) );
-		newBase->state.BeginWriting();
-
-		numBitsRead = msg.GetNumBitsRead();
-
-		deltaMsg.Init( base ? &base->state : NULL, &newBase->state, &msg );
-
-		spawnId = deltaMsg.ReadBits( 32 - GENTITYNUM_BITS );
-		typeNum = deltaMsg.ReadBits( idClass::GetTypeNumBits() );
-		entityDefNumber = ClientRemapDecl( DECL_ENTITYDEF, deltaMsg.ReadBits( entityDefBits ) );
-
-		typeInfo = idClass::GetType( typeNum );
-		if ( !typeInfo ) {
-			Error( "Unknown type number %d for entity %d with class number %d", typeNum, i, entityDefNumber );
+		typeInfo = idClass::GetType(typeNum);
+		if (!typeInfo) {
+			Error("Unknown type number %d for entity %d with class number %d", typeNum, i, entityDefNumber);
 		}
 
 		ent = entities[i];
 
 		// if there is no entity or an entity of the wrong type
-		if ( !ent || ent->GetType()->typeNum != typeNum || ent->entityDefNumber != entityDefNumber || spawnId != spawnIds[ i ] ) {
+		if (!ent || ent->GetType()->typeNum != typeNum || ent->entityDefNumber != entityDefNumber || spawnId != spawnIds[i]) {
 
-			if ( i < MAX_CLIENTS && ent ) {
+			if (i < MAX_CLIENTS && ent) {
 				// SPAWN_PLAYER should be taking care of spawning the entity with the right spawnId
-				common->Warning( "ClientReadSnapshot: recycling client entity %d\n", i );
+				common->Warning("ClientReadSnapshot: recycling client entity %d\n", i);
 			}
 
 			delete ent;
@@ -995,185 +917,86 @@ void idGameLocal::ClientReadSnapshot( int clientNum, int sequence, const int gam
 			spawnCount = spawnId;
 
 			args.Clear();
-			args.SetInt( "spawn_entnum", i );
-			args.Set( "name", va( "entity%d", i ) );
+			args.SetInt("spawn_entnum", i);
+			args.Set("name", va("entity%d", i));
 
-			if ( entityDefNumber >= 0 ) {
-				if ( entityDefNumber >= declManager->GetNumDecls( DECL_ENTITYDEF ) ) {
-					Error( "server has %d entityDefs instead of %d", entityDefNumber, declManager->GetNumDecls( DECL_ENTITYDEF ) );
+			if (entityDefNumber >= 0) {
+				if (entityDefNumber >= declManager->GetNumDecls(DECL_ENTITYDEF)) {
+					Error("server has %d entityDefs instead of %d", entityDefNumber, declManager->GetNumDecls(DECL_ENTITYDEF));
 				}
-				classname = declManager->DeclByIndex( DECL_ENTITYDEF, entityDefNumber, false )->GetName();
-				args.Set( "classname", classname );
-				if ( !SpawnEntityDef( args, &ent ) || !entities[i] || entities[i]->GetType()->typeNum != typeNum ) {
-					Error( "Failed to spawn entity with classname '%s' of type '%s'", classname, typeInfo->classname );
-				}
-			} else {
-				ent = SpawnEntityType( *typeInfo, &args, true );
-				if ( !entities[i] || entities[i]->GetType()->typeNum != typeNum ) {
-					Error( "Failed to spawn entity of type '%s'", typeInfo->classname );
+				classname = declManager->DeclByIndex(DECL_ENTITYDEF, entityDefNumber, false)->GetName();
+				args.Set("classname", classname);
+				if (!SpawnEntityDef(args, &ent) || !entities[i] || entities[i]->GetType()->typeNum != typeNum) {
+					Error("Failed to spawn entity with classname '%s' of type '%s'", classname, typeInfo->classname);
 				}
 			}
-			if ( i < MAX_CLIENTS && i >= numClients ) {
+			else {
+				ent = SpawnEntityType(*typeInfo, &args, true);
+				if (!entities[i] || entities[i]->GetType()->typeNum != typeNum) {
+					Error("Failed to spawn entity of type '%s'", typeInfo->classname);
+				}
+			}
+			if (i < MAX_CLIENTS && i >= numClients) {
 				numClients = i + 1;
 			}
 		}
 
 		// add the entity to the snapshot list
-		ent->snapshotNode.AddToEnd( snapshotEntities );
+		ent->snapshotNode.AddToEnd(snapshotEntities);
 		ent->snapshotSequence = sequence;
 
 		// read the class specific data from the snapshot
-		ent->ReadFromSnapshot( deltaMsg );
+		if (ent->fl.networkSync) {
+			ent->ReadFromSnapshot(msg);
+		}
 
-		ent->snapshotBits = msg.GetNumBitsRead() - numBitsRead;
+		//	ent->snapshotBits = msg.GetNumBitsRead() - numBitsRead;
 
 #if ASYNC_WRITE_TAGS
-		if ( msg.ReadLong() != tagRandom.RandomInt() ) {
-			cmdSystem->BufferCommandText( CMD_EXEC_NOW, "writeGameState" );
-			if ( entityDefNumber >= 0 && entityDefNumber < declManager->GetNumDecls( DECL_ENTITYDEF ) ) {
-				classname = declManager->DeclByIndex( DECL_ENTITYDEF, entityDefNumber, false )->GetName();
-				Error( "write to and read from snapshot out of sync for classname '%s' of type '%s'", classname, typeInfo->classname );
-			} else {
-				Error( "write to and read from snapshot out of sync for type '%s'", typeInfo->classname );
+		if (msg.ReadLong() != tagRandom.RandomInt()) {
+			cmdSystem->BufferCommandText(CMD_EXEC_NOW, "writeGameState");
+			if (entityDefNumber >= 0 && entityDefNumber < declManager->GetNumDecls(DECL_ENTITYDEF)) {
+				classname = declManager->DeclByIndex(DECL_ENTITYDEF, entityDefNumber, false)->GetName();
+				Error("write to and read from snapshot out of sync for classname '%s' of type '%s'", classname, typeInfo->classname);
+			}
+			else {
+				Error("write to and read from snapshot out of sync for type '%s'", typeInfo->classname);
 			}
 		}
 #endif
 	}
 
-	player = static_cast<idPlayer *>( entities[clientNum] );
-	if ( !player ) {
+	player = static_cast<idPlayer*>(entities[clientNum]);
+	if (!player) {
 		return;
 	}
 
 	// if prediction is off, enable local client smoothing
-	player->SetSelfSmooth( dupeUsercmds > 2 );
+	player->SetSelfSmooth(dupeUsercmds > 2);
 
-	if ( player->spectating && player->spectator != clientNum && entities[ player->spectator ] ) {
-		spectated = static_cast< idPlayer * >( entities[ player->spectator ] );
-	} else {
+	if (player->spectating && player->spectator != clientNum && entities[player->spectator]) {
+		spectated = static_cast<idPlayer*>(entities[player->spectator]);
+}
+	else {
 		spectated = player;
 	}
 
-	// get PVS for this player
-	// don't use PVSAreas for networking - PVSAreas depends on animations (and md5 bounds), which are not synchronized
-	numSourceAreas = gameRenderWorld->BoundsInAreas( spectated->GetPlayerPhysics()->GetAbsBounds(), sourceAreas, idEntity::MAX_PVS_AREAS );
-	pvsHandle = gameLocal.pvs.SetupCurrentPVS( sourceAreas, numSourceAreas, PVS_NORMAL );
-
-	// read the PVS from the snapshot
-#if ASYNC_WRITE_PVS
-	int serverPVS[idEntity::MAX_PVS_AREAS];
-	i = numSourceAreas;
-	while ( i < idEntity::MAX_PVS_AREAS ) {
-		sourceAreas[ i++ ] = 0;
-	}
-	for ( i = 0; i < idEntity::MAX_PVS_AREAS; i++ ) {
-		serverPVS[ i ] = msg.ReadLong();
-	}
-	if ( memcmp( sourceAreas, serverPVS, idEntity::MAX_PVS_AREAS * sizeof( int ) ) ) {
-		common->Warning( "client PVS areas != server PVS areas, sequence 0x%x", sequence );
-		for ( i = 0; i < idEntity::MAX_PVS_AREAS; i++ ) {
-			common->DPrintf( "%3d ", sourceAreas[ i ] );
-		}
-		common->DPrintf( "\n" );
-		for ( i = 0; i < idEntity::MAX_PVS_AREAS; i++ ) {
-			common->DPrintf( "%3d ", serverPVS[ i ] );
-		}
-		common->DPrintf( "\n" );
-	}
-	gameLocal.pvs.ReadPVS( pvsHandle, msg );
-#endif
-	for ( i = 0; i < ENTITY_PVS_SIZE; i++ ) {
-		snapshot->pvs[i] = msg.ReadDeltaLong( clientPVS[clientNum][i] );
-	}
-
-	// add entities in the PVS that haven't changed since the last applied snapshot
-	for( ent = spawnedEntities.Next(); ent != NULL; ent = ent->spawnNode.Next() ) {
-
-		// if the entity is already in the snapshot
-		if ( ent->snapshotSequence == sequence ) {
-			continue;
-		}
-
-		// if the entity is not in the snapshot PVS
-		if ( !( snapshot->pvs[ent->entityNumber >> 5] & ( 1 << ( ent->entityNumber & 31 ) ) ) ) {
-			if ( ent->PhysicsTeamInPVS( pvsHandle ) ) {
-				if ( ent->entityNumber >= MAX_CLIENTS && ent->entityNumber < mapSpawnCount ) {
-					// server says it's not in PVS, client says it's in PVS
-					// if that happens on map entities, most likely something is wrong
-					// I can see that moving pieces along several PVS could be a legit situation though
-					// this is a band aid, which means something is not done right elsewhere
-					common->DWarning( "client thinks map entity 0x%x (%s) is stale, sequence 0x%x", ent->entityNumber, ent->name.c_str(), sequence );
-				} else {
-					ent->FreeModelDef();
-					ent->UpdateVisuals();
-					ent->GetPhysics()->UnlinkClip();
-				}
-			}
-			continue;
-		}
-
-		// add the entity to the snapshot list
-		ent->snapshotNode.AddToEnd( snapshotEntities );
-		ent->snapshotSequence = sequence;
-		ent->snapshotBits = 0;
-
-		base = clientEntityStates[clientNum][ent->entityNumber];
-		if ( !base ) {
-			// entity has probably fl.networkSync set to false
-			continue;
-		}
-
-		base->state.BeginReading();
-
-		deltaMsg.Init( &base->state, NULL, (const idBitMsg *)NULL );
-
-		spawnId = deltaMsg.ReadBits( 32 - GENTITYNUM_BITS );
-		typeNum = deltaMsg.ReadBits( idClass::GetTypeNumBits() );
-		entityDefNumber = deltaMsg.ReadBits( entityDefBits );
-
-		typeInfo = idClass::GetType( typeNum );
-
-		// if the entity is not the right type
-		if ( !typeInfo || ent->GetType()->typeNum != typeNum || ent->entityDefNumber != entityDefNumber ) {
-			// should never happen - it does though. with != entityDefNumber only?
-			common->DWarning( "entity '%s' is not the right type %p 0x%d 0x%x 0x%x 0x%x", ent->GetName(), typeInfo, ent->GetType()->typeNum, typeNum, ent->entityDefNumber, entityDefNumber );
-			continue;
-		}
-
-		// read the class specific data from the base state
-		ent->ReadFromSnapshot( deltaMsg );
-	}
-
-	// free the PVS
-	pvs.FreeCurrentPVS( pvsHandle );
-
-	// read the game and player state from the snapshot
-	base = clientEntityStates[clientNum][ENTITYNUM_NONE];	// ENTITYNUM_NONE is used for the game and player state
-	if ( base ) {
-		base->state.BeginReading();
-	}
-	newBase = entityStateAllocator.Alloc();
-	newBase->entityNumber = ENTITYNUM_NONE;
-	newBase->next = snapshot->firstEntityState;
-	snapshot->firstEntityState = newBase;
-	newBase->state.Init( newBase->stateBuf, sizeof( newBase->stateBuf ) );
-	newBase->state.BeginWriting();
-	deltaMsg.Init( base ? &base->state : NULL, &newBase->state, &msg );
-	if ( player->spectating && player->spectator != player->entityNumber && gameLocal.entities[ player->spectator ] && gameLocal.entities[ player->spectator ]->IsType( idPlayer::Type ) ) {
-		static_cast< idPlayer * >( gameLocal.entities[ player->spectator ] )->ReadPlayerStateFromSnapshot( deltaMsg );
-		weap = static_cast< idPlayer * >( gameLocal.entities[ player->spectator ] )->weapon.GetEntity();
-		if ( weap && ( weap->GetRenderEntity()->GetBounds()[0] == weap->GetRenderEntity()->GetBounds()[1] ) ) {
+	if (player->spectating && player->spectator != player->entityNumber && gameLocal.entities[player->spectator] && gameLocal.entities[player->spectator]->IsType(idPlayer::Type)) {
+		static_cast<idPlayer*>(gameLocal.entities[player->spectator])->ReadPlayerStateFromSnapshot(msg);
+		weap = static_cast<idPlayer*>(gameLocal.entities[player->spectator])->weapon.GetEntity();
+		if (weap && (weap->GetRenderEntity()->GetBounds()[0] == weap->GetRenderEntity()->GetBounds()[1])) {
 			// update the weapon's viewmodel bounds so that the model doesn't flicker in the spectator's view
-			weap->GetAnimator()->GetBounds( gameLocal.time, weap->GetRenderEntity()->GetBounds());
+			weap->GetAnimator()->GetBounds(gameLocal.time, weap->GetRenderEntity()->GetBounds());
 			weap->UpdateVisuals();
 		}
-	} else {
-		player->ReadPlayerStateFromSnapshot( deltaMsg );
 	}
-	ReadGameStateFromSnapshot( deltaMsg );
+	else {
+		player->ReadPlayerStateFromSnapshot(msg);
+	}
+	ReadGameStateFromSnapshot(msg);
 
 	// visualize the snapshot
-	ClientShowSnapshot( clientNum );
+	ClientShowSnapshot(clientNum);
 
 	// process entity events
 	ClientProcessEntityNetworkEventQueue();

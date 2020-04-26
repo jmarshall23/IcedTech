@@ -799,7 +799,7 @@ int idPhysics_Static::GetAngularEndTime( void ) const {
 idPhysics_Static::WriteToSnapshot
 ================
 */
-void idPhysics_Static::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idPhysics_Static::WriteToSnapshot( idBitMsg &msg ) const {
 	idCQuat quat, localQuat;
 
 	quat = current.axis.ToCQuat();
@@ -824,7 +824,7 @@ void idPhysics_Static::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPhysics_Base::ReadFromSnapshot
 ================
 */
-void idPhysics_Static::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idPhysics_Static::ReadFromSnapshot( const idBitMsg &msg ) {
 	idCQuat quat, localQuat;
 
 	current.origin[0] = msg.ReadFloat();

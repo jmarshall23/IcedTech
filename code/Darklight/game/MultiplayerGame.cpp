@@ -2250,7 +2250,7 @@ const int ASYNC_PLAYER_PING_BITS = idMath::BitsForInteger( MP_PLAYER_MAXPING );
 idMultiplayerGame::WriteToSnapshot
 ================
 */
-void idMultiplayerGame::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idMultiplayerGame::WriteToSnapshot( idBitMsg &msg ) const {
 	int i;
 	int value;
 
@@ -2276,7 +2276,7 @@ void idMultiplayerGame::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idMultiplayerGame::ReadFromSnapshot
 ================
 */
-void idMultiplayerGame::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idMultiplayerGame::ReadFromSnapshot( const idBitMsg &msg ) {
 	int i;
 	gameState_t newState;
 

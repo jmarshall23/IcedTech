@@ -177,8 +177,8 @@ public:	// common physics interface
 	virtual int					GetLinearEndTime( void ) const = 0;
 	virtual int					GetAngularEndTime( void ) const = 0;
 								// networking
-	virtual void				WriteToSnapshot( idBitMsgDelta &msg ) const = 0;
-	virtual void				ReadFromSnapshot( const idBitMsgDelta &msg ) = 0;
+	virtual void				WriteToSnapshot( idBitMsg &msg ) const = 0;
+	virtual void				ReadFromSnapshot( const idBitMsg &msg ) = 0;
 };
 
 #endif /* !__PHYSICS_H__ */

@@ -81,7 +81,7 @@ idCommonLocal::ClientSendReliableMessage
 void idCommonLocal::ClientSendReliableMessage(const idBitMsg& msg) {
 	if (!IsDedicatedServer() && IsServer() && localClientNum != -1) {
 		rvmNetworkPacketQueue_t* newPacket = new rvmNetworkPacketQueue_t(msg);
-		newPacket->clientNum = -1;
+		newPacket->clientNum = localClientNum;
 		serverPacketQueue.AddToEnd(newPacket);
 		newPacket->_msg.ReadUShort(); // Client Number
 		return;

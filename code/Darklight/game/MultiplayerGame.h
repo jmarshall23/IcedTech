@@ -143,8 +143,8 @@ public:
 	const char*		HandleGuiCommands( const char *menuCommand );
 	void			SetMenuSkin( void );
 
-	void			WriteToSnapshot( idBitMsgDelta &msg ) const;
-	void			ReadFromSnapshot( const idBitMsgDelta &msg );
+	void			WriteToSnapshot( idBitMsg &msg ) const;
+	void			ReadFromSnapshot( const idBitMsg &msg );
 
 	// game state
 	typedef enum {

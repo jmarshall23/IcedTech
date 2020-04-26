@@ -2118,7 +2118,7 @@ int	idWeapon::AmmoRequired( void ) const {
 idWeapon::WriteToSnapshot
 ================
 */
-void idWeapon::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idWeapon::WriteToSnapshot( idBitMsg &msg ) const {
 	msg.WriteBits( ammoClip, ASYNC_PLAYER_INV_CLIP_BITS );
 	msg.WriteBits( worldModel.GetSpawnId(), 32 );
 	msg.WriteBits( lightOn, 1 );
@@ -2130,7 +2130,7 @@ void idWeapon::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idWeapon::ReadFromSnapshot
 ================
 */
-void idWeapon::ReadFromSnapshot( const idBitMsgDelta &msg ) {	
+void idWeapon::ReadFromSnapshot( const idBitMsg &msg ) {	
 	ammoClip = msg.ReadBits( ASYNC_PLAYER_INV_CLIP_BITS );
 	worldModel.SetSpawnId( msg.ReadBits( 32 ) );
 	bool snapLight = msg.ReadBits( 1 ) != 0;

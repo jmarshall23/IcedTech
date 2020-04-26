@@ -461,7 +461,7 @@ void idItem::ClientPredictionThink( void ) {
 idItem::WriteFromSnapshot
 ================
 */
-void idItem::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idItem::WriteToSnapshot( idBitMsg &msg ) const {
 	msg.WriteBits( IsHidden(), 1 );
 }
 
@@ -470,7 +470,7 @@ void idItem::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idItem::ReadFromSnapshot
 ================
 */
-void idItem::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idItem::ReadFromSnapshot( const idBitMsg &msg ) {
 	if ( msg.ReadBits( 1 ) ) {
 		Hide();
 	} else {
@@ -1197,7 +1197,7 @@ void idMoveableItem::DropItems( idAnimatedEntity  *ent, const char *type, idList
 idMoveableItem::WriteToSnapshot
 ======================
 */
-void idMoveableItem::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idMoveableItem::WriteToSnapshot( idBitMsg &msg ) const {
 	physicsObj.WriteToSnapshot( msg );
 }
 
@@ -1206,9 +1206,9 @@ void idMoveableItem::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idMoveableItem::ReadFromSnapshot
 ======================
 */
-void idMoveableItem::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idMoveableItem::ReadFromSnapshot( const idBitMsg &msg ) {
 	physicsObj.ReadFromSnapshot( msg );
-	if ( msg.HasChanged() ) {
+	{
 		UpdateVisuals();
 	}
 }

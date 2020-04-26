@@ -346,17 +346,17 @@ public:
 	};
 
 	virtual void			ClientPredictionThink( void );
-	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
+	virtual void			WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void			ReadFromSnapshot( const idBitMsg &msg );
 	virtual bool			ServerReceiveEvent( int event, int time, const idBitMsg &msg );
 	virtual bool			ClientReceiveEvent( int event, int time, const idBitMsg &msg );
 
-	void					WriteBindToSnapshot( idBitMsgDelta &msg ) const;
-	void					ReadBindFromSnapshot( const idBitMsgDelta &msg );
-	void					WriteColorToSnapshot( idBitMsgDelta &msg ) const;
-	void					ReadColorFromSnapshot( const idBitMsgDelta &msg );
-	void					WriteGUIToSnapshot( idBitMsgDelta &msg ) const;
-	void					ReadGUIFromSnapshot( const idBitMsgDelta &msg );
+	void					WriteBindToSnapshot( idBitMsg &msg ) const;
+	void					ReadBindFromSnapshot( const idBitMsg &msg );
+	void					WriteColorToSnapshot( idBitMsg &msg ) const;
+	void					ReadColorFromSnapshot( const idBitMsg &msg );
+	void					WriteGUIToSnapshot( idBitMsg &msg ) const;
+	void					ReadGUIFromSnapshot( const idBitMsg &msg );
 
 	void					ServerSendEvent( int eventId, const idBitMsg *msg, bool saveEvent, int excludeClient ) const;
 	void					ClientSendEvent( int eventId, const idBitMsg *msg ) const;

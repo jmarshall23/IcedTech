@@ -1,12 +1,89 @@
 ------------- Warnings ---------------
 
-during Darklight Arena initialization...
-WARNING: file materials/gothic_light_built.mtr, line 21: material 'textures/gothic_light/border7_ceil39b' previously defined at materials/gothic_light_built.mtr:7
-WARNING: file materials/weapons.mtr, line 1504: material 'models/weapons/plasmagun/plasmagun' previously defined at materials/newweapons.mtr:8
+during mp/dm2...
+WARNING: Can't find function 'UpdateSkin' in object 'object'
+WARNING: Couldn't load anim: 'models/md5/weapons/machinegun_world/machinegun_idle.md5anim'
+WARNING: Couldn't load gui: 'guis/chat.gui'
+WARNING: Couldn't load gui: 'guis/mpmain.gui'
+WARNING: Couldn't load gui: 'guis/mpmsgmode.gui'
+WARNING: Couldn't load gui: 'guis/netmenu.gui'
+WARNING: Couldn't load gui: 'guis/pda.gui'
+WARNING: Couldn't load gui: 'guis/weapons/bfg.gui'
+WARNING: Couldn't load gui: 'guis/weapons/chaingun.gui'
+WARNING: Couldn't load gui: 'guis/weapons/machinegun.gui'
+WARNING: Couldn't load gui: 'guis/weapons/plasmagun.gui'
+WARNING: Couldn't load model: 'models/items/flashlight/flashlight2_world.lwo'
+WARNING: Couldn't load model: 'models/items/pda/pda_world.lwo'
+WARNING: Couldn't load model: 'models/particles/bfg_bolt/bfg_bolt.lwo'
+WARNING: Couldn't load model: 'models/particles/bfg_bolt/bfg_bolt2.lwo'
+WARNING: Couldn't load model: 'models/particles/plasma_bolt/plasma_bolt.lwo'
+WARNING: Couldn't load model: 'models/particles/tracer/tracer.lwo'
+WARNING: Couldn't load model: 'models/weapons/bfg/bfg_world.lwo'
+WARNING: Couldn't load model: 'models/weapons/bfg/bfg_world_rotated.lwo'
+WARNING: Couldn't load model: 'models/weapons/chaingun/w_chaingun.lwo'
+WARNING: Couldn't load model: 'models/weapons/machinegun/w_machinegun.lwo'
+WARNING: Couldn't load model: 'models/weapons/rocketlauncher/rocket.lwo'
+WARNING: Couldn't load model: 'models/weapons/shell1/sshell_bigger.lwo'
+WARNING: Couldn't load model: 'models/weapons/shotgun/w_shotgun2.lwo'
+WARNING: file D:\projects\IcedTech\dkbase\fx\particles\lava_urpt.prt, line 1: expected '2' but found '3'
+WARNING: file D:\projects\IcedTech\dkbase\guis\scoreboard.gui, line 528: Unexpected end of file
+WARNING: file def/mp.def, line 183: Unknown entityDef 'weapon_chainsaw' inherited by 'weapon_chainsaw_mp'
+WARNING: file def/mp.def, line 265: Unknown entityDef 'weapon_handgrenade' inherited by 'weapon_handgrenade_mp'
+WARNING: file def/mp.def, line 445: 'weapon11_cycle' already defined
+WARNING: file def/weapon_bfg.def, line 101: Model 'models/md5/weapons/bfg_world/worldbfg.md5mesh' defaulted
+WARNING: file def/weapon_bfg.def, line 113: Model 'models/md5/weapons/bfg_view/viewbfg.md5mesh' defaulted
+WARNING: file def/weapon_chaingun.def, line 112: Model 'models/md5/weapons/chaingun_world/worldchaingun.md5mesh' defaulted
+WARNING: file def/weapon_chaingun.def, line 120: Model 'models/md5/weapons/chaingun_view/viewchaingun.md5mesh' defaulted
+WARNING: file def/weapon_fists.def, line 60: Model 'models/md5/weapons/fists_view/fists.md5mesh' defaulted
+WARNING: file def/weapon_flashlight.def, line 162: Bad term 'bathroomtable'
+WARNING: file def/weapon_flashlight.def, line 83: Model 'models/md5/items/flashlight_world/worldflashlight.md5mesh' defaulted
+WARNING: file def/weapon_flashlight.def, line 95: Model 'models/md5/items/flashlight_view/viewflashlight.md5mesh' defaulted
+WARNING: file def/weapon_machinegun.def, line 104: Couldn't load anim 'models/md5/weapons/machinegun_world/machinegun_idle.md5anim'
+WARNING: file def/weapon_pda.def, line 46: Model 'models/md5/items/pda_view/idle.md5mesh' defaulted
+WARNING: file def/weapon_pda.def, line 73: Model 'models/md5/items/pda_world/worldpda.md5mesh' defaulted
+WARNING: file def/weapon_plasmagun.def, line 89: Model 'models/md5/weapons/plasmagun_world/worldplasmagun.md5mesh' defaulted
+WARNING: file def/weapon_rocketlauncher.def, line 86: Model 'models/md5/weapons/rocketlauncher_world/worldrocketlauncher.md5mesh' defaulted
+WARNING: file def/weapon_shotgun.def, line 82: Model 'models/md5/weapons/shotgun_world/worldshotgun.md5mesh' defaulted
+WARNING: file materials/weapons.mtr, line 1270: Bad term 'table4'
+WARNING: file materials/weapons.mtr, line 1270: expected ')' but found '+'
+WARNING: file materials/weapons.mtr, line 1270: expected ',' but found '['
+WARNING: file materials/weapons.mtr, line 1299: Bad term 'table4'
+WARNING: file materials/weapons.mtr, line 1299: expected ')' but found '+'
+WARNING: file materials/weapons.mtr, line 1299: expected ',' but found '['
+WARNING: idBitMsg::WriteBits: value overflow -1 16
+WARNING: idEntity::BindToJoint: joint 'MGATTACHER' not found on entity 'player1'.
+WARNING: Joint 'headcontrol' not found for 'bone_head' on 'player1'
+WARNING: Joint 'Hips' not found for 'bone_hips' on 'player1'
+WARNING: Joint 'Shoulders' not found for 'bone_chest' on 'player1'
+WARNING: material 'textures/liquids/lavahell' had stage with no image
+WARNING: material 'textures/liquids/lavahell_flowup' had stage with no image
+WARNING: material 'textures/skies/lava' had stage with no image
+WARNING: material 'textures/skies/mars' had stage with no image
+WARNING: missing 'putaway' animation on 'player1_weapon' (*unknown*)
+WARNING: no info_player_deathmatch entities marked initial in map
+WARNING: no sinTable for rotate defined
+WARNING: RegisterFont: couldn't find font: 'fonts/english/an/fontImage_12.dat'
+WARNING: RegisterFont: couldn't find font: 'fonts/english/bank/fontImage_12.dat'
+WARNING: Unknown brass 'debris_brass'
+WARNING: Unknown joint 'Body2' in 'origin Body2' for model 'model_mp_soldier1'
+WARNING: Unknown joint 'loneckcontrol' in '*loneckcontrol' for model 'model_mp_soldier1'
+WARNING: Unknown joint 'loneckcontrol' in '*Waist -*loneckcontrol' for model 'model_mp_soldier1'
+WARNING: Unknown joint 'Luparm' in '*Luparm' for model 'model_mp_soldier1'
+WARNING: Unknown joint 'Ruparm' in '*Ruparm' for model 'model_mp_soldier1'
+WARNING: Unknown joint 'Waist' in '*Waist -*loneckcontrol' for model 'model_mp_soldier1'
+WARNING: unknown model type 'bfgexplosion.prt'
+WARNING: unknown model type 'bigexplosion.prt'
+WARNING: unknown model type 'bulletricochet.prt'
+WARNING: unknown model type 'bulletsmokeandspark.prt'
+WARNING: unknown model type 'cgsmokeandspark.prt'
+WARNING: unknown model type 'plasmaimpact.prt'
+WARNING: unknown model type 'rocketexplosion.prt'
+WARNING: unknown model type 'sgsmokeandspark.prt'
+WARNING: Unknown portal sky entity class worldspawn
 
-2 warnings.
+
+79 warnings.
 
 
 -------------- Errors ---------------
 
-ERROR: #str_06780

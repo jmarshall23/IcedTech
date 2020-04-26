@@ -61,8 +61,8 @@ public:
 	void					EnableDamage( bool enable, float duration );
 	virtual bool			Collide( const trace_t &collision, const idVec3 &velocity );
 	virtual void			Killed( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location );
-	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
+	virtual void			WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void			ReadFromSnapshot( const idBitMsg &msg );
 
 protected:
 	idPhysics_RigidBody		physicsObj;				// physics object

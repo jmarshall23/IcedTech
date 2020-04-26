@@ -1057,7 +1057,7 @@ void idProjectile::ClientPredictionThink( void ) {
 idProjectile::WriteToSnapshot
 ================
 */
-void idProjectile::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idProjectile::WriteToSnapshot( idBitMsg &msg ) const {
 	msg.WriteBits( owner.GetSpawnId(), 32 );
 	msg.WriteBits( state, 3 );
 	msg.WriteBits( fl.hidden, 1 );
@@ -1084,7 +1084,7 @@ void idProjectile::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idProjectile::ReadFromSnapshot
 ================
 */
-void idProjectile::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idProjectile::ReadFromSnapshot( const idBitMsg &msg ) {
 	projectileState_t newState;
 
 	owner.SetSpawnId( msg.ReadBits( 32 ) );
@@ -1158,7 +1158,7 @@ void idProjectile::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 		physicsObj.SetAxis( axis );
 	}
 
-	if ( msg.HasChanged() ) {
+	{
 		UpdateVisuals();
 	}
 }
