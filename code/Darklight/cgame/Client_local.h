@@ -4,9 +4,9 @@
 #include "Client_PlayerView.h"
 
 //
-// rvmClientLocal
+// rvmClientGameLocal
 //
-class rvmClientLocal {
+class rvmClientGameLocal {
 public:
 	void Init(void);
 	void BeginLevel(void);
@@ -16,4 +16,4 @@ private:
 	idPlayerView*					playerView;
 };
 
-extern rvmClientLocal clientLocal;
+extern rvmClientGameLocal clientLocal;

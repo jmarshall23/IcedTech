@@ -4,23 +4,23 @@
 #include "Game_precompiled.h"
 #include "Client_local.h"
 
-rvmClientLocal clientLocal;
+rvmClientGameLocal clientLocal;
 
 /*
 ==================
-rvmClientLocal::Init
+rvmClientGameLocal::Init
 ==================
 */
-void rvmClientLocal::Init(void) {
+void rvmClientGameLocal::Init(void) {
 	playerView = NULL;
 }
 
 /*
 ==================
-rvmClientLocal::BeginLevel
+rvmClientGameLocal::BeginLevel
 ==================
 */
-void rvmClientLocal::BeginLevel(void) {
+void rvmClientGameLocal::BeginLevel(void) {
 	if (playerView != NULL) {
 		common->FatalError("ClientLocal::BeginLevel: playerView != NULL\n");
 	}
@@ -32,10 +32,10 @@ void rvmClientLocal::BeginLevel(void) {
 
 /*
 ==================
-rvmClientLocal::MapShutdown
+rvmClientGameLocal::MapShutdown
 ==================
 */
-void rvmClientLocal::MapShutdown(void) {
+void rvmClientGameLocal::MapShutdown(void) {
 	if(playerView != NULL) {
 		delete playerView;
 		playerView = NULL;
@@ -44,10 +44,10 @@ void rvmClientLocal::MapShutdown(void) {
 
 /*
 ==================
-rvmClientLocal::RenderPlayerView
+rvmClientGameLocal::RenderPlayerView
 ==================
 */
-void rvmClientLocal::RenderPlayerView(int clientNum) {
+void rvmClientGameLocal::RenderPlayerView(int clientNum) {
 	idPlayer* player = gameLocal.entities[clientNum]->Cast<idPlayer>();
 	if(player == NULL) {
 		return;
@@ -59,7 +59,7 @@ void rvmClientLocal::RenderPlayerView(int clientNum) {
 
 /*
 ==================
-rvmClientLocal::InitClientGame
+rvmClientGameLocal::InitClientGame
 ==================
 */
 void idGameLocal::InitClientGame(void) {
@@ -68,7 +68,7 @@ void idGameLocal::InitClientGame(void) {
 
 /*
 ==================
-rvmClientLocal::ShutdownClientMap
+rvmClientGameLocal::ShutdownClientMap
 ==================
 */
 void idGameLocal::ShutdownClientMap(void) {
