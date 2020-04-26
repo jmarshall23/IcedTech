@@ -555,3 +555,7 @@ void Win_SetErrorText( const char *buf ) {
 		s_wcd.hwndInputLine = NULL;
 	}
 }
+
+void Sys_SetDedicatedConsoleTitle(const char *txt) {
+	SetWindowText(s_wcd.hWnd, txt);
+}

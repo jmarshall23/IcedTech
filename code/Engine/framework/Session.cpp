@@ -298,6 +298,10 @@ called on errors and game exits
 ===============
 */
 void idSessionLocal::Stop() {
+	if (common->IsDedicatedServer()) {
+		Sys_SetDedicatedConsoleTitle(GAME_NAME);
+	}
+
 	ClearWipe();
 
 	// clear mapSpawned and demo playing flags
@@ -1478,6 +1482,10 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 	idStr fullMapName = "maps/";
 	fullMapName += mapString;
 	fullMapName.StripFileExtension();
+
+	if (common->IsDedicatedServer()) {
+		Sys_SetDedicatedConsoleTitle(va("%s: %s", GAME_NAME, fullMapName.c_str()));
+	}
 
 	// cause prints to force screen updates as a pacifier,
 	// and draw the loading gui instead of game draws

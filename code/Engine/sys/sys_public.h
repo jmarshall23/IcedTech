@@ -499,4 +499,6 @@ extern idSys *				sys;
 bool Sys_LoadOpenAL( void );
 void Sys_FreeOpenAL( void );
 
+void Sys_SetDedicatedConsoleTitle(const char* txt);
+
 #endif /* !__SYS_PUBLIC__ */
