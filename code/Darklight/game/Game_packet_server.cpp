@@ -69,6 +69,29 @@ void idGameLocal::ServerToggleSpectate(int clientNum, bool spectate) {
 
 /*
 ====================
+idGameLocal::ServerTeleportPlayer
+====================
+*/
+void idGameLocal::ServerTeleportPlayer(int clientNum, idVec3 position, idMat3 axis) {
+	rvmNetworkPacket teleportPacket(clientNum);
+	idQuat quat;
+
+	quat = axis.ToQuat();
+
+	teleportPacket.msg.WriteUShort(NET_OPCODE_TELEPORTPLAYER);
+	teleportPacket.msg.WriteByte(clientNum);
+	teleportPacket.msg.WriteFloat(position.x);
+	teleportPacket.msg.WriteFloat(position.y);
+	teleportPacket.msg.WriteFloat(position.z);
+	teleportPacket.msg.WriteFloat(quat.x);
+	teleportPacket.msg.WriteFloat(quat.y);
+	teleportPacket.msg.WriteFloat(quat.z);
+	teleportPacket.msg.WriteFloat(quat.w);
+	common->ServerSendReliableMessage(-1, teleportPacket.msg);
+}
+
+/*
+====================
 idGameLocal::ServerProcessPacket
 ====================
 */
@@ -108,6 +131,10 @@ void idGameLocal::ServerClientBegin(int clientNum, bool isBot, const char* botNa
 
 	// Disable spectate on the client.
 	ServerToggleSpectate(clientNum, false);
+
+	// Teleport the player to the spawn point.
+	idPlayer* player = entities[clientNum]->Cast<idPlayer>();
+	ServerTeleportPlayer(clientNum, player->GetOrigin(), player->GetPhysics()->GetAxis());
 }
 
 /*

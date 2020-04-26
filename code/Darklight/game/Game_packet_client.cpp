@@ -75,6 +75,26 @@ void idGameLocal::ClientProcessPacket(int clientNum, const idBitMsg& msg) {
 				entities[_clientNum]->Cast<idPlayer>()->Spectate(_spectate);
 			}
 			break;
+		case NET_OPCODE_TELEPORTPLAYER:
+			{
+				int _clientNum;
+				idVec3 _position;
+				idQuat _quat;
+
+				_clientNum = msg.ReadByte();
+				_position.x = msg.ReadFloat();
+				_position.y = msg.ReadFloat();
+				_position.z = msg.ReadFloat();
+
+				_quat.x = msg.ReadFloat();
+				_quat.y = msg.ReadFloat();
+				_quat.z = msg.ReadFloat();
+				_quat.w = msg.ReadFloat();
+
+				entities[_clientNum]->Cast<idPlayer>()->SetOrigin(_position);
+				entities[_clientNum]->Cast<idPlayer>()->GetPhysics()->SetAxis(_quat.ToMat3());
+			}
+			break;
 		default:
 			common->Warning("ClientProcessPacket: Unknown OpCode %d\n", opCode);
 			break;

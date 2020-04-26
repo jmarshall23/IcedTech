@@ -48,6 +48,7 @@ enum rvmNetworkOpCodes {
 	NET_OPCODE_SNAPSHOT				= 0x0008,
 	NET_OPCODE_SPECTATE				= 0x0009,
 	NET_OPCODE_IMPULSE				= 0x0010,
+	NET_OPCODE_TELEPORTPLAYER		= 0x0011,
 };
 
 #define LAGO_IMG_WIDTH 64
@@ -482,6 +483,7 @@ public:
 	void					ServerClientBegin(int clientNum, bool isBot, const char* botName);
 	void					ClientReadSnapshot(int clientNum, int sequence, const int gameFrame, const int gameTime, const int dupeUsercmds, const int aheadOfServer, const idBitMsg& msg);
 	void					ServerToggleSpectate(int clientNum, bool spectate);
+	void					ServerTeleportPlayer(int clientNum, idVec3 position, idMat3 axis);
 
 	void					AlertBots(idPlayer *player, idVec3 alert_position);
 
@@ -590,6 +592,8 @@ public:
 	void					RemoveEffect(fxEmitterInstance_t* fx);
 
 	void					Trace(trace_t& results, const idVec3& start, const idVec3& end, int contentMask, int passEntity);
+
+	int						GetCurrentServerSnapshotEntity() { return serverWriteSnapshotEntity; }
 public:
 	int						 nextDebrisSpawnTime;
 	idList<rvClientEntity*>  clientEntityThreadWork;
@@ -735,6 +739,7 @@ private:
 // jmarshall end
 
 	int						clientSpawnCount;
+	int						serverWriteSnapshotEntity;
 
 	idParallelJobList		*clientPhysicsJob;
 private:

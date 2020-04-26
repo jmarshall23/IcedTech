@@ -76,6 +76,7 @@ void idGameLocal::InitAsyncNetwork( void ) {
 	savedEventQueue.Init();
 
 	snapShotSequence = 0;
+	serverWriteSnapshotEntity = 0;
 
 	entityDefBits = -( idMath::BitsForInteger( declManager->GetNumDecls( DECL_ENTITYDEF ) ) + 1 );
 	localClientNum = 0; // on a listen server SetLocalUser will set this right
@@ -538,6 +539,8 @@ void idGameLocal::ServerWriteSnapshot( int clientNum, int sequence, idBitMsg &ms
 
 	// free too old snapshots
 	FreeSnapshotsOlderThanSequence(clientNum, sequence - 64);
+
+	serverWriteSnapshotEntity = clientNum;
 
 	// allocate new snapshot
 	snapshot = snapshotAllocator.Alloc();

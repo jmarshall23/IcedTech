@@ -7972,7 +7972,9 @@ idPlayer::WriteToSnapshot
 ================
 */
 void idPlayer::WriteToSnapshot( idBitMsg &msg ) const {
-	physicsObj.WriteToSnapshot( msg );
+	if (entityNumber != gameLocal.GetCurrentServerSnapshotEntity()) {
+		physicsObj.WriteToSnapshot(msg);
+	}
 	WriteBindToSnapshot( msg );
 	msg.WriteDeltaFloat( 0.0f, deltaViewAngles[0] );
 	msg.WriteDeltaFloat( 0.0f, deltaViewAngles[1] );
@@ -8009,7 +8011,9 @@ void idPlayer::ReadFromSnapshot( const idBitMsg &msg ) {
 
 	oldHealth = health;
 
-	physicsObj.ReadFromSnapshot( msg );
+	if (entityNumber != gameLocal.localClientNum) {
+		physicsObj.ReadFromSnapshot(msg);
+	}
 	ReadBindFromSnapshot( msg );
 	deltaViewAngles[0] = msg.ReadDeltaFloat( 0.0f );
 	deltaViewAngles[1] = msg.ReadDeltaFloat( 0.0f );
