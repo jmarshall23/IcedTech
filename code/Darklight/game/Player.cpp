@@ -1211,9 +1211,6 @@ void idPlayer::Init( void ) {
 	talkCursor				= 0;
 	focusVehicle			= NULL;
 
-	// remove any damage effects
-	playerView.ClearEffects();
-
 	// damage values
 	fl.takedamage			= true;
 	ClearPain();
@@ -1498,9 +1495,6 @@ void idPlayer::Spawn( void ) {
 	// create combat collision hull for exact collision detection
 	SetCombatModel();
 
-	// init the damage effects
-	playerView.SetPlayerEntity( this );
-
 	// supress model in non-player views, but allow it in mirrors and remote views
 	renderEntity->SetSuppressSurfaceInViewID(entityNumber+1);
 
@@ -1627,7 +1621,6 @@ void idPlayer::Save( idSaveGame *savefile ) const {
 	int i;
 
 	savefile->WriteUsercmd( usercmd );
-	playerView.Save( savefile );
 
 	savefile->WriteBool( noclip );
 	savefile->WriteBool( godmode );
@@ -1834,7 +1827,6 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	float set;
 
 	savefile->ReadUsercmd( usercmd );
-	playerView.Restore( savefile );
 
 	savefile->ReadBool( noclip );
 	savefile->ReadBool( godmode );
@@ -2750,7 +2742,7 @@ void idPlayer::WeaponFireFeedback( const idDict *weaponDef ) {
 	pfl.weaponFired = true;
 
 	// update view feedback
-	playerView.WeaponFireFeedback( weaponDef );
+//	playerView.WeaponFireFeedback( weaponDef );
 }
 
 /*
@@ -6325,7 +6317,7 @@ void idPlayer::Think( void ) {
 
 		LinkCombat();
 
-		playerView.CalculateShake();
+//		playerView.CalculateShake();
 	}
 
 	if ( !( thinkFlags & TH_THINK ) ) {
@@ -6739,7 +6731,7 @@ void idPlayer::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &di
 	// the total will be turned into screen blends and view angle kicks
 	// at the end of the frame
 	if ( health > 0 ) {
-		playerView.DamageImpulse( localDamageVector, &damageDef->dict );
+	//	playerView.DamageImpulse( localDamageVector, &damageDef->dict );
 	}
 
 	// do the damage
@@ -6832,7 +6824,7 @@ void idPlayer::Teleport( const idVec3 &origin, const idAngles &angles, idEntity 
 	oldViewYaw = viewAngles.yaw;
 
 	if ( common->IsMultiplayer() ) {
-		playerView.Flash( colorWhite, 140 );
+//		playerView.Flash( colorWhite, 140 );
 	}
 
 	UpdateVisuals();
@@ -7197,7 +7189,7 @@ void idPlayer::GetViewPos( idVec3 &origin, idMat3 &axis ) const {
 		origin = GetEyePosition();
 	} else {
 		origin = GetEyePosition() + viewBob;
-		angles = viewAngles + viewBobAngles + playerView.AngleOffset();
+		angles = viewAngles + viewBobAngles;// +playerView.AngleOffset();
 
 		axis = angles.ToMat3() * physicsObj.GetGravityAxis();
 
@@ -7220,7 +7212,7 @@ void idPlayer::CalculateFirstPersonView( void ) {
 		idVec3 origin;
 		idAngles ang;
 
-		ang = viewBobAngles + playerView.AngleOffset();
+		ang = viewBobAngles;// +playerView.AngleOffset();
 		ang.yaw += viewAxis[ 0 ].ToYaw();
 		
 		jointHandle_t joint = animator.GetJointHandle( "camera" );
@@ -7716,7 +7708,7 @@ void idPlayer::Event_ExitTeleporter( void ) {
 	physicsObj.SetLinearVelocity( exitEnt->GetPhysics()->GetAxis()[ 0 ] * pushVel );
 	physicsObj.ClearPushedVelocity();
 	// teleport fx
-	playerView.Flash( colorWhite, 120 );
+	//playerView.Flash( colorWhite, 120 );
 
 	// clear the ik heights so model doesn't appear in the wrong place
 //	walkIK.EnableAll();
@@ -7888,7 +7880,7 @@ void idPlayer::ClientPredictionThink( void ) {
 	LinkCombat();
 
 	if ( gameLocal.isNewFrame && entityNumber == gameLocal.localClientNum ) {
-		playerView.CalculateShake();
+	//	playerView.CalculateShake();
 	}
 }
 
@@ -8060,7 +8052,7 @@ void idPlayer::ReadFromSnapshot( const idBitMsg &msg ) {
 		SetWaitState( "" );
 		animator.ClearAllJoints();
 		if ( entityNumber == gameLocal.localClientNum ) {
-			playerView.Fade( colorBlack, 12000 );
+//			playerView.Fade( colorBlack, 12000 );
 		}
 		StartRagdoll();
 		physicsObj.SetMovementType( PM_DEAD );
@@ -8084,7 +8076,7 @@ void idPlayer::ReadFromSnapshot( const idBitMsg &msg ) {
 			// damage feedback
 			const idDeclEntityDef *def = static_cast<const idDeclEntityDef *>( declManager->DeclByIndex( DECL_ENTITYDEF, lastDamageDef, false ) );
 			if ( def ) {
-				playerView.DamageImpulse( lastDamageDir * viewAxis.Transpose(), &def->dict );
+//				playerView.DamageImpulse( lastDamageDir * viewAxis.Transpose(), &def->dict );
 				pfl.pain = Pain( NULL, NULL, oldHealth - health, lastDamageDir, lastDamageLocation );
 				lastDmgTime = gameLocal.time;
 			} else {

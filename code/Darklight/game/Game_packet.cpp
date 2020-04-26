@@ -1,4 +1,4 @@
-// Game_packet_server.cpp
+// Game_packet.cpp
 //
 
 #include "Game_precompiled.h"

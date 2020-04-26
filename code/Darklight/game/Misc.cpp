@@ -154,7 +154,7 @@ void idPlayerStart::Event_TeleportStage( idEntity *_player ) {
 	float teleportDelay = spawnArgs.GetFloat( "teleportDelay" );
 	switch ( teleportStage ) {
 		case 0:
-			player->playerView.Flash( colorWhite, 125 );
+//			player->playerView.Flash( colorWhite, 125 );
 			player->SetInfluenceLevel( INFLUENCE_LEVEL3 );
 			player->SetInfluenceView( spawnArgs.GetString( "mtr_teleportFx" ), NULL, 0.0f, NULL );
 			gameSoundWorld->FadeSoundClasses( 0, -20.0f, teleportDelay );

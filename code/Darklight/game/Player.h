@@ -213,8 +213,6 @@ public:
 
 	usercmd_t				usercmd;
 
-	class idPlayerView		playerView;			// handles damage kicks and effects
-
 	bool					noclip;
 	bool					godmode;
 

@@ -743,6 +743,8 @@ private:
 
 	idParallelJobList		*clientPhysicsJob;
 private:
+	void					InitClientGame(void);
+	void					ShutdownClientMap(void);
 	void					ClientNetSendUserCmd(void);
 private:
 	const idDeclEntityDef* debrisEntityDef[DEBRIS_MODEL_COUNT];
@@ -918,7 +920,6 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "Light.h"
 #include "WorldSpawn.h"
 #include "Item.h"
-#include "PlayerView.h"
 #include "PlayerIcon.h"
 #include "Player.h"
 #include "Mover.h"

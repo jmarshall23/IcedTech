@@ -1939,127 +1939,127 @@ const char* idMultiplayerGame::HandleGuiCommands( const char *_menuCommand ) {
 idMultiplayerGame::Draw
 ================
 */
-bool idMultiplayerGame::Draw( int clientNum ) {
-	idPlayer *player, *viewPlayer;
-
-	// clear the render entities for any players that don't need
-	// icons and which might not be thinking because they weren't in
-	// the last snapshot.
-	for ( int i = 0; i < gameLocal.numClients; i++ ) {
-		player = static_cast<idPlayer *>( gameLocal.entities[ i ] );
-		if ( player && !player->NeedsIcon() ) {
-			player->HidePlayerIcons();
-		}
-	}
-
-	player = viewPlayer = static_cast<idPlayer *>( gameLocal.entities[ clientNum ] );
-
-	if ( player == NULL ) {
-		return false;
-	}
-
-	if ( player->spectating ) {
-		viewPlayer = static_cast<idPlayer *>( gameLocal.entities[ player->spectator ] );
-		if ( viewPlayer == NULL ) {
-			return false;
-		}
-	}
-
-	UpdatePlayerRanks();
-	UpdateHud( viewPlayer, player->hud );
-	// use the hud of the local player
-	viewPlayer->playerView.RenderPlayerView( player->hud );
-
-	if ( currentMenu ) {
-#if 0
-		// uncomment this if you want to track when players are in a menu
-		if ( !bCurrentMenuMsg ) {
-			idBitMsg	outMsg;
-			byte		msgBuf[ 128 ];
-
-			outMsg.Init( msgBuf, sizeof( msgBuf ) );
-			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_MENU );
-			outMsg.WriteBits( 1, 1 );
-			common->ClientSendReliableMessage( outMsg );
-
-			bCurrentMenuMsg = true;
-		}
-#endif
-		if ( player->wantSpectate ) {
-			mainGui->SetStateString( "spectext", common->GetLanguageDict()->GetString( "#str_04249" ) );
-		} else {
-			mainGui->SetStateString( "spectext", common->GetLanguageDict()->GetString( "#str_04250" ) );
-		}
-		DrawChat();
-		if ( currentMenu == 1 ) {
-			UpdateMainGui();
-			mainGui->Redraw( gameLocal.time );
-		} else {
-			msgmodeGui->Redraw( gameLocal.time );
-		}
-	} else {
-#if 0
-		// uncomment this if you want to track when players are in a menu
-		if ( bCurrentMenuMsg ) {
-			idBitMsg	outMsg;
-			byte		msgBuf[ 128 ];
-
-			outMsg.Init( msgBuf, sizeof( msgBuf ) );
-			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_MENU );
-			outMsg.WriteBits( 0, 1 );
-			common->ClientSendReliableMessage( outMsg );
-
-			bCurrentMenuMsg = false;
-		}
-#endif
-		if ( player->spectating ) {
-			idStr spectatetext[ 2 ];
-			int ispecline = 0;
-			if ( gameLocal.gameType == GAME_TOURNEY ) {
-				if ( !player->wantSpectate ) {
-					spectatetext[ 0 ] = common->GetLanguageDict()->GetString( "#str_04246" );
-					switch ( player->tourneyLine ) {
-						case 0:
-							spectatetext[ 0 ] += common->GetLanguageDict()->GetString( "#str_07003" );
-							break;
-						case 1:
-							spectatetext[ 0 ] += common->GetLanguageDict()->GetString( "#str_07004" );
-							break;
-						case 2:
-							spectatetext[ 0 ] += common->GetLanguageDict()->GetString( "#str_07005" );
-							break;
-						default:
-							spectatetext[ 0 ] += va( common->GetLanguageDict()->GetString( "#str_07006" ), player->tourneyLine );
-							break;
-					}
-					ispecline++;
-				}
-			} else if ( gameLocal.gameType == GAME_LASTMAN ) {
-				if ( !player->wantSpectate ) {
-					spectatetext[ 0 ] = common->GetLanguageDict()->GetString( "#str_07007" );
-					ispecline++;
-				}
-			}
-			if ( player->spectator != player->entityNumber ) {
-				spectatetext[ ispecline ] = va( common->GetLanguageDict()->GetString( "#str_07008" ), viewPlayer->GetUserInfo()->GetString( "ui_name" ) );
-			} else if ( !ispecline ) {
-				spectatetext[ 0 ] = common->GetLanguageDict()->GetString( "#str_04246" );
-			}
-			spectateGui->SetStateString( "spectatetext0", spectatetext[0].c_str() );
-			spectateGui->SetStateString( "spectatetext1", spectatetext[1].c_str() );
-			if ( vote != VOTE_NONE ) {
-				spectateGui->SetStateString( "vote", va( "%s (y: %d n: %d)", voteString.c_str(), (int)yesVotes, (int)noVotes ) );
-			} else {
-				spectateGui->SetStateString( "vote", "" );
-			}
-			spectateGui->Redraw( gameLocal.time );
-		}
-		DrawChat();
-		DrawScoreBoard( player );
-	}
-
-	return true;
-}
+//bool idMultiplayerGame::Draw( int clientNum ) {
+//	idPlayer *player, *viewPlayer;
+//
+//	// clear the render entities for any players that don't need
+//	// icons and which might not be thinking because they weren't in
+//	// the last snapshot.
+//	for ( int i = 0; i < gameLocal.numClients; i++ ) {
+//		player = static_cast<idPlayer *>( gameLocal.entities[ i ] );
+//		if ( player && !player->NeedsIcon() ) {
+//			player->HidePlayerIcons();
+//		}
+//	}
+//
+//	player = viewPlayer = static_cast<idPlayer *>( gameLocal.entities[ clientNum ] );
+//
+//	if ( player == NULL ) {
+//		return false;
+//	}
+//
+//	if ( player->spectating ) {
+//		viewPlayer = static_cast<idPlayer *>( gameLocal.entities[ player->spectator ] );
+//		if ( viewPlayer == NULL ) {
+//			return false;
+//		}
+//	}
+//
+//	UpdatePlayerRanks();
+//	UpdateHud( viewPlayer, player->hud );
+//	// use the hud of the local player
+//	viewPlayer->playerView.RenderPlayerView( player->hud );
+//
+//	if ( currentMenu ) {
+//#if 0
+//		// uncomment this if you want to track when players are in a menu
+//		if ( !bCurrentMenuMsg ) {
+//			idBitMsg	outMsg;
+//			byte		msgBuf[ 128 ];
+//
+//			outMsg.Init( msgBuf, sizeof( msgBuf ) );
+//			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_MENU );
+//			outMsg.WriteBits( 1, 1 );
+//			common->ClientSendReliableMessage( outMsg );
+//
+//			bCurrentMenuMsg = true;
+//		}
+//#endif
+//		if ( player->wantSpectate ) {
+//			mainGui->SetStateString( "spectext", common->GetLanguageDict()->GetString( "#str_04249" ) );
+//		} else {
+//			mainGui->SetStateString( "spectext", common->GetLanguageDict()->GetString( "#str_04250" ) );
+//		}
+//		DrawChat();
+//		if ( currentMenu == 1 ) {
+//			UpdateMainGui();
+//			mainGui->Redraw( gameLocal.time );
+//		} else {
+//			msgmodeGui->Redraw( gameLocal.time );
+//		}
+//	} else {
+//#if 0
+//		// uncomment this if you want to track when players are in a menu
+//		if ( bCurrentMenuMsg ) {
+//			idBitMsg	outMsg;
+//			byte		msgBuf[ 128 ];
+//
+//			outMsg.Init( msgBuf, sizeof( msgBuf ) );
+//			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_MENU );
+//			outMsg.WriteBits( 0, 1 );
+//			common->ClientSendReliableMessage( outMsg );
+//
+//			bCurrentMenuMsg = false;
+//		}
+//#endif
+//		if ( player->spectating ) {
+//			idStr spectatetext[ 2 ];
+//			int ispecline = 0;
+//			if ( gameLocal.gameType == GAME_TOURNEY ) {
+//				if ( !player->wantSpectate ) {
+//					spectatetext[ 0 ] = common->GetLanguageDict()->GetString( "#str_04246" );
+//					switch ( player->tourneyLine ) {
+//						case 0:
+//							spectatetext[ 0 ] += common->GetLanguageDict()->GetString( "#str_07003" );
+//							break;
+//						case 1:
+//							spectatetext[ 0 ] += common->GetLanguageDict()->GetString( "#str_07004" );
+//							break;
+//						case 2:
+//							spectatetext[ 0 ] += common->GetLanguageDict()->GetString( "#str_07005" );
+//							break;
+//						default:
+//							spectatetext[ 0 ] += va( common->GetLanguageDict()->GetString( "#str_07006" ), player->tourneyLine );
+//							break;
+//					}
+//					ispecline++;
+//				}
+//			} else if ( gameLocal.gameType == GAME_LASTMAN ) {
+//				if ( !player->wantSpectate ) {
+//					spectatetext[ 0 ] = common->GetLanguageDict()->GetString( "#str_07007" );
+//					ispecline++;
+//				}
+//			}
+//			if ( player->spectator != player->entityNumber ) {
+//				spectatetext[ ispecline ] = va( common->GetLanguageDict()->GetString( "#str_07008" ), viewPlayer->GetUserInfo()->GetString( "ui_name" ) );
+//			} else if ( !ispecline ) {
+//				spectatetext[ 0 ] = common->GetLanguageDict()->GetString( "#str_04246" );
+//			}
+//			spectateGui->SetStateString( "spectatetext0", spectatetext[0].c_str() );
+//			spectateGui->SetStateString( "spectatetext1", spectatetext[1].c_str() );
+//			if ( vote != VOTE_NONE ) {
+//				spectateGui->SetStateString( "vote", va( "%s (y: %d n: %d)", voteString.c_str(), (int)yesVotes, (int)noVotes ) );
+//			} else {
+//				spectateGui->SetStateString( "vote", "" );
+//			}
+//			spectateGui->Redraw( gameLocal.time );
+//		}
+//		DrawChat();
+//		DrawScoreBoard( player );
+//	}
+//
+//	return true;
+//}
 
 /*
 ================

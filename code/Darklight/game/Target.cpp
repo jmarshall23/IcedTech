@@ -883,7 +883,7 @@ idTarget_SetInfluence::Event_Flash
 */
 void idTarget_SetInfluence::Event_Flash( float flash, int out ) {
 	idPlayer *player = gameLocal.GetLocalPlayer();
-	player->playerView.Fade( idVec4( 1, 1, 1, 1 ), flash );
+	//player->playerView.Fade( idVec4( 1, 1, 1, 1 ), flash );
 	const idSoundShader *shader = NULL;
 	if ( !out && flashInSound.Length() ){
 		shader = declManager->FindSound( flashInSound );
@@ -903,7 +903,7 @@ idTarget_SetInfluence::Event_ClearFlash
 */
 void idTarget_SetInfluence::Event_ClearFlash( float flash ) {
 	idPlayer *player = gameLocal.GetLocalPlayer();
-	player->playerView.Fade( vec4_zero , flash );		
+//	player->playerView.Fade( vec4_zero , flash );		
 }
 /*
 ================

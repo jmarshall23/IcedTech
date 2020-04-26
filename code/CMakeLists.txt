@@ -137,6 +137,14 @@ set(src_idlib
 	./engine/idlib/math/Vector.h	
 )
 
+set(src_cgame 
+	./Darklight/cgame/Client_Local.cpp
+	./Darklight/cgame/Client_Local.h
+	./Darklight/cgame/Client_Packet.cpp
+	./Darklight/cgame/Client_PlayerView.h
+	./Darklight/cgame/Client_PlayerView.cpp
+)
+
 set(src_game
 	./Darklight/game/bot/bot.cpp
 	./Darklight/game/bot/bot_input.cpp
@@ -192,8 +200,7 @@ set(src_game
 	./Darklight/game/Game_local.cpp
 	./Darklight/game/Game_local.h
 	./Darklight/game/Game_network.cpp
-	./Darklight/game/Game_packet_server.cpp
-	./Darklight/game/Game_packet_client.cpp
+	./Darklight/game/Game_packet.cpp
 	./Darklight/game/Game_parallel.cpp
 	./Darklight/game/Game_render.cpp
 	./Darklight/game/IK.cpp
@@ -216,8 +223,6 @@ set(src_game
 	./Darklight/game/Player.h
 	./Darklight/game/PlayerIcon.cpp
 	./Darklight/game/PlayerIcon.h
-	./Darklight/game/PlayerView.cpp
-	./Darklight/game/PlayerView.h
 	./Darklight/game/Projectile.cpp
 	./Darklight/game/Projectile.h
 	./Darklight/game/PortalSky.cpp
@@ -330,7 +335,7 @@ target_compile_definitions(idLib PRIVATE NAME=$<TARGET_FILE_NAME:idLib>)
 set_target_properties(idLib PROPERTIES LINK_FLAGS "/PDB:\"idlib.pdb\"")
 
 # Game Project
-add_library(game MODULE  ${src_game} )
+add_library(game MODULE  ${src_game} ${src_cgame} )
 target_compile_definitions(game PRIVATE GAME_DLL=1)
 target_link_libraries(game idLib)
 add_precompiled_header( game game_precompiled.h  SOURCE_CXX ./Darklight/game/game_precompiled.cpp )

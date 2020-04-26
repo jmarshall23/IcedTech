@@ -1531,7 +1531,7 @@ void idThread::Event_FadeIn( idVec3 &color, float time ) {
 	player = gameLocal.GetLocalPlayer();
 	if ( player ) {
 		fadeColor.Set( color[ 0 ], color[ 1 ], color[ 2 ], 0.0f );
-		player->playerView.Fade(fadeColor, SEC2MS( time ) );
+//		player->playerView.Fade(fadeColor, SEC2MS( time ) );
 	}
 }
 
@@ -1547,7 +1547,7 @@ void idThread::Event_FadeOut( idVec3 &color, float time ) {
 	player = gameLocal.GetLocalPlayer();
 	if ( player ) {
 		fadeColor.Set( color[ 0 ], color[ 1 ], color[ 2 ], 1.0f );
-		player->playerView.Fade(fadeColor, SEC2MS( time ) );
+	//	player->playerView.Fade(fadeColor, SEC2MS( time ) );
 	}
 }
 
@@ -1563,7 +1563,7 @@ void idThread::Event_FadeTo( idVec3 &color, float alpha, float time ) {
 	player = gameLocal.GetLocalPlayer();
 	if ( player ) {
 		fadeColor.Set( color[ 0 ], color[ 1 ], color[ 2 ], alpha );
-		player->playerView.Fade(fadeColor, SEC2MS( time ) );
+//		player->playerView.Fade(fadeColor, SEC2MS( time ) );
 	}
 }
 

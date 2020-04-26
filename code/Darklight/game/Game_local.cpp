@@ -1485,6 +1485,8 @@ void idGameLocal::MapShutdown( void ) {
 		navMeshFile = nullptr;
 	}
 
+	ShutdownClientMap();
+
 	gamestate = GAMESTATE_SHUTDOWN;
 
 	if ( gameRenderWorld ) {
@@ -2503,30 +2505,6 @@ void idGameLocal::CalcFov( float base_fov, float &fov_x, float &fov_y ) const {
 		Printf( sys->FPU_GetState() );
 		Error( "idGameLocal::CalcFov: bad result" );
 	}
-}
-
-/*
-================
-idGameLocal::Draw
-
-makes rendering and sound system calls
-================
-*/
-bool idGameLocal::Draw( int clientNum ) {
-	if ( common->IsMultiplayer() ) {
-		return mpGame.Draw( clientNum );
-	}
-
-	idPlayer *player = static_cast<idPlayer *>(entities[ clientNum ]);
-
-	if ( !player ) {
-		return false;
-	}
-
-	// render the scene
-	player->playerView.RenderPlayerView( player->hud );
-
-	return true;
 }
 
 /*

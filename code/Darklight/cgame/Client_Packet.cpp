@@ -2,6 +2,7 @@
 //
 
 #include "Game_precompiled.h"
+#include "Client_local.h"
 
 extern idCVar ui_name;
 
@@ -107,6 +108,8 @@ idGameLocal::MapLoadFinished
 ================
 */
 void idGameLocal::MapLoadFinished(void) {
+	clientLocal.BeginLevel();
+
 	rvmNetworkPacket packet(common->GetLocalClientNum());
 	packet.msg.WriteShort(NET_OPCODE_CLIENTLOADED);
 	common->ClientSendReliableMessage(packet.msg);
