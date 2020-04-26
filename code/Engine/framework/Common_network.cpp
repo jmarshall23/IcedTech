@@ -95,15 +95,6 @@ bool idCommonLocal::IsMultiplayer(void) {
 
 /*
 ==================
-idCommonLocal::DisconnectFromServer
-==================
-*/
-void idCommonLocal::DisconnectFromServer(void) {
-
-}
-
-/*
-==================
 idCommonLocal::KillServer
 ==================
 */
@@ -208,6 +199,13 @@ void idCommonLocal::NetworkFrame(int numGameFrames) {
 			enet_packet_destroy(ev.packet);
 			continue;
 		}
+
+		if(ev.type == ENET_EVENT_TYPE_DISCONNECT) {
+			if(IsClient()) {
+				DisconnectFromServer();
+				return;
+			}
+		}
 	}
 
 	// Run the server commands.
@@ -242,9 +240,9 @@ void idCommonLocal::NetworkFrame(int numGameFrames) {
 	}
 		
 
-	if (!IsDedicatedServer() && IsServer() && localClientNum != -1) {
+	if (!IsDedicatedServer() && localClientNum != -1) {
 		usercmd_t cmd = usercmdGen->GetDirectUsercmd();
-		memcpy(&userCmds[0], &cmd, sizeof(usercmd_t));
+		memcpy(&userCmds[localClientNum], &cmd, sizeof(usercmd_t));
 	}
 
 	// advance game

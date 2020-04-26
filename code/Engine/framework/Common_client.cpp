@@ -104,7 +104,29 @@ void idCommonLocal::ExecuteClientMapChange(const char* mapName, const char* game
 	cvarSystem->SetCVarString("si_map", mapName);
 	cvarSystem->SetCVarString("si_gameType", "deathmatch");
 
-	// Stop any current game.
-	session->Stop();
 	sessLocal.ExecuteServerMapChange();
+}
+
+
+/*
+==================
+idCommonLocal::DisconnectFromServer
+==================
+*/
+void idCommonLocal::DisconnectFromServer(void) {
+	if (networkServer == NULL)
+		return;
+
+	common->Printf("Disconnected from the server.\n");
+
+	enet_peer_reset(networkServer->serverPeer);
+	enet_host_destroy(networkServer->client);
+
+	delete networkServer;
+	networkServer = NULL;
+	
+	networkType = NETWORK_TYPE_NONE;
+
+	// Server disconnected, drop out and return to the main menu(todo take us to a score screen of some kind?).
+	sessLocal.Stop();
 }

@@ -33,7 +33,17 @@ void idGameLocal::ServerProcessPacket(int clientNum, const idBitMsg& msg) {
 		case NET_OPCODE_CLIENTLOADED:
 			{				
 				ServerClientBegin(clientNum, false, "");
-				
+			}
+			break;
+		case NET_OPCODE_IMPULSE:
+			{
+				int _spawnId = msg.ReadBits(32);
+				int _gameTime = msg.ReadLong();
+				int _impulse = msg.ReadBits(6);
+
+				if (_impulse > 0) {
+					entities[clientNum]->Cast<idPlayer>()->PerformImpulse(_impulse);
+				}
 			}
 			break;
 		default:

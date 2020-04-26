@@ -5555,16 +5555,16 @@ idPlayer::PerformImpulse
 ==============
 */
 void idPlayer::PerformImpulse( int impulse ) {
-
 	if ( common->IsClient() ) {
-		idBitMsg	msg;
-		byte		msgBuf[MAX_EVENT_PARAM_SIZE];
+		assert(entityNumber == gameLocal.localClientNum);
 
-		assert( entityNumber == gameLocal.localClientNum );
-		msg.Init( msgBuf, sizeof( msgBuf ) );
-		msg.BeginWriting();
-		msg.WriteBits( impulse, 6 );
-		ClientSendEvent( EVENT_IMPULSE, &msg );
+		rvmNetworkPacket impulsePacket(entityNumber);
+		impulsePacket.msg.WriteUShort(NET_OPCODE_IMPULSE);
+		impulsePacket.msg.WriteBits(gameLocal.GetSpawnId(this), 32);
+		impulsePacket.msg.WriteLong(gameLocal.time);
+		impulsePacket.msg.WriteBits(impulse, 6);
+
+		common->ClientSendReliableMessage(impulsePacket.msg);		
 	}
 
 	if ( impulse >= IMPULSE_0 && impulse <= IMPULSE_12 ) {
@@ -7766,11 +7766,12 @@ void idPlayer::ClientPredictionThink( void ) {
 	// clear the ik before we do anything else so the skeleton doesn't get updated twice
 //	walkIK.ClearJointMods();
 
-	if ( gameLocal.isNewFrame ) {
-		if ( ( usercmd.flags & UCF_IMPULSE_SEQUENCE ) != ( oldFlags & UCF_IMPULSE_SEQUENCE ) ) {
-			PerformImpulse( usercmd.impulse );
-		}
-	}
+	//if ( gameLocal.isNewFrame ) {
+	//	if ( ( usercmd.flags & UCF_IMPULSE_SEQUENCE ) != ( oldFlags & UCF_IMPULSE_SEQUENCE ) ) {
+	//		PerformImpulse( usercmd.impulse );
+	//	}
+	//}
+	PerformImpulse(usercmd.impulse);
 
 	scoreBoardOpen = ( ( usercmd.buttons & BUTTON_SCORES ) != 0 || forceScoreBoard );
 

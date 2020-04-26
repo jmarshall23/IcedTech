@@ -163,6 +163,7 @@ private:
 	void						DumpWarnings(void);
 	void						LoadGameDLL(void);
 	void						UnloadGameDLL(void);
+
 // jmarshall
 #ifdef ID_ALLOW_TOOLS
 	void						InitImGui(void);
