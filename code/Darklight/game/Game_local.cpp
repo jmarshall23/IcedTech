@@ -194,6 +194,7 @@ void idGameLocal::Clear( void ) {
 	frameCommandThread = NULL;
 	testmodel = NULL;
 	testFx = NULL;
+	snapshotEntities.Clear();
 	clip.Shutdown();
 	pvs.Shutdown();
 	sessionCommand.Clear();
@@ -2431,6 +2432,8 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 	// show any debug info for this frame
 	RunDebugInfo();
 	D_DrawDebugLines();
+
+	WriteNetworkSnapshots();
 
 	return ret;
 }

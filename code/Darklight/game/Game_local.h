@@ -45,6 +45,7 @@ enum rvmNetworkOpCodes {
 	NET_OPCODE_INIT_DECL_REMAP		= 0x0005,
 	NET_OPCODE_SPAWNPLAYER			= 0x0006,
 	NET_OPCODE_CHATMESSAGE			= 0x0007,
+	NET_OPCODE_SNAPSHOT				= 0x0008,
 };
 
 #define LAGO_IMG_WIDTH 64
@@ -422,8 +423,7 @@ public:
 	virtual void			ServerWriteInitialReliableMessages( int clientNum );
 	virtual void			ServerWriteSnapshot( int clientNum, int sequence, idBitMsg &msg, byte *clientInPVS, int numPVSClients );
 	virtual bool			ServerApplySnapshot( int clientNum, int sequence );
-	virtual void			ServerProcessReliableMessage( int clientNum, const idBitMsg &msg );
-	virtual void			ClientReadSnapshot( int clientNum, int sequence, const int gameFrame, const int gameTime, const int dupeUsercmds, const int aheadOfServer, const idBitMsg &msg );
+	virtual void			ServerProcessReliableMessage( int clientNum, const idBitMsg &msg );	
 	virtual bool			ClientApplySnapshot( int clientNum, int sequence );
 	virtual void			ClientProcessReliableMessage( int clientNum, const idBitMsg &msg );
 	virtual gameReturn_t	ClientPrediction( int clientNum, const usercmd_t *clientCmds, bool lastPredictFrame );
@@ -477,6 +477,7 @@ public:
 // jmarshall end
 
 	void					ServerClientBegin(int clientNum, bool isBot, const char* botName);
+	void					ClientReadSnapshot(int clientNum, int sequence, const int gameFrame, const int gameTime, const int dupeUsercmds, const int aheadOfServer, const idBitMsg& msg);
 
 	void					AlertBots(idPlayer *player, idVec3 alert_position);
 
@@ -643,6 +644,8 @@ private:
 // jmarshall
 	rvmGameRender_t			gameRender;
 // jmarshall end
+
+	void					WriteNetworkSnapshots(void);
 
 	byte					lagometer[ LAGO_IMG_HEIGHT ][ LAGO_IMG_WIDTH ][ 4 ];
 

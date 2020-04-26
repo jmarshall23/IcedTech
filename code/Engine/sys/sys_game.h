@@ -169,9 +169,6 @@ public:
 	// Processes a reliable message from a client.
 	virtual void				ServerProcessReliableMessage( int clientNum, const idBitMsg &msg ) = 0;
 
-	// Reads a snapshot and updates the client game state.
-	virtual void				ClientReadSnapshot( int clientNum, int sequence, const int gameFrame, const int gameTime, const int dupeUsercmds, const int aheadOfServer, const idBitMsg &msg ) = 0;
-
 	// Patches the network entity states at the client with a snapshot.
 	virtual bool				ClientApplySnapshot( int clientNum, int sequence ) = 0;
 

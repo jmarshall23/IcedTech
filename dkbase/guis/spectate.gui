@@ -1,0 +1,59 @@
+windowDef Desktop {
+	rect	0 ,0 ,640 ,480 
+	backcolor	0 ,0 ,0 ,0 
+	visible	1
+	nocursor	1
+	noevents 1
+	
+	windowDef Spectate0 {
+		text "gui::spectatetext0"
+		font "fonts/bank"
+		rect	0, 350, 640, 40
+		backcolor 0, 0, 0, 0
+		forecolor 1, 1, 1, 0.8
+		textscale 0.35
+		visible 1
+		textalign 1
+		
+		onTime 0 {
+			transition "forecolor" "1 1 1 0.8" "1 1 1 0.2" "800" ;
+		}
+		onTime 500 {
+			transition "forecolor" "1 1 1 0.2" "1 1 1 0.8" "100" ;
+		}
+		onTime 900 {
+			resetTime "0" ;
+		}
+	}
+
+	windowDef Spectate1 {
+		text "gui::spectatetext1"
+		font "fonts/bank"
+		rect	0, 400, 640, 40
+		backcolor 0, 0, 0, 0
+		forecolor 1, 1, 1, 0.8
+		textscale 0.35
+		visible 1
+		textalign 1
+		
+		onTime 0 {
+			transition "forecolor" "1 1 1 0.8" "1 1 1 0.2" "800" ;
+		}
+		onTime 500 {
+			transition "forecolor" "1 1 1 0.2" "1 1 1 0.8" "100" ;
+		}
+		onTime 900 {
+			resetTime "0" ;
+		}
+	}
+
+	windowDef VoteWin {
+		rect 10, 235, 640, 30
+		text	"gui::vote"
+		forecolor 1, 1, 1, 0.8
+		textscale 0.33
+		font "fonts/an"
+		shadow 1
+		textalign	0
+	}
+}

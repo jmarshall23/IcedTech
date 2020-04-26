@@ -301,22 +301,18 @@ public:
 	virtual void				BindUserInfo(int clientNum) = 0;
 
 	virtual void				ExecuteClientMapChange(const char* mapName, const char* gameType) = 0;
+
+	virtual int					GetGameFrame(void) = 0;
 };
 
-//
-// rvmNetworkPacketType
-//
-enum rvmNetworkPacketType {
-	NETWORK_PACKET_READ = 0,
-	NETWORK_PACKET_WRITE
-};
+
 
 //
 // rvmNetworkPacket
 //
 class rvmNetworkPacket {
 public:
-	rvmNetworkPacket(rvmNetworkPacketType packetType, int maxMessageSize = 256);
+	rvmNetworkPacket(int clientNum, int maxMessageSize = 256);
 	~rvmNetworkPacket();
 
 	idBitMsg	msg;
@@ -329,15 +325,11 @@ private:
 rvmNetworkPacket::rvmNetworkPacket
 ==================
 */
-ID_INLINE rvmNetworkPacket::rvmNetworkPacket(rvmNetworkPacketType packetType, int maxMessageSize) {
+ID_INLINE rvmNetworkPacket::rvmNetworkPacket(int clientNum, int maxMessageSize) {
 	net_buffer = new byte[maxMessageSize];
 
-	if(packetType == NETWORK_PACKET_READ) {
-		msg.Init((const byte *)net_buffer, maxMessageSize);
-	}
-	else {
-		msg.Init(net_buffer, maxMessageSize);
-	}
+	msg.Init(net_buffer, maxMessageSize);
+	msg.WriteUShort(clientNum);
 }
 
 /*

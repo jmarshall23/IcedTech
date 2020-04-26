@@ -26,7 +26,7 @@ void idCommonLocal::InitNetwork(void) {
 
 	// Init the multiplayer commands.
 	cmdSystem->AddCommand("spawnServer", SpawnServer_f, CMD_FL_SYSTEM, "spawns a server", idCmdSystem::ArgCompletion_MapName);
-//	cmdSystem->AddCommand("connect", Connect_f, CMD_FL_SYSTEM, "connects to a server");
+	cmdSystem->AddCommand("connect", Connect_f, CMD_FL_SYSTEM, "connects to a server");
 }
 
 /*
@@ -148,26 +148,65 @@ void idCommonLocal::NetworkFrame(int numGameFrames) {
 		Sys_GrabMouseCursor(true);
 	}
 
-	if (IsServer()) {
-		ENetEvent ev;
-		enet_host_service(serverState->server, &ev, 0);
+	ENetEvent ev;
+	ENetHost* host = NULL;
 
-		if (ev.type == ENET_EVENT_TYPE_CONNECT) {
-			common->Printf("Incoming client detected...\n");
+	if(IsServer()) {
+		host = serverState->server;
+	}
+	else {
+		host = networkServer->client;
+	}
 
-			for (int i = 0; i < net_maxPlayers.GetInteger(); i++) {
-				if (networkClients[i] != NULL)
-					continue;
+	while (enet_host_service(host, &ev, 0) > 0) {
+		if (IsServer()) {
+			if (ev.type == ENET_EVENT_TYPE_CONNECT) {
+				common->Printf("Incoming client detected...\n");
 
-				networkClients[i] = new rvmNetworkClient_t();
-				networkClients[i]->peer = ev.peer;
-				networkClients[i]->address = ev.peer->address;
-				networkClients[i]->addrType = NA_IP;
-				networkClients[i]->client = NULL;
+				for (int i = 0; i < net_maxPlayers.GetInteger(); i++) {
+					if (networkClients[i] != NULL)
+						continue;
 
-				NewClient(i, networkClients[i]->peer);
-				game->ServerNewClient(i);
+					common->Printf("...new client initialized on id %d\n", i);
+
+					networkClients[i] = new rvmNetworkClient_t();
+					networkClients[i]->peer = ev.peer;
+					networkClients[i]->address = ev.peer->address;
+					networkClients[i]->addrType = NA_IP;
+					networkClients[i]->client = NULL;
+
+					NewClient(i, networkClients[i]->peer);
+					game->ServerNewClient(i);
+					break;
+				}
+
+				continue;
 			}
+		}
+
+		if(ev.type == ENET_EVENT_TYPE_RECEIVE) {
+			idBitMsg msg;
+
+			msg.Init((const byte*)ev.packet->data, ev.packet->dataLength);
+			msg.SetSize(ev.packet->dataLength);
+			msg.BeginReading();
+			rvmNetworkPacketQueue_t* packet = new rvmNetworkPacketQueue_t(msg);
+			packet->clientNum = packet->_msg.ReadUShort();
+
+			if (IsServer()) {
+				serverPacketQueue.AddToEnd(packet);
+			}
+			else if(IsClient()) {
+				// This is a hack!
+				if (localClientNum == -1) {
+					localClientNum = packet->clientNum;
+					game->SetLocalClient(localClientNum);
+				}
+				clientPacketQueue.AddToEnd(packet);
+			}
+			
+			enet_packet_destroy(ev.packet);
+			continue;
 		}
 	}
 
@@ -210,8 +249,15 @@ void idCommonLocal::NetworkFrame(int numGameFrames) {
 
 	// advance game
 	for (int i = 0; i < numGameFrames; i++) {
-		gameReturn_t ret = game->RunFrame(&userCmds[0]);
+		if (IsServer()) {
+			gameReturn_t ret = game->RunFrame(&userCmds[0]);
+		}
+		else if(userCmds != NULL) {
+			gameReturn_t ret = game->ClientPrediction(localClientNum, &userCmds[0], false);
+		}
 	}
+
+	enet_host_flush(host);
 }
 
 /*

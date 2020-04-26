@@ -18,6 +18,8 @@ enum rvmNetworkType_t {
 
 struct rvmNetworkServerState_t;
 struct rvmNetworkClient_t;
+struct rvmNetworkServer_t;
+
 //
 // rvmNetworkPacketQueue_t
 //
@@ -131,6 +133,8 @@ public:
 	virtual int					ServerGetClientPing(int clientNum);
 	virtual int					GetLocalClientNum(void);
 
+	virtual int					GetGameFrame(void) { return gameFrame; }
+
 	virtual void				SetUserInfoKey(int clientNum, const char* key, const char* value);
 	virtual void				BindUserInfo(int clientNum);
 
@@ -199,8 +203,10 @@ private:
 	void						ShutdownNetwork(void);
 
 	static void					SpawnServer_f(const idCmdArgs& args);
+	static void					Connect_f(const idCmdArgs& args);
 	void						SpawnServer(void);
 	void						NetworkFrame(int numGameFrames);
+	void						ConnectToServer(const char* ip);
 
 	void						NewClient(int clientNum, void* peer);
 
@@ -208,6 +214,7 @@ private:
 	rvmNetworkServerState_t*	serverState;
 
 	idList<rvmNetworkClient_t*> networkClients;
+	rvmNetworkServer_t*			networkServer;
 
 	idLinkedList<rvmNetworkPacketQueue_t, &rvmNetworkPacketQueue_t::listNode> serverPacketQueue;
 	idLinkedList<rvmNetworkPacketQueue_t, &rvmNetworkPacketQueue_t::listNode> clientPacketQueue;

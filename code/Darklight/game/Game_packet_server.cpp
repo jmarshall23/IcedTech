@@ -20,7 +20,7 @@ void idGameLocal::ServerProcessPacket(int clientNum, const idBitMsg& msg) {
 
 				// We have just recieved the user info. 
 				// TODO: We need to verify against a ban list or something, for now we are just going to accept the connection.
-				rvmNetworkPacket packet(NETWORK_PACKET_WRITE);
+				rvmNetworkPacket packet(clientNum);
 				
 				idStr mapName = cvarSystem->GetCVarString("si_map");
 				idStr gameType = cvarSystem->GetCVarString("si_gametype");
@@ -48,7 +48,7 @@ idGameLocal::ServerProcessPacket
 */
 void idGameLocal::ServerNewClient(int clientNum) {
 	// When a client connects we need to get there userinfo.
-	rvmNetworkPacket newClientPacket(NETWORK_PACKET_WRITE);
+	rvmNetworkPacket newClientPacket(clientNum);
 	newClientPacket.msg.WriteUShort(NET_OPCODE_GETUSERINFO);
 	common->ServerSendReliableMessage(clientNum, newClientPacket.msg);
 }
@@ -63,7 +63,7 @@ void idGameLocal::ServerClientBegin(int clientNum, bool isBot, const char* botNa
 	InitClientDeclRemap(clientNum);
 
 	// send message to initialize decl remap at the client (this is always the very first reliable game message)
-	rvmNetworkPacket declRemapPacket(NETWORK_PACKET_WRITE);
+	rvmNetworkPacket declRemapPacket(clientNum);
 	declRemapPacket.msg.WriteUShort(NET_OPCODE_INIT_DECL_REMAP);
 	common->ServerSendReliableMessage(clientNum, declRemapPacket.msg);
 
@@ -74,7 +74,7 @@ void idGameLocal::ServerClientBegin(int clientNum, bool isBot, const char* botNa
 	}
 
 	// send message to spawn the player at the clients
-	rvmNetworkPacket spawnPlayerPacket(NETWORK_PACKET_WRITE);
+	rvmNetworkPacket spawnPlayerPacket(clientNum);
 	spawnPlayerPacket.msg.WriteUShort(NET_OPCODE_SPAWNPLAYER);
 	spawnPlayerPacket.msg.WriteByte(clientNum);
 	spawnPlayerPacket.msg.WriteLong(spawnIds[clientNum]);
@@ -87,7 +87,7 @@ idGameLocal::ServerSendChatMessage
 ================
 */
 void idGameLocal::ServerSendChatMessage(int to, const char* name, const char* text) {
-	rvmNetworkPacket messagePacket(NETWORK_PACKET_WRITE);
+	rvmNetworkPacket messagePacket(to);
 	messagePacket.msg.WriteUShort(NET_OPCODE_CHATMESSAGE);
 	messagePacket.msg.WriteString(name);
 	messagePacket.msg.WriteString(text, -1, false);;
@@ -95,5 +95,22 @@ void idGameLocal::ServerSendChatMessage(int to, const char* name, const char* te
 
 	if (to == -1 || to == localClientNum) {
 		mpGame.AddChatLine("%s^0: %s\n", name, text);
+	}
+}
+
+/*
+================
+idGameLocal::ServerSendChatMessage
+================
+*/
+void idGameLocal::WriteNetworkSnapshots(void) {
+	for (int i = 0; i < MAX_ASYNC_CLIENTS; i++) {
+		if (entities[i] == NULL)
+			continue;
+
+		rvmNetworkPacket snapshotPacket(i, 1024);
+		snapshotPacket.msg.WriteUShort(NET_OPCODE_SNAPSHOT);
+		ServerWriteSnapshot(i, 0, snapshotPacket.msg, NULL, 0);
+		common->ServerSendReliableMessage(i, snapshotPacket.msg);
 	}
 }

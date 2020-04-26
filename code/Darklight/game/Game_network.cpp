@@ -648,8 +648,8 @@ void idGameLocal::ServerWriteSnapshot( int clientNum, int sequence, idBitMsg &ms
 	WriteGameStateToSnapshot( deltaMsg );
 
 	// copy the client PVS string
-	memcpy( clientInPVS, snapshot->pvs, ( numPVSClients + 7 ) >> 3 );
-	LittleRevBytes( clientInPVS, sizeof( int ), sizeof( clientInPVS ) / sizeof ( int ) );
+	//memcpy( clientInPVS, snapshot->pvs, ( numPVSClients + 7 ) >> 3 );
+	//LittleRevBytes( clientInPVS, sizeof( int ), sizeof( clientInPVS ) / sizeof ( int ) );
 }
 
 /*

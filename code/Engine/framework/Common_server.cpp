@@ -185,6 +185,7 @@ void idCommonLocal::ServerSendReliableMessage(int clientNum, const idBitMsg& msg
 			if (networkClients[i]->addrType == NA_LOOPBACK) {
 				rvmNetworkPacketQueue_t* newPacket = new rvmNetworkPacketQueue_t(msg);
 				newPacket->clientNum = i;
+				newPacket->_msg.ReadUShort(); // Client Number
 				clientPacketQueue.AddToEnd(newPacket);
 				continue;
 			}
@@ -196,6 +197,7 @@ void idCommonLocal::ServerSendReliableMessage(int clientNum, const idBitMsg& msg
 
 			ENetPacket* packet = enet_packet_create(msg.GetData(), msg.GetSize(), ENET_PACKET_FLAG_RELIABLE);
 			enet_peer_send(networkClients[i]->peer, 0, packet);
+		//	enet_packet_destroy(packet);
 		}
 
 		return;
@@ -203,6 +205,8 @@ void idCommonLocal::ServerSendReliableMessage(int clientNum, const idBitMsg& msg
 
 	if (networkClients[clientNum]->addrType == NA_LOOPBACK) {
 		rvmNetworkPacketQueue_t* newPacket = new rvmNetworkPacketQueue_t(msg);
+		newPacket->_msg.ReadUShort(); // Client Number
+
 		newPacket->clientNum = clientNum;
 		clientPacketQueue.AddToEnd(newPacket);
 		return;
@@ -219,6 +223,7 @@ void idCommonLocal::ServerSendReliableMessage(int clientNum, const idBitMsg& msg
 
 	ENetPacket* packet = enet_packet_create(msg.GetData(), msg.GetSize(), ENET_PACKET_FLAG_RELIABLE);
 	enet_peer_send(networkClients[clientNum]->peer, 0, packet);
+	//enet_packet_destroy(packet);
 }
 
 /*

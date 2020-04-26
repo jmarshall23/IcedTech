@@ -1576,6 +1576,11 @@ void idSessionLocal::ExecuteMapChange( bool noFadeWipe ) {
 		}
 	}
 
+	// Let the game know we have finished loading.
+	if (common->IsMultiplayer() && common->IsClient()) {
+		game->MapLoadFinished();
+	}
+
 	common->EndLoadScreen();
 
 	// actually purge/load the media

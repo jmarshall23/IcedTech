@@ -16,7 +16,7 @@ void idGameLocal::ClientProcessPacket(int clientNum, const idBitMsg& msg) {
 	switch(opCode) {
 		case NET_OPCODE_GETUSERINFO:
 			{
-				rvmNetworkPacket packet(NETWORK_PACKET_WRITE);
+				rvmNetworkPacket packet(clientNum);
 
 				packet.msg.WriteUShort(NET_OPCODE_SENDUSERINFO);
 				packet.msg.WriteString(ui_name.GetString());
@@ -64,6 +64,9 @@ void idGameLocal::ClientProcessPacket(int clientNum, const idBitMsg& msg) {
 				mpGame.AddChatLine("%s^0: %s\n", name, text);
 			}
 			break;
+		case NET_OPCODE_SNAPSHOT:
+			ClientReadSnapshot(localClientNum, 0, common->GetGameFrame(), gameLocal.time, 0, 0, msg);
+			break;
 		default:
 			common->Warning("ClientProcessPacket: Unknown OpCode %d\n", opCode);
 			break;
@@ -76,7 +79,7 @@ idGameLocal::MapLoadFinished
 ================
 */
 void idGameLocal::MapLoadFinished(void) {
-	rvmNetworkPacket packet(NETWORK_PACKET_WRITE);
+	rvmNetworkPacket packet(common->GetLocalClientNum());
 	packet.msg.WriteShort(NET_OPCODE_CLIENTLOADED);
 	common->ClientSendReliableMessage(packet.msg);
 }

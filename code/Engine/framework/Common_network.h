@@ -48,3 +48,8 @@ ID_INLINE rvmNetworkClient_t::rvmNetworkClient_t() {
 }
 
 extern idCVar net_maxPlayers;
+
+struct rvmNetworkServer_t {
+	ENetPeer* serverPeer;
+	ENetHost* client;
+};
