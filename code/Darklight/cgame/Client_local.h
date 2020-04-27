@@ -7,6 +7,8 @@
 #include "entities/ClientModel.h"
 #include "Client_Effects.h"
 
+#define DEBRIS_MODEL_COUNT		3
+
 #define	CENTITYNUM_BITS			12
 #define	MAX_CENTITIES			(1<<CENTITYNUM_BITS)
 
@@ -32,6 +34,7 @@ public:
 	void BeginLevel(void);
 	void MapShutdown(void);
 	void RenderPlayerView(int clientNum);
+	void NetLaunchDebris(const idBitMsg& msg);
 public:
 	void						RegisterClientEntity(rvClientEntity* cent);
 	void						UnregisterClientEntity(rvClientEntity* cent);
@@ -51,6 +54,8 @@ protected:
 	idLinkList<rvClientEntity>	clientSpawnedEntities;			// all client side entities
 	int							num_clientEntities;				// current number of client entities
 	int							firstFreeClientIndex;			// first free index in the client entities array
+private:
+	const idDeclEntityDef* debrisEntityDef[DEBRIS_MODEL_COUNT];
 };
 
 extern rvmClientGameLocal clientLocal;

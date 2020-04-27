@@ -64,8 +64,6 @@ enum rvmNetworkOpCodes {
 #define LIGHT_CHANNEL_LIGHTRIG_PLAYER   1
 #define LIGHT_CHANNEL_LIGHTRIG_ITEMS	2
 
-#define DEBRIS_MODEL_COUNT		3
-
 #define	MASK_SHOT		(CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE)
 
 // if set to 1 the server sends the client PVS with snapshots and the client compares against what it sees
@@ -722,8 +720,6 @@ private:
 	void					ShutdownClientMap(void);
 	void					ClientNetSendUserCmd(void);
 private:
-	const idDeclEntityDef* debrisEntityDef[DEBRIS_MODEL_COUNT];
-	
 	idLinkedList<fxEmitterInstance_t, &fxEmitterInstance_t::listNode> fxEmitters;
 };
 

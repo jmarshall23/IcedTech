@@ -256,8 +256,10 @@ void idCommonLocal::NetworkFrame(int numGameFrames) {
 	}
 
 	// Local host needs to run the client frame as well.
-	if (!IsDedicatedServer() && IsServer() && localClientNum != -1) {
-		game->RunClientFrame();
+	if ((!IsDedicatedServer() && IsServer() && localClientNum != -1) || IsClient()) {
+		for (int i = 0; i < numGameFrames; i++) {
+			game->RunClientFrame();
+		}
 	}
 
 	enet_host_flush(host);

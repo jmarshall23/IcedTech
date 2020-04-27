@@ -311,15 +311,6 @@ void idGameLocal::Init( void ) {
 	// init the client game system.
 	InitClientGame();
 
-	// load all of the debris decls.
-	for (int i = 0; i < DEBRIS_MODEL_COUNT; i++) {
-		debrisEntityDef[i] = gameLocal.FindEntityDef(va("debris_debris%d", i), false);
-
-		if(debrisEntityDef[i] == NULL) {
-			gameLocal.Error("Failed to load debris decl %d\n", i);
-		}		
-	}
-
 	// load in the bot itemtable.
 	botItemTable = FindEntityDef("bot_itemtable", false);
 	if(botItemTable == NULL) {

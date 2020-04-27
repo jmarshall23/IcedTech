@@ -34,6 +34,15 @@ void rvmClientGameLocal::BeginLevel(void) {
 	playerView = new idPlayerView();
 	playerView->ClearEffects();
 
+	// load all of the debris decls.
+	for (int i = 0; i < DEBRIS_MODEL_COUNT; i++) {
+		debrisEntityDef[i] = gameLocal.FindEntityDef(va("debris_debris%d", i), false);
+
+		if (debrisEntityDef[i] == NULL) {
+			gameLocal.Error("Failed to load debris decl %d\n", i);
+		}
+	}
+
 	clientSpawnCount = 0;
 }
 

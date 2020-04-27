@@ -89,7 +89,7 @@ void rvClientModel::Think ( void ) {
 
 	idVec3 delta = renderEntity->GetOrigin() - worldOrigin;
 	if(delta.Length() <= 0) {
-		stopSimulation = true;
+	//	stopSimulation = true;
 	}
 
 	renderEntity->SetOrigin(worldOrigin);
