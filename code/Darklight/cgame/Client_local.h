@@ -39,6 +39,8 @@ public:
 protected:
 	static void					ClientEntityJob_t(rvmClientPhysicsJobParams_t* params);
 
+	idList<rvClientEntity*>		activeClientEntities;
+
 	idParallelJobList*			clientPhysicsJob;
 	idList<rvClientEntity*>		clientEntityThreadWork;
 

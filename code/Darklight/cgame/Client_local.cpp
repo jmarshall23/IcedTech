@@ -131,9 +131,7 @@ bool rvmClientGameLocal::SpawnClientEntityDef(const idDict& args, rvClientEntity
 
 		obj->CallSpawn();
 
-		if (cent && obj->IsType(rvClientEntity::Type)) {
-			*cent = static_cast<rvClientEntity*>(obj);
-		}
+		*cent = static_cast<rvClientEntity*>(obj);		
 
 		return true;
 	}
@@ -181,6 +179,8 @@ void rvmClientGameLocal::RegisterClientEntity(rvClientEntity* cent) {
 	if (entityNumber >= num_clientEntities) {
 		num_clientEntities++;
 	}
+
+	activeClientEntities.Append(cent);
 }
 
 /*
@@ -207,6 +207,8 @@ void rvmClientGameLocal::UnregisterClientEntity(rvClientEntity* cent) {
 		}
 		cent->entityNumber = -1;
 	}
+
+	activeClientEntities.Remove(cent);
 }
 
 /*

@@ -308,6 +308,9 @@ void idGameLocal::Init( void ) {
 	// init the game render system.
 	InitGameRenderSystem();
 
+	// init the client game system.
+	InitClientGame();
+
 	// load all of the debris decls.
 	for (int i = 0; i < DEBRIS_MODEL_COUNT; i++) {
 		debrisEntityDef[i] = gameLocal.FindEntityDef(va("debris_debris%d", i), false);
@@ -2290,6 +2293,9 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 		if ( g_timeentities.GetFloat() ) {
 			num = 0;
 			for( ent = activeEntities.Next(); ent != NULL; ent = ent->activeNode.Next() ) {
+				if(ent->IsClientEntity()) {
+					continue;
+				}
 				if ( g_cinematic.GetBool() && inCinematic && !ent->cinematic ) {
 					ent->GetPhysics()->UpdateTime( time );
 					continue;
@@ -2308,6 +2314,9 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 			if ( inCinematic ) {
 				num = 0;
 				for( ent = activeEntities.Next(); ent != NULL; ent = ent->activeNode.Next() ) {
+					if (ent->IsClientEntity()) {
+						continue;
+					}
 					if ( g_cinematic.GetBool() && !ent->cinematic ) {
 						ent->GetPhysics()->UpdateTime( time );
 						continue;
@@ -2318,6 +2327,9 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 			} else {
 				num = 0;
 				for( ent = activeEntities.Next(); ent != NULL; ent = ent->activeNode.Next() ) {
+					if (ent->IsClientEntity()) {
+						continue;
+					}
 					ent->Think();
 					num++;
 				}

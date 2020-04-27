@@ -1,0 +1,3 @@
+entityDef wall_debris {
+	"spawnclass" 		"rvmClientEffect_debris"
+}

@@ -117,9 +117,10 @@ void idGameLocal::ClientProcessPacket(int clientNum, const idBitMsg& msg) {
 				rvmClientEffect_debris* entity;
 				idDict args;
 
+				args.Set("classname", "wall_debris");
 				args.Set("origin", _origin.ToString());
 
-				entity = static_cast<rvmClientEffect_debris*>(gameLocal.SpawnEntityType(rvmClientEffect_debris::Type, &args));
+				clientLocal.SpawnClientEntityDef(args, (rvClientEntity**)(&entity), false, "rvmClientEffect_debris");
 				entity->LaunchEffect(debrisEntityDef, DEBRIS_MODEL_COUNT, _origin, _axis, _shaderName);
 			}
 			break;

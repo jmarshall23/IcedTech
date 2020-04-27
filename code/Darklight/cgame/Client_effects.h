@@ -4,7 +4,7 @@
 //
 // rvmClientEffect
 //
-class rvmClientEffect : public idEntity {
+class rvmClientEffect : public rvClientEntity {
 public:
 					~rvmClientEffect();
 	virtual void	Spawn(void);

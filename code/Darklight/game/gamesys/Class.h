@@ -213,6 +213,8 @@ public:
 	const char *				GetSuperclass( void ) const;
 	void						FindUninitializedMemory( void );
 
+	virtual bool				IsClientEntity(void) { return false; }
+
 // jmarshall
 	template< typename T >
 	T* Cast(void) { return this ? (IsType(T::Type) ? static_cast<T*>(this) : NULL) : NULL; }

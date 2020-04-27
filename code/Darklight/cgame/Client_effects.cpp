@@ -28,7 +28,7 @@ rvmClientEffect::AddClientModel
 ====================
 */
 void rvmClientEffect::Spawn(void) {
-	idEntity::Spawn();
+	rvClientEntity::Spawn();
 
 	deleteFrame = -1;
 }
@@ -57,8 +57,6 @@ void rvmClientEffect::AddClientModel(const idDict& clientEntityDef, idVec3 origi
 	clientEntityDebris.Append(cent);
 
 	deleteFrame = gameLocal.realClientTime + SEC2MS(4);
-
-	BecomeActive(TH_THINK);
 }
 
 /*
@@ -68,11 +66,11 @@ rvmClientEffect::Think
 */
 void rvmClientEffect::Think(void) {
 	if (gameLocal.time > deleteFrame && deleteFrame != -1) {
-		PostEventMS(&EV_Remove, 0);
+		delete this;
 		return;
 	}
 
-	idEntity::Think();
+	rvClientEntity::Think();
 
 	for(int i = 0; i < clientEntityDebris.Num(); i++) {
 		clientEntityDebris[i]->Think();
@@ -80,7 +78,7 @@ void rvmClientEffect::Think(void) {
 }
 
 
-CLASS_DECLARATION(idEntity, rvmClientEffect_debris)
+CLASS_DECLARATION(rvmClientEffect, rvmClientEffect_debris)
 END_CLASS
 
 CLASS_STATES_DECLARATION(rvmClientEffect_debris)
@@ -102,8 +100,6 @@ rvmClientEffect_debris::Spawn
 */
 void rvmClientEffect_debris::Spawn(void) {
 	BaseSpawn();
-
-	BecomeInactive(TH_THINK); // Disable think until we launch a effect.
 }
 
 /*
@@ -135,8 +131,6 @@ void rvmClientEffect_debris::LaunchEffect(const idDeclEntityDef **debrisArray, i
 	for(int i = 0; i < clientEntityDebris.Num(); i++) {
 		clientEntityDebris[i]->GetPhysics()->GetClipModel()->SetRecievesCollision(false);
 	}
-
-	BecomeActive(TH_THINK);
 }
 
 /*

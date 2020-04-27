@@ -13,6 +13,9 @@ void idGameLocal::RunClientFrame(void) {
 	clientLocal.clientPhysicsJob->Wait();
 	clientLocal.clientEntityThreadWork.Clear();
 
+	for(int i = 0; i < clientLocal.activeClientEntities.Num(); i++) {
+		clientLocal.activeClientEntities[i]->Think();
+	}
 
 	// Submit any work we are going to reap the next frame.
 	{
