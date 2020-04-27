@@ -4,7 +4,7 @@
 #include "game_precompiled.h"
 #pragma hdrstop
 
-#include "../Game_local.h"
+#include "../Client_local.h"
 
 /*
 ===============================================================================
@@ -381,7 +381,7 @@ void rvClientMoveable::SpawnClientMoveables( idEntity* ent, const char *type, id
 	
 		rvClientMoveable* newModel = NULL;
 		// force spawnclass to rvClientMoveable
-		gameLocal.SpawnClientEntityDef( *entityDef, (rvClientEntity**)(&newModel), false, "rvClientMoveable" );
+		clientLocal.SpawnClientEntityDef( *entityDef, (rvClientEntity**)(&newModel), false, "rvClientMoveable" );
 
 		if( !newModel ) {
 			gameLocal.Warning( "error spawning client moveable (invalid entity def '%s' on entity '%s')\n", kv->GetValue().c_str(), ent->name.c_str() );

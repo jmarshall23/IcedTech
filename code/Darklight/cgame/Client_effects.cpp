@@ -4,7 +4,8 @@
 #include "game_precompiled.h"
 #pragma hdrstop
 
-#include "Game_local.h"
+#include "Client_local.h"
+
 /*
 ====================
 rvmClientEffect::~rvmClientEffect
@@ -40,7 +41,7 @@ rvmClientEffect::AddClientModel
 void rvmClientEffect::AddClientModel(const idDict& clientEntityDef, idVec3 origin, idMat3 axis, idVec3 velocity, const char* shaderName) {
 	rvClientModel* cent = NULL;
 	// force spawnclass to rvClientMoveable
-	gameLocal.SpawnClientEntityDef(clientEntityDef, (rvClientEntity**)(&cent), false, "rvClientModel");
+	clientLocal.SpawnClientEntityDef(clientEntityDef, (rvClientEntity**)(&cent), false, "rvClientModel");
 
 	if (!cent) {
 		return;

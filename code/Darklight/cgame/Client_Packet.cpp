@@ -96,6 +96,33 @@ void idGameLocal::ClientProcessPacket(int clientNum, const idBitMsg& msg) {
 				entities[_clientNum]->Cast<idPlayer>()->GetPhysics()->SetAxis(_quat.ToMat3());
 			}
 			break;
+		case NET_OPCODE_SPAWNDEBRIS:
+			{
+				idVec3 _origin;
+				idMat3 _axis;
+				idQuat _quat;
+				char _shaderName[256];
+
+				_origin.x = msg.ReadFloat();
+				_origin.y = msg.ReadFloat();
+				_origin.z = msg.ReadFloat();
+
+				_quat.x = msg.ReadFloat();
+				_quat.y = msg.ReadFloat();
+				_quat.z = msg.ReadFloat();
+				_quat.w = msg.ReadFloat();
+
+				msg.ReadString(_shaderName, sizeof(_shaderName));
+
+				rvmClientEffect_debris* entity;
+				idDict args;
+
+				args.Set("origin", _origin.ToString());
+
+				entity = static_cast<rvmClientEffect_debris*>(gameLocal.SpawnEntityType(rvmClientEffect_debris::Type, &args));
+				entity->LaunchEffect(debrisEntityDef, DEBRIS_MODEL_COUNT, _origin, _axis, _shaderName);
+			}
+			break;
 		default:
 			common->Warning("ClientProcessPacket: Unknown OpCode %d\n", opCode);
 			break;
@@ -122,13 +149,4 @@ idGameLocal::ClientNetSendUserCmd
 */
 void idGameLocal::ClientNetSendUserCmd(void) {
 
-}
-
-/*
-================
-idGameLocal::RunClientFrame
-================
-*/
-void idGameLocal::RunClientFrame(void) {
-	
 }

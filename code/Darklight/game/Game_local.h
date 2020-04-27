@@ -37,6 +37,8 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
+#define INITIAL_SPAWN_COUNT         1
+
 enum rvmNetworkOpCodes {
 	NET_OPCODE_GETUSERINFO			= 0x0001,
 	NET_OPCODE_SENDUSERINFO			= 0x0002,
@@ -49,6 +51,7 @@ enum rvmNetworkOpCodes {
 	NET_OPCODE_SPECTATE				= 0x0009,
 	NET_OPCODE_IMPULSE				= 0x0010,
 	NET_OPCODE_TELEPORTPLAYER		= 0x0011,
+	NET_OPCODE_SPAWNDEBRIS			= 0x0012,
 };
 
 #define LAGO_IMG_WIDTH 64
@@ -111,9 +114,6 @@ class rvClientEntity;
 #define	ENTITYNUM_MAX_NORMAL	(MAX_GENTITIES-2)
 #define ENTITYNUM_CLIENT		(MAX_GENTITIES-3)
 #define ENTITYNUM_CLIENT2		(MAX_GENTITIES-4)
-
-#define	CENTITYNUM_BITS			12
-#define	MAX_CENTITIES			(1<<CENTITYNUM_BITS)
 
 //============================================================================
 
@@ -300,18 +300,10 @@ struct rvmGameDelayRemoveEntry_t {
 	idEntity *entity;
 };
 
-//
-// rvmClientPhysicsJobParams_t
-//
-struct rvmClientPhysicsJobParams_t {
-	int startClientEntity;
-	int numClientEntities;
-	int clientThreadId;
-};
-
 //============================================================================
 
 class idGameLocal : public idGame {
+	friend class rvmClientGameLocal;
 public:
 	idDict					serverInfo;				// all the tunable parameters, like numclients, etc
 	int						numClients;				// pulled from serverInfo and verified
@@ -330,12 +322,6 @@ public:
 	bool					sortPushers;			// true if active lists needs to be reordered to place pushers at the front
 	bool					sortTeamMasters;		// true if active lists needs to be reordered to place physics team masters before their slaves
 	idDict					persistentLevelInfo;	// contains args that are kept around between levels
-
-	rvClientEntity*				clientEntities[MAX_CENTITIES];	// index to client entities
-	int							clientSpawnIds[MAX_CENTITIES];	// for use in idClientEntityPtr
-	idLinkList<rvClientEntity>	clientSpawnedEntities;			// all client side entities
-	int							num_clientEntities;				// current number of client entities
-	int							firstFreeClientIndex;			// first free index in the client entities array
 
 	int							entityRegisterTime;
 
@@ -491,12 +477,8 @@ public:
 	void					SetSkill( int value );
 	gameState_t				GameState( void ) const;
 	idEntity *				SpawnEntityType( const idTypeInfo &classdef, const idDict *args = NULL, bool bIsClientReadSnapshot = false );
-	bool					SpawnEntityDef( const idDict &args, idEntity **ent = NULL, bool setDefaults = true );
-	bool					SpawnClientEntityDef(const idDict& args, rvClientEntity** cent, bool setDefaults, const char* spawn);
+	bool					SpawnEntityDef( const idDict &args, idEntity **ent = NULL, bool setDefaults = true );	
 	int						GetSpawnId( const idEntity *ent ) const;
-
-	void					RegisterClientEntity(rvClientEntity* cent);
-	void					UnregisterClientEntity(rvClientEntity* cent);
 
 	const idDeclEntityDef *	FindEntityDef( const char *name, bool makeDefault = true ) const;
 	const idDict *			FindEntityDefDict( const char *name, bool makeDefault = true ) const;
@@ -595,13 +577,12 @@ public:
 
 	int						GetCurrentServerSnapshotEntity() { return serverWriteSnapshotEntity; }
 public:
-	int						 nextDebrisSpawnTime;
-	idList<rvClientEntity*>  clientEntityThreadWork;
+	int						 nextDebrisSpawnTime;	
 
 	int						uniqueLightCount;
+protected:
+	idDict					spawnArgs;				// spawn args used during entity spawning  FIXME: shouldn't be necessary anymore
 private:
-	const static int		INITIAL_SPAWN_COUNT = 1;
-
 	idStr					mapFileName;			// name of the map, empty string if no map loaded
 	idMapFile *				mapFile;				// will be NULL during the game unless in-game editing is used
 	bool					mapCycleLoaded;
@@ -619,8 +600,6 @@ private:
 
 	idEntityPtr<idActor>	lastAIAlertEntity;
 	int						lastAIAlertTime;
-
-	idDict					spawnArgs;				// spawn args used during entity spawning  FIXME: shouldn't be necessary anymore
 
 	pvsHandle_t				playerPVS;				// merged pvs of all players
 	pvsHandle_t				playerConnectedAreas;	// all areas connected to any player area
@@ -718,8 +697,6 @@ private:
 	void					InitJobSystem(void);
 	void					ShutdownJobSystem(void);
 
-	static void				ClientEntityJob_t(rvmClientPhysicsJobParams_t *params);
-
 // jmarshall
 	void					RunBotFrame(void);
 
@@ -738,12 +715,10 @@ private:
 	rvmNavFile				*navMeshFile;
 // jmarshall end
 
-	int						clientSpawnCount;
 	int						serverWriteSnapshotEntity;
-
-	idParallelJobList		*clientPhysicsJob;
 private:
 	void					InitClientGame(void);
+	void					SpawnClientEntities(void);
 	void					ShutdownClientMap(void);
 	void					ClientNetSendUserCmd(void);
 private:
@@ -899,12 +874,6 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 
 // FX
 #include "Emitter.h"
-
-// Client Entities
-#include "client/ClientEntity.h"
-#include "client/ClientMoveable.h"
-#include "client/ClientModel.h"
-#include "ClientEffects.h"
 
 // Portal Sky
 #include "PortalSky.h"

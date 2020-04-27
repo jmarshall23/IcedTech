@@ -4,7 +4,7 @@
 #include "game_precompiled.h"
 #pragma hdrstop
 
-#include "../Game_local.h"
+#include "../Client_local.h"
 
 ABSTRACT_DECLARATION( idClass, rvClientEntity )
 END_CLASS
@@ -39,8 +39,8 @@ rvClientEntity::~rvClientEntity
 */
 rvClientEntity::~rvClientEntity( void ) {
 	Unbind();
-	gameLocal.UnregisterClientEntity( this );
-	gameLocal.clientEntityThreadWork.Remove(this);
+	clientLocal.UnregisterClientEntity( this );
+	clientLocal.clientEntityThreadWork.Remove(this);
 
 	// Free sound emitter
 	//soundSystem->FreeSoundEmitter( SOUNDWORLD_GAME, refSound.referenceSoundHandle, true );
@@ -58,7 +58,7 @@ void rvClientEntity::Spawn( void ) {
 
 	BaseSpawn();
 
-	gameLocal.RegisterClientEntity( this );
+	clientLocal.RegisterClientEntity( this );
 
 	spawnNode.SetOwner( this );
 	bindNode.SetOwner( this );
@@ -382,7 +382,7 @@ void rvClientEntity::RunPhysics ( void ) {
 		worldAxis = worldAxisThread;
 	}
 
-	gameLocal.clientEntityThreadWork.Append(this);
+	clientLocal.clientEntityThreadWork.Append(this);
 
 	hasThreadedResults = false;
 }
@@ -601,7 +601,7 @@ bool rvClientPhysics::Collide( const trace_t &collision, const idVec3 &velocity 
 	assert ( currentEntityNumber >= 0 && currentEntityNumber < MAX_CENTITIES );
 	
 	rvClientEntity* cent;
-	cent = gameLocal.clientEntities [ currentEntityNumber ];
+	cent = clientLocal.clientEntities [ currentEntityNumber ];
 	if ( cent ) {
 		return cent->Collide ( collision, velocity );
 	}

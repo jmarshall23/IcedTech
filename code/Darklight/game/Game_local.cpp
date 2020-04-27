@@ -202,7 +202,6 @@ void idGameLocal::Clear( void ) {
 	snapShotSequence = 0;
 //	smokeParticles = NULL;
 	editEntities = NULL;
-	clientSpawnCount = INITIAL_SPAWN_COUNT;
 	entityHash.Clear( 1024, MAX_GENTITIES );
 	inCinematic = false;
 	cinematicSkipTime = 0;
@@ -308,10 +307,6 @@ void idGameLocal::Init( void ) {
 
 	// init the game render system.
 	InitGameRenderSystem();
-
-	// Create the various jobs we need on the game side.
-	clientPhysicsJob = parallelJobManager->AllocJobList(JOBLIST_GAME_CLIENTPHYSICS, JOBLIST_PRIORITY_MEDIUM, 2, 0, NULL);
-	parallelJobManager->RegisterJob((jobRun_t)idGameLocal::ClientEntityJob_t, "G_ClientPhysics");
 
 	// load all of the debris decls.
 	for (int i = 0; i < DEBRIS_MODEL_COUNT; i++) {
@@ -2210,9 +2205,6 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 	}
 #endif
 
-	clientPhysicsJob->Wait();
-	gameLocal.clientEntityThreadWork.Clear();
-
 // jmarshall
 	//botGoalManager.UpdateEntityItems();
 // jmarshall end
@@ -2412,25 +2404,6 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 
 	// Run all the FX
 	RunFX();
-
-	// Submit any work we are going to reap the next frame.
-	{
-		static rvmClientPhysicsJobParams_t clientPhysicsJob1Params;
-		//static rvmClientPhysicsJobParams_t clientPhysicsJob2Params;
-
-		clientPhysicsJob1Params.clientThreadId = ENTITYNUM_CLIENT;
-		clientPhysicsJob1Params.startClientEntity = 0;
-		clientPhysicsJob1Params.numClientEntities = gameLocal.clientEntityThreadWork.Num();
-
-		//clientPhysicsJob1Params.clientThreadId = ENTITYNUM_CLIENT2;
-		//clientPhysicsJob2Params.startClientEntity = clientPhysicsJob1Params.numClientEntities;
-		//clientPhysicsJob2Params.numClientEntities = gameLocal.clientEntityThreadWork.Num();
-
-		clientPhysicsJob->AddJobA((jobRun_t)idGameLocal::ClientEntityJob_t, &clientPhysicsJob1Params);
-		//clientPhysicsJob->AddJobA((jobRun_t)idGameLocal::ClientEntityJob_t, &clientPhysicsJob2Params);
-		clientPhysicsJob->Submit();
-	}	
-	
 
 	// show any debug info for this frame
 	RunDebugInfo();
@@ -2916,83 +2889,6 @@ idEntity *idGameLocal::SpawnEntityType( const idTypeInfo &classdef, const idDict
 
 /*
 ===================
-idGameLocal::SpawnClientEntityDef
-
-Finds the spawn function for the client entity and calls it,
-returning false if not found
-===================
-*/
-bool idGameLocal::SpawnClientEntityDef(const idDict& args, rvClientEntity** cent, bool setDefaults, const char* spawn) {
-	const char* classname;
-	idTypeInfo* cls;
-	idClass* obj;
-	idStr		error;
-	const char* name;
-
-	if (cent) {
-		*cent = NULL;
-	}
-
-	spawnArgs = args;
-
-	if (spawnArgs.GetBool("nospawn")) {
-		//not meant to actually spawn, just there for some compiling process
-		return false;
-	}
-
-	if (spawnArgs.GetString("name", "", &name)) {
-		error = va(" on '%s'", name);
-	}
-
-	spawnArgs.GetString("classname", NULL, &classname);
-
-	const idDeclEntityDef* def = FindEntityDef(classname, false);
-	if (!def) {
-		// RAVEN BEGIN
-		// jscott: a NULL classname would crash Warning()
-		if (classname) {
-			Warning("Unknown classname '%s'%s.", classname, error.c_str());
-		}
-		// RAVEN END
-		return false;
-	}
-
-	spawnArgs.SetDefaults(&def->dict);
-
-	// check if we should spawn a class object
-	if (spawn == NULL) {
-		spawnArgs.GetString("spawnclass", NULL, &spawn);
-	}
-
-	if (spawn) {
-
-		cls = idClass::GetClass(spawn);
-		if (!cls) {
-			Warning("Could not spawn '%s'.  Class '%s' not found%s.", classname, spawn, error.c_str());
-			return false;
-		}
-
-		obj = cls->CreateInstance();
-		if (!obj) {
-			Warning("Could not spawn '%s'. Instance could not be created%s.", classname, error.c_str());
-			return false;
-		}
-
-		obj->CallSpawn();
-
-		if (cent && obj->IsType(rvClientEntity::Type)) {
-			*cent = static_cast<rvClientEntity*>(obj);
-		}
-
-		return true;
-	}
-
-	Warning("%s doesn't include a spawnfunc%s.", classname, error.c_str());
-	return false;
-}
-
-/*
-===================
 idGameLocal::SpawnEntityDef
 
 Finds the spawn function for the entity and calls it,
@@ -3205,20 +3101,7 @@ void idGameLocal::SpawnMapEntities( void ) {
 		Error( "Problem spawning world entity" );
 	}
 
-	// bdube: dummy entity for client entities with physics
-	args.Clear();
-	args.SetInt("spawn_entnum", ENTITYNUM_CLIENT);
-	// jnewquist: Use accessor for static class type 
-	if (!SpawnEntityType(rvClientPhysics::Type, &args, true) || !entities[ENTITYNUM_CLIENT]) {
-		Error("Problem spawning client physics entity");
-	}
-
-	args.Clear();
-	args.SetInt("spawn_entnum", ENTITYNUM_CLIENT2);
-	// jnewquist: Use accessor for static class type 
-	if (!SpawnEntityType(rvClientPhysics::Type, &args, true) || !entities[ENTITYNUM_CLIENT2]) {
-		Error("Problem spawning client physics entity");
-	}
+	SpawnClientEntities();
 
 	num = 1;
 	inhibit = 0;
@@ -4415,99 +4298,30 @@ void idGameLocal::Trace(trace_t& results, const idVec3& start, const idVec3& end
 
 /*
 ===================
-idGameLocal::RegisterClientEntity
-===================
-*/
-void idGameLocal::RegisterClientEntity(rvClientEntity* cent) {
-	int entityNumber;
-
-	assert(cent);
-
-	if (clientSpawnCount >= (1 << (32 - CENTITYNUM_BITS))) {
-		//		Error( "idGameLocal::RegisterClientEntity: spawn count overflow" );
-		clientSpawnCount = INITIAL_SPAWN_COUNT;
-	}
-
-	// Find a free entity index to use
-	while (clientEntities[firstFreeClientIndex] && firstFreeClientIndex < MAX_CENTITIES) {
-		firstFreeClientIndex++;
-	}
-
-	if (firstFreeClientIndex >= MAX_CENTITIES) {
-		cent->PostEventMS(&EV_Remove, 0);
-		Warning("idGameLocal::RegisterClientEntity: no free client entities");
-		return;
-	}
-
-	entityNumber = firstFreeClientIndex++;
-
-	// Add the client entity to the lists
-	clientEntities[entityNumber] = cent;
-	clientSpawnIds[entityNumber] = clientSpawnCount++;
-	cent->entityNumber = entityNumber;
-	cent->spawnNode.AddToEnd(clientSpawnedEntities);
-	cent->spawnArgs.TransferKeyValues(spawnArgs);
-
-	if (entityNumber >= num_clientEntities) {
-		num_clientEntities++;
-	}
-}
-
-/*
-===================
-idGameLocal::UnregisterClientEntity
-===================
-*/
-void idGameLocal::UnregisterClientEntity(rvClientEntity* cent) {
-	assert(cent);
-
-	// No entity number then it failed to register
-	if (cent->entityNumber == -1) {
-		return;
-	}
-
-	cent->spawnNode.Remove();
-	cent->bindNode.Remove();
-
-	if (clientEntities[cent->entityNumber] == cent) {
-		clientEntities[cent->entityNumber] = NULL;
-		clientSpawnIds[cent->entityNumber] = -1;
-		if (cent->entityNumber < firstFreeClientIndex) {
-			firstFreeClientIndex = cent->entityNumber;
-		}
-		cent->entityNumber = -1;
-	}
-}
-
-/*
-===================
 idGameLocal::SpawnDebris
 ===================
 */
 void idGameLocal::SpawnDebris(idVec3 origin, idMat3 axis, const char* shaderName) {
-	rvmClientEffect_debris* entity;
-	idDict args;
-
 	if (nextDebrisSpawnTime > gameLocal.realClientTime)
 		return;
 
 	nextDebrisSpawnTime = gameLocal.realClientTime + SEC2MS(0.5);
 
-	args.Set("origin", origin.ToString());
+	rvmNetworkPacket packet(-1);
+	packet.msg.WriteUShort(NET_OPCODE_SPAWNDEBRIS);
+	packet.msg.WriteFloat(origin.x);
+	packet.msg.WriteFloat(origin.y);
+	packet.msg.WriteFloat(origin.z);
 
-	entity = static_cast<rvmClientEffect_debris*>(gameLocal.SpawnEntityType(rvmClientEffect_debris::Type, &args));
-	entity->LaunchEffect(debrisEntityDef, DEBRIS_MODEL_COUNT, origin, axis, shaderName);
-}
+	idQuat quat = axis.ToQuat();
+	packet.msg.WriteFloat(quat.x);
+	packet.msg.WriteFloat(quat.y);
+	packet.msg.WriteFloat(quat.z);
+	packet.msg.WriteFloat(quat.w);
 
-/*
-===================
-idGameLocal::ClientEntityJob_t
-===================
-*/
-void idGameLocal::ClientEntityJob_t(rvmClientPhysicsJobParams_t* params) {
-	for (int i = params->startClientEntity; i < params->numClientEntities; i++) {
-		gameLocal.clientEntityThreadWork[i]->RunThreadedPhysics(params->clientThreadId);
-	}	
+	packet.msg.WriteString(shaderName);
+
+	common->ServerSendReliableMessage(-1, packet.msg);
 }
 
 /*

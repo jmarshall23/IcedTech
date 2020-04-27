@@ -4,7 +4,7 @@
 #include "game_precompiled.h"
 #pragma hdrstop
 
-#include "../Game_local.h"
+#include "../Client_local.h"
 
 /*
 ===============================================================================
@@ -275,7 +275,7 @@ NOTE: may not change the game state whatsoever!
 bool rvClientModel::ModelCallback(idRenderEntity*renderEntity, const renderView_t *renderView ) {
 	rvClientEntity *cent;
 
-	cent = gameLocal.clientEntities[ renderEntity->GetEntityNum() ];
+	cent = clientLocal.clientEntities[ renderEntity->GetEntityNum() ];
 	if ( !cent ) {
 		gameLocal.Error( "rvClientModel::ModelCallback: callback with NULL client entity '%d'", renderEntity->GetEntityNum() );
 		return false;

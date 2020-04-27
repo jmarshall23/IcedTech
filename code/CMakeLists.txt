@@ -138,11 +138,20 @@ set(src_idlib
 )
 
 set(src_cgame 
+	./Darklight/cgame/Client_frame.cpp
 	./Darklight/cgame/Client_Local.cpp
 	./Darklight/cgame/Client_Local.h
 	./Darklight/cgame/Client_Packet.cpp
 	./Darklight/cgame/Client_PlayerView.h
 	./Darklight/cgame/Client_PlayerView.cpp
+	./Darklight/cgame/Client_Effects.cpp
+	./Darklight/cgame/Client_Effects.h
+	./Darklight/cgame/entities/ClientEntity.cpp
+	./Darklight/cgame/entities/ClientEntity.h
+	./Darklight/cgame/entities/ClientModel.cpp
+	./Darklight/cgame/entities/ClientModel.h
+	./Darklight/cgame/entities/ClientMoveable.cpp
+	./Darklight/cgame/entities/ClientMoveable.h	
 )
 
 set(src_game
@@ -166,14 +175,6 @@ set(src_game
 	./Darklight/game/bot/botai/BotAI_respawn.cpp
 	./Darklight/game/bot/botai/BotAI_SeekLTG.cpp
 	./Darklight/game/bot/botai/BotAI.h
-	./Darklight/game/client/ClientEntity.cpp
-	./Darklight/game/client/ClientEntity.h
-	./Darklight/game/client/ClientModel.cpp
-	./Darklight/game/client/ClientModel.h
-	./Darklight/game/client/ClientMoveable.cpp
-	./Darklight/game/client/ClientMoveable.h
-	./Darklight/game/ClientEffects.cpp
-	./Darklight/game/ClientEffects.h
 	./Darklight/game/ReflectionProbe.cpp
 	./Darklight/game/ReflectionProbe.h
 	./Darklight/game/Emitter.cpp
