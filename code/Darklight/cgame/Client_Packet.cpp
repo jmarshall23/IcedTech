@@ -109,6 +109,7 @@ void idGameLocal::ClientProcessPacket(int clientNum, const idBitMsg& msg) {
 						if (player != NULL) {
 							//common->ServerSetUserCmdForClient(_clientNum, cmd);
 							gameLocal.usercmds[_clientNum] = cmd;
+							player->Spectate(false);
 							player->SetOrigin(_origin);
 							player->SetAxis(_quat.ToMat3());
 						}
