@@ -93,6 +93,8 @@ public:
 	virtual void				Compress(byte* uncompressedMem, byte* compressedMem, int length, int& compressedLength);
 	virtual void				Decompress(byte* compressedMem, byte* uncompressedMem, int compressedMemLength, int outputMemLength);
 
+	virtual void				ServerSetUserCmdForClient(int clientNum, struct usercmd_t& cmd);
+
 	virtual const char* KeysFromBinding(const char* bind);
 	virtual const char* BindingFromKey(const char* key);
 

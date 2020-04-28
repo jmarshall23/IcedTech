@@ -1765,14 +1765,14 @@ void idWeapon::PresentWeapon( bool showViewModel ) {
 	renderEntity->SetLightChannel(LIGHT_CHANNEL_LIGHTRIG_PLAYER, true);
 
 	// present the model
-	if ( showViewModel ) {
+	//if ( showViewModel ) {
 		Present();
-	}
-	else {
+	//}
+	//else {
 // jmarshall
 		//FreeModelDef();
 // jmarshall end
-	}
+	//}
 
 	if ( worldModel.GetEntity() && worldModel.GetEntity()->GetRenderEntity() ) {
 		// deal with the third-person visible world model

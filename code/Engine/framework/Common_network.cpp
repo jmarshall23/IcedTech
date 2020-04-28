@@ -190,9 +190,9 @@ void idCommonLocal::NetworkFrame(int numGameFrames) {
 			else if(IsClient()) {
 				// This is a hack!
 				if (localClientNum == -1) {
-					localClientNum = packet->clientNum;
-					game->SetLocalClient(localClientNum);
+					localClientNum = packet->clientNum;					
 				}
+				game->SetLocalClient(localClientNum);
 				clientPacketQueue.AddToEnd(packet);
 			}
 			
@@ -257,8 +257,9 @@ void idCommonLocal::NetworkFrame(int numGameFrames) {
 
 	// Local host needs to run the client frame as well.
 	if ((!IsDedicatedServer() && IsServer() && localClientNum != -1) || IsClient()) {
+		usercmd_t cmd = usercmdGen->GetDirectUsercmd();
 		for (int i = 0; i < numGameFrames; i++) {
-			game->RunClientFrame();
+			game->RunClientFrame(cmd);
 		}
 	}
 

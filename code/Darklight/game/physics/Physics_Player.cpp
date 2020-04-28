@@ -2051,6 +2051,10 @@ idPhysics_Player::ReadFromSnapshot
 ================
 */
 void idPhysics_Player::ReadFromSnapshot( const idBitMsg &msg ) {
+	playerPState_t savedState;
+
+	savedState = current;
+
 	current.origin[0] = msg.ReadFloat();
 	current.origin[1] = msg.ReadFloat();
 	current.origin[2] = msg.ReadFloat();
@@ -2067,6 +2071,10 @@ void idPhysics_Player::ReadFromSnapshot( const idBitMsg &msg ) {
 	current.movementType = msg.ReadBits( PLAYER_MOVEMENT_TYPE_BITS );
 	current.movementFlags = msg.ReadBits( PLAYER_MOVEMENT_FLAGS_BITS );
 	current.movementTime = msg.ReadDeltaLong( 0 );
+
+	if (self->entityNumber == gameLocal.localClientNum) {
+		current = savedState;
+	}
 
 	if ( clipModel ) {
 		clipModel->Link( gameLocal.clip, self, 0, current.origin, clipModel->GetAxis() );

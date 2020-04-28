@@ -35,14 +35,42 @@ void idGameLocal::ServerProcessPacket(int clientNum, const idBitMsg& msg) {
 				ServerClientBegin(clientNum, false, "");
 			}
 			break;
-		case NET_OPCODE_IMPULSE:
+		case NET_OPCODE_UPDATEPLAYER:
 			{
-				int _spawnId = msg.ReadBits(32);
-				int _gameTime = msg.ReadLong();
-				int _impulse = msg.ReadBits(6);
+				if (entities[clientNum] != NULL) {
+					idPlayer* player = entities[clientNum]->Cast<idPlayer>();
+					usercmd_t& cmd = gameLocal.usercmds[clientNum];
 
-				if (_impulse > 0) {
-					entities[clientNum]->Cast<idPlayer>()->PerformImpulse(_impulse);
+					cmd.gameTime = gameLocal.time;
+					cmd.gameFrame = gameLocal.framenum;
+					cmd.duplicateCount = 0;
+
+					cmd.forwardmove = msg.ReadByte();
+					cmd.rightmove = msg.ReadByte();
+					cmd.upmove = msg.ReadByte();
+					cmd.angles[0] = msg.ReadShort();
+					cmd.angles[1] = msg.ReadShort();
+					cmd.angles[2] = msg.ReadShort();
+					cmd.mx = msg.ReadShort();
+					cmd.my = msg.ReadShort();
+					cmd.impulse = msg.ReadByte();
+
+					idVec3 _origin;
+					idQuat _quat;
+					_origin.x = msg.ReadFloat();
+					_origin.y = msg.ReadFloat();
+					_origin.z = msg.ReadFloat();
+					_quat.x = msg.ReadFloat();
+					_quat.y = msg.ReadFloat();
+					_quat.z = msg.ReadFloat();
+					_quat.w = msg.ReadFloat();
+
+					common->ServerSetUserCmdForClient(clientNum, cmd);
+					player->SetOrigin(_origin);
+					player->SetAxis(_quat.ToMat3());
+				}
+				else {
+					common->Warning("Recieved NET_OPCODE_UPDATEPLAYER from non-spawned clientnum %d\n", clientNum);
 				}
 			}
 			break;
@@ -168,6 +196,54 @@ void idGameLocal::WriteNetworkSnapshots(void) {
 		snapshotPacket.msg.WriteUShort(NET_OPCODE_SNAPSHOT);
 		ServerWriteSnapshot(i, 0, snapshotPacket.msg, NULL, snapShotSequence);		
 		common->ServerSendReliableMessage(i, snapshotPacket.msg);
+	}
+
+	for (int i = 0; i < MAX_ASYNC_CLIENTS; i++) {
+		if (entities[i] == NULL)
+			continue;
+
+		rvmNetworkPacket packet(gameLocal.localClientNum, 4096);
+		packet.msg.WriteUShort(NET_OPCODE_UPDATEALLPLAYERS);
+
+		int numClientsInPacket = 0;
+
+		for (int clientNum = 0; clientNum < MAX_ASYNC_CLIENTS; clientNum++) {
+			if (entities[clientNum] == NULL)
+				continue;
+
+			numClientsInPacket++;
+		}
+
+		packet.msg.WriteByte(numClientsInPacket);
+
+		for (int clientNum = 0; clientNum < MAX_ASYNC_CLIENTS; clientNum++) {
+			if (entities[clientNum] == NULL)
+				continue;
+
+			usercmd_t& cmd = gameLocal.usercmds[clientNum];
+			idVec3 origin = gameLocal.entities[clientNum]->GetOrigin();
+			idQuat rotation = gameLocal.entities[clientNum]->GetPhysics()->GetAxis().ToQuat();
+
+			packet.msg.WriteByte(clientNum);
+			packet.msg.WriteByte(cmd.forwardmove);
+			packet.msg.WriteByte(cmd.rightmove);
+			packet.msg.WriteByte(cmd.upmove);
+			packet.msg.WriteShort(cmd.angles[0]);
+			packet.msg.WriteShort(cmd.angles[1]);
+			packet.msg.WriteShort(cmd.angles[2]);
+			packet.msg.WriteShort(cmd.mx);
+			packet.msg.WriteShort(cmd.my);
+			packet.msg.WriteByte(cmd.impulse);
+			packet.msg.WriteFloat(origin.x);
+			packet.msg.WriteFloat(origin.y);
+			packet.msg.WriteFloat(origin.z);
+			packet.msg.WriteFloat(rotation.y);
+			packet.msg.WriteFloat(rotation.z);
+			packet.msg.WriteFloat(rotation.z);
+			packet.msg.WriteFloat(rotation.w);
+		}
+
+		common->ServerSendReliableMessage(i, packet.msg);
 	}
 
 	snapShotSequence++;

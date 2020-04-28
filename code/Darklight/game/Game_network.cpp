@@ -574,7 +574,7 @@ void idGameLocal::ServerWriteSnapshot( int clientNum, int sequence, idBitMsg &ms
 
 		msg.WriteBits(spawnIds[ent->entityNumber], 32 - GENTITYNUM_BITS);
 		msg.WriteBits(ent->GetType()->typeNum, idClass::GetTypeNumBits());
-		msg.WriteBits(ServerRemapDecl(-1, DECL_ENTITYDEF, ent->entityDefNumber), entityDefBits);
+		msg.WriteBits(ent->entityDefNumber, entityDefBits);
 
 //		msg.WriteBits(ent->GetPredictedKey(), 32);
 
@@ -897,7 +897,7 @@ void idGameLocal::ClientReadSnapshot( int clientNum, int sequence, const int gam
 	for (i = msg.ReadBits(GENTITYNUM_BITS); i != ENTITYNUM_NONE; i = msg.ReadBits(GENTITYNUM_BITS)) {
 		spawnId = msg.ReadBits(32 - GENTITYNUM_BITS);
 		typeNum = msg.ReadBits(idClass::GetTypeNumBits());
-		entityDefNumber = ClientRemapDecl(DECL_ENTITYDEF, msg.ReadBits(entityDefBits));
+		entityDefNumber = msg.ReadBits(entityDefBits); // ClientRemapDecl(DECL_ENTITYDEF, msg.ReadBits(entityDefBits));
 	//	const int predictedKey = msg.ReadBits(32);
 
 		typeInfo = idClass::GetType(typeNum);

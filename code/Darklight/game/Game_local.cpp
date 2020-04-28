@@ -2272,7 +2272,7 @@ gameReturn_t idGameLocal::RunFrame( const usercmd_t *clientCmds ) {
 		}
 
 		// create a merged pvs for all players
-		SetupPlayerPVS();
+		//SetupPlayerPVS();
 
 		// sort the active entity list
 		SortActiveEntityList();

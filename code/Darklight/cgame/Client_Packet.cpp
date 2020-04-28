@@ -69,6 +69,53 @@ void idGameLocal::ClientProcessPacket(int clientNum, const idBitMsg& msg) {
 			ClientReadSnapshot(localClientNum, snapShotSequence, common->GetGameFrame(), gameLocal.time, 0, 0, msg);
 			snapShotSequence++;
 			break;
+		case NET_OPCODE_UPDATEALLPLAYERS:
+			{
+				int numClientsInPacket = msg.ReadByte();
+
+				for (int d = 0; d < numClientsInPacket; d++) {
+					int _clientNum = msg.ReadByte();
+					
+					usercmd_t cmd;
+					memset(&cmd, 0, sizeof(usercmd_t));
+
+					cmd.gameTime = gameLocal.time;
+					cmd.gameFrame = gameLocal.framenum;
+					cmd.duplicateCount = 0;
+
+					cmd.forwardmove = msg.ReadByte();
+					cmd.rightmove = msg.ReadByte();
+					cmd.upmove = msg.ReadByte();
+					cmd.angles[0] = msg.ReadShort();
+					cmd.angles[1] = msg.ReadShort();
+					cmd.angles[2] = msg.ReadShort();
+					cmd.mx = msg.ReadShort();
+					cmd.my = msg.ReadShort();
+					cmd.impulse = msg.ReadByte();
+
+					idVec3 _origin;
+					idQuat _quat;
+					_origin.x = msg.ReadFloat();
+					_origin.y = msg.ReadFloat();
+					_origin.z = msg.ReadFloat();
+					_quat.x = msg.ReadFloat();
+					_quat.y = msg.ReadFloat();
+					_quat.z = msg.ReadFloat();
+					_quat.w = msg.ReadFloat();
+					
+					//if (_clientNum != clientNum) {
+						idPlayer* player = entities[_clientNum]->Cast<idPlayer>();
+
+						if (player != NULL) {
+							//common->ServerSetUserCmdForClient(_clientNum, cmd);
+							gameLocal.usercmds[_clientNum] = cmd;
+							player->SetOrigin(_origin);
+							player->SetAxis(_quat.ToMat3());
+						}
+					//}
+				}
+			}
+			break;
 		case NET_OPCODE_SPECTATE:
 			{
 				int _clientNum = msg.ReadByte();

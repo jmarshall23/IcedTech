@@ -259,3 +259,11 @@ void idCommonLocal::NewClient(int clientNum, void* peer) {
 	game->ServerClientConnect(clientNum, "");
 }
 
+/*
+==================
+idCommonLocal::GetLocalClientNum
+==================
+*/
+void idCommonLocal::ServerSetUserCmdForClient(int clientNum, struct usercmd_t& cmd) {
+	memcpy(&userCmds[clientNum], &cmd, sizeof(usercmd_t));
+}

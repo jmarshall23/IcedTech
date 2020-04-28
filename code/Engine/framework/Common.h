@@ -303,6 +303,8 @@ public:
 	virtual void				ExecuteClientMapChange(const char* mapName, const char* gameType) = 0;
 
 	virtual int					GetGameFrame(void) = 0;
+
+	virtual void				ServerSetUserCmdForClient(int clientNum, struct usercmd_t& cmd) = 0;
 };
 
 

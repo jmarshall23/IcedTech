@@ -49,9 +49,11 @@ enum rvmNetworkOpCodes {
 	NET_OPCODE_CHATMESSAGE			= 0x0007,
 	NET_OPCODE_SNAPSHOT				= 0x0008,
 	NET_OPCODE_SPECTATE				= 0x0009,
-	NET_OPCODE_IMPULSE				= 0x0010,
+	//NET_OPCODE_IMPULSE				= 0x0010,
 	NET_OPCODE_TELEPORTPLAYER		= 0x0011,
 	NET_OPCODE_SPAWNDEBRIS			= 0x0012,
+	NET_OPCODE_UPDATEPLAYER			= 0x0013, // Sent from the client -> server with the idPlayer snapshot.
+	NET_OPCODE_UPDATEALLPLAYERS		= 0x0014,
 };
 
 #define LAGO_IMG_WIDTH 64
@@ -399,7 +401,7 @@ public:
 	virtual void			CacheDictionaryMedia( const idDict *dict );
 	virtual void			SpawnPlayer( int clientNum, bool isBot, const char * botName);
 	virtual gameReturn_t	RunFrame( const usercmd_t *clientCmds );
-	virtual void			RunClientFrame(void);
+	virtual void			RunClientFrame(usercmd_t& cmd);
 	virtual bool			Draw( int clientNum );
 	virtual escReply_t		HandleESC( idUserInterface **gui );
 	virtual idUserInterface	*StartMenu( void );

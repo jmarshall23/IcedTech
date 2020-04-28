@@ -124,7 +124,7 @@ public:
 	virtual gameReturn_t		RunFrame( const usercmd_t *clientCmds ) = 0;
 
 	// Runs a client only frame.
-	virtual void				RunClientFrame(void) = 0;
+	virtual void				RunClientFrame(usercmd_t &cmd) = 0;
 
 	// Makes rendering and sound system calls to display for a given clientNum.
 	virtual bool				Draw( int clientNum ) = 0;

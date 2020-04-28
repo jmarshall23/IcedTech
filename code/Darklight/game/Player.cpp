@@ -5547,18 +5547,6 @@ idPlayer::PerformImpulse
 ==============
 */
 void idPlayer::PerformImpulse( int impulse ) {
-	if ( common->IsClient() ) {
-		assert(entityNumber == gameLocal.localClientNum);
-
-		rvmNetworkPacket impulsePacket(entityNumber);
-		impulsePacket.msg.WriteUShort(NET_OPCODE_IMPULSE);
-		impulsePacket.msg.WriteBits(gameLocal.GetSpawnId(this), 32);
-		impulsePacket.msg.WriteLong(gameLocal.time);
-		impulsePacket.msg.WriteBits(impulse, 6);
-
-		common->ClientSendReliableMessage(impulsePacket.msg);		
-	}
-
 	if ( impulse >= IMPULSE_0 && impulse <= IMPULSE_12 ) {
 		SelectWeapon( impulse, false );
 		return;
@@ -7964,10 +7952,10 @@ idPlayer::WriteToSnapshot
 ================
 */
 void idPlayer::WriteToSnapshot( idBitMsg &msg ) const {
-	if (entityNumber != gameLocal.GetCurrentServerSnapshotEntity()) {
-		physicsObj.WriteToSnapshot(msg);
-	}
-	WriteBindToSnapshot( msg );
+	//if (entityNumber != gameLocal.GetCurrentServerSnapshotEntity()) {
+	//	physicsObj.WriteToSnapshot(msg);
+	//}
+	//WriteBindToSnapshot( msg );
 	msg.WriteDeltaFloat( 0.0f, deltaViewAngles[0] );
 	msg.WriteDeltaFloat( 0.0f, deltaViewAngles[1] );
 	msg.WriteDeltaFloat( 0.0f, deltaViewAngles[2] );
@@ -8003,10 +7991,10 @@ void idPlayer::ReadFromSnapshot( const idBitMsg &msg ) {
 
 	oldHealth = health;
 
-	if (entityNumber != gameLocal.localClientNum) {
-		physicsObj.ReadFromSnapshot(msg);
-	}
-	ReadBindFromSnapshot( msg );
+	//if (entityNumber != gameLocal.localClientNum) {
+	//	physicsObj.ReadFromSnapshot(msg);
+	//}
+	//ReadBindFromSnapshot( msg );
 	deltaViewAngles[0] = msg.ReadDeltaFloat( 0.0f );
 	deltaViewAngles[1] = msg.ReadDeltaFloat( 0.0f );
 	deltaViewAngles[2] = msg.ReadDeltaFloat( 0.0f );
