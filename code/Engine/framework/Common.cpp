@@ -2744,10 +2744,11 @@ void idCommonLocal::Init( int argc, const char **argv, const char *cmdline ) {
 
 		// override cvars from command line
 		StartupVariable( NULL, false );
-
-		if ( !common->IsDedicatedServer() && Sys_AlreadyRunning() ) {
+#ifdef ID_SHIPPING
+		if (!common->IsDedicatedServer() && Sys_AlreadyRunning()) {
 			Sys_Quit();
 		}
+#endif
 
 		// initialize processor specific SIMD implementation
 		InitSIMD();

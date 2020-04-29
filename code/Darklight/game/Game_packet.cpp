@@ -56,18 +56,19 @@ void idGameLocal::ServerProcessPacket(int clientNum, const idBitMsg& msg) {
 					cmd.impulse = msg.ReadByte();
 
 					idVec3 _origin;
-					idQuat _quat;
+					idAngles _angles;
 					_origin.x = msg.ReadFloat();
 					_origin.y = msg.ReadFloat();
 					_origin.z = msg.ReadFloat();
-					_quat.x = msg.ReadFloat();
-					_quat.y = msg.ReadFloat();
-					_quat.z = msg.ReadFloat();
-					_quat.w = msg.ReadFloat();
+					_angles.yaw = msg.ReadFloat();
+					_angles.pitch = 0;
+					_angles.roll = 0;
 
 					common->ServerSetUserCmdForClient(clientNum, cmd);
 					player->SetOrigin(_origin);
-					player->SetAxis(_quat.ToMat3());
+					player->GetPhysics()->SetAxis(_angles.ToMat3());
+					player->viewAngles = _angles;
+					player->UpdateVisuals();
 				}
 				else {
 					common->Warning("Recieved NET_OPCODE_UPDATEPLAYER from non-spawned clientnum %d\n", clientNum);
@@ -222,7 +223,7 @@ void idGameLocal::WriteNetworkSnapshots(void) {
 
 			usercmd_t& cmd = gameLocal.usercmds[clientNum];
 			idVec3 origin = gameLocal.entities[clientNum]->GetOrigin();
-			idQuat rotation = gameLocal.entities[clientNum]->GetPhysics()->GetAxis().ToQuat();
+			idAngles rotation = gameLocal.entities[clientNum]->GetPhysics()->GetAxis().ToAngles();
 
 			packet.msg.WriteByte(clientNum);
 			packet.msg.WriteByte(cmd.forwardmove);
@@ -237,10 +238,7 @@ void idGameLocal::WriteNetworkSnapshots(void) {
 			packet.msg.WriteFloat(origin.x);
 			packet.msg.WriteFloat(origin.y);
 			packet.msg.WriteFloat(origin.z);
-			packet.msg.WriteFloat(rotation.y);
-			packet.msg.WriteFloat(rotation.z);
-			packet.msg.WriteFloat(rotation.z);
-			packet.msg.WriteFloat(rotation.w);
+			packet.msg.WriteFloat(rotation.yaw);			
 		}
 
 		common->ServerSendReliableMessage(i, packet.msg);

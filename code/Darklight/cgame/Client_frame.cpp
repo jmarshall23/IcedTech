@@ -22,7 +22,7 @@ void idGameLocal::RunClientFrame(usercmd_t& cmd) {
 		if (gameLocal.entities[gameLocal.localClientNum] != NULL)
 		{
 			idVec3 origin = gameLocal.entities[gameLocal.localClientNum]->GetOrigin();
-			idQuat rotation = gameLocal.entities[gameLocal.localClientNum]->GetPhysics()->GetAxis().ToQuat();
+			idAngles angles = gameLocal.entities[gameLocal.localClientNum]->GetPhysics()->GetAxis().ToAngles();
 
 			rvmNetworkPacket packet(gameLocal.localClientNum);
 			packet.msg.WriteUShort(NET_OPCODE_UPDATEPLAYER);
@@ -38,10 +38,7 @@ void idGameLocal::RunClientFrame(usercmd_t& cmd) {
 			packet.msg.WriteFloat(origin.x);
 			packet.msg.WriteFloat(origin.y);
 			packet.msg.WriteFloat(origin.z);
-			packet.msg.WriteFloat(rotation.y);
-			packet.msg.WriteFloat(rotation.z);
-			packet.msg.WriteFloat(rotation.z);
-			packet.msg.WriteFloat(rotation.w);
+			packet.msg.WriteFloat(angles.yaw);
 			//gameLocal.entities[gameLocal.localClientNum]->Cast<idPlayer>()->GetPhysics()->WriteToSnapshot(packet.msg);
 			common->ClientSendReliableMessage(packet.msg);
 		}

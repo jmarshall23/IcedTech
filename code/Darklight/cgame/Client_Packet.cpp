@@ -94,26 +94,27 @@ void idGameLocal::ClientProcessPacket(int clientNum, const idBitMsg& msg) {
 					cmd.impulse = msg.ReadByte();
 
 					idVec3 _origin;
-					idQuat _quat;
+					idAngles _angles;
 					_origin.x = msg.ReadFloat();
 					_origin.y = msg.ReadFloat();
 					_origin.z = msg.ReadFloat();
-					_quat.x = msg.ReadFloat();
-					_quat.y = msg.ReadFloat();
-					_quat.z = msg.ReadFloat();
-					_quat.w = msg.ReadFloat();
+					_angles.yaw = msg.ReadFloat();
+					_angles.pitch = 0;
+					_angles.roll = 0;
 					
-					//if (_clientNum != clientNum) {
+					if (_clientNum != clientNum) {
 						idPlayer* player = entities[_clientNum]->Cast<idPlayer>();
 
 						if (player != NULL) {
-							//common->ServerSetUserCmdForClient(_clientNum, cmd);
+							common->ServerSetUserCmdForClient(_clientNum, cmd);
 							gameLocal.usercmds[_clientNum] = cmd;
 							player->Spectate(false);
 							player->SetOrigin(_origin);
-							player->SetAxis(_quat.ToMat3());
+							player->GetPhysics()->SetAxis(_angles.ToMat3());
+							player->viewAngles = _angles;
+							player->UpdateVisuals();
 						}
-					//}
+					}
 				}
 			}
 			break;
