@@ -96,6 +96,8 @@ model worldmodel_shotgun {
 
 model viewmodel_shotgun {
 	mesh						models/weapons/supershotgun/viewshotgun.md5mesh
+	anim idle					models/weapons/supershotgun/idle.md5anim
+	anim fire					models/weapons/supershotgun/fire4.md5anim
 }
 
 entityDef	damage_shotgun {
