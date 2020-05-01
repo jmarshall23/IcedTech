@@ -141,23 +141,6 @@ private:
 	void					Event_CamShot();
 };
 
-class idVideoCDItem : public idItem {
-public:
-	CLASS_PROTOTYPE( idVideoCDItem );
-
-	void					Spawn();
-	virtual bool			GiveToPlayer( idPlayer *player );
-
-	CLASS_STATES_PROTOTYPE(idVideoCDItem);
-};
-
-class idPDAItem : public idItem {
-public:
-	CLASS_PROTOTYPE( idPDAItem );
-
-	virtual bool			GiveToPlayer( idPlayer *player );
-};
-
 class idMoveableItem : public idItem {
 public:
 	CLASS_PROTOTYPE( idMoveableItem );
@@ -188,13 +171,6 @@ private:
 
 	void					Event_DropToFloor( void );
 	void					Event_Gib( const char *damageDefName );
-};
-
-class idMoveablePDAItem : public idMoveableItem {
-public:
-	CLASS_PROTOTYPE( idMoveablePDAItem );
-
-	virtual bool			GiveToPlayer( idPlayer *player );
 };
 
 /*

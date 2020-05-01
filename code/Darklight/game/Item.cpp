@@ -780,34 +780,7 @@ void idObjective::Event_Trigger( idEntity *activator ) {
 	idPlayer *player = gameLocal.GetLocalPlayer();
 	if ( player ) {
 
-		//Pickup( player );
-
-		if ( spawnArgs.GetString( "inv_objective", NULL ) ) {
-	 		if ( player && player->hud ) {
-				idStr shotName = gameLocal.GetMapName();
-				shotName.StripFileExtension();
-				shotName += "/";
-				shotName += spawnArgs.GetString( "screenshot" );
-				shotName.SetFileExtension( ".tga" );
-				player->hud->SetStateString( "screenshot", shotName );
-				player->hud->SetStateString( "objective", "1" );
-				player->hud->SetStateString( "objectivetext", spawnArgs.GetString( "objectivetext" ) );
-				player->hud->SetStateString( "objectivetitle", spawnArgs.GetString( "objectivetitle" ) );
-				player->GiveObjective( spawnArgs.GetString( "objectivetitle" ), spawnArgs.GetString( "objectivetext" ), shotName );
-
-				// a tad slow but keeps from having to update all objectives in all maps with a name ptr
-				for( int i = 0; i < gameLocal.num_entities; i++ ) {
-					if ( gameLocal.entities[ i ] && gameLocal.entities[ i ]->IsType( idObjectiveComplete::Type ) ) {
-						if ( idStr::Icmp( spawnArgs.GetString( "objectivetitle" ), gameLocal.entities[ i ]->spawnArgs.GetString( "objectivetitle" ) ) == 0 ){
-							gameLocal.entities[ i ]->spawnArgs.SetBool( "objEnabled", true );
-							break;
-						}
-					}
-				}
-
-				PostEventMS( &EV_GetPlayerPos, 2000 );
-			}
-		}
+		//Pickup( player );		
 	}
 }
 
@@ -840,66 +813,6 @@ void idObjective::Event_HideObjective(idEntity *e) {
 			PostEventMS( &EV_HideObjective, 100, player );
 		}
 	}
-}
-
-/*
-===============================================================================
-
-  idVideoCDItem
-
-===============================================================================
-*/
-
-CLASS_DECLARATION( idItem, idVideoCDItem )
-END_CLASS
-
-CLASS_STATES_DECLARATION(idVideoCDItem)
-END_CLASS_STATES
-
-/*
-================
-idVideoCDItem::Spawn
-================
-*/
-void idVideoCDItem::Spawn( void ) {
-	BaseSpawn();
-}
-
-/*
-================
-idVideoCDItem::GiveToPlayer
-================
-*/
-bool idVideoCDItem::GiveToPlayer( idPlayer *player ) {
-	idStr str = spawnArgs.GetString( "video" );
-	if ( player && str.Length() ) {
-		player->GiveVideo( str, &spawnArgs );
-	}
-	return true;
-}
-
-/*
-===============================================================================
-
-  idPDAItem
-
-===============================================================================
-*/
-
-CLASS_DECLARATION( idItem, idPDAItem )
-END_CLASS
-
-/*
-================
-idPDAItem::GiveToPlayer
-================
-*/
-bool idPDAItem::GiveToPlayer(idPlayer *player) {
-	const char *str = spawnArgs.GetString( "pda_name" );
-	if ( player ) {
-		player->GivePDA( str, &spawnArgs );
-	}
-	return true;
 }
 
 /*
@@ -1250,30 +1163,6 @@ void idMoveableItem::Event_Gib( const char *damageDefName ) {
 /*
 ===============================================================================
 
-  idMoveablePDAItem
-
-===============================================================================
-*/
-
-CLASS_DECLARATION( idMoveableItem, idMoveablePDAItem )
-END_CLASS
-
-/*
-================
-idMoveablePDAItem::GiveToPlayer
-================
-*/
-bool idMoveablePDAItem::GiveToPlayer(idPlayer *player) {
-	const char *str = spawnArgs.GetString( "pda_name" );
-	if ( player ) {
-		player->GivePDA( str, &spawnArgs );
-	}
-	return true;
-}
-
-/*
-===============================================================================
-
   idItemRemover
 
 ===============================================================================
@@ -1378,19 +1267,19 @@ void idObjectiveComplete::Event_Trigger( idEntity *activator ) {
 		return;
 	}
 	idPlayer *player = gameLocal.GetLocalPlayer();
-	if ( player ) {
-		RemoveItem( player );
-
-		if ( spawnArgs.GetString( "inv_objective", NULL ) ) {
-	 		if ( player->hud ) {
-				player->hud->SetStateString( "objective", "2" );
-				player->hud->SetStateString( "objectivetext", spawnArgs.GetString( "objectivetext" ) );
-				player->hud->SetStateString( "objectivetitle", spawnArgs.GetString( "objectivetitle" ) );
-				player->CompleteObjective( spawnArgs.GetString( "objectivetitle" ) );
-				PostEventMS( &EV_GetPlayerPos, 2000 );
-			}
-		}
-	}
+	//if ( player ) {
+	//	RemoveItem( player );
+	//
+	//	if ( spawnArgs.GetString( "inv_objective", NULL ) ) {
+	// 		if ( player->hud ) {
+	//			player->hud->SetStateString( "objective", "2" );
+	//			player->hud->SetStateString( "objectivetext", spawnArgs.GetString( "objectivetext" ) );
+	//			player->hud->SetStateString( "objectivetitle", spawnArgs.GetString( "objectivetitle" ) );
+	//			player->CompleteObjective( spawnArgs.GetString( "objectivetitle" ) );
+	//			PostEventMS( &EV_GetPlayerPos, 2000 );
+	//		}
+	//	}
+	//}
 }
 
 /*

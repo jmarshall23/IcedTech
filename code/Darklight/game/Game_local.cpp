@@ -288,7 +288,6 @@ void idGameLocal::Init( void ) {
 //	declManager->RegisterDeclFolder( "fx",				".fx",				DECL_FX );
 //	declManager->RegisterDeclFolder( "particles",		".prt",				DECL_PARTICLE );
 	declManager->RegisterDeclFolder( "af",				".af",				DECL_AF );
-	declManager->RegisterDeclFolder( "newpdas",			".pda",				DECL_PDA );
 
 	cmdSystem->AddCommand( "listModelDefs", idListDecls_f<DECL_MODELDEF>, CMD_FL_SYSTEM|CMD_FL_GAME, "lists model defs" );
 	cmdSystem->AddCommand( "printModelDefs", idPrintDecls_f<DECL_MODELDEF>, CMD_FL_SYSTEM|CMD_FL_GAME, "prints a model def", idCmdSystem::ArgCompletion_Decl<DECL_MODELDEF> );
@@ -1782,30 +1781,6 @@ void idGameLocal::CacheDictionaryMedia( const idDict *dict ) {
 			FindEntityDef( kv->GetValue().c_str(), false );
 		}
 		kv = dict->MatchPrefix( "def", kv );
-	}
-
-	kv = dict->MatchPrefix( "pda_name", NULL );
-	while( kv ) {
-		if ( kv->GetValue().Length() ) {
-			declManager->FindType( DECL_PDA, kv->GetValue().c_str(), false );
-		}
-		kv = dict->MatchPrefix( "pda_name", kv );
-	}
-
-	kv = dict->MatchPrefix( "video", NULL );
-	while( kv ) {
-		if ( kv->GetValue().Length() ) {
-			declManager->FindType( DECL_VIDEO, kv->GetValue().c_str(), false );
-		}
-		kv = dict->MatchPrefix( "video", kv );
-	}
-
-	kv = dict->MatchPrefix( "audio", NULL );
-	while( kv ) {
-		if ( kv->GetValue().Length() ) {
-			declManager->FindType( DECL_AUDIO, kv->GetValue().c_str(), false );
-		}
-		kv = dict->MatchPrefix( "audio", kv );
 	}
 }
 

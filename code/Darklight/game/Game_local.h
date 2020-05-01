@@ -902,8 +902,6 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 // jmarshall
 #include "weapons/Weapon_fist.h"
 #include "weapons/Weapon_pistol.h"
-#include "weapons/Weapon_flashlight.h"
-#include "weapons/Weapon_pda.h"
 #include "weapons/Weapon_shotgun.h"
 #include "weapons/Weapon_machinegun.h"
 #include "weapons/Weapon_plasmagun.h"

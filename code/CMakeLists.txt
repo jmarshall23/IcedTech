@@ -311,12 +311,8 @@ set(src_game
 	./Darklight/game/weapons/Weapon_chaingun.h
 	./Darklight/game/weapons/Weapon_fist.cpp
 	./Darklight/game/weapons/Weapon_fist.h
-	./Darklight/game/weapons/Weapon_flashlight.cpp
-	./Darklight/game/weapons/Weapon_flashlight.h
 	./Darklight/game/weapons/Weapon_machinegun.cpp
 	./Darklight/game/weapons/Weapon_machinegun.h
-	./Darklight/game/weapons/Weapon_pda.cpp
-	./Darklight/game/weapons/Weapon_pda.h
 	./Darklight/game/weapons/Weapon_pistol.cpp
 	./Darklight/game/weapons/Weapon_pistol.h
 	./Darklight/game/weapons/Weapon_plasmagun.cpp

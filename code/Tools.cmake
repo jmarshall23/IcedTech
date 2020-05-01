@@ -146,7 +146,6 @@ set(src_tools
 	./engine/tools/materialeditor/MEOptions.cpp
 	./engine/tools/materialeditor/StageView.cpp
 	./engine/tools/materialeditor/ToggleListView.cpp
-	./engine/tools/pda/DialogPDAEditor.cpp
 	./engine/tools/radiant/autocaulk.cpp
 	./engine/tools/radiant/CameraTargetDlg.cpp
 	./engine/tools/radiant/CamWnd.cpp
@@ -326,7 +325,6 @@ set(src_tools
 	./engine/tools/materialeditor/MEOptions.h
 	./engine/tools/materialeditor/StageView.h
 	./engine/tools/materialeditor/ToggleListView.h
-	./engine/tools/pda/DialogPDAEditor.h
 	./engine/tools/radiant/autocaulk.h
 	./engine/tools/radiant/CameraTargetDlg.h
 	./engine/tools/radiant/CamWnd.h

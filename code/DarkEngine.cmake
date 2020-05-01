@@ -41,8 +41,6 @@ set(src_engine
 	./engine/framework/DeclEntityDef.h
 	./engine/framework/DeclManager.cpp
 	./engine/framework/DeclManager.h
-	./engine/framework/DeclPDA.cpp
-	./engine/framework/DeclPDA.h
 	./engine/framework/DeclSkin.cpp
 	./engine/framework/DeclSkin.h
 	./engine/framework/DeclTable.cpp

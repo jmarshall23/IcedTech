@@ -129,19 +129,7 @@ public:
 	int						deplete_ammount;
 	int						nextArmorDepleteTime;
 
-	int						pdasViewed[4]; // 128 bit flags for indicating if a pda has been viewed
-
-	int						selPDA;
-	int						selEMail;
-	int						selVideo;
-	int						selAudio;
-	bool					pdaOpened;
-	bool					turkeyScore;
 	idList<idDict *>		items;
-	idStrList				pdas;
-	idStrList				pdaSecurity;
-	idStrList				videos;
-	idStrList				emails;
 
 	bool					ammoPulse;
 	bool					weaponPulse;
@@ -262,8 +250,6 @@ public:
 	idUserInterface *		objectiveSystem;
 	bool					objectiveSystemOpen;
 
-	int						weapon_soulcube;
-	int						weapon_pda;
 	int						weapon_fists;
 
 	int						heartRate;
@@ -411,13 +397,6 @@ public:
 	void					RemoveInventoryItem( const char *name );
 	idDict *				FindInventoryItem( const char *name );
 
-	void					GivePDA( const char *pdaName, idDict *item );
-	void					GiveVideo( const char *videoName, idDict *item );
-	void					GiveEmail( const char *emailName );
-	void					GiveSecurity( const char *security );
-	void					GiveObjective( const char *title, const char *text, const char *screenshot );
-	void					CompleteObjective( const char *title );
-
 	bool					GivePowerUp( int powerup, int time );
 	void					ClearPowerUps( void );
 	bool					PowerUpActive( int powerup ) const;
@@ -454,12 +433,9 @@ public:
 
 	void					PerformImpulse( int impulse );
 	void					Spectate( bool spectate );
-	void					TogglePDA( void );
 	void					ToggleScoreboard( void );
 	void					RouteGuiMouse( idUserInterface *gui );
 	void					UpdateHud( void );
-	const idDeclPDA *		GetPDA( void ) const;
-	const idDeclVideo *		GetVideo( int index );
 	void					SetInfluenceFov( float fov );
 	void					SetInfluenceView( const char *mtr, const char *skinname, float radius, idEntity *ent );
 	void					SetInfluenceLevel( int level );
@@ -675,9 +651,6 @@ private:
 	void					UpdateFocus( void );
 	void					UpdateLocation( void );
 	idUserInterface *		ActiveGui( void );
-	void					UpdatePDAInfo( bool updatePDASel );
-	int						AddGuiPDAData( const declType_t dataType, const char *listName, const idDeclPDA *src, idUserInterface *gui );
-	void					ExtractEmailInfo( const idStr &email, const char *scan, idStr &out );
 	void					UpdateObjectiveInfo( void );
 
 	void					UseVehicle( void );
