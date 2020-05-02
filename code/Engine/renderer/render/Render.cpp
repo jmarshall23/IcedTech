@@ -859,23 +859,10 @@ void RB_DrawView( const void *data ) {
 		return;
 	}
 
-	// skip render context sets the wgl context to NULL,
-	// which should factor out the API cost, under the assumption
-	// that all gl calls just return if the context isn't valid
-	if ( r_skipRenderContext.GetBool() && backEnd.viewDef->viewEntitys ) {
-		GLimp_DeactivateContext();
-	}
-
 	backEnd.pc.c_surfaces += backEnd.viewDef->numDrawSurfs;
 
 	RB_ShowOverdraw();
 
 	// render the scene, jumping to the hardware specific interaction renderers
 	RB_STD_DrawView();
-
-	// restore the context for 2D drawing if we were stubbing it out
-	if ( r_skipRenderContext.GetBool() && backEnd.viewDef->viewEntitys ) {
-		GLimp_ActivateContext();
-		RB_SetDefaultGLState();
-	}
 }

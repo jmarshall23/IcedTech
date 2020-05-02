@@ -1159,12 +1159,6 @@ int WINAPI DoomMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	common->Printf( Sys_FPU_GetState() );
 #endif
 
-#ifndef	ID_DEDICATED
-	if ( win32.win_notaskkeys.GetInteger() ) {
-		DisableTaskKeys( TRUE, FALSE, /*( win32.win_notaskkeys.GetInteger() == 2 )*/ FALSE );
-	}
-#endif
-
 	// hide or show the early console as necessary
 	if ( win32.win_viewlog.GetInteger() || com_skipRenderer.GetBool() || common->IsDedicatedServer() ) {
 		Sys_ShowConsole( 1, true );

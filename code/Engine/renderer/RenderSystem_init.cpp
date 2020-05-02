@@ -1477,8 +1477,6 @@ void R_SetColorMappings( void ) {
 
 		tr.gammaTable[i] = inf;
 	}
-
-	GLimp_SetGamma( tr.gammaTable, tr.gammaTable, tr.gammaTable );
 }
 
 

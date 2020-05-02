@@ -48,138 +48,37 @@ If you have questions concerning this license or the applicable additional terms
 #include "rc/doom_resource.h"
 #include "../../renderer/tr_local.h"
 
+int   (WINAPI* qwglChoosePixelFormat)(HDC, CONST PIXELFORMATDESCRIPTOR*);
+int   (WINAPI* qwglDescribePixelFormat) (HDC, int, UINT, LPPIXELFORMATDESCRIPTOR);
+int   (WINAPI* qwglGetPixelFormat)(HDC);
+BOOL(WINAPI* qwglSetPixelFormat)(HDC, int, CONST PIXELFORMATDESCRIPTOR*);
+BOOL(WINAPI* qwglSwapBuffers)(HDC);
+
+BOOL(WINAPI* qwglCopyContext)(HGLRC, HGLRC, UINT);
+HGLRC(WINAPI* qwglCreateContext)(HDC);
+HGLRC(WINAPI* qwglCreateLayerContext)(HDC, int);
+BOOL(WINAPI* qwglDeleteContext)(HGLRC);
+HGLRC(WINAPI* qwglGetCurrentContext)(VOID);
+HDC(WINAPI* qwglGetCurrentDC)(VOID);
+PROC(WINAPI* qwglGetProcAddress)(LPCSTR);
+BOOL(WINAPI* qwglMakeCurrent)(HDC, HGLRC);
+BOOL(WINAPI* qwglShareLists)(HGLRC, HGLRC);
+BOOL(WINAPI* qwglUseFontBitmaps)(HDC, DWORD, DWORD, DWORD);
+
+BOOL(WINAPI* qwglUseFontOutlines)(HDC, DWORD, DWORD, DWORD, FLOAT,
+	FLOAT, int, LPGLYPHMETRICSFLOAT);
+
+BOOL(WINAPI* qwglDescribeLayerPlane)(HDC, int, int, UINT,
+	LPLAYERPLANEDESCRIPTOR);
+int  (WINAPI* qwglSetLayerPaletteEntries)(HDC, int, int, int,
+	CONST COLORREF*);
+int  (WINAPI* qwglGetLayerPaletteEntries)(HDC, int, int, int,
+	COLORREF*);
+BOOL(WINAPI* qwglRealizeLayerPalette)(HDC, int, BOOL);
+BOOL(WINAPI* qwglSwapLayerBuffers)(HDC, UINT);
+
 static void		GLW_InitExtensions( void );
 void *GLimp_ExtensionPointer(const char *name);
-
-
-
-/* ARB_pixel_format */
-#define WGL_NUMBER_PIXEL_FORMATS_ARB       0x2000
-#define WGL_DRAW_TO_WINDOW_ARB             0x2001
-#define WGL_DRAW_TO_BITMAP_ARB             0x2002
-#define WGL_ACCELERATION_ARB               0x2003
-#define WGL_NEED_PALETTE_ARB               0x2004
-#define WGL_NEED_SYSTEM_PALETTE_ARB        0x2005
-#define WGL_SWAP_LAYER_BUFFERS_ARB         0x2006
-#define WGL_SWAP_METHOD_ARB                0x2007
-#define WGL_NUMBER_OVERLAYS_ARB            0x2008
-#define WGL_NUMBER_UNDERLAYS_ARB           0x2009
-#define WGL_TRANSPARENT_ARB                0x200A
-#define WGL_SHARE_DEPTH_ARB                0x200C
-#define WGL_SHARE_STENCIL_ARB              0x200D
-#define WGL_SHARE_ACCUM_ARB                0x200E
-#define WGL_SUPPORT_GDI_ARB                0x200F
-#define WGL_SUPPORT_OPENGL_ARB             0x2010
-#define WGL_DOUBLE_BUFFER_ARB              0x2011
-#define WGL_STEREO_ARB                     0x2012
-#define WGL_PIXEL_TYPE_ARB                 0x2013
-#define WGL_COLOR_BITS_ARB                 0x2014
-#define WGL_RED_BITS_ARB                   0x2015
-#define WGL_RED_SHIFT_ARB                  0x2016
-#define WGL_GREEN_BITS_ARB                 0x2017
-#define WGL_GREEN_SHIFT_ARB                0x2018
-#define WGL_BLUE_BITS_ARB                  0x2019
-#define WGL_BLUE_SHIFT_ARB                 0x201A
-#define WGL_ALPHA_BITS_ARB                 0x201B
-#define WGL_ALPHA_SHIFT_ARB                0x201C
-#define WGL_ACCUM_BITS_ARB                 0x201D
-#define WGL_ACCUM_RED_BITS_ARB             0x201E
-#define WGL_ACCUM_GREEN_BITS_ARB           0x201F
-#define WGL_ACCUM_BLUE_BITS_ARB            0x2020
-#define WGL_ACCUM_ALPHA_BITS_ARB           0x2021
-#define WGL_DEPTH_BITS_ARB                 0x2022
-#define WGL_STENCIL_BITS_ARB               0x2023
-#define WGL_AUX_BUFFERS_ARB                0x2024
-#define WGL_NO_ACCELERATION_ARB            0x2025
-#define WGL_GENERIC_ACCELERATION_ARB       0x2026
-#define WGL_FULL_ACCELERATION_ARB          0x2027
-#define WGL_SWAP_EXCHANGE_ARB              0x2028
-#define WGL_SWAP_COPY_ARB                  0x2029
-#define WGL_SWAP_UNDEFINED_ARB             0x202A
-#define WGL_TYPE_RGBA_ARB                  0x202B
-#define WGL_TYPE_COLORINDEX_ARB            0x202C
-#define WGL_TRANSPARENT_RED_VALUE_ARB      0x2037
-#define WGL_TRANSPARENT_GREEN_VALUE_ARB    0x2038
-#define WGL_TRANSPARENT_BLUE_VALUE_ARB     0x2039
-#define WGL_TRANSPARENT_ALPHA_VALUE_ARB    0x203A
-#define WGL_TRANSPARENT_INDEX_VALUE_ARB    0x203B
-
-/* ARB_multisample */
-#define WGL_SAMPLE_BUFFERS_ARB             0x2041
-#define WGL_SAMPLES_ARB                    0x2042
-
-
-
-//
-// function declaration
-//
-bool QGL_Init( const char *dllname );
-void     QGL_Shutdown( void );
-
-
-
-/*
-========================
-GLimp_GetOldGammaRamp
-========================
-*/
-static void GLimp_SaveGamma( void ) {
-	HDC			hDC;
-	BOOL		success;
-
-	hDC = GetDC( GetDesktopWindow() );
-	success = GetDeviceGammaRamp( hDC, win32.oldHardwareGamma );
-	common->DPrintf( "...getting default gamma ramp: %s\n", success ? "success" : "failed" );
-	ReleaseDC( GetDesktopWindow(), hDC );
-}
-
-/*
-========================
-GLimp_RestoreGamma
-========================
-*/
-static void GLimp_RestoreGamma( void ) {
-	HDC hDC;
-	BOOL success;
-
-	// if we never read in a reasonable looking
-	// table, don't write it out
-	if ( win32.oldHardwareGamma[0][255] == 0 ) {
-		return;
-	}
-
-	hDC = GetDC( GetDesktopWindow() );
-	success = SetDeviceGammaRamp( hDC, win32.oldHardwareGamma );
-	common->DPrintf ( "...restoring hardware gamma: %s\n", success ? "success" : "failed" );
-	ReleaseDC( GetDesktopWindow(), hDC );
-}
-
-
-/*
-========================
-GLimp_SetGamma
-
-The renderer calls this when the user adjusts r_gamma or r_brightness
-========================
-*/
-void GLimp_SetGamma( unsigned short red[256], unsigned short green[256], unsigned short blue[256] ) {
-	unsigned short table[3][256];
-	int i;
-
-	if ( !win32.hDC ) {
-		return;
-	}
-
-	for ( i = 0; i < 256; i++ ) {
-		table[0][i] = red[i];
-		table[1][i] = green[i];
-		table[2][i] = blue[i];
-	}
-
-	if ( !SetDeviceGammaRamp( win32.hDC, table ) ) {
-		common->Printf( "WARNING: SetDeviceGammaRamp failed.\n" );
-	}
-}
 
 /*
 =============================================================================
@@ -786,23 +685,35 @@ bool GLimp_Init( glimpParms_t parms ) {
 		return false;
 	}
 
-	// save the hardware gamma so it can be
-	// restored on exit
-	GLimp_SaveGamma();
-
 	// create our window classes if we haven't already
 	GLW_CreateWindowClasses();
 
 	// this will load the dll and set all our gl* function pointers,
 	// but doesn't create a window
 
-	// r_glDriver is only intended for using instrumented OpenGL
-	// dlls.  Normal users should never have to use it, and it is
-	// not archived.
-	driverName = r_glDriver.GetString()[0] ? r_glDriver.GetString() : "opengl32";
-	if ( !QGL_Init( driverName ) ) {
-		common->Printf( "^3GLimp_Init() could not load r_glDriver \"%s\"^0\n", driverName );
-		return false;
+	{
+		qwglCopyContext = wglCopyContext;
+		qwglCreateContext = wglCreateContext;
+		qwglCreateLayerContext = wglCreateLayerContext;
+		qwglDeleteContext = wglDeleteContext;
+		qwglDescribeLayerPlane = wglDescribeLayerPlane;
+		qwglGetCurrentContext = wglGetCurrentContext;
+		qwglGetCurrentDC = wglGetCurrentDC;
+		qwglGetLayerPaletteEntries = wglGetLayerPaletteEntries;
+		qwglGetProcAddress = wglGetProcAddress;
+		qwglMakeCurrent = wglMakeCurrent;
+		qwglRealizeLayerPalette = wglRealizeLayerPalette;
+		qwglSetLayerPaletteEntries = wglSetLayerPaletteEntries;
+		qwglShareLists = wglShareLists;
+		qwglSwapLayerBuffers = wglSwapLayerBuffers;
+		qwglUseFontBitmaps = wglUseFontBitmapsA;
+		qwglUseFontOutlines = wglUseFontOutlinesA;
+
+		qwglChoosePixelFormat = ChoosePixelFormat;
+		qwglDescribePixelFormat = DescribePixelFormat;
+		qwglGetPixelFormat = GetPixelFormat;
+		qwglSetPixelFormat = SetPixelFormat;
+		qwglSwapBuffers = SwapBuffers;
 	}
 
 	// getting the wgl extensions involves creating a fake window to get a context,
@@ -826,9 +737,6 @@ bool GLimp_Init( glimpParms_t parms ) {
 
 	// wglSwapinterval, etc
 	GLW_CheckWGLExtensions( win32.hDC );
-
-	// check logging
-	GLimp_EnableLogging( ( r_logFile.GetInteger() != 0 ) );
 
 	return true;
 }
@@ -966,12 +874,6 @@ void GLimp_Shutdown( void ) {
 		CloseHandle( win32.renderThreadHandle );
 		win32.renderThreadHandle = NULL;
 	}
-
-	// restore gamma
-	GLimp_RestoreGamma();
-
-	// shutdown QGL subsystem
-	QGL_Shutdown();
 }
 
 
@@ -1006,205 +908,6 @@ void GLimp_SwapBuffers( void ) {
 
 //Sys_DebugPrintf( "*** SwapBuffers() ***\n" );
 }
-
-/*
-===========================================================
-
-SMP acceleration
-
-===========================================================
-*/
-
-//#define	REALLOC_DC
-
-/*
-===================
-GLimp_ActivateContext
-
-===================
-*/
-void GLimp_ActivateContext( void ) {
-	if ( !qwglMakeCurrent( win32.hDC, win32.hGLRC ) ) {
-		win32.wglErrors++;
-	}
-}
-
-/*
-===================
-GLimp_DeactivateContext
-
-===================
-*/
-void GLimp_DeactivateContext( void ) {
-	glFinish();
-	if ( !qwglMakeCurrent( win32.hDC, NULL ) ) {
-		win32.wglErrors++;
-	}
-#ifdef REALLOC_DC
-	// makeCurrent NULL frees the DC, so get another
-	if ( ( win32.hDC = GetDC( win32.hWnd ) ) == NULL ) {
-		win32.wglErrors++;
-	}
-#endif
-
-}
-
-/*
-===================
-GLimp_RenderThreadWrapper
-
-===================
-*/
-static void GLimp_RenderThreadWrapper( void ) {
-	win32.glimpRenderThread();
-
-	// unbind the context before we die
-	qwglMakeCurrent( win32.hDC, NULL );
-}
-
-/*
-=======================
-GLimp_SpawnRenderThread
-
-Returns false if the system only has a single processor
-=======================
-*/
-bool GLimp_SpawnRenderThread( void (*function)( void ) ) {
-	SYSTEM_INFO info;
-
-	// check number of processors
-	GetSystemInfo( &info );
-	if ( info.dwNumberOfProcessors < 2 ) {
-		return false;
-	}
-	
-	// create the IPC elements
-	win32.renderCommandsEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-	win32.renderCompletedEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-	win32.renderActiveEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-
-	win32.glimpRenderThread = function;
-
-	win32.renderThreadHandle = CreateThread(
-	   NULL,	// LPSECURITY_ATTRIBUTES lpsa,
-	   0,		// DWORD cbStack,
-	   (LPTHREAD_START_ROUTINE)GLimp_RenderThreadWrapper,	// LPTHREAD_START_ROUTINE lpStartAddr,
-	   0,			// LPVOID lpvThreadParm,
-	   0,			//   DWORD fdwCreate,
-	   &win32.renderThreadId );
-
-	if ( !win32.renderThreadHandle ) {
-		common->Error( "GLimp_SpawnRenderThread: failed" );
-	}
-
-	SetThreadPriority( win32.renderThreadHandle, THREAD_PRIORITY_ABOVE_NORMAL );
-#if 0
-	// make sure they always run on different processors
-	SetThreadAffinityMask( GetCurrentThread, 1 );
-	SetThreadAffinityMask( win32.renderThreadHandle, 2 );
-#endif
-
-	return true;
-}
-
-
-//#define	DEBUG_PRINTS
-
-/*
-===================
-GLimp_BackEndSleep
-
-===================
-*/
-void *GLimp_BackEndSleep( void ) {
-	void	*data;
-
-#ifdef DEBUG_PRINTS
-OutputDebugString( "-->GLimp_BackEndSleep\n" );
-#endif
-	ResetEvent( win32.renderActiveEvent );
-
-	// after this, the front end can exit GLimp_FrontEndSleep
-	SetEvent( win32.renderCompletedEvent );
-
-	WaitForSingleObject( win32.renderCommandsEvent, INFINITE );
-
-	ResetEvent( win32.renderCompletedEvent );
-	ResetEvent( win32.renderCommandsEvent );
-
-	data = win32.smpData;
-
-	// after this, the main thread can exit GLimp_WakeRenderer
-	SetEvent( win32.renderActiveEvent );
-
-#ifdef DEBUG_PRINTS
-OutputDebugString( "<--GLimp_BackEndSleep\n" );
-#endif
-	return data;
-}
-
-/*
-===================
-GLimp_FrontEndSleep
-
-===================
-*/
-void GLimp_FrontEndSleep( void ) {
-#ifdef DEBUG_PRINTS
-OutputDebugString( "-->GLimp_FrontEndSleep\n" );
-#endif
-	WaitForSingleObject( win32.renderCompletedEvent, INFINITE );
-
-#ifdef DEBUG_PRINTS
-OutputDebugString( "<--GLimp_FrontEndSleep\n" );
-#endif
-}
-
-volatile bool	renderThreadActive;
-
-/*
-===================
-GLimp_WakeBackEnd
-
-===================
-*/
-void GLimp_WakeBackEnd( void *data ) {
-	int		r;
-
-#ifdef DEBUG_PRINTS
-OutputDebugString( "-->GLimp_WakeBackEnd\n" );
-#endif
-	win32.smpData = data;
-
-	if ( renderThreadActive ) {
-		common->FatalError( "GLimp_WakeBackEnd: already active" );
-	}
-
-	r = WaitForSingleObject( win32.renderActiveEvent, 0 );
-	if ( r == WAIT_OBJECT_0 ) {
-		common->FatalError( "GLimp_WakeBackEnd: already signaled" );
-	}
-
-	r = WaitForSingleObject( win32.renderCommandsEvent, 0 );
-	if ( r == WAIT_OBJECT_0 ) {
-		common->FatalError( "GLimp_WakeBackEnd: commands already signaled" );
-	}
-
-	// after this, the renderer can continue through GLimp_RendererSleep
-	SetEvent( win32.renderCommandsEvent );
-
-	r = WaitForSingleObject( win32.renderActiveEvent, 5000 );
-
-	if ( r == WAIT_TIMEOUT ) {
-		common->FatalError( "GLimp_WakeBackEnd: WAIT_TIMEOUT" );
-	}
-
-#ifdef DEBUG_PRINTS
-OutputDebugString( "<--GLimp_WakeBackEnd\n" );
-#endif
-}
-
-//===================================================================
 
 /*
 ===================

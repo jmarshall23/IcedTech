@@ -223,8 +223,6 @@ set(src_engine
 	./engine/sys/sys_local.h
 	./engine/sys/sys_public.h
 	./engine/sys/sys_threading.h
-	./engine/sys/win32/eax.h
-	./engine/sys/win32/eaxguid.lib
 	./engine/sys/win32/rc
 	./engine/sys/win32/sdk
 	./engine/sys/win32/win_cpu.cpp
@@ -232,11 +230,8 @@ set(src_engine
 	./engine/sys/win32/win_input.cpp
 	./engine/sys/win32/win_local.h
 	./engine/sys/win32/win_main.cpp
-	./engine/sys/win32/win_qgl.cpp
 	./engine/sys/win32/win_shared.cpp
-	./engine/sys/win32/win_snd.cpp
 	./engine/sys/win32/win_syscon.cpp
-	./engine/sys/win32/win_taskkeyhook.cpp
 	./engine/sys/win32/win_thread.cpp
 	./engine/sys/win32/win_wndproc.cpp
 	./engine/sys/win32/rc/CreateResourceIDs.cpp
@@ -283,73 +278,6 @@ set(src_engine
 	./engine/ui/Window.h
 	./engine/ui/Winvar.cpp
 	./engine/ui/Winvar.h
-)
-
-set(src_launcher
-	./engine/sys/win32/win_launcher.cpp
-	./engine/sys/win32/rc/doom.rc
-	./engine/sys/win32/rc/doom_resource.h
-	./engine/sys/win32/rc/res/BEVEL.BMP
-	./engine/sys/win32/rc/res/BITMAP2.BMP
-	./engine/sys/win32/rc/res/BMP00001.BMP
-	./engine/sys/win32/rc/res/bmp00002.bmp
-	./engine/sys/win32/rc/res/bmp00003.bmp
-	./engine/sys/win32/rc/res/bmp00004.bmp
-	./engine/sys/win32/rc/res/bmp00005.bmp
-	./engine/sys/win32/rc/res/BMP0002.BMP
-	./engine/sys/win32/rc/res/cchsb.bmp
-	./engine/sys/win32/rc/res/ccrgb.bmp
-	./engine/sys/win32/rc/res/dbg_back.bmp
-	./engine/sys/win32/rc/res/dbg_breakpoint.ico
-	./engine/sys/win32/rc/res/dbg_current.ico
-	./engine/sys/win32/rc/res/dbg_currentline.ico
-	./engine/sys/win32/rc/res/dbg_empty.ico
-	./engine/sys/win32/rc/res/dbg_open.bmp
-	./engine/sys/win32/rc/res/dbg_toolbar.bmp
-	./engine/sys/win32/rc/res/DEFTEX.WAL
-	./engine/sys/win32/rc/res/doom.ico
-	./engine/sys/win32/rc/res/ENDCAP.BMP
-	./engine/sys/win32/rc/res/fpoint.cur
-	./engine/sys/win32/rc/res/fxeditor.ico
-	./engine/sys/win32/rc/res/fxed_link.ico
-	./engine/sys/win32/rc/res/fxed_toolbar.bmp
-	./engine/sys/win32/rc/res/GetString.htm
-	./engine/sys/win32/rc/res/guied.ico
-	./engine/sys/win32/rc/res/guied_collapse.ico
-	./engine/sys/win32/rc/res/guied_expand.ico
-	./engine/sys/win32/rc/res/guied_hand.cur
-	./engine/sys/win32/rc/res/guied_nav_visible.ico
-	./engine/sys/win32/rc/res/guied_nav_visibledisabled.ico
-	./engine/sys/win32/rc/res/guied_scripts.ico
-	./engine/sys/win32/rc/res/guied_scripts_white.ico
-	./engine/sys/win32/rc/res/guied_viewer_toolbar.bmp
-	./engine/sys/win32/rc/res/IBEVEL.BMP
-	./engine/sys/win32/rc/res/icon2.ico
-	./engine/sys/win32/rc/res/IENDCAP.BMP
-	./engine/sys/win32/rc/res/logo_sm3dfx.bmp
-	./engine/sys/win32/rc/res/matedtree.bmp
-	./engine/sys/win32/rc/res/MaterialEditor.ico
-	./engine/sys/win32/rc/res/MEFileToolbar.bmp
-	./engine/sys/win32/rc/res/MEtoolbar.bmp
-	./engine/sys/win32/rc/res/me_disabled_icon.ico
-	./engine/sys/win32/rc/res/me_enabled.ico
-	./engine/sys/win32/rc/res/me_off_icon.ico
-	./engine/sys/win32/rc/res/me_on_icon.ico
-	./engine/sys/win32/rc/res/PropTree.rc2
-	./engine/sys/win32/rc/res/Q.BMP
-	./engine/sys/win32/rc/res/qe3.ico
-	./engine/sys/win32/rc/res/Radiant.ico
-	./engine/sys/win32/rc/res/RADIANT3.GIF
-	./engine/sys/win32/rc/res/RadiantDoc.ico
-	./engine/sys/win32/rc/res/shaderbar.bmp
-	./engine/sys/win32/rc/res/shaderdoc.ico
-	./engine/sys/win32/rc/res/shaderframe.ico
-	./engine/sys/win32/rc/res/spliter.cur
-	./engine/sys/win32/rc/res/Toolbar.bmp
-	./engine/sys/win32/rc/res/TOOLBAR1.BMP
-	./engine/sys/win32/rc/res/TOOLBAR2.BMP
-	./engine/sys/win32/rc/res/VIEWDEFA.BMP
-	./engine/sys/win32/rc/res/VIEWOPPO.BMP
 )
 
 set(src_external
@@ -512,11 +440,6 @@ target_link_libraries(DoomDLL idLib External Tools "opengl32.lib" "dxguid.lib" "
 add_precompiled_header( DoomDLL Engine_precompiled.h  SOURCE_CXX ./engine/framework/Engine_precompiled.cpp )
 set_target_properties(DoomDLL PROPERTIES OUTPUT_NAME "DoomDLL" LINK_FLAGS "/STACK:16777216,16777216 /PDB:\"DoomDLL.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/exports.def")
 target_include_directories(DoomDLL PRIVATE ./engine/external/Recast/include ./engine/external/detour/Include ./engine/external/openal/include ./engine/external/ffmpeg-win64/include)
-
-# Launcher Project
-add_executable(Launcher ${src_launcher})
-target_link_libraries(Launcher DoomDLL)
-set_target_properties(Launcher PROPERTIES OUTPUT_NAME "Darklight" LINK_FLAGS "/STACK:16777216,16777216 /SUBSYSTEM:WINDOWS /PDB:\"Darklight.pdb\"")
 
 # Dedicated Server
 add_executable(DoomDedicatedServer ${src_engine} ./engine/framework/Dedicated_precompiled.cpp)

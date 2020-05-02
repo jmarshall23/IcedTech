@@ -324,6 +324,74 @@ set(src_game
 	./Engine/sys/sys_game.h
 )
 
+
+set(src_launcher
+	./Darklight/launcher/launcher_main.cpp
+	./engine/sys/win32/rc/doom.rc
+	./engine/sys/win32/rc/doom_resource.h
+	./engine/sys/win32/rc/res/BEVEL.BMP
+	./engine/sys/win32/rc/res/BITMAP2.BMP
+	./engine/sys/win32/rc/res/BMP00001.BMP
+	./engine/sys/win32/rc/res/bmp00002.bmp
+	./engine/sys/win32/rc/res/bmp00003.bmp
+	./engine/sys/win32/rc/res/bmp00004.bmp
+	./engine/sys/win32/rc/res/bmp00005.bmp
+	./engine/sys/win32/rc/res/BMP0002.BMP
+	./engine/sys/win32/rc/res/cchsb.bmp
+	./engine/sys/win32/rc/res/ccrgb.bmp
+	./engine/sys/win32/rc/res/dbg_back.bmp
+	./engine/sys/win32/rc/res/dbg_breakpoint.ico
+	./engine/sys/win32/rc/res/dbg_current.ico
+	./engine/sys/win32/rc/res/dbg_currentline.ico
+	./engine/sys/win32/rc/res/dbg_empty.ico
+	./engine/sys/win32/rc/res/dbg_open.bmp
+	./engine/sys/win32/rc/res/dbg_toolbar.bmp
+	./engine/sys/win32/rc/res/DEFTEX.WAL
+	./engine/sys/win32/rc/res/doom.ico
+	./engine/sys/win32/rc/res/ENDCAP.BMP
+	./engine/sys/win32/rc/res/fpoint.cur
+	./engine/sys/win32/rc/res/fxeditor.ico
+	./engine/sys/win32/rc/res/fxed_link.ico
+	./engine/sys/win32/rc/res/fxed_toolbar.bmp
+	./engine/sys/win32/rc/res/GetString.htm
+	./engine/sys/win32/rc/res/guied.ico
+	./engine/sys/win32/rc/res/guied_collapse.ico
+	./engine/sys/win32/rc/res/guied_expand.ico
+	./engine/sys/win32/rc/res/guied_hand.cur
+	./engine/sys/win32/rc/res/guied_nav_visible.ico
+	./engine/sys/win32/rc/res/guied_nav_visibledisabled.ico
+	./engine/sys/win32/rc/res/guied_scripts.ico
+	./engine/sys/win32/rc/res/guied_scripts_white.ico
+	./engine/sys/win32/rc/res/guied_viewer_toolbar.bmp
+	./engine/sys/win32/rc/res/IBEVEL.BMP
+	./engine/sys/win32/rc/res/icon2.ico
+	./engine/sys/win32/rc/res/IENDCAP.BMP
+	./engine/sys/win32/rc/res/logo_sm3dfx.bmp
+	./engine/sys/win32/rc/res/matedtree.bmp
+	./engine/sys/win32/rc/res/MaterialEditor.ico
+	./engine/sys/win32/rc/res/MEFileToolbar.bmp
+	./engine/sys/win32/rc/res/MEtoolbar.bmp
+	./engine/sys/win32/rc/res/me_disabled_icon.ico
+	./engine/sys/win32/rc/res/me_enabled.ico
+	./engine/sys/win32/rc/res/me_off_icon.ico
+	./engine/sys/win32/rc/res/me_on_icon.ico
+	./engine/sys/win32/rc/res/PropTree.rc2
+	./engine/sys/win32/rc/res/Q.BMP
+	./engine/sys/win32/rc/res/qe3.ico
+	./engine/sys/win32/rc/res/Radiant.ico
+	./engine/sys/win32/rc/res/RADIANT3.GIF
+	./engine/sys/win32/rc/res/RadiantDoc.ico
+	./engine/sys/win32/rc/res/shaderbar.bmp
+	./engine/sys/win32/rc/res/shaderdoc.ico
+	./engine/sys/win32/rc/res/shaderframe.ico
+	./engine/sys/win32/rc/res/spliter.cur
+	./engine/sys/win32/rc/res/Toolbar.bmp
+	./engine/sys/win32/rc/res/TOOLBAR1.BMP
+	./engine/sys/win32/rc/res/TOOLBAR2.BMP
+	./engine/sys/win32/rc/res/VIEWDEFA.BMP
+	./engine/sys/win32/rc/res/VIEWOPPO.BMP
+)
+
 # idLib project
 add_definitions(-D_AFXDLL -D_WINDOWS -D_CRT_SECURE_NO_DEPRECATE)
 add_library(idLib STATIC ${src_idlib})
@@ -355,3 +423,10 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/full_sdk_license.txt")
 else()
 	Message("Generated SDK projects...")
 endif()
+
+# Launcher Project
+add_executable(Launcher ${src_launcher})
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/full_sdk_license.txt") 	
+	target_link_libraries(Launcher DoomDLL)
+endif()
+set_target_properties(Launcher PROPERTIES OUTPUT_NAME "Darklight" LINK_FLAGS "/STACK:16777216,16777216 /SUBSYSTEM:WINDOWS /PDB:\"Darklight.pdb\"")
