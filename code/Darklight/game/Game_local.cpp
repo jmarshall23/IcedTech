@@ -2753,11 +2753,12 @@ idGameLocal::CheatsOk
 */
 bool idGameLocal::CheatsOk( bool requirePlayer ) {
 	idPlayer *player;
-
+#ifdef ID_SHIPPING
 	if ( common->IsMultiplayer() && !cvarSystem->GetCVarBool( "net_allowCheats" ) ) {
 		Printf( "Not allowed in multiplayer.\n" );
 		return false;
 	}
+#endif
 
 	if ( developer.GetBool() ) {
 		return true;

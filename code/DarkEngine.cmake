@@ -105,6 +105,7 @@ set(src_engine
 	./engine/model/Model_md3.cpp
 	./engine/model/Model_md3.h
 	./engine/model/Model_md5.cpp
+	./engine/model/Model_md6.cpp
 	./engine/model/Model_fx.cpp
 	./engine/model/Model_obj.cpp
 	./engine/model/Model_sprite.cpp

@@ -46,6 +46,12 @@ class idJointBuffer;
 #define MD5_CAMERA_EXT			"md5camera"
 #define MD5_VERSION				10
 
+#define MD6_VERSION_STRING		"MD6Version"
+#define MD6_MESH_EXT			"md6mesh"
+#define MD6_ANIM_EXT			"md6anim"
+#define MD6_CAMERA_EXT			"md6camera"
+#define MD6_VERSION				2
+
 // using shorts for triangle indexes can save a significant amount of traffic, but
 // to support the large models that renderBump loads, they need to be 32 bits
 #if 1
