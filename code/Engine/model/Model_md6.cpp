@@ -414,41 +414,41 @@ idMD6Mesh::CalcBounds
 ====================
 */
 idBounds idMD6Mesh::CalcBounds(const idJointMat* entJoints) {
-//#ifdef ID_WIN_X86_SSE2_INTRIN
-//
-//	__m128 minX = vector_float_posInfinity;
-//	__m128 minY = vector_float_posInfinity;
-//	__m128 minZ = vector_float_posInfinity;
-//	__m128 maxX = vector_float_negInfinity;
-//	__m128 maxY = vector_float_negInfinity;
-//	__m128 maxZ = vector_float_negInfinity;
-//	for (int i = 0; i < numMeshJoints; i++) {
-//		const idJointMat& joint = entJoints[meshJoints[i]];
-//		__m128 x = _mm_load_ps(joint.ToFloatPtr() + 0 * 4);
-//		__m128 y = _mm_load_ps(joint.ToFloatPtr() + 1 * 4);
-//		__m128 z = _mm_load_ps(joint.ToFloatPtr() + 2 * 4);
-//		minX = _mm_min_ps(minX, x);
-//		minY = _mm_min_ps(minY, y);
-//		minZ = _mm_min_ps(minZ, z);
-//		maxX = _mm_max_ps(maxX, x);
-//		maxY = _mm_max_ps(maxY, y);
-//		maxZ = _mm_max_ps(maxZ, z);
-//	}
-//	__m128 expand = _mm_splat_ps(_mm_load_ss(&maxJointVertDist), 0);
-//	minX = _mm_sub_ps(minX, expand);
-//	minY = _mm_sub_ps(minY, expand);
-//	minZ = _mm_sub_ps(minZ, expand);
-//	maxX = _mm_add_ps(maxX, expand);
-//	maxY = _mm_add_ps(maxY, expand);
-//	maxZ = _mm_add_ps(maxZ, expand);
-//	_mm_store_ss(bounds.ToFloatPtr() + 0, _mm_splat_ps(minX, 3));
-//	_mm_store_ss(bounds.ToFloatPtr() + 1, _mm_splat_ps(minY, 3));
-//	_mm_store_ss(bounds.ToFloatPtr() + 2, _mm_splat_ps(minZ, 3));
-//	_mm_store_ss(bounds.ToFloatPtr() + 3, _mm_splat_ps(maxX, 3));
-//	_mm_store_ss(bounds.ToFloatPtr() + 4, _mm_splat_ps(maxY, 3));
-//	_mm_store_ss(bounds.ToFloatPtr() + 5, _mm_splat_ps(maxZ, 3));
-//
-//#else
+#ifdef ID_WIN_X86_SSE2_INTRIN
+
+	__m128 minX = vector_float_posInfinity;
+	__m128 minY = vector_float_posInfinity;
+	__m128 minZ = vector_float_posInfinity;
+	__m128 maxX = vector_float_negInfinity;
+	__m128 maxY = vector_float_negInfinity;
+	__m128 maxZ = vector_float_negInfinity;
+	for (int i = 0; i < numMeshJoints; i++) {
+		const idJointMat& joint = entJoints[meshJoints[i]];
+		__m128 x = _mm_load_ps(joint.ToFloatPtr() + 0 * 4);
+		__m128 y = _mm_load_ps(joint.ToFloatPtr() + 1 * 4);
+		__m128 z = _mm_load_ps(joint.ToFloatPtr() + 2 * 4);
+		minX = _mm_min_ps(minX, x);
+		minY = _mm_min_ps(minY, y);
+		minZ = _mm_min_ps(minZ, z);
+		maxX = _mm_max_ps(maxX, x);
+		maxY = _mm_max_ps(maxY, y);
+		maxZ = _mm_max_ps(maxZ, z);
+	}
+	__m128 expand = _mm_splat_ps(_mm_load_ss(&maxJointVertDist), 0);
+	minX = _mm_sub_ps(minX, expand);
+	minY = _mm_sub_ps(minY, expand);
+	minZ = _mm_sub_ps(minZ, expand);
+	maxX = _mm_add_ps(maxX, expand);
+	maxY = _mm_add_ps(maxY, expand);
+	maxZ = _mm_add_ps(maxZ, expand);
+	_mm_store_ss(bounds.ToFloatPtr() + 0, _mm_splat_ps(minX, 3));
+	_mm_store_ss(bounds.ToFloatPtr() + 1, _mm_splat_ps(minY, 3));
+	_mm_store_ss(bounds.ToFloatPtr() + 2, _mm_splat_ps(minZ, 3));
+	_mm_store_ss(bounds.ToFloatPtr() + 3, _mm_splat_ps(maxX, 3));
+	_mm_store_ss(bounds.ToFloatPtr() + 4, _mm_splat_ps(maxY, 3));
+	_mm_store_ss(bounds.ToFloatPtr() + 5, _mm_splat_ps(maxZ, 3));
+
+#else
 
 	bounds.Clear();
 	for (int i = 0; i < numMeshJoints; i++) {
@@ -457,7 +457,7 @@ idBounds idMD6Mesh::CalcBounds(const idJointMat* entJoints) {
 	}
 	bounds.ExpandSelf(maxJointVertDist);
 
-//#endif
+#endif
 	return bounds;
 }
 
