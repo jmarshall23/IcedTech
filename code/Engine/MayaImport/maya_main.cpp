@@ -68,6 +68,7 @@ struct rvmExportJointWeight {
 //
 struct rvmExportMesh {
 	aiMesh* mesh;
+	idStr mtrName;
 	idList<int> indexes;
 	idList<idDrawVert> vertexes;
 	idList<rvmExportJointWeight> vertexWeights;
@@ -256,6 +257,8 @@ WriteMD6Mesh
 ===============
 */
 void WriteMD6Mesh(const char *dest, idList< BoneDesc > &skeleton, rvmExportMesh* meshes, int numMeshes, const char *commandLine) {
+	common->Printf("Writing MD6 mesh %s\n", dest);
+
 	idFile* file = fileSystem->OpenExplicitFileWrite(dest);
 
 	file->WriteFloatString(MD6_VERSION_STRING " %d\n", MD6_VERSION);
@@ -302,7 +305,7 @@ void WriteMD6Mesh(const char *dest, idList< BoneDesc > &skeleton, rvmExportMesh*
 	for(int i = 0; i < numMeshes; i++) {
 		file->WriteFloatString("mesh {\n");
 			file->WriteFloatString("\tname \"%s\"\n", meshes[i].mesh->mName.C_Str());
-			file->WriteFloatString("\tshader \"test_shader\"\n");
+			file->WriteFloatString("\tshader \"%s\"\n", meshes[i].mtrName.c_str());
 
 			// Write out all the vertexes.
 			file->WriteFloatString("\tverts %d {\n", meshes[i].vertexes.Num());
@@ -377,15 +380,15 @@ void ExportMesh(const char *src, const char *dest, idExportOptions &options) {
 
 		for(int f = 0; f < mesh->mesh->mNumVertices; f++) {
 			mesh->vertexes[f].xyz = ConvertToIdSpace(mesh->mesh->mVertices[f]);
-			mesh->vertexes[f].st = idVec2(mesh->mesh->mTextureCoords[0][f].x, 1.0f - mesh->mesh->mTextureCoords[0][f].y);
+			mesh->vertexes[f].st = idVec2(mesh->mesh->mTextureCoords[0][f].x, mesh->mesh->mTextureCoords[0][f].y);
 		}
 
 		mesh->indexes.SetNum(mesh->mesh->mNumFaces * 3);
 		for(int f = 0; f < mesh->mesh->mNumFaces; f++) {
 			aiFace* face = &mesh->mesh->mFaces[f];
-			mesh->indexes[f * 3 + 0] = face->mIndices[0];
+			mesh->indexes[f * 3 + 2] = face->mIndices[0];
 			mesh->indexes[f * 3 + 1] = face->mIndices[1];
-			mesh->indexes[f * 3 + 2] = face->mIndices[2];
+			mesh->indexes[f * 3 + 0] = face->mIndices[2];
 		}
 
 		for(int f = 0; f < mesh->mesh->mNumBones; f++) {
@@ -401,6 +404,32 @@ void ExportMesh(const char *src, const char *dest, idExportOptions &options) {
 					mesh->vertexWeights[vertexId].numWeights++;
 				}
 			}
+		}
+
+		aiString Path;
+		const aiMaterial* material = scene->mMaterials[mesh->mesh->mMaterialIndex];
+		material->GetTexture(aiTextureType_DIFFUSE, 0, &Path);
+		mesh->mtrName = Path.C_Str();
+
+		if(mesh->mtrName.Length() <= 0) {
+			common->Warning("No diffuse texture assigned for mesh %s, using implicit path", mesh->mesh->mName.C_Str());
+
+			const char* meshName = mesh->mesh->mName.C_Str();
+			const char *skipTo = strstr(meshName, ":");
+			if(skipTo != NULL) {
+				meshName = skipTo + 1;
+			}
+
+			idStr modelSrcPath = src;			
+			modelSrcPath = fileSystem->OSPathToRelativePath(modelSrcPath.c_str());
+			modelSrcPath.StripFilename();
+			modelSrcPath += "/";
+			modelSrcPath += meshName;
+
+			mesh->mtrName = modelSrcPath;
+		}
+		else {
+			mesh->mtrName = fileSystem->OSPathToRelativePath(mesh->mtrName);
 		}
 	}
 
