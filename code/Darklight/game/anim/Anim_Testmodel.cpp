@@ -70,7 +70,7 @@ idTestModel::idTestModel() {
 	headAnim = 0;
 	starttime = 0;
 	animtime = 0;
-	mode = 0;
+	mode = -1; // jmarshall: this was 0 which meant it wouldn't play the animation initially.
 	frame = 0;
 }
 
@@ -269,7 +269,7 @@ void idTestModel::Think( void ) {
 						headAnimator->CycleAnim( ANIMCHANNEL_ALL, headAnim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					}
 				} else {
-					animator.PlayAnim( ANIMCHANNEL_ALL, anim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+					animator.CycleAnim( ANIMCHANNEL_ALL, anim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					if ( headAnim ) {
 						headAnimator->PlayAnim( ANIMCHANNEL_ALL, headAnim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 						if ( headAnimator->AnimLength( headAnim ) > animator.AnimLength( anim ) ) {
@@ -381,10 +381,15 @@ void idTestModel::Think( void ) {
 
 	int frameNum = renderEntity->GetFrameNum();
 	frameNum++;
-	if (frameNum >= renderEntity->GetRenderModel()->NumFrames()) {
-		frameNum = 0;
+
+	if (renderEntity->GetRenderModel()->NumJoints() == 0) {
+		// Vertex animation
+		if (frameNum >= renderEntity->GetRenderModel()->NumFrames()) {
+			frameNum = 0;
+		}
+
+		renderEntity->SetFrameNum(frameNum);
 	}
-	renderEntity->SetFrameNum(frameNum);
 
 	BecomeActive(TH_UPDATEVISUALS);
 

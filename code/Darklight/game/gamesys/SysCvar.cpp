@@ -282,7 +282,7 @@ idCVar g_testParticle(				"g_testParticle",			"0",			CVAR_GAME | CVAR_INTEGER, "
 idCVar g_testParticleName(			"g_testParticleName",		"",				CVAR_GAME, "name of the particle being tested by the particle editor" );
 idCVar g_testModelRotate(			"g_testModelRotate",		"0",			CVAR_GAME, "test model rotation speed" );
 idCVar g_testPostProcess(			"g_testPostProcess",		"",				CVAR_GAME, "name of material to draw over screen" );
-idCVar g_testModelAnimate(			"g_testModelAnimate",		"0",			CVAR_GAME | CVAR_INTEGER, "test model animation,\n"
+idCVar g_testModelAnimate(			"g_testModelAnimate",		"2",			CVAR_GAME | CVAR_INTEGER, "test model animation,\n"
 																							"0 = cycle anim with origin reset\n"
 																							"1 = cycle anim with fixed origin\n"
 																							"2 = cycle anim with continuous origin\n"

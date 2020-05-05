@@ -53,6 +53,9 @@ idMD5Anim::idMD5Anim() {
 	numJoints	= 0;
 	frameRate	= 24;
 	animLength	= 0;
+// jmarshall - md6 anim
+	animType = ANIM_TYPE_UNKNOWN;
+// jmarshall end
 	totaldelta.Zero();
 }
 
@@ -153,6 +156,293 @@ size_t idMD5Anim::Allocated( void ) const {
 	return size;
 }
 
+// jmarshall - md6 anim support.
+/*
+====================
+idMD5Anim::ParseMD6Flags
+====================
+*/
+bool idMD5Anim::ParseMD6Flags(idLexer& parser) {
+	idToken token;
+
+	parser.ExpectTokenString("flags");
+	parser.ExpectTokenString("{");
+
+	while (true) {
+		if (parser.EndOfFile()) {
+			parser.Error("Unexpceted EOF in flags block\n");
+			return false;
+		}
+
+		parser.ReadToken(&token);
+
+		if (token == "}") {
+			break;
+		}
+		else if (token == "additive") {
+			// TODO Implement me!
+		}
+		else if (token == "useForwardTranslation") {
+			// TODO Implement me!
+		}
+		else if (token == "useLeftTranslation") {
+			// TODO Implement me!
+		}
+		else if (token == "useUpTranslation") {
+			// TODO Implement me!
+		}
+		else if (token == "useYawRotation" || token == "useRotation") {
+			// TODO Implement me!
+		}
+		else if (token == "ignoreBounds") {
+			// TODO Implement me!
+		}
+		else if (token == "retargetAdditive") {
+			// TODO Implement me!
+		}
+		else {
+			parser.Error("Unexpected or unknown token in flags block %s\n", token.c_str());
+		}
+	}
+	return true;
+}
+
+/*
+====================
+idMD5Anim::ParseMD6Init
+====================
+*/
+bool idMD5Anim::ParseMD6Init(idLexer& parser) {
+	idToken token;
+
+	parser.ExpectTokenString("init");
+	parser.ExpectTokenString("{");
+
+	while(true) {
+		if(parser.EndOfFile()) {
+			parser.Error("Unexpceted EOF in init block\n");
+			return false;
+		}
+
+		parser.ReadToken(&token);
+
+		if(token == "}") {
+			break;
+		}
+		else if(token == "commandLine") {
+			parser.ReadToken(&token);
+		}
+		else if (token == "sourceAnim") {
+			parser.ReadToken(&token);
+		}
+		else if (token == "subtractiveAnim") { // TODO implement this
+			parser.ReadToken(&token);
+		}
+		else if (token == "rotationMask") { // TODO implement this
+			parser.ReadToken(&token);
+		}
+		else if (token == "scaleMask") { // TODO implement this
+			parser.ReadToken(&token);
+		}
+		else if (token == "translationMask") { // TODO implement this
+			parser.ReadToken(&token);
+		}
+		else if (token == "skeletonName") { // Are MD6skel used at runtime?
+			parser.ReadToken(&token);
+		}
+		else if (token == "meshName") { // Do we need to keep track of the md6mesh at runtime?
+			parser.ReadToken(&token);
+		}
+		else if (token == "numFrames") { 
+			numFrames = parser.ParseInt();
+		}
+		else if (token == "frameRate") {
+			frameRate = parser.ParseInt();
+		}
+		else if (token == "numJoints") {
+			numJoints = parser.ParseInt();
+		}
+		else if (token == "numUserChannels") {  // TODO implement this
+			parser.ParseInt();
+		}
+		else if(token == "translatedBounds") {
+			idBounds _bounds;
+
+			parser.Parse1DMatrix(3, _bounds[0].ToFloatPtr());
+			parser.Parse1DMatrix(3, _bounds[1].ToFloatPtr());
+
+			bounds.SetGranularity(1);
+			bounds.SetNum(numFrames);
+			for (int i = 0; i < numFrames; i++) {
+				bounds[i] = _bounds;
+			}
+		}
+		else if (token == "normalizedBounds") {
+			idBounds bounds;
+
+			parser.Parse1DMatrix(3, bounds[0].ToFloatPtr());
+			parser.Parse1DMatrix(3, bounds[1].ToFloatPtr());
+		}
+		else if (token == "maxErrorRotation") {
+			parser.ParseFloat();
+		}
+		else if (token == "maxErrorScale") {
+			parser.ParseFloat();
+		}
+		else if (token == "maxErrorTranslation") {
+			parser.ParseFloat();
+		}
+		else if (token == "maxErrorUser") {
+			parser.ParseFloat();
+		}
+		else {
+			parser.Error("Unexpected or unknown token in init block %s\n", token.c_str());
+		}
+	}
+	
+	return true;
+}
+
+/*
+====================
+idMD5Anim::LoadMD6Anim
+====================
+*/
+bool idMD5Anim::LoadMD6Anim(const char* filename) {
+	int		version;
+	idLexer	parser(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS | LEXFL_NOSTRINGCONCAT);
+	idToken	token;
+	int		i, j;
+	int		num;
+
+// jmarshall
+	animType = ANIM_TYPE_MD6;
+// jmarshall end
+
+	idStr generatedFileName = "generated/anim/";
+	generatedFileName.AppendPath(filename);
+	generatedFileName.SetFileExtension(".bMD6anim");
+
+	// Get the timestamp on the original file, if it's newer than what is stored in binary model, regenerate it
+	ID_TIME_T sourceTimeStamp = fileSystem->GetTimestamp(filename);
+
+	//idFileScoped file(fileSystem->OpenFileReadMemory(generatedFileName));
+	//if (LoadBinary(file, sourceTimeStamp)) {
+	//	name = filename;
+	//	return true;
+	//}
+
+	if (!parser.LoadFile(filename)) {
+		return false;
+	}
+
+	Free();
+
+	name = filename;
+
+	parser.ExpectTokenString(MD6_VERSION_STRING);
+	version = parser.ParseInt();
+	if (version != MD6_ANIM_VERSION) {
+		parser.Error("Invalid version %d.  Should be version %d\n", version, MD6_ANIM_VERSION);
+	}
+
+	// Parse the init block
+	ParseMD6Init(parser);
+
+	// Parse the flags block
+	ParseMD6Flags(parser);
+
+	// parse the hierarchy
+	jointInfo.SetGranularity(1);
+	jointInfo.SetNum(numJoints);
+	parser.ExpectTokenString("joints");
+	parser.ExpectTokenString("{");
+	for (i = 0; i < numJoints; i++) {
+		parser.ReadToken(&token);
+		jointInfo[i].nameIndex = animationLib.JointIndex(token);
+
+		// parse parent num
+		jointInfo[i].parentNum = parser.ParseInt();
+		if (jointInfo[i].parentNum >= i) {
+			parser.Error("Invalid parent num: %d", jointInfo[i].parentNum);
+		}
+
+		if ((i != 0) && (jointInfo[i].parentNum < 0)) {
+			parser.Error("Animations may have only one root joint");
+		}
+
+		// jmarshall: TODO It seems to be always 1 that follows the parent num but I don't know what it is.
+		int unknownToken = parser.ParseInt();
+		if(unknownToken != 1) {
+			common->FatalError("MD6 Anim has unknowntoken of non 1, needs to be looked at!\n");
+		}
+
+		// Disable a bunch of the old animation system.
+		jointInfo[i].animBits = -1; // (ANIM_TX | ANIM_TY | ANIM_TZ | ANIM_QX | ANIM_QY | ANIM_QZ);
+		jointInfo[i].firstComponent = -1;		
+	}
+
+	parser.ExpectTokenString("}");
+
+	// TODO Implement rotation/scale/translation masks.
+	idStr temp;
+	parser.ExpectTokenString("rotationMask");	
+	parser.ParseBracedSectionExact(temp);
+
+	parser.ExpectTokenString("scaleMask");
+	parser.ParseBracedSectionExact(temp);
+
+	parser.ExpectTokenString("translationMask");
+	parser.ParseBracedSectionExact(temp);
+
+	// Now grab all of our frames
+	md6Frames.SetNum(numFrames);
+	parser.ExpectTokenString("frames");
+	parser.ExpectTokenString("{");
+	for(int i = 0; i < numFrames; i++) {
+		md6Frame_t* frame = &md6Frames[i];
+
+		frame->jointFrames.SetNum(numJoints);
+
+		parser.ExpectTokenString("frame");
+		parser.ExpectTokenString(va("%d", i));
+		parser.ExpectTokenString("{");
+		for(int d = 0; d < numJoints; d++) {
+			md6JointFrame_t* joint = &frame->jointFrames[d];
+
+			joint->parentNum = jointInfo[d].parentNum;
+
+			parser.ExpectTokenString("joint");
+			parser.ExpectTokenString(va("%d", d));
+			parser.ExpectTokenString("{");
+
+			parser.ExpectTokenString("R");
+			parser.Parse1DMatrix(4, joint->rotation.ToFloatPtr());
+
+			parser.ExpectTokenString("S");
+			parser.Parse1DMatrix(3, joint->scale.ToFloatPtr());
+
+			parser.ExpectTokenString("T");
+			parser.Parse1DMatrix(3, joint->translation.ToFloatPtr());
+
+			parser.ExpectTokenString("}");
+		}
+
+		parser.ExpectTokenString("}");
+	}
+	parser.ExpectTokenString("}");
+
+	// we don't count last frame because it would cause a 1 frame pause at the end
+	animLength = ((numFrames - 1) * 1000 + frameRate - 1) / frameRate;
+
+	common->Printf("Writing %s\n", generatedFileName.c_str());
+	idFileScoped outputFile(fileSystem->OpenFileWrite(generatedFileName, "fs_basepath"));
+	WriteBinary(outputFile, sourceTimeStamp);
+
+	return true;
+}
+// jmarshall end
+
 /*
 ====================
 idMD5Anim::LoadAnim
@@ -164,6 +454,10 @@ bool idMD5Anim::LoadAnim( const char *filename ) {
 	idToken	token;
 	int		i, j;
 	int		num;
+
+// jmarshall
+	animType = ANIM_TYPE_MD5;
+// jmarshall end
 
 	idStr generatedFileName = "generated/anim/";
 	generatedFileName.AppendPath(filename);
@@ -595,6 +889,18 @@ idMD5Anim::GetOrigin
 void idMD5Anim::GetOrigin( idVec3 &offset, int time, int cyclecount ) const {
 	frameBlend_t frame;
 
+// jmarshall
+	if (animType == ANIM_TYPE_MD6) {
+		idVec3 t;
+
+		ConvertTimeToFrame(time, cyclecount, frame);
+
+		t.Lerp(md6Frames[frame.frame1].jointFrames[0].translation, md6Frames[frame.frame2].jointFrames[0].translation, frame.backlerp);
+		offset = t;
+		return;
+	}
+// jmarshall end
+
 	offset = baseFrame[ 0 ].t;
 	if ( !( jointInfo[ 0 ].animBits & ( ANIM_TX | ANIM_TY | ANIM_TZ ) ) ) {
 		// just use the baseframe		
@@ -635,6 +941,15 @@ idMD5Anim::GetOriginRotation
 void idMD5Anim::GetOriginRotation( idQuat &rotation, int time, int cyclecount ) const {
 	frameBlend_t	frame;
 	int				animBits;
+
+// jmarshall
+	if (animType == ANIM_TYPE_MD6) {		
+		ConvertTimeToFrame(time, cyclecount, frame);
+		rotation.Slerp(md6Frames[frame.frame1].jointFrames[0].rotation, md6Frames[frame.frame2].jointFrames[0].rotation, frame.backlerp);
+		return;
+	}
+// jmarshall end
+
 	
 	animBits = jointInfo[ 0 ].animBits;
 	if ( !( animBits & ( ANIM_QX | ANIM_QY | ANIM_QZ ) ) ) {
@@ -751,6 +1066,14 @@ void idMD5Anim::GetBounds( idBounds &bnds, int time, int cyclecount ) const {
 	frameBlend_t	frame;
 	idVec3			offset;
 
+// jmarshall
+	// We should evaluate this for non root animations!
+	if(animType == ANIM_TYPE_MD6) {
+		bnds = bounds[0];
+		return;
+	}
+// jmarshall end
+
 	ConvertTimeToFrame( time, cyclecount, frame );
 
 	bnds = bounds[ frame.frame1 ];
@@ -785,6 +1108,50 @@ void idMD5Anim::GetBounds( idBounds &bnds, int time, int cyclecount ) const {
 
 /*
 ====================
+idMD5Anim::GetInterpolatedMD6Frame
+====================
+*/
+void idMD5Anim::GetInterpolatedMD6Frame(frameBlend_t& frame, idJointQuat* joints, const int* index, int numIndexes) const {
+	idJointQuat* blendJoints;
+	int* lerpIndex;
+
+	blendJoints = (idJointQuat*)_alloca16(md6Frames[0].jointFrames.Num() * sizeof(idJointQuat));
+
+	// This looks silly because we are trying to reuse as much of the Doom 3 animation system as possible.
+	for(int i = 0; i < md6Frames[frame.frame2].jointFrames.Num(); i++) {
+		const md6JointFrame_t* jointframe = &md6Frames[frame.frame2].jointFrames[i];
+
+		//if(jointframe->parentNum != -1) {
+		//	idMat3 rotation = jointframe->rotation.ToMat3();
+		//	idMat3 parentrotation = blendJoints[jointframe->parentNum].q.ToMat3();
+		//
+		//	blendJoints[i].q = (parentrotation.Inverse() * rotation).ToQuat();
+		//}
+		//else {
+		//	blendJoints[i].q = jointframe->rotation;
+		//}
+
+		blendJoints[i].q = jointframe->rotation;
+		blendJoints[i].q = blendJoints[i].q.Inverse();
+
+		blendJoints[i].t = jointframe->translation;
+		blendJoints[i].w = blendJoints[i].q.w;
+	}
+
+	for (int i = 0; i < numJoints; i++) {
+	//	joints[i].q.Slerp(joints[i].q, blendJoints[i].q, frame.backlerp);
+	//	joints[i].t.Lerp(joints[i].t, blendJoints[i].t, frame.backlerp);
+		joints[i] = blendJoints[i];
+	}
+	
+
+	//if (frame.cycleCount) {
+	//	joints[0].t += totaldelta * (float)frame.cycleCount;
+	//}
+}
+
+/*
+====================
 idMD5Anim::GetInterpolatedFrame
 ====================
 */
@@ -800,6 +1167,13 @@ void idMD5Anim::GetInterpolatedFrame( frameBlend_t &frame, idJointQuat *joints, 
 	idJointQuat				*jointPtr;
 	idJointQuat				*blendPtr;
 	int						*lerpIndex;
+
+// jmarshall md6 anim support
+	if(animType == ANIM_TYPE_MD6) {
+		GetInterpolatedMD6Frame(frame, joints, index, numIndexes);
+		return;
+	}
+// jmarshall end
 
 	// copy the baseframe
 	SIMDProcessor->Memcpy( joints, baseFrame.Ptr(), baseFrame.Num() * sizeof( baseFrame[ 0 ] ) );
@@ -986,6 +1360,19 @@ void idMD5Anim::GetSingleFrame( int framenum, idJointQuat *joints, const int *in
 	idJointQuat				*jointPtr;
 	const jointAnimInfo_t	*infoPtr;
 
+// jmarshall
+	if(animType == ANIM_TYPE_MD6) {
+		// This looks silly because we are trying to reuse as much of the Doom 3 animation system as possible.
+		for (int i = 0; i < md6Frames[framenum].jointFrames.Num(); i++) {
+			joints[i].q = md6Frames[framenum].jointFrames[i].rotation;
+			joints[i].t = md6Frames[framenum].jointFrames[i].translation;
+			joints[i].w = md6Frames[framenum].jointFrames[i].rotation.w;
+		}
+
+		return;
+	}
+// jmarshall end
+
 	// copy the baseframe
 	SIMDProcessor->Memcpy( joints, baseFrame.Ptr(), baseFrame.Num() * sizeof( baseFrame[ 0 ] ) );
 
@@ -1124,15 +1511,26 @@ idMD5Anim *idAnimManager::GetAnim( const char *name ) {
 		idStr filename = name;
 
 		filename.ExtractFileExtension( extension );
-		if ( extension != MD5_ANIM_EXT ) {
-			return NULL;
+		if (extension == MD5_ANIM_EXT) {
+			anim = new idMD5Anim();
+			if (!anim->LoadAnim(filename)) {
+				gameLocal.Warning("Couldn't load anim: '%s'", filename.c_str());
+				delete anim;
+				anim = NULL;
+			}
 		}
-
-		anim = new idMD5Anim();
-		if ( !anim->LoadAnim( filename ) ) {
-			gameLocal.Warning( "Couldn't load anim: '%s'", filename.c_str() );
-			delete anim;
-			anim = NULL;
+// jmarshall - md6anim support.
+		else if(extension == MD6_ANIM_EXT) {
+			anim = new idMD5Anim();
+			if (!anim->LoadMD6Anim(filename)) {
+				gameLocal.Warning("Couldn't load anim: '%s'", filename.c_str());
+				delete anim;
+				anim = NULL;
+			}
+		}
+// jmarshall end
+		else {
+			return NULL;
 		}
 		animations.Set( filename, anim );
 	}

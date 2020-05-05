@@ -289,7 +289,7 @@ void idMD6Mesh::ParseMesh(idLexer& parser, int numJoints, const idJointMat* join
 		for (int j = 0; j < numWeights; j++) {
 			totalWeight += vertexWeights[i].weightTable[j + 4];
 		}
-		assert(totalWeight > 0.998f && totalWeight < 1.001f);
+		//assert(totalWeight > 0.998f && totalWeight < 1.001f);
 
 		float usedWeight = 0;
 		for (int j = 0; j < usedWeights; j++) {

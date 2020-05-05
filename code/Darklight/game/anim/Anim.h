@@ -217,6 +217,26 @@ public:
 ==============================================================================================
 */
 
+// jmarshall 
+enum rvmAnimType_t {
+	ANIM_TYPE_UNKNOWN,
+	ANIM_TYPE_MD5,
+	ANIM_TYPE_MD6
+};
+
+struct md6JointFrame_t {
+	int jointNum;
+	int parentNum;
+	idQuat rotation;
+	idVec3 scale;
+	idVec3 translation;
+};
+
+struct md6Frame_t {
+	idList<md6JointFrame_t>		jointFrames;
+};
+// jmarshall end
+
 class idMD5Anim {
 private:
 	int						numFrames;
@@ -232,6 +252,10 @@ private:
 	idVec3					totaldelta;
 	mutable int				ref_count;
 
+// jmarshall - md6 support
+	idList<md6Frame_t>		md6Frames;
+	rvmAnimType_t			animType;
+// jmarshall end
 public:
 							idMD5Anim();
 							~idMD5Anim();
@@ -241,6 +265,9 @@ public:
 	size_t					Allocated( void ) const;
 	size_t					Size( void ) const { return sizeof( *this ) + Allocated(); };
 	bool					LoadAnim( const char *filename );
+// jmarshall - md6 support.
+	bool					LoadMD6Anim(const char* filename);
+// jmarshall end
 
 	void					IncreaseRefs( void ) const;
 	void					DecreaseRefs( void ) const;
@@ -264,6 +291,13 @@ public:
 private:
 	bool LoadBinary(idFile * file, ID_TIME_T sourceTimeStamp);
 	void WriteBinary(idFile * file, ID_TIME_T sourceTimeStamp);
+
+// jmarshall - md6 support.
+	bool					ParseMD6Init(idLexer &parser);
+	bool					ParseMD6Flags(idLexer& parser);	
+
+	void					GetInterpolatedMD6Frame(frameBlend_t& frame, idJointQuat* joints, const int* index, int numIndexes) const;
+// jmarshall end
 };
 
 /*
