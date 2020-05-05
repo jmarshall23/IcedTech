@@ -52,12 +52,11 @@ static int c_numVerts = 0;
 static int c_numWeights = 0;
 static int c_numWeightJoints = 0;
 
-typedef struct vertexWeight_s {
-	int							vert;
-	int							joint;
-	idVec3						offset;
-	float						jointWeight;
-} vertexWeight_t;
+struct tempMeshWeightEntry_t {
+	idVec3 offset;
+	float weightTable[8];
+	int numWeights;
+};
 
 /*
 ====================
@@ -103,16 +102,11 @@ idMD6Mesh::ParseMesh
 void idMD6Mesh::ParseMesh(idLexer& parser, int numJoints, const idJointMat* joints) {
 	idToken		token;
 	idToken		name;
-	int			num;
 	int			count;
 	int			jointnum;
 	idStr		shaderName;
 	int			i, j;
-	int			maxweight;
 	idList<int>	tris;
-	idList<int>	firstWeightForVertex;
-	idList<int>	numWeightsForVertex;
-	idList<vertexWeight_t> tempWeights;
 
 	parser.ExpectTokenString("{");
 
@@ -148,53 +142,33 @@ void idMD6Mesh::ParseMesh(idLexer& parser, int numJoints, const idJointMat* join
 	parser.ExpectTokenString("{");
 
 	texCoords.SetNum(count);
-	firstWeightForVertex.SetNum(count);
-	numWeightsForVertex.SetNum(count);
-
-	tempWeights.SetGranularity(texCoords.Num());
+	idTempArray<tempMeshWeightEntry_t> vertexWeights(count);
 
 	numWeights = 0;
-	maxweight = 0;
 	for (i = 0; i < texCoords.Num(); i++) {
-		idVec3 weightOffset;
-
 		parser.ExpectTokenString("vert");
 		parser.ParseInt();
 
 		// Parse the weight offset.
-		parser.Parse1DMatrix(3, weightOffset.ToFloatPtr());
+		parser.Parse1DMatrix(3, vertexWeights[i].offset.ToFloatPtr());
 
 		// Parse the tex coord.
 		parser.Parse1DMatrix(2, texCoords[i].ToFloatPtr());
 
-		float weightTable[8];
-		parser.Parse1DMatrix(8, weightTable);
+		parser.Parse1DMatrix(8, &vertexWeights[i].weightTable[0]);
 
-		firstWeightForVertex[i] = tempWeights.Num();
-		numWeightsForVertex[i] = 0;
-
+		vertexWeights[i].numWeights = 0;
 		for (int d = 0; d < 4; d++) {
-			if (weightTable[d] != -1) {
-				vertexWeight_t weight;
-
-				weight.joint = weightTable[d];
-				weight.jointWeight = weightTable[d + 4];
-				weight.offset = weightOffset;
-
-				tempWeights.Append(weight);
-
-				numWeightsForVertex[i]++;
+			if (vertexWeights[i].weightTable[d] != -1) {
+				vertexWeights[i].numWeights++;
 			}
 		}
 
-		if (!numWeightsForVertex[i]) {
+		if (!vertexWeights[i].numWeights) {
 			parser.Error("Vertex without any joint weights.");
 		}
 
-		numWeights += numWeightsForVertex[i];
-		if (numWeightsForVertex[i] + firstWeightForVertex[i] > maxweight) {
-			maxweight = numWeightsForVertex[i] + firstWeightForVertex[i];
-		}
+		numWeights += vertexWeights[i].numWeights;
 	}
 
 	parser.ExpectTokenString("}");
@@ -230,11 +204,10 @@ void idMD6Mesh::ParseMesh(idLexer& parser, int numJoints, const idJointMat* join
 
 	count = 0;
 	for (i = 0; i < texCoords.Num(); i++) {
-		num = firstWeightForVertex[i];
-		for (j = 0; j < numWeightsForVertex[i]; j++, num++, count++) {
-			scaledWeights[count].ToVec3() = tempWeights[num].offset * tempWeights[num].jointWeight;
-			scaledWeights[count].w = tempWeights[num].jointWeight;
-			weightIndex[count * 2 + 0] = tempWeights[num].joint * sizeof(idJointMat);
+		for (j = 0; j < vertexWeights[i].numWeights; j++, count++) {
+			scaledWeights[count].ToVec3() = vertexWeights[i].offset * vertexWeights[i].weightTable[j + 4];
+			scaledWeights[count].w = vertexWeights[i].weightTable[j + 4];
+			weightIndex[count * 2 + 0] = vertexWeights[i].weightTable[j] * sizeof(idJointMat);
 		}
 		weightIndex[count * 2 - 1] = 1;
 	}
@@ -255,12 +228,7 @@ void idMD6Mesh::ParseMesh(idLexer& parser, int numJoints, const idJointMat* join
 	//
 	idDrawVert* basePose = (idDrawVert*)Mem_ClearedAlloc(texCoords.Num() * sizeof(*basePose));
 	for (int j = 0, i = 0; i < texCoords.Num(); i++) {
-		idVec3 v = (*(idJointMat*)((byte*)joints + weightIndex[j * 2 + 0])) * scaledWeights[j];
-		while (weightIndex[j * 2 + 1] == 0) {
-			j++;
-			v += (*(idJointMat*)((byte*)joints + weightIndex[j * 2 + 0])) * scaledWeights[j];
-		}
-		j++;
+		idVec3 v = vertexWeights[i].offset;
 
 		basePose[i].Clear();
 		basePose[i].xyz = v;
@@ -298,18 +266,18 @@ void idMD6Mesh::ParseMesh(idLexer& parser, int numJoints, const idJointMat* join
 
 		// sort the weights and take the four largest
 		int	weights[256];
-		const int numWeights = numWeightsForVertex[i];
+		const int numWeights = vertexWeights[i].numWeights;
 		for (int j = 0; j < numWeights; j++) {
-			weights[j] = firstWeightForVertex[i] + j;
+			weights[j] = vertexWeights[i].weightTable[j];
 		}
 		// bubble sort
-		for (int j = 0; j < numWeights; j++) {
-			for (int k = 0; k < numWeights - 1 - j; k++) {
-				if (tempWeights[weights[k]].jointWeight < tempWeights[weights[k + 1]].jointWeight) {
-					SwapValues(weights[k], weights[k + 1]);
-				}
-			}
-		}
+		//for (int j = 0; j < numWeights; j++) {
+		//	for (int k = 0; k < numWeights - 1 - j; k++) {
+		//		if (tempWeights[weights[k]].jointWeight < tempWeights[weights[k + 1]].jointWeight) {
+		//			SwapValues(weights[k], weights[k + 1]);
+		//		}
+		//	}
+		//}
 
 		if (numWeights > maxWeightsPerVert) {
 			maxWeightsPerVert = numWeights;
@@ -319,13 +287,13 @@ void idMD6Mesh::ParseMesh(idLexer& parser, int numJoints, const idJointMat* join
 
 		float totalWeight = 0;
 		for (int j = 0; j < numWeights; j++) {
-			totalWeight += tempWeights[weights[j]].jointWeight;
+			totalWeight += vertexWeights[i].weightTable[j + 4];
 		}
 		assert(totalWeight > 0.998f && totalWeight < 1.001f);
 
 		float usedWeight = 0;
 		for (int j = 0; j < usedWeights; j++) {
-			usedWeight += tempWeights[weights[j]].jointWeight;
+			usedWeight += vertexWeights[i].weightTable[j + 4];
 		}
 
 		const float residualWeight = totalWeight - usedWeight;
@@ -336,9 +304,9 @@ void idMD6Mesh::ParseMesh(idLexer& parser, int numJoints, const idJointMat* join
 		byte finalWeights[MAX_VERTEX_WEIGHTS] = { 0 };
 		byte finalJointIndecies[MAX_VERTEX_WEIGHTS] = { 0 };
 		for (int j = 0; j < usedWeights; j++) {
-			const vertexWeight_t& weight = tempWeights[weights[j]];
-			const int jointIndex = weight.joint;
-			const float fw = weight.jointWeight;
+			//const vertexWeight_t& weight = tempWeights[weights[j]];
+			const int jointIndex = vertexWeights[i].weightTable[j];
+			const float fw = vertexWeights[i].weightTable[j + 4];
 			assert(fw >= 0.0f && fw <= 1.0f);
 			const float normalizedWeight = fw / usedWeight;
 			finalWeights[j] = idMath::Ftob(normalizedWeight * 255.0f);
@@ -402,10 +370,6 @@ void idMD6Mesh::ParseMesh(idLexer& parser, int numJoints, const idJointMat* join
 			}
 		}
 	}
-
-	tempWeights.Clear();
-	numWeightsForVertex.Clear();
-	firstWeightForVertex.Clear();
 
 	Mem_Free(basePose);
 }
