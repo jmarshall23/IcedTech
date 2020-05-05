@@ -33,6 +33,7 @@ set(src_radiant_net
 set(src_maya_import 
 	./engine/MayaImport/maya_precompiled.cpp
 	./engine/MayaImport/maya_main.cpp
+	./engine/MayaImport/ExportOptions.cpp
 )
 
 set(src_tools
@@ -411,16 +412,10 @@ target_include_directories(Tools PRIVATE ./engine/external/Recast/include)
 
 
 # MayaImport
-if(EXISTS "C:\\Program Files\\Autodesk\\Maya2019\\include\\qt-5.6.1_vc14-include.zip") 
-	Message("Found Maya 2019 SDK...")
-	add_library(mayaimport MODULE  ${src_maya_import} )
-	target_compile_definitions(mayaimport PRIVATE MAYA_IMPORT=1)
-	target_link_libraries(mayaimport idLib "foundation.lib" "OpenMaya.lib" "OpenMayaAnim.lib")
-	add_precompiled_header( mayaimport maya_precompiled.h  SOURCE_CXX ./engine/MayaImport/maya_precompiled.cpp )
-	set_target_properties(mayaimport PROPERTIES OUTPUT_NAME "MayaImport2019x64" LINK_FLAGS "/STACK:36777216,36777216 /PDB:\"MayaImport.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/engine/MayaImport/mayaimport.def")
-	# MayaImport 2019 Maya Folders
-	target_include_directories(mayaimport PUBLIC "C:\\Program Files\\Autodesk\\Maya2019\\include")
-	target_link_directories(mayaimport PUBLIC "C:\\Program Files\\Autodesk\\Maya2019\\lib")
-else()
-	Message("Maya 2019 SDK not found, not building MayaImport...")
-endif()
+add_library(mayaimport MODULE  ${src_maya_import} )
+target_compile_definitions(mayaimport PRIVATE MAYA_IMPORT=1)
+target_link_libraries(mayaimport idLib "assimp-vc142-mt.lib")
+add_precompiled_header( mayaimport maya_precompiled.h  SOURCE_CXX ./engine/MayaImport/maya_precompiled.cpp )
+set_target_properties(mayaimport PROPERTIES OUTPUT_NAME "MayaImport2019x64" LINK_FLAGS "/STACK:36777216,36777216 /PDB:\"MayaImport.pdb\" /DEF:${CMAKE_CURRENT_SOURCE_DIR}/engine/MayaImport/mayaimport.def")
+target_include_directories(mayaimport PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/engine/external/assimp/include")
+target_link_directories(mayaimport PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/engine/external/assimp/lib/")

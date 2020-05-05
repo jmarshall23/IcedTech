@@ -38,7 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 
-typedef bool ( *exporterDLLEntry_t )( int version, idCommon *common, idSys *sys );
+typedef bool ( *exporterDLLEntry_t )( int version, idCommon *common, idSys *sys, idFileSystem *fileSystem );
 typedef const char *( *exporterInterface_t )( const char *ospath, const char *commandline );
 typedef void ( *exporterShutdown_t )( void );
 

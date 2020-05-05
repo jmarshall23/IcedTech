@@ -123,7 +123,7 @@ void idModelExport::LoadMayaDll( void ) {
 	}
 
 	// initialize the DLL
-	if ( !dllEntry( MD5_VERSION, common, sys ) ) {
+	if ( !dllEntry( MD5_VERSION, common, sys, fileSystem ) ) {
 		// init failed
 		Maya_ConvertModel = NULL;
 		Maya_Shutdown = NULL;
@@ -257,7 +257,7 @@ bool idModelExport::ExportModel( const char *model ) {
 	Reset();
 	src  = model;
 	dest = model;
-	dest.SetFileExtension( MD5_MESH_EXT );
+	dest.SetFileExtension( MD6_MESH_EXT );
 
 	sprintf( commandLine, "mesh %s -dest %s -game %s", src.c_str(), dest.c_str(), game );
 	if ( !ConvertMayaToMD5() ) {
@@ -438,7 +438,7 @@ int idModelExport::ParseExportSection( idParser &parser ) {
 				}
 
 				if ( command == "mesh" ) {
-					dest.SetFileExtension( MD5_MESH_EXT );
+					dest.SetFileExtension( MD6_MESH_EXT );
 				} else if ( command == "anim" ) {
 					dest.SetFileExtension( MD5_ANIM_EXT );
 				} else if ( command == "camera" ) {

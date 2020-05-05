@@ -32,6 +32,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "../renderer/tr_local.h"
 #include "Model_local.h"
 
+idCVar r_showSkelMaxJoints("r_showSkelMaxJoints", "-1", CVAR_INTEGER | CVAR_RENDERER, "");
+
 static const char* MD6_SnapshotName = "_MD6_Snapshot_";
 
 #define ID_WIN_X86_SSE2_INTRIN
@@ -319,7 +321,7 @@ void idMD6Mesh::ParseMesh(idLexer& parser, int numJoints, const idJointMat* join
 		for (int j = 0; j < numWeights; j++) {
 			totalWeight += tempWeights[weights[j]].jointWeight;
 		}
-		assert(totalWeight > 0.999f && totalWeight < 1.001f);
+		assert(totalWeight > 0.998f && totalWeight < 1.001f);
 
 		float usedWeight = 0;
 		for (int j = 0; j < usedWeights; j++) {
@@ -607,7 +609,10 @@ void idRenderModelMD6::ParseJoint(idLexer& parser, idMD5Joint* joint, idJointQua
 	parser.Parse1DMatrix(3, &jointScale[0]);
 
 	// Joint Translation.
-	parser.Parse1DMatrix(3, defaultPose->t.ToFloatPtr());
+	idVec3 translation;
+	parser.Parse1DMatrix(3, &translation[0]);
+
+	defaultPose->t = idVec3(translation[0], translation[1], translation[2]);
 }
 
 /*
@@ -736,14 +741,26 @@ void idRenderModelMD6::LoadModel() {
 	parser.ExpectTokenString("{");
 	pose = defaultPose.Ptr();
 	joint = joints.Ptr();
+
 	for (i = 0; i < joints.Num(); i++, joint++, pose++) {
-		ParseJoint(parser, joint, pose);
-		poseMat3[i].SetRotation(pose->q.ToMat3());
-		poseMat3[i].SetTranslation(pose->t);
-		if (joint->parent) {
+		ParseJoint(parser, joint, pose);			
+		
+		if (joint->parent) {					
 			parentNum = joint->parent - joints.Ptr();
+
+			poseMat3[i].SetRotation(poseMat3[parentNum].ToMat3() * pose->q.ToMat3());
+
+			idVec3 relativeJointPos = pose->t;
+			idVec3 parentJointPos = poseMat3[parentNum].ToVec3();
+			idVec3 transformedJointPos = parentJointPos + relativeJointPos * poseMat3[parentNum].ToMat3().Transpose();
+			poseMat3[i].SetTranslation(transformedJointPos);
+
 			pose->q = (poseMat3[i].ToMat3() * poseMat3[parentNum].ToMat3().Transpose()).ToQuat();
-			pose->t = (poseMat3[i].ToVec3() - poseMat3[parentNum].ToVec3()) * poseMat3[parentNum].ToMat3().Transpose();
+			pose->t = (poseMat3[i].ToVec3() - poseMat3[parentNum].ToVec3()) * poseMat3[parentNum].ToMat3().Transpose();			
+		}		
+		else {
+			poseMat3[i].SetRotation(pose->q.ToMat3());
+			poseMat3[i].SetTranslation(pose->t);
 		}
 	}
 	parser.ExpectTokenString("}");
@@ -896,17 +913,33 @@ void idRenderModelMD6::DrawJoints(const idRenderEntityParms* ent, const struct v
 	int					num;
 	idVec3				pos;
 	const idJointMat* joint;
+	const idJointMat* basejoint;
 	const idMD5Joint* MD6Joint;
 	int					parentNum;
 
 	num = ent->numJoints;
 	joint = ent->joints;
+
+	if(joint == NULL || num == 0) {
+		joint = poseMat3;
+		basejoint = poseMat3;
+		num = this->NumJoints();
+	}
+	else {
+		basejoint = joint;
+	}
+
+	if (r_showSkelMaxJoints.GetInteger() != -1) {
+		num = r_showSkelMaxJoints.GetInteger();
+	}
+
+
 	MD6Joint = joints.Ptr();
 	for (i = 0; i < num; i++, joint++, MD6Joint++) {
 		pos = ent->origin + joint->ToVec3() * ent->axis;
 		if (MD6Joint->parent) {
 			parentNum = MD6Joint->parent - joints.Ptr();
-			session->rw->DebugLine(colorWhite, ent->origin + ent->joints[parentNum].ToVec3() * ent->axis, pos);
+			session->rw->DebugLine(colorWhite, ent->origin + basejoint[parentNum].ToVec3() * ent->axis, pos);
 		}
 
 		session->rw->DebugLine(colorRed, pos, pos + joint->ToMat3()[0] * 2.0f * ent->axis);
@@ -1060,6 +1093,10 @@ idRenderModel* idRenderModelMD6::InstantiateDynamicModel(const class idRenderEnt
 	else {
 		staticModel = new idRenderModelMD6Instance;
 		staticModel->InitEmpty(MD6_SnapshotName);
+	}
+
+	if (r_showSkel.GetInteger()) {
+		DrawJoints(&((const idRenderEntityLocal* )ent)->parms, view);
 	}
 
 	// update the GPU joints array

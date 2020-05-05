@@ -5,7 +5,7 @@
 ***********************************************************************/
 
 export fred {
-	mesh models/weapons/supershotgun/shotgun.mb -dest models/weapons/supershotgun/viewshotgun
+	mesh models/weapons/supershotgun/view_shotgun.fbx -dest models/weapons/supershotgun/viewshotgun
 }
 
 entityDef weapon_shotgun {
