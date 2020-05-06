@@ -149,6 +149,13 @@ void transformnode(aiMatrix4x4* result, struct aiNode* node)
 	}
 }
 
+void extract3x3(aiMatrix3x3* m3, aiMatrix4x4* m4)
+{
+	m3->a1 = m4->a1; m3->a2 = m4->a2; m3->a3 = m4->a3;
+	m3->b1 = m4->b1; m3->b2 = m4->b2; m3->b3 = m4->b3;
+	m3->c1 = m4->c1; m3->c2 = m4->c2; m3->c3 = m4->c3;
+}
+
 const char *FixBoneName(const char *name) {
 	const char* skipTo = strstr(name, ":");
 	if (skipTo != NULL) {
@@ -186,17 +193,22 @@ static void GatherBoneNames(const aiScene* scene, struct aiNode* nodes, idList<r
 	}
 }
 
-struct BoneDesc
+class BoneDesc
 {
+public:
 	const aiNode* node;
 	idStr	name;
 	int		parentIndex;
 	idMat3	rotation;
+	idMat4  mOffsetMatrix;
 	idMat3  worldRotation;
 	idVec3 location;
 	idVec3 worldTransform;
 	const aiBone* bone;
+	aiMatrix4x4 globalTransform;
 };
+
+
 
 // This is a global variable because it needs to stay persistant between mesh -> anim runs because assimp doesn't let you gather bone names
 // on FBX without names.
@@ -205,8 +217,10 @@ idList< BoneDesc > meshskeleton;
 
 // parentTransform * node->mTransformation;
 
-static void BuildSkeleton(const aiNode* node, const idList<rvmBoneEntry>& boneNames, const idVec3 translation, const idMat3 &rotation, const int parentBoneIndex, idList< BoneDesc >& skeleton)
+static void BuildSkeleton(const aiNode* node, const aiMatrix4x4 &parentTransform, const idList<rvmBoneEntry>& boneNames, const idVec3 translation, const idMat3 &rotation, const int parentBoneIndex, idList< BoneDesc >& skeleton)
 {
+	const aiMatrix4x4 globalTransform = node->mTransformation * parentTransform;
+
 	idVec3 nodeTranslation = idVec3(node->mTransformation.a4, node->mTransformation.b4, node->mTransformation.c4);
 	aiMatrix3x3 matrix = aiMatrix3x3(node->mTransformation);
 
@@ -215,7 +229,7 @@ static void BuildSkeleton(const aiNode* node, const idList<rvmBoneEntry>& boneNa
 	idMat3 currentRotation;
 	memcpy(currentRotation.ToFloatPtr(), &matrix, sizeof(idMat3));
 
-	idMat3 globalRotation = currentRotation * rotation;
+	idMat3 globalRotation = rotation * currentRotation;
 
 	int newBoneIndex = parentBoneIndex;
 
@@ -229,7 +243,7 @@ static void BuildSkeleton(const aiNode* node, const idList<rvmBoneEntry>& boneNa
 	}
 
 	if (index != -1)
-	{
+	{		
 		newBoneIndex = skeleton.Num();
 
 		BoneDesc newBone;
@@ -238,9 +252,10 @@ static void BuildSkeleton(const aiNode* node, const idList<rvmBoneEntry>& boneNa
 		newBone.name = node->mName.C_Str();
 		newBone.location = globalSkeletalTranslation;
 		newBone.rotation = globalRotation;
-
+		newBone.globalTransform = globalTransform;
 		newBone.parentIndex = parentBoneIndex;
 		newBone.bone = boneNames[index].bone;
+		memcpy(newBone.mOffsetMatrix.ToFloatPtr(), &boneNames[index].bone->mOffsetMatrix, sizeof(float) * 16);
 
 		skeleton.Append(newBone);
 
@@ -250,7 +265,7 @@ static void BuildSkeleton(const aiNode* node, const idList<rvmBoneEntry>& boneNa
 	for (int childIndex = 0; childIndex < node->mNumChildren; childIndex++)
 	{
 		const aiNode* childNode = node->mChildren[childIndex];
-		BuildSkeleton(childNode, boneNames, globalSkeletalTranslation, globalRotation, newBoneIndex, skeleton);
+		BuildSkeleton(childNode, globalTransform, boneNames, globalSkeletalTranslation, globalRotation, newBoneIndex, skeleton);
 	}
 }
 
@@ -524,12 +539,13 @@ void ExportAnim(const char *modelpath, const char* src, const char* dest, idExpo
 	for (int d = 0; d < animLength; d++) {
 		idVec3 _origin;
 		idMat3 _axis;
+		aiMatrix4x4 iden;
 
 		_origin.Zero();
 		_axis.Identity();
 
 		animatescene(scene, scene->mAnimations[0], d);
-		BuildSkeleton(originNode, boneNames, _origin, _axis, -1, frames[d].skeleton);
+		BuildSkeleton(originNode, iden, boneNames, _origin, _axis, -1, frames[d].skeleton);
 
 		for (int f = 0; f < frames[d].skeleton.Num(); f++) {
 			translatedBounds.AddPoint(frames[d].skeleton[f].location);
@@ -544,7 +560,10 @@ void ExportAnim(const char *modelpath, const char* src, const char* dest, idExpo
 WriteMD6Mesh
 ===============
 */
-void WriteMD6Mesh(const char *dest, idList< BoneDesc > &skeleton, rvmExportMesh* meshes, int numMeshes, const char *commandLine) {
+void WriteMD6Mesh(const char *dest, idList< BoneDesc > &skeleton, rvmExportMesh* meshes, int numMeshes, const char *commandLine, aiMatrix4x4 &globalInverseTransform) {	
+	idMat4 inverseTransform;
+	memcpy(inverseTransform.ToFloatPtr(), &globalInverseTransform, sizeof(float) * 16);
+
 	common->Printf("Writing MD6 mesh %s\n", dest);
 
 	idFile* file = fileSystem->OpenExplicitFileWrite(dest);
@@ -573,14 +592,13 @@ void WriteMD6Mesh(const char *dest, idList< BoneDesc > &skeleton, rvmExportMesh*
 
 			idStr parentName = "";
 			if(skeleton[i].parentIndex != -1) {				
-				parentName = skeleton[skeleton[i].parentIndex].name;
-
-				//translation = translation + skeleton[skeleton[i].parentIndex].worldTransform;
-				skeleton[i].worldRotation = skeleton[i].worldRotation * skeleton[skeleton[i].parentIndex].worldRotation;
+				parentName = skeleton[skeleton[i].parentIndex].name;			
 			}
-
+			
 			skeleton[i].worldTransform = translation;
 			skeleton[i].worldRotation = quat.ToMat3();
+
+			//idAngles debugAngles = quat.ToAngles()
 
 			file->WriteFloatString("\t \"%s\" %d ( 1 0 0 0 0 0 0 0 ) ( %f %f %f %f ) ( 1 1 1 ) ( %f %f %f ) // %s\n", skeleton[i].name.c_str(), skeleton[i].parentIndex, 
 									quat.x, quat.y, quat.z, quat.w,
@@ -600,7 +618,10 @@ void WriteMD6Mesh(const char *dest, idList< BoneDesc > &skeleton, rvmExportMesh*
 				for(int d = 0; d < meshes[i].vertexes.Num(); d++) {
 					idDrawVert* vert = &meshes[i].vertexes[d];
 					rvmExportJointWeight* weight = &meshes[i].vertexWeights[d];
-					file->WriteFloatString("\t\tvert %d ( %f %f %f ) ( %f %f ) ( %d %d %d %d %f %f %f %f )\n", d, vert->xyz.x, vert->xyz.y, vert->xyz.z,
+
+					idVec3 exportedXyz = ConvertToIdSpace(vert->xyz);
+					
+					file->WriteFloatString("\t\tvert %d ( %f %f %f ) ( %f %f ) ( %d %d %d %d %f %f %f %f )\n", d, exportedXyz.x, exportedXyz.y, exportedXyz.z,
 						vert->st.x, vert->st.y,
 						weight->jointIndex[0], weight->jointIndex[1], weight->jointIndex[2], weight->jointIndex[3],
 						weight->weights[0], weight->weights[1], weight->weights[2], weight->weights[3]);
@@ -618,6 +639,33 @@ void WriteMD6Mesh(const char *dest, idList< BoneDesc > &skeleton, rvmExportMesh*
 	}
 
 	fileSystem->CloseFile(file);
+}
+
+void SetBasePose(struct aiScene* scene, rvmExportMesh *mesh)
+{
+	aiMesh* amesh = mesh->mesh;
+	aiMatrix4x4 skin4;
+	aiMatrix3x3 skin3;
+
+	for (int k = 0; k < amesh->mNumBones; k++) {
+		struct aiBone* bone = amesh->mBones[k];
+		struct aiNode* node = FindNodeByName(scene->mRootNode, bone->mName.data);
+
+		transformnode(&skin4, node);
+		aiMultiplyMatrix4(&skin4, &bone->mOffsetMatrix);
+		extract3x3(&skin3, &skin4);
+
+		for (int i = 0; i < bone->mNumWeights; i++) {
+			int v = bone->mWeights[i].mVertexId;
+			float w = bone->mWeights[i].mWeight;
+
+			aiVector3D position = amesh->mVertices[v];
+			aiTransformVecByMatrix4(&position, &skin4);
+			mesh->vertexes[v].xyz.x += position.x * w;
+			mesh->vertexes[v].xyz.y += position.y * w;
+			mesh->vertexes[v].xyz.z += position.z * w;
+		}
+	}
 }
 
 /*
@@ -646,11 +694,12 @@ void ExportMesh(const char *src, const char *dest, idExportOptions &options) {
 	
 	idVec3 _origin;
 	idMat3 _axis;
+	aiMatrix4x4 iden;
 
 	_origin.Zero();
 	_axis.Identity();
 
-	BuildSkeleton(originNode, boneNames, _origin, _axis, -1, meshskeleton);
+	BuildSkeleton(originNode, iden, boneNames, _origin, _axis, -1, meshskeleton);
 
 	// Grab all of the meshes.
 	int numMeshes = scene->mNumMeshes;
@@ -667,7 +716,7 @@ void ExportMesh(const char *src, const char *dest, idExportOptions &options) {
 		mesh->ResetWeights();
 
 		for(int f = 0; f < mesh->mesh->mNumVertices; f++) {
-			mesh->vertexes[f].xyz = ConvertToIdSpace(mesh->mesh->mVertices[f]);
+			mesh->vertexes[f].xyz = idVec3(0, 0, 0);
 			mesh->vertexes[f].st = idVec2(mesh->mesh->mTextureCoords[0][f].x, mesh->mesh->mTextureCoords[0][f].y);
 		}
 
@@ -720,9 +769,14 @@ void ExportMesh(const char *src, const char *dest, idExportOptions &options) {
 			mesh->mtrName = modelSrcPath;
 			mesh->mtrName.Replace(".", "_");
 		}
+
+		SetBasePose(scene, mesh);
 	}
 
-	WriteMD6Mesh(dest, meshskeleton, meshes.Ptr(), numMeshes, options.commandLine);
+	aiMatrix4x4 globalInverseTransform = scene->mRootNode->mTransformation;
+	globalInverseTransform.Inverse();
+
+	WriteMD6Mesh(dest, meshskeleton, meshes.Ptr(), numMeshes, options.commandLine, globalInverseTransform);
 }
 
 /*
