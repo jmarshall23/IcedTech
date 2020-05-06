@@ -282,7 +282,7 @@ bool idModelExport::ExportAnim( const char *anim ) {
 	Reset();
 	src  = anim;
 	dest = anim;
-	dest.SetFileExtension( MD5_ANIM_EXT );
+	dest.SetFileExtension(MD6_ANIM_EXT);
 
 	sprintf( commandLine, "anim %s -dest %s -game %s", src.c_str(), dest.c_str(), game );
 	if ( !ConvertMayaToMD5() ) {
@@ -440,7 +440,7 @@ int idModelExport::ParseExportSection( idParser &parser ) {
 				if ( command == "mesh" ) {
 					dest.SetFileExtension( MD6_MESH_EXT );
 				} else if ( command == "anim" ) {
-					dest.SetFileExtension( MD5_ANIM_EXT );
+					dest.SetFileExtension( MD6_ANIM_EXT );
 				} else if ( command == "camera" ) {
 					dest.SetFileExtension( MD5_CAMERA_EXT );
 				} else {

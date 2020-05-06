@@ -45,6 +45,30 @@ models/weapons/rocketlauncher/rocketlauncher_diffuse
 	specularmap		models/weapons/rocketlauncher/rocketlauncher_spec.tga	
 }
 
+models/weapons/supershotgun/Stock
+{
+	qer_editorimage		models/weapons/supershotgun/mat_doublebarrel_Base_Color.png
+	bumpmap			models/weapons/supershotgun/mat_doublebarrel_Normal_OpenGL.png
+	diffusemap		models/weapons/supershotgun/mat_doublebarrel_Base_Color.png
+	specularmap		models/weapons/supershotgun/mat_doublebarrel_Metallic.png
+}
+
+models/weapons/supershotgun/Cylinder_002
+{
+	qer_editorimage		models/weapons/supershotgun/mat_doublebarrel_2_Base_Color.png
+	bumpmap			models/weapons/supershotgun/mat_doublebarrel_2_Normal_OpenGL.png
+	diffusemap		models/weapons/supershotgun/mat_doublebarrel_2_Base_Color.png
+	specularmap		models/weapons/supershotgun/mat_doublebarrel_2_Metallic.png
+}
+
+models/weapons/supershotgun/cylinder
+{
+	qer_editorimage		models/weapons/supershotgun/mat_doublebarrel_2_Base_Color.png
+	bumpmap			models/weapons/supershotgun/mat_doublebarrel_2_Normal_OpenGL.png
+	diffusemap		models/weapons/supershotgun/mat_doublebarrel_2_Base_Color.png
+	specularmap		models/weapons/supershotgun/mat_doublebarrel_2_Metallic.png
+}
+
 models/weapons/supershotgun/mat_doublebarrel_2_Base_Color
 {
 	qer_editorimage		models/weapons/supershotgun/mat_doublebarrel_2_Base_Color.png

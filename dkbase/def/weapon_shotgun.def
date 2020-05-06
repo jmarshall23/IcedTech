@@ -5,7 +5,13 @@
 ***********************************************************************/
 
 export fred {
-	mesh models/weapons/supershotgun/view_shotgun.fbx -dest models/weapons/supershotgun/viewshotgun
+	mesh models/weapons/supershotgun/view_shotgun.fbx -dest md6/weapons/supershotgun/viewshotgun.md6mesh
+	anim models/weapons/supershotgun/reload.fbx  -dest md6/weapons/supershotgun/reload.md6anim
+}
+
+model shotgun_test {
+	mesh md6/weapons/supershotgun/viewshotgun.md6mesh
+	anim idle md6/weapons/supershotgun/reload.md6anim
 }
 
 entityDef weapon_shotgun {

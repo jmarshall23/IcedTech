@@ -48,6 +48,18 @@ idFileSystem* fileSystem = NULL;
 
 idCVar* idCVar::staticVars = NULL;
 
+struct rvmBoneEntry {
+	idStr name;
+	const aiBone* bone;
+
+	inline bool operator==(const rvmBoneEntry& rhs) {
+		if (name != rhs.name)
+			return false;
+
+		return true;
+	}
+};
+
 struct rvmExportJointWeight {
 	void Reset() {
 		for(int i = 0; i < 4; i++) {
@@ -77,18 +89,6 @@ struct rvmExportMesh {
 		for (int i = 0; i < vertexWeights.Num(); i++) {
 			vertexWeights[i].Reset();
 		}
-	}
-};
-
-struct rvmBoneEntry {
-	idStr name;
-	const aiBone* bone;
-
-	inline bool operator==(const rvmBoneEntry& rhs) { 
-		if (name != rhs.name)
-			return false;
-
-		return true;
 	}
 };
 
@@ -149,6 +149,14 @@ void transformnode(aiMatrix4x4* result, struct aiNode* node)
 	}
 }
 
+const char *FixBoneName(const char *name) {
+	const char* skipTo = strstr(name, ":");
+	if (skipTo != NULL) {
+		return skipTo + 1;
+	}
+
+	return name;
+}
 
 // https://www.gamedev.net/forums/topic/648859-assimp-build-the-skeleton-from-the-scene/
 static void GatherBoneNames(const aiScene* scene, struct aiNode* nodes, idList<rvmBoneEntry> &bones)
@@ -167,7 +175,7 @@ static void GatherBoneNames(const aiScene* scene, struct aiNode* nodes, idList<r
 			{
 				rvmBoneEntry entry;
 				entry.bone = bone;
-				entry.name = node->mName.C_Str();
+				entry.name = FixBoneName(node->mName.C_Str());
 				bones.AddUnique(entry);
 				node = node->mParent;
 				if (node && node->mNumChildren == 1) {
@@ -190,6 +198,11 @@ struct BoneDesc
 	const aiBone* bone;
 };
 
+// This is a global variable because it needs to stay persistant between mesh -> anim runs because assimp doesn't let you gather bone names
+// on FBX without names.
+idList<rvmBoneEntry> boneNames;
+idList< BoneDesc > meshskeleton;
+
 // parentTransform * node->mTransformation;
 
 static void BuildSkeleton(const aiNode* node, const idList<rvmBoneEntry>& boneNames, const idVec3 translation, const idMat3 &rotation, const int parentBoneIndex, idList< BoneDesc >& skeleton)
@@ -209,7 +222,7 @@ static void BuildSkeleton(const aiNode* node, const idList<rvmBoneEntry>& boneNa
 	int index = -1; 
 	
 	for(int i = 0; i < boneNames.Num(); i++) {
-		if(boneNames[i].name == node->mName.C_Str()) {
+		if(boneNames[i].name == FixBoneName(node->mName.C_Str())) {
 			index = i;
 			break;
 		}
@@ -251,6 +264,281 @@ int FindExportJoint(aiBone* bone, idList<BoneDesc>& exportJoints) {
 	common->FatalError("FindExportJoint: Failed to find joint!\n");
 	return -1;
 }
+
+
+int GetAnimLength(aiAnimation* anim)
+{
+	int i, len = 0;
+	for (i = 0; i < anim->mNumChannels; i++) {
+		struct aiNodeAnim* chan = anim->mChannels[i];
+		len = max(len, chan->mNumPositionKeys);
+		len = max(len, chan->mNumRotationKeys);
+		len = max(len, chan->mNumScalingKeys);
+	}
+	return len;
+}
+
+
+void composematrix(aiMatrix4x4* m, aiVector3D* t, aiQuaternion* q, aiVector3D* s)
+{
+	// quat to rotation matrix
+	m->a1 = 1 - 2 * (q->y * q->y + q->z * q->z);
+	m->a2 = 2 * (q->x * q->y - q->z * q->w);
+	m->a3 = 2 * (q->x * q->z + q->y * q->w);
+	m->b1 = 2 * (q->x * q->y + q->z * q->w);
+	m->b2 = 1 - 2 * (q->x * q->x + q->z * q->z);
+	m->b3 = 2 * (q->y * q->z - q->x * q->w);
+	m->c1 = 2 * (q->x * q->z - q->y * q->w);
+	m->c2 = 2 * (q->y * q->z + q->x * q->w);
+	m->c3 = 1 - 2 * (q->x * q->x + q->y * q->y);
+
+	// scale matrix
+	m->a1 *= s->x; m->a2 *= s->x; m->a3 *= s->x;
+	m->b1 *= s->y; m->b2 *= s->y; m->b3 *= s->y;
+	m->c1 *= s->z; m->c2 *= s->z; m->c3 *= s->z;
+
+	// set translation
+	m->a4 = t->x; m->b4 = t->y; m->c4 = t->z;
+
+	m->d1 = 0; m->d2 = 0; m->d3 = 0; m->d4 = 1;
+}
+
+void mixvector(aiVector3D* p, aiVector3D* a, aiVector3D* b, float t)
+{
+	p->x = a->x + t * (b->x - a->x);
+	p->y = a->y + t * (b->y - a->y);
+	p->z = a->z + t * (b->z - a->z);
+}
+
+
+float dotquaternions(aiQuaternion* a, aiQuaternion* b)
+{
+	return a->x * b->x + a->y * b->y + a->z * b->z + a->w * b->w;
+}
+
+void normalizequaternion(aiQuaternion* q)
+{
+	float d = sqrt(dotquaternions(q, q));
+	if (d >= 0.00001) {
+		d = 1 / d;
+		q->x *= d;
+		q->y *= d;
+		q->z *= d;
+		q->w *= d;
+	}
+	else {
+		q->x = q->y = q->z = 0;
+		q->w = 1;
+	}
+}
+
+void mixquaternion(aiQuaternion* q, aiQuaternion* a, aiQuaternion* b, float t)
+{
+	aiQuaternion tmp;
+	if (dotquaternions(a, b) < 0) {
+		tmp.x = -a->x; tmp.y = -a->y; tmp.z = -a->z; tmp.w = -a->w;
+		a = &tmp;
+	}
+	q->x = a->x + t * (b->x - a->x);
+	q->y = a->y + t * (b->y - a->y);
+	q->z = a->z + t * (b->z - a->z);
+	q->w = a->w + t * (b->w - a->w);
+	normalizequaternion(q);
+}
+
+//
+// ANIMATION
+//
+
+void animatescene(struct aiScene* scene, struct aiAnimation* anim, float tick)
+{
+	aiVectorKey* p0, * p1, * s0, * s1;
+	aiQuatKey* r0, * r1;
+	aiVector3D p, s;
+	aiQuaternion r;
+	int i;
+
+	// Assumes even key frame rate and synchronized pos/rot/scale keys.
+	// We should look at the key->mTime values instead, but I'm lazy.
+
+	int frame = floor(tick);
+	float t = tick - floor(tick);
+
+	for (i = 0; i < anim->mNumChannels; i++) {
+		struct aiNodeAnim* chan = anim->mChannels[i];
+		struct aiNode* node = FindNodeByName(scene->mRootNode, chan->mNodeName.data);
+		p0 = chan->mPositionKeys + (frame + 0) % chan->mNumPositionKeys;
+		p1 = chan->mPositionKeys + (frame + 1) % chan->mNumPositionKeys;
+		r0 = chan->mRotationKeys + (frame + 0) % chan->mNumRotationKeys;
+		r1 = chan->mRotationKeys + (frame + 1) % chan->mNumRotationKeys;
+		s0 = chan->mScalingKeys + (frame + 0) % chan->mNumScalingKeys;
+		s1 = chan->mScalingKeys + (frame + 1) % chan->mNumScalingKeys;
+		mixvector(&p, &p0->mValue, &p1->mValue, t);
+		mixquaternion(&r, &r0->mValue, &r1->mValue, t);
+		mixvector(&s, &s0->mValue, &s1->mValue, t);
+		composematrix(&node->mTransformation, &p, &r, &s);
+	}
+}
+
+//
+// md6Frame_t
+//
+struct md6Frame_t {
+	idList< BoneDesc > skeleton;
+};
+
+/*
+===============
+WriteMD6Anim
+===============
+*/
+void WriteMD6Anim(const char *meshpath, const char* dest, idList< BoneDesc >& skeleton, idList<md6Frame_t> &frames,  const char* commandLine, idBounds &translatedBounds) {
+	idStr fakeMD6Skel = dest;
+	fakeMD6Skel.SetFileExtension(".md6skl");
+	fakeMD6Skel = fileSystem->OSPathToRelativePath(fakeMD6Skel);
+
+
+	common->Printf("Writing MD6 anim %s\n", dest);
+
+	idFile* file = fileSystem->OpenExplicitFileWrite(dest);
+
+	file->WriteFloatString(MD6_VERSION_STRING " %d\n", MD6_ANIM_VERSION);
+
+	// Write the init block.
+	file->WriteFloatString("init {\n");
+	file->WriteFloatString("\tcommandLine \"%s\"\n", commandLine);
+	file->WriteFloatString("\tsourceAnim \"not_set.mb\"\n");
+	file->WriteFloatString("\tsubtractiveAnim \"\"\n");
+	file->WriteFloatString("\trotationMask \"\"\n");
+	file->WriteFloatString("\tscaleMask \"\"\n");
+	file->WriteFloatString("\ttranslationMask \"\"\n");
+	file->WriteFloatString("\tskeletonName \"%s\"\n", fakeMD6Skel.c_str());
+	file->WriteFloatString("\tmeshName \"%s\"\n", meshpath);
+	file->WriteFloatString("\tnumFrames %d\n", frames.Num());
+	file->WriteFloatString("\tframeRate 30\n");
+	file->WriteFloatString("\tnumJoints %d\n", skeleton.Num());
+	file->WriteFloatString("\tnumUserChannels 0\n");
+	file->WriteFloatString("\ttranslatedBounds ( %f %f %f ) ( %f %f %f )\n", translatedBounds[0][0], translatedBounds[0][1], translatedBounds[0][2], translatedBounds[1][0], translatedBounds[1][1], translatedBounds[1][2]);
+	file->WriteFloatString("\tnormalizedBounds ( %f %f %f ) ( %f %f %f )\n", translatedBounds[0][0], translatedBounds[0][1], translatedBounds[0][2], translatedBounds[1][0], translatedBounds[1][1], translatedBounds[1][2]); // Not sure what to put here? So I'm just putting translated bounds again.
+	file->WriteFloatString("\tmaxErrorRotation 0.001200\n");
+	file->WriteFloatString("\tmaxErrorScale 0.001200\n");
+	file->WriteFloatString("\tmaxErrorTranslation 0.001200\n");
+	file->WriteFloatString("\tmaxErrorUser 0.000000\n");
+	file->WriteFloatString("}\n");
+
+	// Write out the flags block, todo make these customizable.
+	file->WriteFloatString("flags {\n");
+		file->WriteFloatString("\tuseForwardTranslation\n");
+		file->WriteFloatString("\tuseLeftTranslation\n");
+		file->WriteFloatString("\tuseRotation\n");
+	file->WriteFloatString("}\n");
+
+	// Write the joint block
+	file->WriteFloatString("joints {\n");
+	for (int i = 0; i < skeleton.Num(); i++) {
+		idQuat quat = skeleton[i].rotation.ToQuat();
+		idVec3 translation = skeleton[i].location;
+
+		idStr parentName = "";
+		if (skeleton[i].parentIndex != -1) {
+			parentName = skeleton[skeleton[i].parentIndex].name;
+
+			//translation = translation + skeleton[skeleton[i].parentIndex].worldTransform;
+			skeleton[i].worldRotation = skeleton[i].worldRotation * skeleton[skeleton[i].parentIndex].worldRotation;
+		}
+
+		skeleton[i].worldTransform = translation;
+		skeleton[i].worldRotation = quat.ToMat3();
+
+		file->WriteFloatString("\t \"%s\" %d 1 // %s\n", skeleton[i].name.c_str(), skeleton[i].parentIndex, parentName.c_str());
+	}
+	file->WriteFloatString("}\n");
+
+	// TODO: Add suppotr for rotation/scale/translation masks!
+	file->WriteFloatString("rotationMask {\n");
+	file->WriteFloatString("}\n");
+
+	file->WriteFloatString("scaleMask {\n");
+	file->WriteFloatString("}\n");
+
+	file->WriteFloatString("translationMask {\n");
+	file->WriteFloatString("}\n");
+
+	// Write out all of our frames.
+	file->WriteFloatString("frames {\n");
+		for(int i = 0; i < frames.Num(); i++) {
+			file->WriteFloatString("\tframe %d {\n", i);
+				for(int d = 0; d < frames[i].skeleton.Num(); d++) {
+					idMat3 rotation = frames[i].skeleton[d].rotation;
+					idQuat jointRotation = rotation.ToQuat();
+					idVec3 jointTranslation = frames[i].skeleton[d].location;
+
+					file->WriteFloatString("\t\tjoint %d {\n", d);
+						file->WriteFloatString("\t\t\tR( %f %f %f %f )\n", jointRotation.x, jointRotation.y, jointRotation.z, jointRotation.w);
+						file->WriteFloatString("\t\t\tS( 1 1 1 )\n");
+						file->WriteFloatString("\t\t\tT( %f %f %f )\n", jointTranslation.x, jointTranslation.y, jointTranslation.z);
+					file->WriteFloatString("\t\t}\n");
+				}
+			file->WriteFloatString("\t}\n");
+		}
+	file->WriteFloatString("}\n");
+
+	// Write the user channels block(not sure what this is, but it seems to correlate to numFrames.
+	file->WriteFloatString("userChannels {\n");
+		for (int i = 0; i < frames.Num(); i++) {
+			file->WriteFloatString("\t( )\n");
+		}
+	file->WriteFloatString("}\n");
+
+	fileSystem->CloseFile(file);
+}
+
+/*
+===============
+ExportAnim
+===============
+*/
+void ExportAnim(const char *modelpath, const char* src, const char* dest, idExportOptions& options) {
+	common->Printf("Opening Mesh %s\n", src);
+	aiScene* scene = (aiScene*)aiImportFile(src, aiProcess_Triangulate | aiProcess_GenSmoothNormals);
+	if (scene == nullptr) {
+		common->Warning("ExportMesh: Failed to open mesh %s\n", dest);
+		return;
+	}
+
+	// Find the origin node.
+	struct aiNode* originNode = FindNodeByName(scene->mRootNode, "origin");
+	if (originNode == NULL) {
+		common->Error("You don't have a origin bone in your mesh!\n");
+		return;
+	}
+
+	int animLength = GetAnimLength(scene->mAnimations[0]);
+	common->Printf("AnimLength: %d\n", animLength);
+
+	idBounds translatedBounds;
+	translatedBounds.Clear();
+
+	idList<md6Frame_t> frames;
+	frames.SetNum(animLength);
+	for (int d = 0; d < animLength; d++) {
+		idVec3 _origin;
+		idMat3 _axis;
+
+		_origin.Zero();
+		_axis.Identity();
+
+		animatescene(scene, scene->mAnimations[0], d);
+		BuildSkeleton(originNode, boneNames, _origin, _axis, -1, frames[d].skeleton);
+
+		for (int f = 0; f < frames[d].skeleton.Num(); f++) {
+			translatedBounds.AddPoint(frames[d].skeleton[f].location);
+		}
+	}
+
+	WriteMD6Anim(modelpath, dest, meshskeleton, frames, options.commandLine, translatedBounds);
+}
+
 /*
 ===============
 WriteMD6Mesh
@@ -265,16 +553,16 @@ void WriteMD6Mesh(const char *dest, idList< BoneDesc > &skeleton, rvmExportMesh*
 
 	// Write the init block.
 	file->WriteFloatString("init {\n");
-		file->WriteFloatString("commandLine \"%s\"\n", commandLine);
-		file->WriteFloatString("sourceFile \"not_set.mb\"\n");
-		file->WriteFloatString("numMeshes %d\n", numMeshes);
-		file->WriteFloatString("numJoints %d\n", skeleton.Num());
-		file->WriteFloatString("numUserChannels 0\n");
-		file->WriteFloatString("numWeightSets 8\n");
-		file->WriteFloatString("minExpand ( -16 -16 -16 )\n");
-		file->WriteFloatString("maxExpand ( 16 16 16 )\n");
-		file->WriteFloatString("remapForSkinning 1\n");
-		file->WriteFloatString("morphMap \"\"\n");
+		file->WriteFloatString("\tcommandLine \"%s\"\n", commandLine);
+		file->WriteFloatString("\tsourceFile \"not_set.mb\"\n");
+		file->WriteFloatString("\tnumMeshes %d\n", numMeshes);
+		file->WriteFloatString("\tnumJoints %d\n", skeleton.Num());
+		file->WriteFloatString("\tnumUserChannels 0\n");
+		file->WriteFloatString("\tnumWeightSets 8\n");
+		file->WriteFloatString("\tminExpand ( -16 -16 -16 )\n");
+		file->WriteFloatString("\tmaxExpand ( 16 16 16 )\n");
+		file->WriteFloatString("\tremapForSkinning 1\n");
+		file->WriteFloatString("\tmorphMap \"\"\n");
 	file->WriteFloatString("}\n");
 
 	// Write the joint block
@@ -352,8 +640,8 @@ void ExportMesh(const char *src, const char *dest, idExportOptions &options) {
 		return;
 	}
 
-	idList< BoneDesc > skeleton;
-	idList<rvmBoneEntry> boneNames;
+	meshskeleton.Clear();
+	boneNames.Clear();
 	GatherBoneNames(scene, originNode, boneNames);
 	
 	idVec3 _origin;
@@ -362,7 +650,7 @@ void ExportMesh(const char *src, const char *dest, idExportOptions &options) {
 	_origin.Zero();
 	_axis.Identity();
 
-	BuildSkeleton(originNode, boneNames, _origin, _axis, -1, skeleton);
+	BuildSkeleton(originNode, boneNames, _origin, _axis, -1, meshskeleton);
 
 	// Grab all of the meshes.
 	int numMeshes = scene->mNumMeshes;
@@ -399,7 +687,7 @@ void ExportMesh(const char *src, const char *dest, idExportOptions &options) {
 				float weight = bone->mWeights[g].mWeight;
 				
 				if (weight > 0) {
-					mesh->vertexWeights[vertexId].jointIndex[mesh->vertexWeights[vertexId].numWeights] = FindExportJoint(bone, skeleton);
+					mesh->vertexWeights[vertexId].jointIndex[mesh->vertexWeights[vertexId].numWeights] = FindExportJoint(bone, meshskeleton);
 					mesh->vertexWeights[vertexId].weights[mesh->vertexWeights[vertexId].numWeights] = weight;
 					mesh->vertexWeights[vertexId].numWeights++;
 				}
@@ -410,6 +698,9 @@ void ExportMesh(const char *src, const char *dest, idExportOptions &options) {
 		const aiMaterial* material = scene->mMaterials[mesh->mesh->mMaterialIndex];
 		material->GetTexture(aiTextureType_DIFFUSE, 0, &Path);
 		mesh->mtrName = Path.C_Str();
+		if(mesh->mtrName.Length() > 0) {
+			mesh->mtrName = fileSystem->OSPathToRelativePath(mesh->mtrName);
+		}
 
 		if(mesh->mtrName.Length() <= 0) {
 			common->Warning("No diffuse texture assigned for mesh %s, using implicit path", mesh->mesh->mName.C_Str());
@@ -427,13 +718,11 @@ void ExportMesh(const char *src, const char *dest, idExportOptions &options) {
 			modelSrcPath += meshName;
 
 			mesh->mtrName = modelSrcPath;
-		}
-		else {
-			mesh->mtrName = fileSystem->OSPathToRelativePath(mesh->mtrName);
+			mesh->mtrName.Replace(".", "_");
 		}
 	}
 
-	WriteMD6Mesh(dest, skeleton, meshes.Ptr(), numMeshes, options.commandLine);
+	WriteMD6Mesh(dest, meshskeleton, meshes.Ptr(), numMeshes, options.commandLine);
 }
 
 /*
@@ -453,6 +742,8 @@ void Maya_Shutdown( void ) {
 
 }
 
+idStr lastMeshExport = "";
+
 /*
 ===============
 Maya_ConvertModel
@@ -464,6 +755,11 @@ const char *Maya_ConvertModel( const char *ospath, const char *commandline ) {
 	switch(options.type) {
 		case WRITE_MESH:
 			ExportMesh(options.src, options.dest, options);
+			lastMeshExport = options.dest;
+			break;
+
+		case WRITE_ANIM:
+			ExportAnim(lastMeshExport.c_str(), options.src, options.dest, options);
 			break;
 	}
 
