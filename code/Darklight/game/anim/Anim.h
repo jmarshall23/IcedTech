@@ -255,6 +255,7 @@ private:
 // jmarshall - md6 support
 	idList<md6Frame_t>		md6Frames;
 	rvmAnimType_t			animType;
+	idRenderModel*			renderModel;
 // jmarshall end
 public:
 							idMD5Anim();

@@ -252,6 +252,10 @@ bool idMD5Anim::ParseMD6Init(idLexer& parser) {
 		}
 		else if (token == "meshName") { // Do we need to keep track of the md6mesh at runtime?
 			parser.ReadToken(&token);
+			renderModel = renderModelManager->FindModel(token);
+			if (renderModel == NULL) {
+				parser.Error("Failed to load render model %s\n", token.c_str());
+			}
 		}
 		else if (token == "numFrames") { 
 			numFrames = parser.ParseInt();
@@ -1069,7 +1073,7 @@ void idMD5Anim::GetBounds( idBounds &bnds, int time, int cyclecount ) const {
 // jmarshall
 	// We should evaluate this for non root animations!
 	if(animType == ANIM_TYPE_MD6) {
-		bnds = bounds[0];
+		bnds = renderModel->Bounds();
 		return;
 	}
 // jmarshall end

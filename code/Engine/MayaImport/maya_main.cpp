@@ -419,6 +419,8 @@ void WriteMD6Anim(const char *meshpath, const char* dest, idList< BoneDesc >& sk
 
 	file->WriteFloatString(MD6_VERSION_STRING " %d\n", MD6_ANIM_VERSION);
 
+	idStr relativePath = fileSystem->OSPathToRelativePath(meshpath);
+
 	// Write the init block.
 	file->WriteFloatString("init {\n");
 	file->WriteFloatString("\tcommandLine \"%s\"\n", commandLine);
@@ -428,7 +430,7 @@ void WriteMD6Anim(const char *meshpath, const char* dest, idList< BoneDesc >& sk
 	file->WriteFloatString("\tscaleMask \"\"\n");
 	file->WriteFloatString("\ttranslationMask \"\"\n");
 	file->WriteFloatString("\tskeletonName \"%s\"\n", fakeMD6Skel.c_str());
-	file->WriteFloatString("\tmeshName \"%s\"\n", meshpath);
+	file->WriteFloatString("\tmeshName \"%s\"\n", relativePath.c_str());
 	file->WriteFloatString("\tnumFrames %d\n", frames.Num());
 	file->WriteFloatString("\tframeRate 30\n");
 	file->WriteFloatString("\tnumJoints %d\n", skeleton.Num());
