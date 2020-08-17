@@ -930,7 +930,7 @@ idRenderMatrix::Multiply
 ========================
 */
 void idRenderMatrix::Multiply( const idRenderMatrix & a, const idRenderMatrix & b, idRenderMatrix & out ) {
-
+#ifndef __AVX2__
 #ifdef ID_WIN_X86_SSE2_INTRIN
 
 	__m128 a0 = _mm_loadu_ps( a.m + 0*4 );
@@ -1003,6 +1003,48 @@ void idRenderMatrix::Multiply( const idRenderMatrix & a, const idRenderMatrix & 
 	out.m[3*4+3] = a.m[3*4+0]*b.m[0*4+3] + a.m[3*4+1]*b.m[1*4+3] + a.m[3*4+2]*b.m[2*4+3] + a.m[3*4+3]*b.m[3*4+3];
 
 #endif
+#else
+	__m256 ymm1 = *(__m256*)(&a.m[0]);
+	__m256 ymm3 = *(__m256*)(&b.m[8]);
+	__m256 ymm2 = *(__m256*)(&b.m[0]);
+	__m256 ymm0 = *(__m256*)(&a.m[8]);
+	auto ymm5 = _mm256_permute2f128_ps(ymm3, ymm3, 0);
+	auto ymm4 = _mm256_permute_ps(ymm1, 170);
+	ymm3 = _mm256_permute2f128_ps(ymm3, ymm3, 17);
+	ymm4 = _mm256_mul_ps(ymm4, ymm5);
+	auto ymm6 = _mm256_permute_ps(ymm1, 255);
+	auto ymm7 = _mm256_permute2f128_ps(ymm2, ymm2, 0);
+	ymm6 = _mm256_mul_ps(ymm6, ymm3);
+	ymm2 = _mm256_permute2f128_ps(ymm2, ymm2, 17);
+
+	ymm4 = _mm256_add_ps(ymm4, ymm6);
+	ymm6 = _mm256_permute_ps(ymm1, 0);
+	ymm1 = _mm256_permute_ps(ymm1, 85);
+
+	ymm6 = _mm256_mul_ps(ymm6, ymm7);
+	ymm1 = _mm256_mul_ps(ymm1, ymm2);
+
+	ymm1 = _mm256_add_ps(ymm6, ymm1);
+
+	ymm1 = _mm256_add_ps(ymm4, ymm1);
+	ymm4 = _mm256_permute_ps(ymm0, 255);
+	ymm3 = _mm256_mul_ps(ymm4, ymm3);
+
+	*(__m256*)&out.m[0] = ymm1;
+
+	ymm1 = _mm256_permute_ps(ymm0, 0);
+	ymm1 = _mm256_mul_ps(ymm1, ymm7);
+	ymm1 = _mm256_add_ps(ymm1, ymm3);
+	ymm3 = _mm256_permute_ps(ymm0, 85);
+	ymm0 = _mm256_permute_ps(ymm0, 170);
+
+	ymm2 = _mm256_mul_ps(ymm3, ymm2);
+	ymm0 = _mm256_mul_ps(ymm0, ymm5);
+	ymm0 = _mm256_add_ps(ymm2, ymm0);
+	ymm0 = _mm256_add_ps(ymm1, ymm0);
+
+	*(__m256*)(&out.m[8]) = ymm0;
+#endif
 }
 
 /*
@@ -1011,7 +1053,7 @@ idRenderMatrix::Inverse
 
 inverse( M ) = ( 1 / determinant( M ) ) * transpose( cofactor( M ) )
 
-This code is based on the code written by Cédric Lallain, published on "Cell Performance"
+This code is based on the code written by CÃ©dric Lallain, published on "Cell Performance"
 (by Mike Acton) and released under the BSD 3-Clause ("BSD New" or "BSD Simplified") license.
 https://code.google.com/p/cellperformance-snippets/
 
