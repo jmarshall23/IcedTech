@@ -454,26 +454,118 @@ ID_INLINE idVec3 idMat3::operator*( const idVec3 &vec ) const {
 		mat[ 0 ].z * vec.x + mat[ 1 ].z * vec.y + mat[ 2 ].z * vec.z );
 }
 
-ID_INLINE idMat3 idMat3::operator*( const idMat3 &a ) const {
+
+ID_FORCE_INLINE idMat3 idMat3::operator*( const idMat3& a ) const
+{
+#ifdef __AVX2__
+#define	REORDER_LC(x1,x2,x3,x4,x5,x6,x7,x8)		_mm256_set_epi32(x8, x7, x6, x5, x4, x3, x2, x1)
+
+	auto LC0 = REORDER_LC(0,0,0,3,3,3,6,6);
+	auto LC1 = REORDER_LC(0,1,2,0,1,2,0,1);
+	auto LC2 = REORDER_LC(1,1,1,4,4,4,7,7);
+	auto LC3 = REORDER_LC(3,4,5,3,4,5,3,4);
+	
+	auto rdi = (const float*)&this->mat[0];
+	auto rsi = (const float*)&a.mat[0];
+	
+	union alignas(__m256) tempval{
+		idMat3 result;
+		char nodestruct;
+		tempval() {}
+	}res_disable_constructor;
+	
+	auto rdx = (float*)&res_disable_constructor.result.mat[0];
+
+	auto xmm2 = _mm_load_ss(rsi+2);
+	auto xmm6 = _mm_load_ss(rsi+5);
+	xmm2 = _mm_mul_ss(xmm2, _mm_load_ss(rdi+6));
+	auto xmm7 = _mm_load_ps(rsi);
+	xmm6 = _mm_mul_ss(xmm6, _mm_load_ss(rdi+7));
+
+	auto ymm1 = _mm256_insertf128_ps(_mm256_castps128_ps256(xmm7), _mm_load_ps(rsi+4), 1);
+
+	auto xmm8 = _mm_load_ss(rdi+8);
+	xmm7 = _mm_load_ss(rsi+8);
+
+	auto xmm3 = _mm_load_ps(rdi);
+	auto ymm9 = LC0;
+
+	auto ymm3 = _mm256_insertf128_ps(_mm256_castps128_ps256(xmm3), _mm_load_ps(rdi+4), 1);
+
+
+	auto xmm0 = _mm_load_ss(rdi+2);
+	auto xmm4 = _mm_load_ss(rdi+5);
+
+	auto xmm10 = _mm_load_ss(rsi+6);
+
+	xmm2 = _mm_add_ss(xmm2, xmm6);
+	xmm6 = _mm_mul_ss(xmm7, xmm8);
+
+	auto xmm5 = _mm_load_ss(rsi+7);
+	ymm9 = _mm256_permutexvar_epi32(ymm9, _mm256_castps_si256( ymm3));
+
+	xmm8 = _mm_unpacklo_ps(xmm8, xmm8);
+	xmm2 = _mm_add_ss(xmm2, xmm6);
+
+	auto ymm6 =_mm256_castsi256_ps( _mm256_permutexvar_epi32(LC1, _mm256_castps_si256(ymm1)));
+
+	ymm6 = _mm256_mul_ps(ymm6, _mm256_castsi256_ps(ymm9));
+
+
+	auto xmm9 = _mm_unpacklo_ps(xmm4, xmm4);
+	xmm4 = _mm_unpacklo_ps(xmm0, xmm4);
+
+	_mm_store_ss(rdx+8, xmm2);
+
+	xmm0 = _mm_unpacklo_ps(xmm0, xmm0);
+
+	xmm8 = _mm_movelh_ps(xmm9, xmm8);
+	xmm0 = _mm_movelh_ps(xmm0, xmm4);
+	xmm4 = _mm_unpacklo_ps(xmm10, xmm5);
+	xmm5 = _mm_unpacklo_ps(xmm5, xmm7);
+	xmm7 = _mm_unpacklo_ps(xmm7, xmm10);
+	xmm5 = _mm_movelh_ps(xmm5, xmm4);
+
+	auto ymm0 = _mm256_insertf128_ps(_mm256_castps128_ps256(xmm0), xmm8, 1);
+	xmm4 = _mm_movelh_ps(xmm4, xmm7);
+
+	auto ymm4 = _mm256_insertf128_ps(_mm256_castps128_ps256(xmm4), xmm5, 1);
+
+	ymm0 = _mm256_mul_ps(ymm0, ymm4);
+
+	ymm3 = _mm256_castsi256_ps(_mm256_permutexvar_epi32(LC2, _mm256_castps_si256(ymm3)));
+
+	ymm1 = _mm256_castsi256_ps(_mm256_permutexvar_epi32(LC3, _mm256_castps_si256(ymm1)));
+	ymm1 = _mm256_mul_ps(ymm1, ymm3);
+	ymm0 = _mm256_add_ps(ymm6, ymm0);
+	ymm0 = _mm256_add_ps(ymm0, ymm1);
+
+	*(__m256*)rdx = ymm0;
+	return res_disable_constructor.result;
+
+#else
 	int i, j;
-	const float *m1Ptr, *m2Ptr;
-	float *dstPtr;
+	const float* m1Ptr, *m2Ptr;
+	float* dstPtr;
 	idMat3 dst;
 
-	m1Ptr = reinterpret_cast<const float *>(this);
-	m2Ptr = reinterpret_cast<const float *>(&a);
-	dstPtr = reinterpret_cast<float *>(&dst);
+	m1Ptr = reinterpret_cast<const float*>( this );
+	m2Ptr = reinterpret_cast<const float*>( &a );
+	dstPtr = reinterpret_cast<float*>( &dst );
 
-	for ( i = 0; i < 3; i++ ) {
-		for ( j = 0; j < 3; j++ ) {
+	for( i = 0; i < 3; i++ )
+	{
+		for( j = 0; j < 3; j++ )
+		{
 			*dstPtr = m1Ptr[0] * m2Ptr[ 0 * 3 + j ]
-					+ m1Ptr[1] * m2Ptr[ 1 * 3 + j ]
-					+ m1Ptr[2] * m2Ptr[ 2 * 3 + j ];
+					  + m1Ptr[1] * m2Ptr[ 1 * 3 + j ]
+					  + m1Ptr[2] * m2Ptr[ 2 * 3 + j ];
 			dstPtr++;
 		}
 		m1Ptr += 3;
 	}
 	return dst;
+#endif
 }
 
 ID_INLINE idMat3 idMat3::operator*( const float a ) const {
@@ -506,6 +598,9 @@ ID_INLINE idMat3 &idMat3::operator*=( const float a ) {
 }
 
 ID_INLINE idMat3 &idMat3::operator*=( const idMat3 &a ) {
+#ifdef __AVX2__
+	*this = *this * a;
+#else
 	int i, j;
 	const float *m2Ptr;
 	float *m1Ptr, dst[3];
@@ -522,6 +617,7 @@ ID_INLINE idMat3 &idMat3::operator*=( const idMat3 &a ) {
 		m1Ptr[0] = dst[0]; m1Ptr[1] = dst[1]; m1Ptr[2] = dst[2];
 		m1Ptr += 3;
 	}
+#endif
 	return *this;
 }
 
